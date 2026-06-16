@@ -1,0 +1,88 @@
+{
+  "title": "The Flock With No Leader",
+  "axis": "STRUCTURE",
+  "form": "EMERGENCE",
+  "metaphor": "starling murmuration",
+  "hook": "A hundred thousand birds turn as one \u2014 and not one is in charge.",
+  "script": "A hundred thousand birds turn at once, and not one of them is in charge. It looks impossible. A single shape twisting like it has a mind. But there is no mind, no leader, no plan. Each bird follows one tiny rule: watch only your nearest seven neighbors, and match them. That is it. Seven birds. None of them can see the whole flock. But that rule, copied across a hundred thousand bodies, builds a shape no single bird could ever picture. And when one edge turns, the turn races through the entire flock faster than any bird can react. Faster than their nerves should even allow. Scientists have measured it for years. They still cannot fully explain how the wave moves that fast.",
+  "first_frame": {
+    "primary_object": "A vast starling murmuration forming a single dark shape against an open sky",
+    "composition": "centered",
+    "motion_state": "micro_loop",
+    "contradiction": "Thousands of separate birds moving as one solid object with no visible leader",
+    "text_position": "bottom",
+    "impact": "The viewer instantly sees one living shape made of countless separate things."
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 5,
+      "voiceover": "A hundred thousand birds turn at once. And not one of them is in charge.",
+      "on_screen_text": "No leader.",
+      "search_query": "murmuration starlings sky",
+      "motion": "static"
+    },
+    {
+      "id": 2,
+      "duration": 5,
+      "voiceover": "It looks impossible. A single shape, twisting like it has a mind. But there is no mind. No leader. No plan.",
+      "on_screen_text": "One shape. No plan.",
+      "search_query": "starlings murmuration flock",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 3,
+      "duration": 6,
+      "voiceover": "Each bird follows one tiny rule. Watch only your nearest seven neighbors. Match them. That is it.",
+      "on_screen_text": "Watch 7 neighbors.",
+      "search_query": "birds flock aerial",
+      "motion": "static"
+    },
+    {
+      "id": 4,
+      "duration": 6,
+      "voiceover": "Seven birds. None of them sees the whole flock. But that rule, copied across a hundred thousand, builds a shape no single bird could picture.",
+      "on_screen_text": "Local rule. Global shape.",
+      "search_query": "birds flock sunset sky",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 5,
+      "duration": 5,
+      "voiceover": "And when one edge turns, the turn races through the flock faster than any bird can react.",
+      "on_screen_text": "Faster than reaction.",
+      "search_query": "birds flying slow motion sky",
+      "motion": "pan"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "Faster than their nerves should allow. Scientists have measured it for years. They still cannot fully explain how the wave moves that fast.",
+      "on_screen_text": "Still unexplained.",
+      "search_query": "starlings flying dusk",
+      "motion": "static"
+    }
+  ],
+  "captions": [
+    "100,000 birds. Zero leaders. Here is the one rule that builds the whole shape.",
+    "This is called a murmuration, and how the turn spreads this fast is still debated.",
+    "Each bird only watches 7 neighbors. That is all it takes. Watch it build."
+  ],
+  "hashtags": [
+    "#murmuration",
+    "#starlings",
+    "#emergence",
+    "#nature",
+    "#howthingswork",
+    "#birds",
+    "#everydayscience",
+    "#satisfying",
+    "#explained",
+    "#swarm"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  }
+}
