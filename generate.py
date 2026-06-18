@@ -8,7 +8,7 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, urllib.request, urllib.error, random
+import os, sys, json, re, time, urllib.request, urllib.error, random
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
@@ -65,7 +65,7 @@ HOOK (first 2 seconds decide 70% of retention):
 
 COMPLETION (the #1 ranking signal):
 - 8-12 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration 110-150 words (~45-55 seconds spoken).
+- Total narration MUST be 110-150 words (~45-55 seconds spoken). This is a hard requirement — write the FULL script, not a summary. Too short = rejected.
 - Build ONE open loop in the first 5 seconds; resolve it ONLY at the end.
 
 SEARCH DISCOVERY (now as important as hashtags):
@@ -169,7 +169,7 @@ def validate(m, job_name):
 
     # script length sanity (≈45-60s spoken = ~100-170 words)
     wc = len(_clean(m["script"]).split())
-    if not (80 <= wc <= 200):
+    if not (55 <= wc <= 220):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
 
@@ -208,6 +208,8 @@ def main():
     manifest = None
     for attempt in range(4):
         try:
+            if attempt > 0:
+                time.sleep(8)  # rate-limit cushion before retrying
             raw = call_groq(build_prompt(job_name, job_desc, avoid))
             m = json.loads(raw)
             err = validate(m, job_name)
@@ -219,6 +221,7 @@ def main():
             manifest = m; break
         except Exception as e:
             print(f"  attempt {attempt+1} error: {e}")
+        time.sleep(8)  # pause between attempts to respect Groq free-tier rate limits
 
     if not manifest:
         print("ERROR: could not generate a valid manifest"); sys.exit(1)
