@@ -116,7 +116,9 @@ def call_groq(prompt):
     req = urllib.request.Request(
         "https://api.groq.com/openai/v1/chat/completions",
         data=body,
-        headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"})
+        headers={"Authorization": f"Bearer {GROQ_KEY}",
+                 "Content-Type": "application/json",
+                 "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())["choices"][0]["message"]["content"]
 
