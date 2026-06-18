@@ -15,7 +15,7 @@ PAGE = os.environ.get("PAGE", "science")
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
-MODEL = "llama-3.3-70b-versatile"   # stronger model for script quality
+MODEL = "llama-3.1-8b-instant"   # widely-available model; swap to 70b if your account supports it
 
 VIEWER_JOBS = [
     ("REFRAME",
