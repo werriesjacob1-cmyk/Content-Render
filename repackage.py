@@ -17,7 +17,7 @@ safe zone (~900x1400 centered) so every derived cut keeps text on-screen.
 import os, sys, subprocess, shutil, json
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-OUT  = os.path.join(ROOT, "..", "out")
+OUT  = os.path.join(ROOT, "out")
 
 
 def run(cmd):
