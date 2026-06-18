@@ -187,7 +187,8 @@ def _groq_pick(intent, candidates):
         req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",
                                      data=body,
                                      headers={"Authorization": f"Bearer {key}",
-                                              "Content-Type": "application/json"})
+                                              "Content-Type": "application/json",
+                                              "User-Agent": "content-render/1.0"})
         with urllib.request.urlopen(req, timeout=30) as r:
             txt = json.loads(r.read().decode())["choices"][0]["message"]["content"]
         m = re.search(r"\d+", txt)
