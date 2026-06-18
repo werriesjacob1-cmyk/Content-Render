@@ -1,0 +1,103 @@
+name: render-video
+
+on:
+  repository_dispatch:
+    types: [render]
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PAGE: science          # change to history_pov / dark_mystery / ai_life to run another page
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ensure ffmpeg
+        run: ffmpeg -version >/dev/null 2>&1 || sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Auto-generate a fresh video idea
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          python generate.py manifest.json || cp manifest_example.json manifest.json
+          echo "--- generated manifest ---"
+          head -c 400 manifest.json; echo
+
+      - name: Write manifest from dispatch payload
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          printf '%s' "$PAYLOAD" > manifest.json
+          echo "manifest bytes: $(wc -c < manifest.json)"
+
+      - name: Commit memory + manifest
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          git config user.name "render-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add memory_*.json manifest.json 2>/dev/null || true
+          git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
+          git push 2>/dev/null || echo "push skipped"
+
+      - name: Render
+        env:
+          PEXELS_API_KEY:      ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY:     ${{ secrets.PIXABAY_API_KEY }}
+          ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python main.py manifest.json
+
+      - name: Prove output
+        run: |
+          echo "=== SIZE & HASH ==="
+          ls -la out/final.mp4
+          sha256sum out/final.mp4
+          echo "=== STREAMS ==="
+          ffprobe -v error -show_entries stream=codec_type,duration -of default=nw=1 out/final.mp4
+          echo "=== FRAME BRIGHTNESS (low = black screen) ==="
+          ffmpeg -hide_banner -i out/final.mp4 -vf "select=eq(n\,240),signalstats,metadata=print:key=lavfi.signalstats.YAVG" -frames:v 1 -f null - 2>&1 | grep YAVG || true
+          echo "=== EXTRACT FRAME ==="
+          ffmpeg -y -ss 8 -i out/final.mp4 -frames:v 1 out/proof_frame.png
+          ls -la out/proof_frame.png
+
+      - name: Repackage for all platforms
+        run: python repackage.py out/final.mp4
+
+      - name: Upload all platform cuts
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-video-${{ github.run_number }}
+          path: |
+            out/tiktok_reels_shorts.mp4
+            out/facebook_reels.mp4
+            out/square.mp4
+            out/landscape.mp4
+            out/final.mp4
+            out/post.json
+            out/platforms.json
+            out/proof_frame.png
+          retention-days: 7
+
+      - name: Notify n8n (optional)
+        if: always()
+        env:
+          HOOK: ${{ secrets.N8N_WEBHOOK_URL }}
+        run: |
+          if [ -n "$HOOK" ]; then
+            STATUS="${{ job.status }}"
+            RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            curl -s -X POST "$HOOK" -H "Content-Type: application/json" \
+              -d "{\"status\":\"$STATUS\",\"run_url\":\"$RUN_URL\"}" || true
+          fi
