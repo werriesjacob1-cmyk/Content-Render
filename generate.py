@@ -19,14 +19,16 @@ MODEL = "llama-3.1-8b-instant"   # widely-available model; swap to 70b if your a
 
 VIEWER_JOBS = [
     ("REFRAME",
-     "Flip something the viewer thought they understood. The payoff rewires their mental model. "
-     "End so they think 'I'll never see X the same way.'"),
+     "Flip a SPECIFIC scientific fact the viewer thought they understood. Must center on a real, "
+     "verifiable mechanism (how/why something actually works). The payoff rewires their mental model. "
+     "End so they think 'I'll never see X the same way.' NOT vague philosophy — a concrete fact."),
     ("SOCIAL_CURRENCY",
-     "Built around ONE stunning number or comparison so striking the viewer repeats it to sound smart. "
-     "The fact itself is the share trigger."),
+     "Built around ONE stunning, TRUE, specific number or comparison (with the actual figure) so striking "
+     "the viewer repeats it to sound smart. Must include a real measurable fact, not a feeling."),
     ("EXISTENTIAL_CHILL",
-     "Leave an eerie awe/dread feeling about reality, the body, time, or the universe. "
-     "End on an unresolved, haunting note that lingers."),
+     "Take a REAL, specific scientific fact about reality/the body/time/the universe that happens to be "
+     "awe-inducing, and explain the actual science of it. The chill comes from a TRUE mechanism, not from "
+     "vague poetry. NO fortune-cookie lines like 'time is a river' — state the real fact and why it's true."),
     ("HOW_TO",
      "A simple, SAFE, surprising science demonstration the viewer can do with common household items, then the science of WHY it works. "
      "STRICT SAFETY: only classic, well-established, proven-safe demos. NO fire, flames, heat, ingestion, swallowing, "
@@ -79,8 +81,11 @@ SAVES (we are weakest here — make every video save-worthy):
 COMMENTS:
 - Plant ONE line people will argue with or react to ("no way", "that's not true", "wait what").
 
-CONTENT:
-- ONE surprising, TRUE science fact/idea. Counterintuitive. Connects to the viewer's body/life/world.
+CONTENT (CRITICAL):
+- The video MUST teach ONE concrete, TRUE, verifiable science fact or mechanism — a real number, a real process, a real cause.
+- BANNED: vague philosophy, mysticism, fortune-cookie lines, metaphors-as-substance ("time is a river", "a grain of sand"), motivational fluff, "your life depends on it".
+- If a 12-year-old couldn't learn an actual FACT from it, it's wrong. Substance over mood.
+- Counterintuitive. Connects to the viewer's body/life/world.
 - Visually deliverable with real stock footage (nature, space, ocean, animals, cities, body, weather, hands, household).
 - No "imagine", no "did you know", no filler.
 
@@ -101,7 +106,7 @@ Return ONLY valid JSON, no markdown, exactly:
     {{"id": 1, "duration": 4, "voiceover": "one sentence", "on_screen_text": "2-4 words", "search_query": "2-5 words", "motion": "zoom_in"}}
   ],
   "captions": ["caption with keyword + a question (drives comments)", "caption 2", "caption 3"],
-  "hashtags": ["#science", "#...", "..."],
+  "hashtags": ["#science", "#space", "#facts"],  // 4-6 REAL one-word tags people search. No underscores, no sentences, no made-up phrases.
   "render": {{"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"}}
 }}"""
 
@@ -136,7 +141,7 @@ def validate(m, job_name):
     for k in ["title", "hook", "script", "scenes", "captions", "hashtags"]:
         if k not in m:
             return f"missing {k}"
-    if not isinstance(m["scenes"], list) or not (5 <= len(m["scenes"]) <= 14):
+    if not isinstance(m["scenes"], list) or not (8 <= len(m["scenes"]) <= 14):
         return f"scene count {len(m.get('scenes', []))} out of range"
 
     # clean top-level text
@@ -169,7 +174,7 @@ def validate(m, job_name):
 
     # script length sanity (≈45-60s spoken = ~100-170 words)
     wc = len(_clean(m["script"]).split())
-    if not (55 <= wc <= 220):
+    if not (95 <= wc <= 220):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
 
@@ -177,13 +182,21 @@ def validate(m, job_name):
     m["captions"] = [_clean(c) for c in m["captions"] if _clean(c)][:3] or [m["title"]]
     tags = []
     for h in m["hashtags"]:
-        h = _clean(h).replace(" ", "")
-        if not h.startswith("#"):
-            h = "#" + h
-        if h.lower() not in [t.lower() for t in tags]:
-            tags.append(h)
-    if "#science" not in [t.lower() for t in tags]:
-        tags.insert(0, "#science")
+        h = _clean(h).lstrip("#")
+        # reject phrase/sentence tags: drop anything with underscores or that's too long
+        if "_" in h or len(h) > 20 or " " in h.strip():
+            # try to salvage the first word only
+            h = re.sub(r"[_\s].*$", "", h)
+        h = re.sub(r"[^A-Za-z0-9]", "", h)  # letters/numbers only
+        if not h or len(h) < 2:
+            continue
+        tag = "#" + h.lower()
+        if tag not in tags:
+            tags.append(tag)
+    # guarantee core tags
+    for core in ["#science", "#learnontiktok"]:
+        if core not in tags:
+            tags.append(core)
     m["hashtags"] = tags[:6]
 
     if job_name == "HOW_TO":
@@ -206,7 +219,7 @@ def main():
     print(f"[generate] job={job_name} avoiding={avoid[:80]}")
 
     manifest = None
-    for attempt in range(4):
+    for attempt in range(5):
         try:
             if attempt > 0:
                 time.sleep(8)  # rate-limit cushion before retrying
