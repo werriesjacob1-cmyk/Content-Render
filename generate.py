@@ -67,8 +67,11 @@ HOOK (first 2 seconds decide 70% of retention):
 
 COMPLETION (the #1 ranking signal):
 - 8-12 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 110-150 words (~45-55 seconds spoken). This is a hard requirement — write the FULL script, not a summary. Too short = rejected.
-- Build ONE open loop in the first 5 seconds; resolve it ONLY at the end.
+- Total narration MUST be 110-150 words (~45-55 seconds spoken). Write the FULL script. Too short = rejected.
+- NARRATIVE PROGRESSION (critical): every scene must ADD NEW information and move the story forward.
+  NEVER restate the topic or repeat an idea in different words. Structure: HOOK -> setup -> escalating detail/steps -> the surprising REVEAL -> payoff.
+- Build ONE open loop in the first 5 seconds; resolve it ONLY at the end with a genuine "whoa" payoff (a number, a twist, a why nobody expects).
+- The ending must LAND — a satisfying revelation, then loop back to the hook. Do NOT trail off or restate the premise.
 
 SEARCH DISCOVERY (now as important as hashtags):
 - Pick ONE core keyword phrase (what someone would type to find this). 
@@ -83,9 +86,11 @@ COMMENTS:
 
 CONTENT (CRITICAL):
 - The video MUST teach ONE concrete, TRUE, verifiable science fact or mechanism — a real number, a real process, a real cause.
-- BANNED: vague philosophy, mysticism, fortune-cookie lines, metaphors-as-substance ("time is a river", "a grain of sand"), motivational fluff, "your life depends on it".
-- If a 12-year-old couldn't learn an actual FACT from it, it's wrong. Substance over mood.
-- Counterintuitive. Connects to the viewer's body/life/world.
+- The fact must be GENUINELY SURPRISING — something most adults do NOT know. Aim for "wait, WHAT?" not "yeah I knew that."
+- BANNED TOPICS (too obvious/overdone): static electricity, the water cycle, why the sky is blue, photosynthesis basics, "we only use 10% of our brain", basic volcano/rainbow facts.
+- BANNED STYLE: vague philosophy, mysticism, fortune-cookie lines, metaphors-as-substance, motivational fluff.
+- Prefer the strange and specific: deep-sea biology, quantum weirdness made real, the body's hidden systems, cosmic scale, time dilation, animal superpowers, numbers that sound fake but are true.
+- If a 12-year-old couldn't learn a NEW fact from it, it's wrong. Substance + surprise over mood.
 - Visually deliverable with real stock footage (nature, space, ocean, animals, cities, body, weather, hands, household).
 - No "imagine", no "did you know", no filler.
 
@@ -177,6 +182,21 @@ def validate(m, job_name):
     if not (70 <= wc <= 240):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
+
+    # anti-repetition: reject if scene voiceovers are too similar to each other
+    import difflib
+    vos = [s["voiceover"].lower() for s in m["scenes"]]
+    for i in range(len(vos)):
+        for j in range(i + 1, len(vos)):
+            ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
+            if ratio > 0.6:
+                return f"scenes {i+1} and {j+1} too similar (repetition)"
+    # reject if the title's key noun appears in nearly every scene (circling one idea)
+    import collections
+    words = collections.Counter(re.sub(r"[^a-z ]", "", " ".join(vos)).split())
+    common = [w for w, c in words.items() if len(w) > 4 and c >= max(4, len(vos) - 1)]
+    if common:
+        return f"word(s) {common} repeated in nearly every scene (not progressing)"
 
     # captions / hashtags hygiene
     m["captions"] = [_clean(c) for c in m["captions"] if _clean(c)][:3] or [m["title"]]
