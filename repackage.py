@@ -28,6 +28,52 @@ def run(cmd):
     return r
 
 
+
+
+def write_platform_text():
+    """Generate distinct per-platform text so each post reads as native (avoids originality penalties)
+    and exploits each platform's discovery model. Reads out/post.json if present."""
+    import json as _json
+    post_path = os.path.join(OUT, "post.json")
+    if not os.path.exists(post_path):
+        return
+    try:
+        with open(post_path) as f:
+            post = _json.load(f)
+    except Exception:
+        return
+
+    title = post.get("title", "")
+    caps = post.get("captions", []) or [title]
+    tags = post.get("hashtags", []) or ["#science"]
+    keyword = post.get("keyword", "") or (title.split()[0] if title else "science")
+    base_cap = caps[0] if caps else title
+
+    # TikTok: keyword-stuffed caption + question (search + comments). Tags inline.
+    tiktok = f"{base_cap} {' '.join(tags[:5])}"
+    # Instagram Reels: share-prompt framing, fewer tags, cleaner. 'Send this to...' drives DM sends.
+    insta = f"{base_cap}\n\nSend this to someone who needs to see it.\n{' '.join(tags[:5])}"
+    # YouTube Shorts: real searchable TITLE + description (Shorts has search discovery).
+    yt_title = (title if len(title) <= 90 else title[:87] + "...") + " #shorts"
+    yt_desc = f"{base_cap}\n\n{(caps[1] if len(caps)>1 else '')}\n\n{' '.join(tags[:8])}"
+    # Facebook: sound-off world, slightly longer caption restating the hook as text.
+    facebook = f"{base_cap}\n\n{(caps[2] if len(caps)>2 else base_cap)}"
+    # X: punchy one-liner, 1-2 tags max.
+    x = f"{base_cap} {' '.join(tags[:2])}"
+
+    out = {
+        "tiktok": {"caption": tiktok, "file": "tiktok_reels_shorts.mp4"},
+        "instagram_reels": {"caption": insta, "file": "tiktok_reels_shorts.mp4"},
+        "youtube_shorts": {"title": yt_title, "description": yt_desc, "file": "tiktok_reels_shorts.mp4"},
+        "facebook_reels": {"caption": facebook, "file": "facebook_reels.mp4"},
+        "x_twitter": {"caption": x, "file": "square.mp4"},
+        "instagram_feed": {"caption": insta, "file": "square.mp4"},
+    }
+    with open(os.path.join(OUT, "platform_text.json"), "w") as f:
+        _json.dump(out, f, indent=2)
+    print("platform_text.json written — native caption/title per platform.")
+
+
 def main():
     master = sys.argv[1] if len(sys.argv) > 1 else os.path.join(OUT, "final.mp4")
     if not os.path.exists(master):
@@ -78,6 +124,7 @@ def main():
     with open(os.path.join(OUT, "platforms.json"), "w") as f:
         json.dump(files, f, indent=2)
     print("\nplatforms.json written — every shape ready.")
+    write_platform_text()
 
 
 if __name__ == "__main__":
