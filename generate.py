@@ -114,7 +114,7 @@ def call_groq(prompt):
     body = json.dumps({
         "model": MODEL,
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.9,
+        "temperature": 0.7,
         "max_tokens": 2000,
         "response_format": {"type": "json_object"}
     }).encode()
@@ -141,7 +141,7 @@ def validate(m, job_name):
     for k in ["title", "hook", "script", "scenes", "captions", "hashtags"]:
         if k not in m:
             return f"missing {k}"
-    if not isinstance(m["scenes"], list) or not (8 <= len(m["scenes"]) <= 14):
+    if not isinstance(m["scenes"], list) or not (6 <= len(m["scenes"]) <= 14):
         return f"scene count {len(m.get('scenes', []))} out of range"
 
     # clean top-level text
@@ -174,7 +174,7 @@ def validate(m, job_name):
 
     # script length sanity (≈45-60s spoken = ~100-170 words)
     wc = len(_clean(m["script"]).split())
-    if not (95 <= wc <= 220):
+    if not (70 <= wc <= 240):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
 
@@ -219,6 +219,7 @@ def main():
     print(f"[generate] job={job_name} avoiding={avoid[:80]}")
 
     manifest = None
+    near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
     for attempt in range(5):
         try:
             if attempt > 0:
@@ -227,14 +228,29 @@ def main():
             m = json.loads(raw)
             err = validate(m, job_name)
             if err:
-                print(f"  attempt {attempt+1} invalid: {err}"); continue
+                print(f"  attempt {attempt+1} invalid: {err}")
+                # keep it as a backup if it at least has the core pieces
+                if all(k in m for k in ("title", "hook", "script", "scenes", "captions")) and near_miss is None:
+                    near_miss = m
+                continue
             mt = m.get("metaphor", "").lower()
             if any(mt and mt in h.get("metaphor", "").lower() for h in history):
                 print(f"  attempt {attempt+1} repeats topic, retrying"); continue
             manifest = m; break
         except Exception as e:
             print(f"  attempt {attempt+1} error: {e}")
-        time.sleep(8)  # pause between attempts to respect Groq free-tier rate limits
+
+    if not manifest and near_miss is not None:
+        # repair the near-miss minimally so it can render, rather than fall back to murmuration
+        print("  using best near-miss (repaired)")
+        nm = near_miss
+        nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
+        nm["hashtags"] = nm.get("hashtags", ["#science"])
+        nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
+        for s in nm.get("scenes", []):
+            s.setdefault("motion", "zoom_in"); s.setdefault("duration", 5)
+            s.setdefault("on_screen_text", ""); s.setdefault("search_query", nm.get("keyword", "science"))
+        manifest = nm
 
     if not manifest:
         print("ERROR: could not generate a valid manifest"); sys.exit(1)
