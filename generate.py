@@ -12,6 +12,8 @@ import os, sys, json, re, time, urllib.request, urllib.error, random
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
+SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
+SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
@@ -55,6 +57,15 @@ def save_memory(history, entry):
         json.dump({"history": history}, f, indent=2)
 
 def build_prompt(job_name, job_desc, avoid):
+    series_block = ""
+    if SERIES:
+        part = SERIES_PART or "1"
+        series_block = (f"\n\nSERIES MODE: This is PART {part} of an ongoing series titled \"{SERIES}\". "
+                        f"Open by referencing it's part {part} of the series (e.g. 'Part {part}: ...'). "
+                        f"Cover ONE distinct sub-topic that fits the series theme but does NOT repeat earlier parts. "
+                        f"End by teasing the NEXT part to make viewers follow so they don't miss it "
+                        f"(e.g. 'Follow so you don't miss part {int(part)+1}.'). "
+                        f"Put the series name + part number in the first on_screen_text and first caption.")
     return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.
 
 THIS VIDEO'S JOB: {job_name}. {job_desc}
@@ -77,12 +88,17 @@ SEARCH DISCOVERY (now as important as hashtags):
 - Pick ONE core keyword phrase (what someone would type to find this). 
 - Put it in the hook, in at least 2 on_screen_text labels, and in the first caption.
 
-SAVES (we are weakest here — make every video save-worthy):
-- The final spoken line must deliver a payoff AND explicitly invite a save (e.g. "Save this before you forget it.")
-- ALSO loop the last line back to the hook's idea so it replays cleanly (rewatch = #1 distribution signal).
+SHARES (THE #1 weighted signal — 10x a like). Engineer the video to be SENT to a friend:
+- The fact must be "send-worthy": so surprising or identity-relevant the viewer thinks "I have to show ___ this."
+- Include one line that hands the viewer a reason to share ("tag someone who won't believe this", or a fact they'll want to prove to a friend).
 
-COMMENTS:
-- Plant ONE line people will argue with or react to ("no way", "that's not true", "wait what").
+SAVES (5x a like — make every video save-worthy):
+- The final spoken line delivers a payoff AND invites a save ("Save this so you remember it.").
+- Loop the last line back to the hook so it replays cleanly (rewatch = top distribution signal).
+
+COMMENTS (binary questions outperform — easiest to answer, drive depth):
+- Plant ONE line that provokes a reply: either a BINARY question ("Team A or Team B?", "Did you know this — yes or no?") OR a claim people will argue with ("no way", "that's not true").
+- Put a binary/question version in the FIRST caption too (comments often come from the caption).
 
 CONTENT (CRITICAL):
 - The video MUST teach ONE concrete, TRUE, verifiable science fact or mechanism — a real number, a real process, a real cause.
@@ -94,7 +110,7 @@ CONTENT (CRITICAL):
 - Visually deliverable with real stock footage (nature, space, ocean, animals, cities, body, weather, hands, household).
 - No "imagine", no "did you know", no filler.
 
-AVOID these recent topics entirely: {avoid}
+AVOID these recent topics entirely: {avoid}{series_block}
 
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and a 2-5 word LITERAL stock-footage search query.
