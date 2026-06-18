@@ -226,8 +226,9 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     frames = max(1, int(seg_dur * 30))
 
     # slow zoom-in (Ken Burns) + cinematic color grade (contrast, slight teal shadows, mild saturation)
+    zspeed = PROFILE["zoom_speed"]
     motion = (f"scale=-2:2400,crop={W}:{H},"
-              f"zoompan=z='if(lte(on,3),1.06,min(zoom+{PROFILE["zoom_speed"]},1.12))':d={frames}:s={W}x{H}:fps=30,")
+              f"zoompan=z='if(lte(on,3),1.06,min(zoom+{zspeed},1.12))':d={frames}:s={W}x{H}:fps=30,")
     grade = PROFILE["grade"]
 
     if have:
