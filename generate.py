@@ -17,7 +17,17 @@ SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
-MODEL = "llama-3.1-8b-instant"   # widely-available model; swap to 70b if your account supports it
+# Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
+MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
+BANK_PATH = os.path.join(ROOT, "topic_bank.json")
+
+def load_bank():
+    try:
+        with open(BANK_PATH) as f:
+            return json.load(f).get("facts", [])
+    except Exception:
+        return []
+_WORKING_MODEL = None  # cached once we find one that responds
 
 VIEWER_JOBS = [
     ("REFRAME",
@@ -56,7 +66,7 @@ def save_memory(history, entry):
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
 
-def build_prompt(job_name, job_desc, avoid):
+def build_prompt(job_name, job_desc, avoid, fact=None):
     series_block = ""
     if SERIES:
         part = SERIES_PART or "1"
@@ -66,7 +76,17 @@ def build_prompt(job_name, job_desc, avoid):
                         f"End by teasing the NEXT part to make viewers follow so they don't miss it "
                         f"(e.g. 'Follow so you don't miss part {int(part)+1}.'). "
                         f"Put the series name + part number in the first on_screen_text and first caption.")
-    return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.
+    fact_block = ""
+    if fact:
+        fact_block = (f"\n\n=== THE VERIFIED FACT FOR THIS VIDEO (this is TRUE — build the whole script around it) ===\n"
+                      f"\"{fact['fact']}\"\n"
+                      f"Angle: {fact['angle']}.\n"
+                      f"ABSOLUTE RULES FOR ACCURACY:\n"
+                      f"- Center the ENTIRE script on this one fact. Do NOT introduce other topics.\n"
+                      f"- Do NOT invent any statistic, number, or 'fact' that is not in the verified fact above. If you are unsure of a number, do not state one.\n"
+                      f"- Never state two different numbers for the same thing. Accuracy over drama.\n"
+                      f"- For the footage search_query fields, prefer these proven matches: {fact.get('queries', [])}.\n")
+    return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}
 
 THIS VIDEO'S JOB: {job_name}. {job_desc}
 
@@ -131,9 +151,9 @@ Return ONLY valid JSON, no markdown, exactly:
   "render": {{"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"}}
 }}"""
 
-def call_groq(prompt):
+def _call_model(model, prompt):
     body = json.dumps({
-        "model": MODEL,
+        "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7,
         "max_tokens": 2000,
@@ -147,6 +167,26 @@ def call_groq(prompt):
                  "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+
+def call_groq(prompt):
+    global _WORKING_MODEL
+    # if we already found a working model, use it
+    if _WORKING_MODEL:
+        return _call_model(_WORKING_MODEL, prompt)
+    # otherwise walk the chain, caching the first that works
+    last_err = None
+    for model in MODEL_CHAIN:
+        try:
+            out = _call_model(model, prompt)
+            _WORKING_MODEL = model
+            print(f"  [model] using {model}")
+            return out
+        except urllib.error.HTTPError as e:
+            if e.code in (403, 404):   # not available to this account — try next
+                print(f"  [model] {model} unavailable ({e.code}), trying next")
+                last_err = e; continue
+            raise   # 429/500 etc — let the retry loop handle it
+    raise last_err if last_err else RuntimeError("no model available")
 
 # basic safety net for HOW_TO output
 UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|candle|stove|boil|boiling|"
@@ -199,6 +239,23 @@ def validate(m, job_name):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
 
+    # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
+    full = (m["script"] + " " + " ".join(c for c in m.get("captions", []))).lower()
+    # map each "number + following noun" and each "number + preceding noun"
+    pairs = re.findall(r"(\d[\d,\.]*)\s+([a-z]{3,})", full)
+    by_noun = {}
+    for num, noun in pairs:
+        n = num.rstrip(".").replace(",", "")
+        by_noun.setdefault(noun, set()).add(n)
+    for noun, nums in by_noun.items():
+        if len(nums) > 1 and noun not in ("times", "ways", "kinds", "types", "of", "the", "and"):
+            return f"contradictory numbers for '{noun}': {sorted(nums)}"
+    # reject absurd fractional counts of discrete things (16.5 colors, 3.5 hearts)
+    for num, noun in pairs:
+        if "." in num and noun in ("colors", "colours", "hearts", "planets", "stars", "people",
+                                   "cells", "bones", "legs", "eyes", "moons", "times", "animals"):
+            return f"impossible fractional count: {num} {noun}"
+
     # anti-repetition: reject if scene voiceovers are too similar to each other
     import difflib
     vos = [s["voiceover"].lower() for s in m["scenes"]]
@@ -249,6 +306,14 @@ def main():
 
     history = load_memory()
     avoid = ", ".join(h.get("metaphor", "") for h in history) or "none yet"
+
+    # Path C: pick a verified fact from the bank not used recently
+    bank = load_bank()
+    used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
+    available = [f for f in bank if f["id"] not in used_ids] or bank
+    chosen_fact = random.choice(available) if available else None
+    if chosen_fact:
+        print(f"  [bank] fact: {chosen_fact['id']}")
     last_job = history[-1].get("viewer_job") if history else None
     jobs = [j for j in VIEWER_JOBS if j[0] != last_job] or VIEWER_JOBS
     job_name, job_desc = random.choice(jobs)
@@ -260,7 +325,7 @@ def main():
         try:
             if attempt > 0:
                 time.sleep(8)  # rate-limit cushion before retrying
-            raw = call_groq(build_prompt(job_name, job_desc, avoid))
+            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact))
             m = json.loads(raw)
             err = validate(m, job_name)
             if err:
@@ -294,7 +359,8 @@ def main():
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
     save_memory(history, {"metaphor": manifest.get("metaphor", manifest["title"]),
-                          "viewer_job": job_name, "title": manifest["title"]})
+                          "viewer_job": job_name, "title": manifest["title"],
+                          "fact_id": chosen_fact["id"] if chosen_fact else None})
     print(f"[generate] wrote {manifest['title']!r} ({job_name}) -> {OUT_MANIFEST}")
 
 if __name__ == "__main__":
