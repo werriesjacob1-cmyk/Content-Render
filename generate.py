@@ -13,7 +13,7 @@ import os, sys, json, re, urllib.request, urllib.error, random
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
-OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "..", "manifest.json")
+OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 MODEL = "llama-3.3-70b-versatile"   # stronger model for script quality
 
