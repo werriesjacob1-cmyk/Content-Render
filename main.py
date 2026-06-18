@@ -11,8 +11,8 @@ import random
 W, H = 1080, 1920
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 ROOT = os.path.dirname(os.path.abspath(__file__))
-WORK = os.path.join(ROOT, "..", "work")
-OUT  = os.path.join(ROOT, "..", "out")
+WORK = os.path.join(ROOT, "work")
+OUT  = os.path.join(ROOT, "out")
 MUSIC = os.path.join(ROOT, "music.mp3")  # set per-profile below
 PEXELS_KEY  = os.environ.get("PEXELS_API_KEY", "")
 PIXABAY_KEY = os.environ.get("PIXABAY_API_KEY", "")
