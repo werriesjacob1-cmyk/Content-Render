@@ -201,8 +201,34 @@ def _groq_pick(intent, candidates):
     return None
 
 
+
+def _coverr_candidates(query):
+    """Failover footage source. Dormant unless COVERR_API_KEY is set. Same shape as _pexels_candidates."""
+    key = os.environ.get("COVERR_API_KEY", "")
+    if not key:
+        return []
+    out = []
+    try:
+        q = urllib.parse.quote(query)
+        data = _http_json(
+            f"https://api.coverr.co/videos?query={q}&page_size=12",
+            {"Authorization": f"Bearer {key}", "User-Agent": BROWSER_UA})
+        for v in (data.get("hits") or data.get("videos") or []):
+            vid = v.get("id")
+            if vid in _used_video_ids:
+                continue
+            url = (v.get("urls") or {}).get("mp4") or v.get("mp4") or v.get("url")
+            if url:
+                out.append({"id": vid, "url": url, "desc": (v.get("title") or query)})
+    except Exception as e:
+        print("  Coverr failed:", e)
+    return out
+
+
 def fetch_clip(query, dest, intent=None):
     cands = _pexels_candidates(query)
+    if not cands:
+        cands = _coverr_candidates(query)  # failover source (dormant unless COVERR_API_KEY set)
     if not cands:
         print(f"  No footage: {query} — color card")
         return False
@@ -231,11 +257,12 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     motion = (f"scale=-2:2400,crop={W}:{H},"
               f"zoompan=z='if(lte(on,3),1.06,min(zoom+{zspeed},1.12))':d={frames}:s={W}x{H}:fps=30,")
     grade = PROFILE["grade"]
+    stat = _stat_overlay(scene, seg_dur)
 
     if have:
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
-             "-filter_complex", f"[0:v]{motion}{grade},setsar=1[v]",
+             "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
     else:
@@ -246,6 +273,28 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
 
 
 # ---------- KARAOKE CAPTIONS (word-by-word, eye level, ASS format) ----------
+
+def _stat_overlay(scene, seg_dur):
+    """Return an ffmpeg drawtext snippet for an animated number card, or '' if none/disabled.
+    OFF unless PROFILE.get('motion_graphics') is True. Fully optional + safe."""
+    if not PROFILE.get("motion_graphics"):
+        return ""
+    import re as _re
+    text = f"{scene.get('on_screen_text','')} {scene.get('voiceover','')}"
+    m = _re.search(r"(\d[\d,\.]*\s?(?:%|x|mph|m-?per-?hour|times|million|billion|degrees|tons?)?)", text)
+    if not m:
+        return ""
+    num = m.group(1).strip().replace(":", " ").replace("'", "")
+    num = _re.sub(r"[^0-9A-Za-z%,\. ]", "", num)[:14]
+    if not num:
+        return ""
+    # pop-in: grow font for first 0.3s via enable + a stepped fontsize using two drawtexts is complex;
+    # keep it robust: one bold card, fade in quickly, upper third, with a translucent box.
+    return (f",drawtext=text='{num}':fontfile='{FONT}':fontsize=140:fontcolor=white:"
+            f"borderw=8:bordercolor=black:box=1:boxcolor=black@0.35:boxborderw=24:"
+            f"x=(w-tw)/2:y=h*0.18:alpha='if(lt(t,0.2),t/0.2,1)'")
+
+
 def _ass_t(t):
     cs = int(round(t * 100))
     h = cs // 360000; cs %= 360000
