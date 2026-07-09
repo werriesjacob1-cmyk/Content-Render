@@ -224,6 +224,58 @@ VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street tim
                    "hands typing closeup", "waterfall slow motion", "desert dunes aerial",
                    "northern lights sky", "rain window closeup", "eagle flying mountains"]
 
+
+def punch_up(m, fact):
+    """Second-pass rewrite of the voiceovers only. Structure rules in the main
+    prompt get a script that follows the letter of the format but still writes
+    flat lines (e.g. following the midpoint twist with 'the difference is
+    almost negligible' — an anti-climax — or stacking two CTAs). A focused
+    critique-and-rewrite pass fixes delivery; validate() re-guards the result
+    and we keep the original whenever the rewrite doesn't survive it."""
+    fact_line = fact["fact"] if fact else "the fact stated in the script"
+    scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
+    prompt = f"""You are a short-form script doctor. Rewrite ONLY the voiceover lines below for maximum retention.
+
+THE VERIFIED FACT (do not alter it, do not add new numbers): "{fact_line}"
+
+RULES:
+- Same number of scenes, same ids, same order, same underlying meaning per scene.
+- Each line stays ONE punchy spoken sentence, 6-18 words, natural to read aloud.
+- ESCALATE: every line must feel like a step deeper than the last. No line may deflate
+  ("it's tiny", "almost negligible", "basically nothing") right after a tension-raiser.
+  If a smallness caveat is needed, fuse it INTO an impressive frame ("so small only an
+  atomic clock can see it — but it never stops").
+- The line right after any "that's not the strange part"-style interrupt must deliver the
+  single most surprising concrete detail of the whole script.
+- Exactly ONE call-to-action, in the FINAL line only (save OR share OR comment — never two).
+- Final line must also close the loop back to the opening image.
+- Keep any real numbers exactly as they are. Add NO new facts or numbers.
+
+Scenes: {scenes_json}
+
+Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}"""
+    try:
+        raw = call_groq(prompt)
+        new_scenes = {s["id"]: _clean(s["voiceover"]) for s in json.loads(raw)["scenes"]
+                      if s.get("voiceover")}
+    except Exception as e:  # noqa: BLE001 - punch-up is best-effort
+        print(f"  punch-up failed ({e}), keeping original")
+        return m
+    if set(new_scenes) != {s["id"] for s in m["scenes"]}:
+        print("  punch-up returned mismatched scenes, keeping original")
+        return m
+    import copy
+    trial = copy.deepcopy(m)
+    for s in trial["scenes"]:
+        s["voiceover"] = new_scenes[s["id"]]
+    trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
+    err = validate(trial, m.get("viewer_job", ""))
+    if err:
+        print(f"  punch-up rejected by validation ({err}), keeping original")
+        return m
+    print("  punch-up applied")
+    return trial
+
 def _clean(t):
     # strip code fences / markdown / stray quotes the model sometimes adds
     t = str(t).strip().strip("`").strip()
@@ -407,6 +459,8 @@ def main():
 
     if not manifest:
         print("ERROR: could not generate a valid manifest"); sys.exit(1)
+
+    manifest = punch_up(manifest, chosen_fact)
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
