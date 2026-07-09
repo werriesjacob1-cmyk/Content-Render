@@ -246,20 +246,15 @@ def _nasa_candidates(query):
     return out
 
 
-def _groq_pick(intent, candidates):
-    """Ask Groq to pick the index of the best-matching clip. Returns int or None."""
+def _groq_chat(prompt, max_tokens=20, temperature=0):
     key = os.environ.get("GROQ_API_KEY", "")
-    if not key or len(candidates) < 2:
+    if not key:
         return None
-    listing = "\n".join(f"{i}: {c['desc']}" for i, c in enumerate(candidates))
-    prompt = (f"A short video scene needs B-roll matching this idea: \"{intent}\".\n"
-              f"Here are stock clips (index: description):\n{listing}\n"
-              f"Reply with ONLY the index number of the clip that best matches the idea visually.")
     try:
         body = json.dumps({
             "model": "llama-3.1-8b-instant",
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0, "max_tokens": 5
+            "temperature": temperature, "max_tokens": max_tokens
         }).encode()
         req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",
                                      data=body,
@@ -267,15 +262,47 @@ def _groq_pick(intent, candidates):
                                               "Content-Type": "application/json",
                                               "User-Agent": "content-render/1.0"})
         with urllib.request.urlopen(req, timeout=30) as r:
-            txt = json.loads(r.read().decode())["choices"][0]["message"]["content"]
-        m = re.search(r"\d+", txt)
-        if m:
-            idx = int(m.group())
-            if 0 <= idx < len(candidates):
-                return idx
+            return json.loads(r.read().decode())["choices"][0]["message"]["content"]
     except Exception as e:
-        print("  Groq pick failed:", e)
-    return None
+        print("  Groq call failed:", e)
+        return None
+
+
+def _groq_judge(intent, candidates):
+    """Pick the best-matching clip AND score its relevance 0-10, so a bad
+    batch can be rejected outright instead of shipping the least-bad clip
+    (the old picker could only choose among candidates, never veto them —
+    which is how a belly-button macro ended up illustrating stomach acid).
+    Returns (index, score) or (0, None) when no key / unparseable."""
+    listing = "\n".join(f"{i}: {c['desc']}" for i, c in enumerate(candidates))
+    txt = _groq_chat(
+        f"A vertical short-form video scene narrates: \"{intent}\".\n"
+        f"Candidate stock clips (index: description):\n{listing}\n"
+        f"Pick the clip whose VISUAL content best illustrates that narration, and rate "
+        f"how well it fits from 0 (unrelated) to 10 (perfect).\n"
+        f"Reply with ONLY: index,score")
+    if txt:
+        m = re.search(r"(\d+)\s*,\s*(\d+)", txt)
+        if m:
+            idx, score = int(m.group(1)), int(m.group(2))
+            if 0 <= idx < len(candidates):
+                return idx, min(score, 10)
+    return 0, None
+
+
+def _groq_requery(intent, failed_query):
+    """When a search query returns nothing relevant, ask for replacements that
+    a stock library can actually satisfy: concrete, filmable subjects."""
+    txt = _groq_chat(
+        f"A stock-video search for \"{failed_query}\" found nothing that fits this narration: "
+        f"\"{intent}\".\n"
+        f"Suggest 2 alternative search queries (2-4 words each) describing CONCRETE things "
+        f"videographers actually film: real objects, people doing actions, nature, weather, "
+        f"machines, food, cities. No anatomical, microscopic, or abstract terms.\n"
+        f"Reply with ONLY: query one | query two", max_tokens=30, temperature=0.4)
+    if not txt:
+        return []
+    return [q.strip() for q in txt.split("|") if 1 <= len(q.strip().split()) <= 5][:2]
 
 
 
@@ -302,27 +329,56 @@ def _coverr_candidates(query):
     return out
 
 
+def _gather_candidates(query):
+    return (_pexels_candidates(query)
+            or _nasa_candidates(query)
+            or _coverr_candidates(query))  # Coverr dormant unless COVERR_API_KEY set
+
+
+RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling
+
+
+def _accept(chosen, dest, query, score):
+    _download(chosen["url"], dest)
+    _used_video_ids.add(chosen["id"])
+    _used_history.append(chosen["id"])
+    tag = f"judge {score}/10" if score is not None else "first"
+    print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
+    return True
+
+
 def fetch_clip(query, dest, intent=None):
-    cands = _pexels_candidates(query)
-    if not cands:
-        cands = _nasa_candidates(query)
-    if not cands:
-        cands = _coverr_candidates(query)  # failover source (dormant unless COVERR_API_KEY set)
-    if not cands:
-        print(f"  No footage: {query} — color card")
-        return False
-    pick = _groq_pick(intent or query, cands)
-    chosen = cands[pick] if pick is not None else cands[0]
-    try:
-        _download(chosen["url"], dest)
-        _used_video_ids.add(chosen["id"])
-        _used_history.append(chosen["id"])
-        tag = "Groq-matched" if pick is not None else "first"
-        print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
-        return True
-    except Exception as e:
-        print("  download failed:", e)
-        return False
+    """Search -> judge -> (if judged irrelevant) rewrite the query and retry,
+    keeping the best-scoring clip seen as the fallback. The old behavior of
+    blindly taking the first result for the original query is exactly how a
+    'human stomach anatomy' scene shipped with a belly-button macro."""
+    intent = intent or query
+    best = None  # (score, cand, query)
+    queries = [query]
+    for round_no, q in enumerate(queries):
+        cands = _gather_candidates(q)
+        if cands:
+            idx, score = _groq_judge(intent, cands)
+            chosen = cands[idx]
+            if score is None or score >= RELEVANCE_FLOOR:
+                try:
+                    return _accept(chosen, dest, q, score)
+                except Exception as e:
+                    print("  download failed:", e)
+            elif best is None or score > best[0]:
+                best = (score, chosen, q)
+            print(f"  weak match ({score}/10) for '{q}' — trying a better query")
+        else:
+            print(f"  no results for '{q}'")
+        if round_no == 0:  # one rescue round: ask for stock-native rewrites
+            queries.extend(_groq_requery(intent, q))
+    if best:  # nothing cleared the floor; any real footage beats a black card
+        try:
+            return _accept(best[1], dest, best[2], best[0])
+        except Exception as e:
+            print("  download failed:", e)
+    print(f"  No footage: {query} — color card")
+    return False
 
 
 # ---------- PER-SCENE VIDEO (motion + color grade) ----------
@@ -488,15 +544,37 @@ def main():
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listfile,
          "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", body])
 
-    # captions (lower third) + hook overlay (first 2s, top)
+    # captions (karaoke) + hook title card (first 2.6s, top) — the docstring
+    # always promised a hook overlay but none was ever rendered; the written
+    # hook only existed in the audio. Burning it in gives scrollers a reason
+    # to stop before the voiceover even registers.
     ass = os.path.join(WORK, "captions.ass")
     build_ass(m["scenes"], durations, ass)
     body_dur = ffprobe_dur(body)
     fade_out_start = max(0.0, body_dur - 0.3)
+    hook_filter = ""
+    hook_text = re.sub(r"[^A-Za-z0-9 ,.?!'\-]", "", m.get("hook", "")).strip()
+    if hook_text:
+        # wrap to ~3-4 words per line; textfile= avoids drawtext escaping entirely
+        words = hook_text.upper().split()
+        lines, line = [], []
+        for w in words:
+            line.append(w)
+            if len(" ".join(line)) >= 16:
+                lines.append(" ".join(line)); line = []
+        if line:
+            lines.append(" ".join(line))
+        hook_path = os.path.join(WORK, "hook.txt")
+        with open(hook_path, "w") as hf:
+            hf.write("\n".join(lines[:4]))
+        hook_filter = (f",drawtext=textfile='{hook_path}':fontfile='{FONT}':fontsize=72:"
+                       f"fontcolor=white:borderw=6:bordercolor=black:box=1:boxcolor=black@0.45:"
+                       f"boxborderw=18:line_spacing=14:x=(w-tw)/2:y=h*0.12:"
+                       f"enable='between(t,0,2.6)':alpha='if(lt(t,0.15),t/0.15,if(gt(t,2.3),(2.6-t)/0.3,1))'")
     captioned = os.path.join(WORK, "captioned.mp4")
     run(["ffmpeg", "-y", "-i", body,
          "-vf", (f"ass='{ass}',fade=t=in:st=0:d=0.2,"
-                 f"fade=t=out:st={fade_out_start:.2f}:d=0.3"),
+                 f"fade=t=out:st={fade_out_start:.2f}:d=0.3" + hook_filter),
          "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", captioned])
 
     # background music bed (optional)

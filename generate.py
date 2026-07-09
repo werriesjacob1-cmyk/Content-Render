@@ -85,7 +85,8 @@ def build_prompt(job_name, job_desc, avoid, fact=None):
                       f"- Center the ENTIRE script on this one fact. Do NOT introduce other topics.\n"
                       f"- Do NOT invent any statistic, number, or 'fact' that is not in the verified fact above. If you are unsure of a number, do not state one.\n"
                       f"- Never state two different numbers for the same thing. Accuracy over drama.\n"
-                      f"- For the footage search_query fields, prefer these proven matches: {fact.get('queries', [])}.\n")
+                      f"- For the footage search_query fields, prefer these proven matches: "
+                      f"{[q for q in fact.get('queries', []) if not UNSTOCKABLE_Q.search(q)]}.\n")
     return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}
 
 THIS VIDEO'S JOB: {job_name}. {job_desc}
@@ -96,16 +97,22 @@ HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 
-COMPLETION (the #1 ranking signal):
+STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 8-12 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
 - Total narration MUST be 110-150 words (~45-55 seconds spoken). Write the FULL script. Too short = rejected.
-- NARRATIVE PROGRESSION (critical): every scene must ADD NEW information and move the story forward.
-  NEVER restate the topic or repeat an idea in different words. Structure: HOOK -> setup -> escalating detail/steps -> the surprising REVEAL -> payoff.
-- Build ONE open loop in the first 5 seconds; resolve it ONLY at the end with a genuine "whoa" payoff (a number, a twist, a why nobody expects).
-- The ending must LAND — a satisfying revelation, then loop back to the hook. Do NOT trail off or restate the premise.
+- ESCALATION LADDER (critical): every scene must reveal something the previous scene did not.
+  Never restate the fact in different words — each line raises the stakes or zooms deeper:
+  what -> how -> why it's stranger than it sounds -> what it means for YOU.
+- MIDPOINT TWIST: around scene 5-7, plant a pattern interrupt that reopens curiosity, e.g.
+  "But that's not even the strange part." / "And here's where it stops making sense." Then pay it off.
+- MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
+  (not "400 million years" alone — "before Saturn had rings", "you could watch every human
+  civilization rise and fall 80,000 times"). One vivid comparison beats three adjectives.
+- The ending must LAND: the single most quotable line of the video, then loop back to the hook's
+  image so the replay feels seamless. Do NOT trail off, restate the premise, or stack two CTAs.
 
 SEARCH DISCOVERY (now as important as hashtags):
-- Pick ONE core keyword phrase (what someone would type to find this). 
+- Pick ONE core keyword phrase (what someone would type to find this).
 - Put it in the hook, in at least 2 on_screen_text labels, and in the first caption.
 
 SHARES (THE #1 weighted signal — 10x a like). Engineer the video to be SENT to a friend:
@@ -132,8 +139,21 @@ CONTENT (CRITICAL):
 
 AVOID these recent topics entirely: {avoid}{series_block}
 
+FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
+- Each scene needs a 2-5 word stock-footage search query describing something a videographer
+  ACTUALLY FILMS: a concrete subject + action or setting (animals, nature, weather, oceans, space,
+  cities, machines, food, hands doing things, people reacting).
+- BANNED query words: anatomy, anatomical, organ, cell/cells, microscope, microscopic, diagram,
+  xray, x-ray, molecular, atom, quantum, abstract, concept, system. Free stock libraries have
+  almost nothing real for these — searches degrade into random flesh/lab/texture close-ups.
+- If the concept is invisible (acid, time, gravity, DNA, speed of nerves), pick a VISUAL METAPHOR
+  a library does have: "bubbling green liquid" for acid, "hourglass sand falling" for time,
+  "lightning storm slow motion" for nerve signals, "dominoes falling chain" for reactions.
+- Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
+  setting) — a video that shows the same three shots on loop reads as spam.
+
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
-and a 2-5 word LITERAL stock-footage search query.
+and the search query as specified above.
 
 Return ONLY valid JSON, no markdown, exactly:
 {{
@@ -193,6 +213,17 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
                     r"microwave|oven|heat|hot water|electric|outlet|socket|battery acid|bleach|ammonia|"
                     r"swallow|drink|eat|ingest|knife|blade|razor|shatter|explode|explosion)\b", re.I)
 
+# terms free stock libraries can't actually satisfy — searches for them degrade
+# into random flesh/lab/texture close-ups (see the belly-button incident)
+UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organ|cells?|microscop\w*|diagram|x-?ray|molecul\w*|"
+                           r"atoms?|quantum|abstract|concept\w*|system)\b", re.I)
+
+# visually-rich neutral B-roll for query dedup / repair — always available on stock sites
+VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street timelapse",
+                   "lightning storm clouds", "forest sunlight drone", "hourglass sand falling",
+                   "hands typing closeup", "waterfall slow motion", "desert dunes aerial",
+                   "northern lights sky", "rain window closeup", "eagle flying mountains"]
+
 def _clean(t):
     # strip code fences / markdown / stray quotes the model sometimes adds
     t = str(t).strip().strip("`").strip()
@@ -221,10 +252,19 @@ def validate(m, job_name):
         s["on_screen_text"] = " ".join(s["on_screen_text"].split()[:4])  # cap label to 4 words
         if len(s["voiceover"].split()) > 28:
             return f"scene {i} voiceover too long"
+        # stock libraries return junk (flesh closeups, random labs) for these:
+        # the belly-button-as-stomach incident came from 'human stomach anatomy'
+        if UNSTOCKABLE_Q.search(s["search_query"]):
+            return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
         q = s["search_query"].lower()
         if q in seen_q:
-            s["search_query"] = s["search_query"] + " cinematic"  # nudge variety
-        seen_q.add(q)
+            # a repeated query means repeated footage; appending a style word
+            # ('cinematic') never changed the results. Swap in a real variant.
+            for alt in VARIETY_QUERIES:
+                if alt.lower() not in seen_q:
+                    s["search_query"] = alt
+                    break
+        seen_q.add(s["search_query"].lower())
         # numeric, sane duration
         try:
             s["duration"] = max(2, min(8, int(float(s.get("duration", 4)))))
@@ -256,13 +296,16 @@ def validate(m, job_name):
                                    "cells", "bones", "legs", "eyes", "moons", "times", "animals"):
             return f"impossible fractional count: {num} {noun}"
 
-    # anti-repetition: reject if scene voiceovers are too similar to each other
+    # anti-repetition: reject if scene voiceovers are too similar to each other.
+    # 0.70, not 0.60 — at 0.60 this fired on legitimate scripts (parallel sentence
+    # structure reads as similarity), and every false rejection pushed a run toward
+    # the much worse near-miss fallback. Catch real restatements only.
     import difflib
     vos = [s["voiceover"].lower() for s in m["scenes"]]
     for i in range(len(vos)):
         for j in range(i + 1, len(vos)):
             ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
-            if ratio > 0.6:
+            if ratio > 0.70:
                 return f"scenes {i+1} and {j+1} too similar (repetition)"
     # reject if the title's key noun appears in nearly every scene (circling one idea)
     import collections
@@ -324,7 +367,7 @@ def main():
     for attempt in range(5):
         try:
             if attempt > 0:
-                time.sleep(8)  # rate-limit cushion before retrying
+                time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact))
             m = json.loads(raw)
             err = validate(m, job_name)
@@ -348,9 +391,18 @@ def main():
         nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
         nm["hashtags"] = nm.get("hashtags", ["#science"])
         nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
-        for s in nm.get("scenes", []):
+        # rotate repair queries through the fact's hints + neutral B-roll so a repaired
+        # video still gets visual variety — the old default gave EVERY scene the same
+        # keyword query, which is how one video showed 3 shots cycled 4 times each
+        pool = (chosen_fact.get("queries", []) if chosen_fact else []) + VARIETY_QUERIES
+        seen = set()
+        for i, s in enumerate(nm.get("scenes", [])):
             s.setdefault("motion", "zoom_in"); s.setdefault("duration", 5)
-            s.setdefault("on_screen_text", ""); s.setdefault("search_query", nm.get("keyword", "science"))
+            s.setdefault("on_screen_text", "")
+            if not s.get("search_query") or s["search_query"].lower() in seen \
+               or UNSTOCKABLE_Q.search(s.get("search_query", "")):
+                s["search_query"] = pool[i % len(pool)]
+            seen.add(s["search_query"].lower())
         manifest = nm
 
     if not manifest:
