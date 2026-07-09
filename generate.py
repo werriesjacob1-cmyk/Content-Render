@@ -250,14 +250,22 @@ RULES:
 - Exactly ONE call-to-action, in the FINAL line only (save OR share OR comment — never two).
 - Final line must also close the loop back to the opening image.
 - Keep any real numbers exactly as they are. Add NO new facts or numbers.
+- Every line ends with proper punctuation (. ? or !) — these are spoken sentences,
+  and the TTS engine uses end punctuation to pace pauses between scenes.
 
 Scenes: {scenes_json}
 
 Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}"""
     try:
         raw = call_groq(prompt)
-        new_scenes = {s["id"]: _clean(s["voiceover"]) for s in json.loads(raw)["scenes"]
-                      if s.get("voiceover")}
+        new_scenes = {}
+        for s in json.loads(raw)["scenes"]:
+            if not s.get("voiceover"):
+                continue
+            line = _clean(s["voiceover"])
+            if line and line[-1] not in ".?!":  # model drops terminal punctuation
+                line += "."                     # under real-world load; don't rely on the prompt alone
+            new_scenes[s["id"]] = line
     except Exception as e:  # noqa: BLE001 - punch-up is best-effort
         print(f"  punch-up failed ({e}), keeping original")
         return m
