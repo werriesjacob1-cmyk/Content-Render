@@ -1,0 +1,108 @@
+{
+  "title": "Sharks vs Trees",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "sharks older than trees",
+  "metaphor": "Ancient Ocean",
+  "hook": "You think trees came first, right?",
+  "script": "You think trees came first, right? But sharks have been here for over 400 million years. They swam in oceans before trees existed. The first trees didn't appear until tens of millions of years later. Sharks were already ancient by then. They predated the first forests. Their history is longer than that of trees. Tag someone who won't believe this. Save this so you remember it, and think about it next time you see a shark or a tree.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "You think trees came first, right?",
+      "on_screen_text": "Sharks Old",
+      "search_query": "shark swimming",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "But sharks have been here for over 400 million years.",
+      "on_screen_text": "400 Million",
+      "search_query": "shark deep blue",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "They swam in oceans before trees existed.",
+      "on_screen_text": "Before Trees",
+      "search_query": "ancient ocean",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "The first trees didn't appear until tens of millions of years later.",
+      "on_screen_text": "Trees Later",
+      "search_query": "ancient forest",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Sharks were already ancient by then.",
+      "on_screen_text": "Ancient Sharks",
+      "search_query": "shark swimming ocean",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "They predated the first forests.",
+      "on_screen_text": "First Forests",
+      "search_query": "ancient trees",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Their history is longer than that of trees.",
+      "on_screen_text": "Shark History",
+      "search_query": "shark deep blue cinematic",
+      "motion": "static"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "Tag someone who won't believe this.",
+      "on_screen_text": "Tag Friend",
+      "search_query": "shark swimming cinematic",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 9,
+      "duration": 4,
+      "voiceover": "Save this so you remember it.",
+      "on_screen_text": "Save Now",
+      "search_query": "ancient ocean cinematic",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 10,
+      "duration": 4,
+      "voiceover": "And think about it next time you see a shark or a tree.",
+      "on_screen_text": "Sharks vs Trees",
+      "search_query": "shark swimming ocean cinematic",
+      "motion": "zoom_out"
+    }
+  ],
+  "captions": [
+    "Did you know sharks are older than trees? #sharks #trees #ocean",
+    "Sharks have been on our planet for over 400 million years! #ancient #sharks",
+    "Mind blown, right? Sharks older than trees! #sharks #trees #mindblown"
+  ],
+  "hashtags": [
+    "#sharks",
+    "#trees",
+    "#ocean",
+    "#ancient",
+    "#wildlife",
+    "#nature"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  }
+}
