@@ -5,6 +5,11 @@ on:
     types: [render]
   workflow_dispatch:
 
+permissions:
+  contents: write   # the workflow commits manifest.json and used_footage_*.json
+                     # back to the repo; without this the GITHUB_TOKEN defaults
+                     # to read-only and every `git push` below silently no-ops.
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -66,6 +71,7 @@ jobs:
         env:
           PEXELS_API_KEY:      ${{ secrets.PEXELS_API_KEY }}
           ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
+          GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
