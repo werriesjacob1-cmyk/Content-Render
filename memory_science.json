@@ -11,6 +11,12 @@
       "viewer_job": "REFRAME",
       "title": "Time Dilation in Your Body",
       "fact_id": "head_ages_faster"
+    },
+    {
+      "metaphor": "Tiny Animal Superpower",
+      "viewer_job": "MYTH_BUSTER",
+      "title": "Mantis Shrimp Punches Break Physics",
+      "fact_id": "mantis_shrimp"
     }
   ]
 }

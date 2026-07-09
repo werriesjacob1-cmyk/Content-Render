@@ -1,120 +1,120 @@
 {
-  "title": "Time Dilation in Your Body",
-  "viewer_job": "REFRAME",
-  "keyword": "time dilation",
-  "metaphor": "Gravity's Time Trick",
-  "hook": "Your head is aging faster than your feet",
-  "script": "Your head is aging faster than your feet. Time runs very slightly faster for your head. This is because gravity is weaker further from Earth. It's a tiny difference, but it has been measured. You're experiencing time dilation right now. But that's not even the strange part. The difference is so small it's almost negligible. Yet, it's a reminder that time isn't absolute. It's relative, even within your own body. So, the next time you look up at a skyscraper, remember time is passing faster at the top. Tag someone who won't believe this. Save this so you remember it, and think about it the next time you look up.",
+  "title": "Mantis Shrimp Punches Break Physics",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "mantis shrimp speed",
+  "metaphor": "Tiny Animal Superpower",
+  "hook": "You think you're fast, but this tiny animal breaks physics",
+  "script": "Meet the animal that defies speed limits The mantis shrimp punches so fast Its speed creates a flash of light and heat What fuels this explosive power? The mantis shrimp's claw accelerates rapidly But that's not even the strange part It briefly boils the water around its claw Creating a blast that's both fierce and tiny This phenomenon is hiding in plain sight A secret world of intense energy The mantis shrimp's punch is a natural wonder Save this and remember the mantis shrimp's boiling punch",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your head is aging faster than your feet",
-      "on_screen_text": "Time Dilation",
-      "search_query": "clock ticking closeup",
+      "voiceover": "Meet the animal that defies speed limits",
+      "on_screen_text": "Mantis Shrimp",
+      "search_query": "mantis shrimp colorful",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "Time runs very slightly faster for your head",
-      "on_screen_text": "Gravity's Effect",
-      "search_query": "skyscraper looking up",
+      "duration": 4,
+      "voiceover": "The mantis shrimp punches so fast",
+      "on_screen_text": "Fast Punch",
+      "search_query": "underwater shrimp",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This is because gravity is weaker further from Earth",
-      "on_screen_text": "Earth's Gravity",
-      "search_query": "earth from space",
+      "voiceover": "Its speed creates a flash of light and heat",
+      "on_screen_text": "Flash of Light",
+      "search_query": "ocean reef creature",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 3,
-      "voiceover": "It's a tiny difference, but it has been measured",
-      "on_screen_text": "Measuring Time",
-      "search_query": "stopwatch in hand",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "What fuels this explosive power?",
+      "on_screen_text": "Mantis Shrimp Power",
+      "search_query": "mantis shrimp attack",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "You're experiencing time dilation right now",
-      "on_screen_text": "Time Dilation Now",
-      "search_query": "person looking up",
-      "motion": "zoom_out"
+      "voiceover": "The mantis shrimp's claw accelerates rapidly",
+      "on_screen_text": "Rapid Acceleration",
+      "search_query": "underwater animal speed",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 3,
+      "duration": 4,
       "voiceover": "But that's not even the strange part",
-      "on_screen_text": "The Strange Part",
-      "search_query": "lightning storm slow motion",
-      "motion": "zoom_in"
+      "on_screen_text": "Strange Part",
+      "search_query": "ocean waves aerial",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The difference is so small it's almost negligible",
-      "on_screen_text": "Small Difference",
-      "search_query": "hourglass sand falling",
-      "motion": "zoom_out"
+      "voiceover": "It briefly boils the water around its claw",
+      "on_screen_text": "Tiny Explosion",
+      "search_query": "underwater explosion",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 3,
-      "voiceover": "Yet, it's a reminder that time isn't absolute",
-      "on_screen_text": "Relative Time",
-      "search_query": "bubbling green liquid",
-      "motion": "static"
+      "duration": 4,
+      "voiceover": "Creating a blast that's both fierce and tiny",
+      "on_screen_text": "Boiling Water",
+      "search_query": "boiling water underwater",
+      "motion": "zoom_in"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "It's relative, even within your own body",
-      "on_screen_text": "Body Time",
-      "search_query": "person touching toes",
-      "motion": "zoom_in"
+      "voiceover": "This phenomenon is hiding in plain sight",
+      "on_screen_text": "Hidden Power",
+      "search_query": "mantis shrimp hiding",
+      "motion": "zoom_out"
     },
     {
       "id": 10,
-      "duration": 3,
-      "voiceover": "So, the next time you look up at a skyscraper, remember time is passing faster at the top",
-      "on_screen_text": "Skyscraper Time",
-      "search_query": "ocean waves aerial",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "A secret world of intense energy",
+      "on_screen_text": "Plain Sight",
+      "search_query": "mantis shrimp in plain sight",
+      "motion": "zoom_out"
     },
     {
       "id": 11,
       "duration": 4,
-      "voiceover": "Tag someone who won't believe this",
-      "on_screen_text": "Share This",
-      "search_query": "person sharing phone",
-      "motion": "zoom_in"
+      "voiceover": "The mantis shrimp's punch is a natural wonder",
+      "on_screen_text": "Tag a Friend",
+      "search_query": "person reacting in shock",
+      "motion": "pan"
     },
     {
       "id": 12,
-      "duration": 3,
-      "voiceover": "Save this so you remember it, and think about it the next time you look up",
+      "duration": 4,
+      "voiceover": "Save this and remember the mantis shrimp's boiling punch",
       "on_screen_text": "Save and Remember",
-      "search_query": "night sky timelapse",
-      "motion": "zoom_in"
+      "search_query": "person saving on phone",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Did you know time dilation occurs in your body? #time_dilation",
-    "Time dilation is real, and it's happening to you right now",
-    "What's the weirdest thing about time dilation? Share your thoughts"
+    "Did you know mantis shrimp speed is so fast it boils water? Yes or no?",
+    "Mantis shrimp are tiny but pack a big punch",
+    "What's the most surprising animal fact you know?"
   ],
   "hashtags": [
-    "#time",
-    "#gravity",
-    "#relativity",
+    "#mantisshrimp",
+    "#animalfacts",
+    "#oceancreatures",
+    "#wildlife",
     "#science",
-    "#space",
-    "#facts"
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
