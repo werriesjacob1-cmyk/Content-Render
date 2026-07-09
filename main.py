@@ -5,7 +5,7 @@ Adds: slow-zoom motion, color grade, lower-third captions with natural phrasing,
 hook overlay (first 2s), background music bed, no-repeat footage.
 """
 
-import os, sys, json, subprocess, shutil, wave, struct, re, urllib.request, urllib.parse, urllib.error
+import os, sys, json, subprocess, shutil, wave, struct, re, time, urllib.request, urllib.parse, urllib.error
 import random
 
 W, H = 1080, 1920
@@ -163,9 +163,9 @@ def silent_track(secs, out_mp3):
 
 
 # ---------- FOOTAGE (dedup, more results) ----------
-def _http_json(url, headers):
+def _http_json(url, headers, timeout=30):
     req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode())
 
 
@@ -208,6 +208,16 @@ def _pexels_candidates(query):
     return out
 
 
+NASA_ITEM_LIMIT = 3       # was 6 -- each item costs a second network round trip
+NASA_ITEM_TIMEOUT_S = 10  # small JSON manifests; no reason to allow the full 30s
+NASA_BUDGET_S = 15        # hard wall-clock cap for the whole call: this is a fallback
+                          # source, not worth stalling a render over. A render with the
+                          # judge/rescue chain can call this several times per scene --
+                          # unbounded, a slow/degraded NASA endpoint could stall a whole
+                          # run (observed: one render ran 25+ min past its usual ~5 min
+                          # with no other code path that could explain it).
+
+
 def _nasa_candidates(query):
     """Second footage source, tried when Pexels has no portrait match. NASA's
     Image and Video Library is public domain (CC0) and its API is explicitly
@@ -217,20 +227,25 @@ def _nasa_candidates(query):
     Pexels B-roll. Two-step API: search gives items + a manifest href per
     item; the manifest lists the actual mp4 files."""
     out = []
+    deadline = time.time() + NASA_BUDGET_S
     try:
         q = urllib.parse.quote(query)
         data = _http_json(
             f"https://images-api.nasa.gov/search?q={q}&media_type=video",
-            {"User-Agent": BROWSER_UA})
-        items = ((data.get("collection") or {}).get("items") or [])[:6]
+            {"User-Agent": BROWSER_UA}, timeout=NASA_ITEM_TIMEOUT_S)
+        items = ((data.get("collection") or {}).get("items") or [])[:NASA_ITEM_LIMIT]
         for item in items:
+            if time.time() > deadline:
+                print("  NASA budget exceeded, returning what we have")
+                break
             meta = (item.get("data") or [{}])[0]
             nasa_id = meta.get("nasa_id")
             manifest_url = item.get("href")
             if not nasa_id or not manifest_url or nasa_id in _used_video_ids:
                 continue
             try:
-                files = _http_json(manifest_url, {"User-Agent": BROWSER_UA})
+                files = _http_json(manifest_url, {"User-Agent": BROWSER_UA},
+                                   timeout=NASA_ITEM_TIMEOUT_S)
             except Exception:
                 continue
             mp4 = next((u for u in files if isinstance(u, str)
