@@ -55,7 +55,6 @@ jobs:
       - name: Render
         env:
           PEXELS_API_KEY:      ${{ secrets.PEXELS_API_KEY }}
-          PIXABAY_API_KEY:     ${{ secrets.PIXABAY_API_KEY }}
           ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
         run: python main.py manifest.json
 

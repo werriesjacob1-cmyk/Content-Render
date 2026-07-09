@@ -15,7 +15,6 @@ WORK = os.path.join(ROOT, "work")
 OUT  = os.path.join(ROOT, "out")
 MUSIC = os.path.join(ROOT, "music.mp3")  # set per-profile below
 PEXELS_KEY  = os.environ.get("PEXELS_API_KEY", "")
-PIXABAY_KEY = os.environ.get("PIXABAY_API_KEY", "")
 import profiles
 PROFILE, PAGE = profiles.get_profile()
 ELEVEN_VOICE = PROFILE["eleven_voice"]
@@ -174,33 +173,41 @@ def _pexels_candidates(query):
     return out
 
 
-def _pixabay_candidates(query):
-    """Second real footage source, tried when Pexels has no portrait match.
-    Pixabay's API returns real curator-assigned tags (unlike Pexels, which has
-    no description field at all), so it's also a better Groq-matching signal
-    when both sources have candidates."""
+def _nasa_candidates(query):
+    """Second footage source, tried when Pexels has no portrait match. NASA's
+    Image and Video Library is public domain (CC0) and its API is explicitly
+    built for automated/embedded use (unlike Pixabay, which prohibits
+    unattended API calls in its terms). Landscape-only footage, but for
+    space/astro topics the real mission-footage relevance beats generic
+    Pexels B-roll. Two-step API: search gives items + a manifest href per
+    item; the manifest lists the actual mp4 files."""
     out = []
-    if not PIXABAY_KEY:
-        return out
     try:
         q = urllib.parse.quote(query)
         data = _http_json(
-            f"https://pixabay.com/api/videos/?key={PIXABAY_KEY}&q={q}"
-            f"&orientation=vertical&safesearch=true&per_page=15",
+            f"https://images-api.nasa.gov/search?q={q}&media_type=video",
             {"User-Agent": BROWSER_UA})
-        for v in data.get("hits", []):
-            vid = v.get("id")
-            if vid in _used_video_ids:
+        items = ((data.get("collection") or {}).get("items") or [])[:6]
+        for item in items:
+            meta = (item.get("data") or [{}])[0]
+            nasa_id = meta.get("nasa_id")
+            manifest_url = item.get("href")
+            if not nasa_id or not manifest_url or nasa_id in _used_video_ids:
                 continue
-            videos = v.get("videos", {})
-            best = videos.get("large") or videos.get("medium") or videos.get("small")
-            if best and best.get("url"):
-                out.append({"id": vid, "url": best["url"],
-                            "desc": v.get("tags", query), "source": "Pixabay"})
+            try:
+                files = _http_json(manifest_url, {"User-Agent": BROWSER_UA})
+            except Exception:
+                continue
+            mp4 = next((u for u in files if isinstance(u, str)
+                        and u.lower().endswith(".mp4") and "thumb" not in u.lower()), None)
+            if mp4:
+                desc = f"{meta.get('title','')} {meta.get('description','')} " \
+                       f"{' '.join(meta.get('keywords') or [])}"
+                out.append({"id": nasa_id, "url": mp4, "desc": desc.strip()[:300], "source": "NASA"})
     except urllib.error.HTTPError as e:
-        print(f"  Pixabay HTTP {e.code}: {e.read().decode()[:160]}")
+        print(f"  NASA HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
-        print("  Pixabay failed:", e)
+        print("  NASA failed:", e)
     return out
 
 
@@ -263,7 +270,7 @@ def _coverr_candidates(query):
 def fetch_clip(query, dest, intent=None):
     cands = _pexels_candidates(query)
     if not cands:
-        cands = _pixabay_candidates(query)
+        cands = _nasa_candidates(query)
     if not cands:
         cands = _coverr_candidates(query)  # failover source (dormant unless COVERR_API_KEY set)
     if not cands:
