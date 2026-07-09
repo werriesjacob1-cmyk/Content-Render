@@ -1,119 +1,119 @@
 {
-  "title": "Mantis Shrimp Punches Break Physics",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "mantis shrimp speed",
-  "metaphor": "Tiny Animal Superpower",
-  "hook": "You think you're fast, but this tiny animal breaks physics",
-  "script": "Meet the animal that defies speed limits The mantis shrimp punches so fast Its speed creates a flash of light and heat What fuels this explosive power? The mantis shrimp's claw accelerates rapidly But that's not even the strange part It briefly boils the water around its claw Creating a blast that's both fierce and tiny This phenomenon is hiding in plain sight A secret world of intense energy The mantis shrimp's punch is a natural wonder Save this and remember the mantis shrimp's boiling punch",
+  "title": "The Void Within",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "empty space",
+  "metaphor": "sugar cube",
+  "hook": "Your body is almost entirely empty",
+  "script": "Your body is nearly all empty space. Atoms are mostly void. If emptied, humanity fits in a sugar cube. That's the space inside every human. But that's not the strange part. Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube. This void is what makes life possible. It's what allows atoms to exist. The empty space is what makes us, us. The void within is what makes life worth living. Now, imagine this void in every sugar cube. Save this to remember the void inside a single sugar cube.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Meet the animal that defies speed limits",
-      "on_screen_text": "Mantis Shrimp",
-      "search_query": "mantis shrimp colorful",
+      "voiceover": "Your body is nearly all empty space.",
+      "on_screen_text": "Empty Space",
+      "search_query": "sugar cube macro",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The mantis shrimp punches so fast",
-      "on_screen_text": "Fast Punch",
-      "search_query": "underwater shrimp",
+      "voiceover": "Atoms are mostly void.",
+      "on_screen_text": "Atomic Space",
+      "search_query": "empty warehouse interior",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Its speed creates a flash of light and heat",
-      "on_screen_text": "Flash of Light",
-      "search_query": "ocean reef creature",
+      "voiceover": "If emptied, humanity fits in a sugar cube.",
+      "on_screen_text": "Sugar Cube",
+      "search_query": "ocean waves aerial",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "What fuels this explosive power?",
-      "on_screen_text": "Mantis Shrimp Power",
-      "search_query": "mantis shrimp attack",
-      "motion": "zoom_out"
+      "voiceover": "That's the space inside every human.",
+      "on_screen_text": "Inner Space",
+      "search_query": "starry night sky",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The mantis shrimp's claw accelerates rapidly",
-      "on_screen_text": "Rapid Acceleration",
-      "search_query": "underwater animal speed",
-      "motion": "zoom_in"
+      "voiceover": "But that's not the strange part.",
+      "on_screen_text": "The Void",
+      "search_query": "night sky timelapse",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "ocean waves aerial",
+      "voiceover": "Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube.",
+      "on_screen_text": "Atomic Void",
+      "search_query": "city street timelapse",
       "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "It briefly boils the water around its claw",
-      "on_screen_text": "Tiny Explosion",
-      "search_query": "underwater explosion",
+      "voiceover": "This void is what makes life possible.",
+      "on_screen_text": "Void Within",
+      "search_query": "lightning storm clouds",
       "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "Creating a blast that's both fierce and tiny",
-      "on_screen_text": "Boiling Water",
-      "search_query": "boiling water underwater",
+      "voiceover": "It's what allows atoms to exist.",
+      "on_screen_text": "The Void Within",
+      "search_query": "forest sunlight drone",
       "motion": "zoom_in"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "This phenomenon is hiding in plain sight",
-      "on_screen_text": "Hidden Power",
-      "search_query": "mantis shrimp hiding",
-      "motion": "zoom_out"
+      "voiceover": "The empty space is what makes us, us.",
+      "on_screen_text": "Existence",
+      "search_query": "hourglass sand falling",
+      "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "A secret world of intense energy",
-      "on_screen_text": "Plain Sight",
-      "search_query": "mantis shrimp in plain sight",
+      "voiceover": "The void within is what makes life worth living.",
+      "on_screen_text": "Share This",
+      "search_query": "people reacting",
       "motion": "zoom_out"
     },
     {
       "id": 11,
       "duration": 4,
-      "voiceover": "The mantis shrimp's punch is a natural wonder",
-      "on_screen_text": "Tag a Friend",
-      "search_query": "person reacting in shock",
-      "motion": "pan"
+      "voiceover": "Now, imagine this void in every sugar cube.",
+      "on_screen_text": "Save This",
+      "search_query": "hands saving phone",
+      "motion": "zoom_in"
     },
     {
       "id": 12,
       "duration": 4,
-      "voiceover": "Save this and remember the mantis shrimp's boiling punch",
-      "on_screen_text": "Save and Remember",
-      "search_query": "person saving on phone",
-      "motion": "pan"
+      "voiceover": "Save this to remember the void inside a single sugar cube.",
+      "on_screen_text": "The Void",
+      "search_query": "hands typing closeup",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know mantis shrimp speed is so fast it boils water? Yes or no?",
-    "Mantis shrimp are tiny but pack a big punch",
-    "What's the most surprising animal fact you know?"
+    "Did you know you're mostly empty space? #empty space",
+    "The void within us is what makes us, us",
+    "Tag someone who loves science!"
   ],
   "hashtags": [
-    "#mantisshrimp",
-    "#animalfacts",
-    "#oceancreatures",
-    "#wildlife",
     "#science",
+    "#space",
+    "#facts",
+    "#atoms",
+    "#void",
     "#learnontiktok"
   ],
   "render": {
