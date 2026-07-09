@@ -58,6 +58,15 @@ jobs:
           ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
         run: python main.py manifest.json
 
+      - name: Commit footage dedup history
+        if: always()
+        run: |
+          git config user.name "render-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add used_footage_*.json 2>/dev/null || true
+          git commit -m "auto: update footage dedup history ($PAGE)" 2>/dev/null || echo "nothing to commit"
+          git push 2>/dev/null || echo "push skipped"
+
       - name: Prove output
         run: |
           echo "=== SIZE & HASH ==="

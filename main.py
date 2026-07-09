@@ -23,7 +23,26 @@ MUSIC = os.path.join(ROOT, PROFILE.get("music", "music.mp3"))
 BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
               "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
-_used_video_ids = set()   # dedup footage across scenes
+USED_FOOTAGE_PATH = os.path.join(ROOT, f"used_footage_{PAGE}.json")
+USED_FOOTAGE_CAP = 500  # oldest ids fall off once a channel has used this many clips
+
+_used_video_ids = set()   # in-run dedup (fast lookups) + prior runs' history, loaded at startup
+_used_history = []        # ordered record, written back to disk so dedup survives across runs
+
+
+def load_used_footage():
+    try:
+        with open(USED_FOOTAGE_PATH) as f:
+            ids = json.load(f).get("ids", [])
+    except Exception:
+        ids = []
+    _used_history.extend(ids)
+    _used_video_ids.update(ids)
+
+
+def save_used_footage():
+    with open(USED_FOOTAGE_PATH, "w") as f:
+        json.dump({"ids": _used_history[-USED_FOOTAGE_CAP:]}, f)
 
 
 def run(cmd):
@@ -281,6 +300,7 @@ def fetch_clip(query, dest, intent=None):
     try:
         _download(chosen["url"], dest)
         _used_video_ids.add(chosen["id"])
+        _used_history.append(chosen["id"])
         tag = "Groq-matched" if pick is not None else "first"
         print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
         return True
@@ -420,6 +440,9 @@ def main():
     for d in (WORK, OUT):
         shutil.rmtree(d, ignore_errors=True); os.makedirs(d, exist_ok=True)
 
+    load_used_footage()
+    print(f"[footage] {len(_used_video_ids)} clip ids excluded from prior runs")
+
     print("[voice] full track...")
     full_script = m.get("script", " ".join(s["voiceover"] for s in m["scenes"]))
     full_mp3 = os.path.join(WORK, "full_vo.mp3")
@@ -432,6 +455,8 @@ def main():
     for i, (sc, (seg_mp3, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
         print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']}")
         scene_files.append(build_scene(sc, i, seg_mp3, seg_dur)); durations.append(seg_dur)
+
+    save_used_footage()  # persist before the render steps below, in case one of them fails
 
     # concat
     listfile = os.path.join(WORK, "list.txt")
