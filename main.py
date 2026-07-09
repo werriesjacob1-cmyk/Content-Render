@@ -142,7 +142,7 @@ def _download(url, dest):
 
 
 def _pexels_candidates(query):
-    """Return list of dicts: {id, w, h, url, desc} for unused portrait clips."""
+    """Return list of dicts: {id, w, h, url, desc, source} for unused portrait clips."""
     out = []
     if not PEXELS_KEY:
         return out
@@ -160,12 +160,47 @@ def _pexels_candidates(query):
                     if best is None or abs((f.get("width") or 0) - W) < abs((best.get("width") or 0) - W):
                         best = f
             if best:
+                # Pexels' API has no real description; the page-URL slug is the
+                # closest thing to one, but its trailing numeric id is pure
+                # noise for the Groq matcher below — strip it.
+                slug = (v.get("url", "") or "").rstrip("/").split("/")[-1]
+                slug = re.sub(r"-\d+$", "", slug)
                 out.append({"id": v.get("id"), "url": best["link"],
-                            "desc": (v.get("url", "") or "").rstrip("/").split("/")[-1].replace("-", " ")})
+                            "desc": slug.replace("-", " "), "source": "Pexels"})
     except urllib.error.HTTPError as e:
         print(f"  Pexels HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
         print("  Pexels failed:", e)
+    return out
+
+
+def _pixabay_candidates(query):
+    """Second real footage source, tried when Pexels has no portrait match.
+    Pixabay's API returns real curator-assigned tags (unlike Pexels, which has
+    no description field at all), so it's also a better Groq-matching signal
+    when both sources have candidates."""
+    out = []
+    if not PIXABAY_KEY:
+        return out
+    try:
+        q = urllib.parse.quote(query)
+        data = _http_json(
+            f"https://pixabay.com/api/videos/?key={PIXABAY_KEY}&q={q}"
+            f"&orientation=vertical&safesearch=true&per_page=15",
+            {"User-Agent": BROWSER_UA})
+        for v in data.get("hits", []):
+            vid = v.get("id")
+            if vid in _used_video_ids:
+                continue
+            videos = v.get("videos", {})
+            best = videos.get("large") or videos.get("medium") or videos.get("small")
+            if best and best.get("url"):
+                out.append({"id": vid, "url": best["url"],
+                            "desc": v.get("tags", query), "source": "Pixabay"})
+    except urllib.error.HTTPError as e:
+        print(f"  Pixabay HTTP {e.code}: {e.read().decode()[:160]}")
+    except Exception as e:
+        print("  Pixabay failed:", e)
     return out
 
 
@@ -219,7 +254,7 @@ def _coverr_candidates(query):
                 continue
             url = (v.get("urls") or {}).get("mp4") or v.get("mp4") or v.get("url")
             if url:
-                out.append({"id": vid, "url": url, "desc": (v.get("title") or query)})
+                out.append({"id": vid, "url": url, "desc": (v.get("title") or query), "source": "Coverr"})
     except Exception as e:
         print("  Coverr failed:", e)
     return out
@@ -227,6 +262,8 @@ def _coverr_candidates(query):
 
 def fetch_clip(query, dest, intent=None):
     cands = _pexels_candidates(query)
+    if not cands:
+        cands = _pixabay_candidates(query)
     if not cands:
         cands = _coverr_candidates(query)  # failover source (dormant unless COVERR_API_KEY set)
     if not cands:
@@ -238,7 +275,7 @@ def fetch_clip(query, dest, intent=None):
         _download(chosen["url"], dest)
         _used_video_ids.add(chosen["id"])
         tag = "Groq-matched" if pick is not None else "first"
-        print(f"  Pexels SUCCESS ({tag}, id {chosen['id']}): {query}")
+        print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
         return True
     except Exception as e:
         print("  download failed:", e)
@@ -246,16 +283,34 @@ def fetch_clip(query, dest, intent=None):
 
 
 # ---------- PER-SCENE VIDEO (motion + color grade) ----------
+def _motion_filter(scene, frames, zspeed):
+    """Per-scene motion, driven by generate.py's scene['motion'] (zoom_in/zoom_out/
+    pan/static) instead of always applying the same zoom-in — same field the LLM
+    already picks for visual variety, previously ignored here."""
+    kind = scene.get("motion", "zoom_in")
+    base = f"scale=-2:2400,crop={W}:{H},"
+    if kind == "static":
+        return base
+    if kind == "zoom_out":
+        z = f"if(lte(on,3),1.12,max(zoom-{zspeed},1.06))"
+        return base + f"zoompan=z='{z}':d={frames}:s={W}x{H}:fps=30,"
+    if kind == "pan":
+        # fixed mild zoom, slide across the frame left->right over the scene
+        return (base + f"zoompan=z='1.09':x='(iw-iw/zoom)*on/{frames}':"
+                        f"y='(ih-ih/zoom)/2':d={frames}:s={W}x{H}:fps=30,")
+    z = f"if(lte(on,3),1.06,min(zoom+{zspeed},1.12))"  # zoom_in (default)
+    return base + f"zoompan=z='{z}':d={frames}:s={W}x{H}:fps=30,"
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
     have = fetch_clip(scene["search_query"], raw, intent=scene.get("voiceover", scene["search_query"]))
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, int(seg_dur * 30))
 
-    # slow zoom-in (Ken Burns) + cinematic color grade (contrast, slight teal shadows, mild saturation)
+    # motion (Ken Burns zoom/pan, varies per scene.motion) + cinematic color grade
     zspeed = PROFILE["zoom_speed"]
-    motion = (f"scale=-2:2400,crop={W}:{H},"
-              f"zoompan=z='if(lte(on,3),1.06,min(zoom+{zspeed},1.12))':d={frames}:s={W}x{H}:fps=30,")
+    motion = _motion_filter(scene, frames, zspeed)
     grade = PROFILE["grade"]
     stat = _stat_overlay(scene, seg_dur)
 

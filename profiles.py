@@ -22,6 +22,7 @@ PROFILES = {
         # look
         "grade": "eq=contrast=1.08:saturation=1.12:brightness=-0.02,curves=preset=medium_contrast",
         "zoom_speed": 0.0006,         # slow cinematic
+        "motion_graphics": True,      # animated number card when a scene has a stat
         # audio
         "music": "music_science.mp3",
         "music_vol": 0.10,
