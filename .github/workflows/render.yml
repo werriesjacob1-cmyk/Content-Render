@@ -23,6 +23,16 @@ jobs:
       - name: Ensure ffmpeg
         run: ffmpeg -version >/dev/null 2>&1 || sudo apt-get update && sudo apt-get install -y ffmpeg
 
+      - name: Ensure fonts
+        # main.py hardcodes /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
+        # for drawtext, and the karaoke captions resolve "DejaVu Sans"/"DejaVu
+        # Serif" via fontconfig — neither is guaranteed present on the runner
+        # image, and a missing font file makes ffmpeg's drawtext fail outright.
+        run: |
+          fc-list | grep -qi dejavu || (sudo apt-get update && sudo apt-get install -y fonts-dejavu-core)
+          fc-cache -f >/dev/null 2>&1 || true
+          test -f /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
+
       - name: Install deps
         run: pip install -r requirements.txt
 

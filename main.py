@@ -125,8 +125,24 @@ def tts_full(full_text, out_mp3, voice, rate):
 
 def split_audio(full_mp3, scenes, work_dir):
     total = ffprobe_dur(full_mp3)
-    tw = sum(len(s["voiceover"].split()) for s in scenes)
     out, cursor = [], 0.0
+    if WORD_TIMINGS:
+        # exact: cut each scene where its last word actually ends, per the
+        # same ElevenLabs timings the karaoke captions use — otherwise the
+        # captions are word-perfect but the B-roll cut lands off-beat from
+        # the words it's showing.
+        word_i = 0
+        for i, sc in enumerate(scenes):
+            word_i += len(sc["voiceover"].split())
+            last = (i == len(scenes) - 1) or word_i >= len(WORD_TIMINGS)
+            seg_end = total if last else WORD_TIMINGS[word_i - 1][2]
+            seg = max(0.1, seg_end - cursor)
+            p = os.path.join(work_dir, f"s{i+1}.mp3")
+            run(["ffmpeg", "-y", "-i", full_mp3, "-ss", f"{cursor:.3f}", "-t", f"{seg:.3f}", "-c:a", "copy", p])
+            out.append((p, seg)); cursor += seg
+        return out
+    # fallback: no exact timings available, split proportionally by word count
+    tw = sum(len(s["voiceover"].split()) for s in scenes)
     for i, sc in enumerate(scenes):
         w = len(sc["voiceover"].split())
         seg = (w / tw) * total if tw else float(sc.get("duration", 3))
@@ -444,7 +460,12 @@ def main():
     print(f"[footage] {len(_used_video_ids)} clip ids excluded from prior runs")
 
     print("[voice] full track...")
-    full_script = m.get("script", " ".join(s["voiceover"] for s in m["scenes"]))
+    # Always synthesize the concatenated per-scene voiceovers, not m["script"]
+    # (a separately-written field the LLM doesn't guarantee matches the scenes
+    # word-for-word) — this is what split_audio's word-timing cuts and the
+    # karaoke captions both key off of, so TTS/captions/scene-cuts must all
+    # measure the same text or they drift out of sync with each other.
+    full_script = " ".join(s["voiceover"] for s in m["scenes"])
     full_mp3 = os.path.join(WORK, "full_vo.mp3")
     if not tts_full(full_script, full_mp3, voice, rate):
         silent_track(sum(float(s.get("duration", 3)) for s in m["scenes"]), full_mp3)
