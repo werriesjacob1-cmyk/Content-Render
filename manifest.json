@@ -1,104 +1,120 @@
 {
-  "title": "Sharks vs Trees",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "sharks older than trees",
-  "metaphor": "Ancient Ocean",
-  "hook": "You think trees came first, right?",
-  "script": "You think trees came first, right? But sharks have been here for over 400 million years. They swam in oceans before trees existed. The first trees didn't appear until tens of millions of years later. Sharks were already ancient by then. They predated the first forests. Their history is longer than that of trees. Tag someone who won't believe this. Save this so you remember it, and think about it next time you see a shark or a tree.",
+  "title": "Time Dilation in Your Body",
+  "viewer_job": "REFRAME",
+  "keyword": "time dilation",
+  "metaphor": "Gravity's Time Trick",
+  "hook": "Your head is aging faster than your feet",
+  "script": "Your head is aging faster than your feet. Time runs very slightly faster for your head. This is because gravity is weaker further from Earth. It's a tiny difference, but it has been measured. You're experiencing time dilation right now. But that's not even the strange part. The difference is so small it's almost negligible. Yet, it's a reminder that time isn't absolute. It's relative, even within your own body. So, the next time you look up at a skyscraper, remember time is passing faster at the top. Tag someone who won't believe this. Save this so you remember it, and think about it the next time you look up.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You think trees came first, right?",
-      "on_screen_text": "Sharks Old",
-      "search_query": "shark swimming",
+      "voiceover": "Your head is aging faster than your feet",
+      "on_screen_text": "Time Dilation",
+      "search_query": "clock ticking closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "But sharks have been here for over 400 million years.",
-      "on_screen_text": "400 Million",
-      "search_query": "shark deep blue",
-      "motion": "zoom_out"
+      "duration": 3,
+      "voiceover": "Time runs very slightly faster for your head",
+      "on_screen_text": "Gravity's Effect",
+      "search_query": "skyscraper looking up",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "They swam in oceans before trees existed.",
-      "on_screen_text": "Before Trees",
-      "search_query": "ancient ocean",
-      "motion": "zoom_in"
+      "voiceover": "This is because gravity is weaker further from Earth",
+      "on_screen_text": "Earth's Gravity",
+      "search_query": "earth from space",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "The first trees didn't appear until tens of millions of years later.",
-      "on_screen_text": "Trees Later",
-      "search_query": "ancient forest",
+      "duration": 3,
+      "voiceover": "It's a tiny difference, but it has been measured",
+      "on_screen_text": "Measuring Time",
+      "search_query": "stopwatch in hand",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Sharks were already ancient by then.",
-      "on_screen_text": "Ancient Sharks",
-      "search_query": "shark swimming ocean",
-      "motion": "zoom_in"
+      "voiceover": "You're experiencing time dilation right now",
+      "on_screen_text": "Time Dilation Now",
+      "search_query": "person looking up",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "They predated the first forests.",
-      "on_screen_text": "First Forests",
-      "search_query": "ancient trees",
-      "motion": "zoom_out"
+      "duration": 3,
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "The Strange Part",
+      "search_query": "lightning storm slow motion",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Their history is longer than that of trees.",
-      "on_screen_text": "Shark History",
-      "search_query": "shark deep blue cinematic",
-      "motion": "static"
+      "voiceover": "The difference is so small it's almost negligible",
+      "on_screen_text": "Small Difference",
+      "search_query": "hourglass sand falling",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "Tag someone who won't believe this.",
-      "on_screen_text": "Tag Friend",
-      "search_query": "shark swimming cinematic",
-      "motion": "zoom_in"
+      "duration": 3,
+      "voiceover": "Yet, it's a reminder that time isn't absolute",
+      "on_screen_text": "Relative Time",
+      "search_query": "bubbling green liquid",
+      "motion": "static"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Save this so you remember it.",
-      "on_screen_text": "Save Now",
-      "search_query": "ancient ocean cinematic",
-      "motion": "zoom_out"
+      "voiceover": "It's relative, even within your own body",
+      "on_screen_text": "Body Time",
+      "search_query": "person touching toes",
+      "motion": "zoom_in"
     },
     {
       "id": 10,
+      "duration": 3,
+      "voiceover": "So, the next time you look up at a skyscraper, remember time is passing faster at the top",
+      "on_screen_text": "Skyscraper Time",
+      "search_query": "ocean waves aerial",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 11,
       "duration": 4,
-      "voiceover": "And think about it next time you see a shark or a tree.",
-      "on_screen_text": "Sharks vs Trees",
-      "search_query": "shark swimming ocean cinematic",
-      "motion": "zoom_out"
+      "voiceover": "Tag someone who won't believe this",
+      "on_screen_text": "Share This",
+      "search_query": "person sharing phone",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 12,
+      "duration": 3,
+      "voiceover": "Save this so you remember it, and think about it the next time you look up",
+      "on_screen_text": "Save and Remember",
+      "search_query": "night sky timelapse",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know sharks are older than trees? #sharks #trees #ocean",
-    "Sharks have been on our planet for over 400 million years! #ancient #sharks",
-    "Mind blown, right? Sharks older than trees! #sharks #trees #mindblown"
+    "Did you know time dilation occurs in your body? #time_dilation",
+    "Time dilation is real, and it's happening to you right now",
+    "What's the weirdest thing about time dilation? Share your thoughts"
   ],
   "hashtags": [
-    "#sharks",
-    "#trees",
-    "#ocean",
-    "#ancient",
-    "#wildlife",
-    "#nature"
+    "#time",
+    "#gravity",
+    "#relativity",
+    "#science",
+    "#space",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
