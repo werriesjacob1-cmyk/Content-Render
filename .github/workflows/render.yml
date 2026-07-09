@@ -13,7 +13,10 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # the footage judge/rescue adds up to ~3 Groq calls + 3 searches per scene;
+    # 15 min was calibrated for the old first-result pipeline and left no room
+    # for the ~3.5 min repackage step after a judged render
+    timeout-minutes: 30
     env:
       PAGE: science          # change to history_pov / dark_mystery / ai_life to run another page
     steps:
