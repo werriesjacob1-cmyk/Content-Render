@@ -35,6 +35,12 @@
       "viewer_job": "EXISTENTIAL_CHILL",
       "title": "Radioactive Bananas",
       "fact_id": "banana_radioactive"
+    },
+    {
+      "metaphor": "Turritopsis dohrnii",
+      "viewer_job": "HOW_TO",
+      "title": "Meet the Immortal Jellyfish",
+      "fact_id": "immortal_jellyfish"
     }
   ]
 }
