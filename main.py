@@ -261,13 +261,13 @@ def _nasa_candidates(query):
     return out
 
 
-def _groq_chat(prompt, max_tokens=20, temperature=0):
+def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
     key = os.environ.get("GROQ_API_KEY", "")
     if not key:
         return None
     try:
         body = json.dumps({
-            "model": "llama-3.1-8b-instant",
+            "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": temperature, "max_tokens": max_tokens
         }).encode()
@@ -283,6 +283,12 @@ def _groq_chat(prompt, max_tokens=20, temperature=0):
         return None
 
 
+JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call, not
+                                          # a cheap classification -- llama-3.1-8b-instant
+                                          # scored an ocean-waves clip 9/10 against a
+                                          # "humanity fits in a sugar cube" line in production
+
+
 def _groq_judge(intent, candidates):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
@@ -293,9 +299,14 @@ def _groq_judge(intent, candidates):
     txt = _groq_chat(
         f"A vertical short-form video scene narrates: \"{intent}\".\n"
         f"Candidate stock clips (index: description):\n{listing}\n"
-        f"Pick the clip whose VISUAL content best illustrates that narration, and rate "
-        f"how well it fits from 0 (unrelated) to 10 (perfect).\n"
-        f"Reply with ONLY: index,score")
+        f"Pick the clip whose VISUAL SUBJECT best illustrates that narration.\n"
+        f"Score it 0-10 using this rubric -- be strict, most stock-search results are "
+        f"NOT a good fit and should score low:\n"
+        f"0-2: different subject entirely, no visual connection to the narration.\n"
+        f"3-5: same broad theme but the wrong specific subject.\n"
+        f"6-7: right general subject but a loose or generic shot of it.\n"
+        f"8-10: the clip's actual visual subject directly matches what's narrated.\n"
+        f"Reply with ONLY: index,score", model=JUDGE_MODEL)
     if txt:
         m = re.search(r"(\d+)\s*,\s*(\d+)", txt)
         if m:

@@ -100,9 +100,14 @@ HOOK (first 2 seconds decide 70% of retention):
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 8-12 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
 - Total narration MUST be 110-150 words (~45-55 seconds spoken). Write the FULL script. Too short = rejected.
-- ESCALATION LADDER (critical): every scene must reveal something the previous scene did not.
-  Never restate the fact in different words — each line raises the stakes or zooms deeper:
-  what -> how -> why it's stranger than it sounds -> what it means for YOU.
+- ESCALATION LADDER (critical): every scene must reveal something NO other scene has said yet.
+  State the core reveal — the specific number or comparison from the verified fact — in EXACTLY
+  ONE scene, once, as the payoff moment. Every other scene explores a DIFFERENT angle (the setup
+  question, the mechanism/why it's true, a second consequence, what it means for YOU) and must
+  NOT reference that same number or comparison again, even reworded. A script that circles back to
+  the same reveal twice reads as padded and repetitive, not escalating — each scene is a NEW fact
+  about the topic, not a rephrasing of the last one: what -> how -> why it's stranger than it
+  sounds -> what it means for YOU.
 - MIDPOINT TWIST: around scene 5-7, plant a pattern interrupt that reopens curiosity, e.g.
   "But that's not even the strange part." / "And here's where it stops making sense." Then pay it off.
 - MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
@@ -277,7 +282,7 @@ Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}
     for s in trial["scenes"]:
         s["voiceover"] = new_scenes[s["id"]]
     trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
-    err = validate(trial, m.get("viewer_job", ""))
+    err = validate(trial, m.get("viewer_job", ""), fact=fact)
     if err:
         print(f"  punch-up rejected by validation ({err}), keeping original")
         return m
@@ -289,7 +294,7 @@ def _clean(t):
     t = str(t).strip().strip("`").strip()
     return re.sub(r"\s+", " ", t)
 
-def validate(m, job_name):
+def validate(m, job_name, fact=None):
     for k in ["title", "hook", "script", "scenes", "captions", "hashtags"]:
         if k not in m:
             return f"missing {k}"
@@ -302,8 +307,7 @@ def validate(m, job_name):
     if not (5 <= len(m["hook"].split()) <= 16):
         return f"hook length {len(m['hook'].split())} words out of range"
 
-    # scenes: clean, validate, dedup search queries so footage doesn't repeat
-    seen_q = set()
+    # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
         for k in ("voiceover", "on_screen_text", "search_query"):
             if not s.get(k):
@@ -316,15 +320,15 @@ def validate(m, job_name):
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):
             return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
-        q = s["search_query"].lower()
-        if q in seen_q:
-            # a repeated query means repeated footage; appending a style word
-            # ('cinematic') never changed the results. Swap in a real variant.
-            for alt in VARIETY_QUERIES:
-                if alt.lower() not in seen_q:
-                    s["search_query"] = alt
-                    break
-        seen_q.add(s["search_query"].lower())
+        # NOTE: a duplicate search_query used to get force-swapped to an
+        # unrelated VARIETY_QUERIES term here. That's how a scene whose
+        # voiceover was "humanity fits in a sugar cube" ended up querying
+        # "ocean waves aerial" -- pure noise, zero relevance, and the judge
+        # in main.py could only rate what it was given. It also solved a
+        # problem main.py already handles: fetch_clip's candidate sources
+        # exclude every previously-used clip id (_used_video_ids), so two
+        # scenes sharing a query get different clips automatically. No
+        # swap needed -- leave the query tied to its own scene's content.
         # numeric, sane duration
         try:
             s["duration"] = max(2, min(8, int(float(s.get("duration", 4)))))
@@ -367,6 +371,26 @@ def validate(m, job_name):
             ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
             if ratio > 0.70:
                 return f"scenes {i+1} and {j+1} too similar (repetition)"
+    # anti-restatement: the pairwise check above only catches near-identical
+    # PHRASING between two scenes. It missed a real production failure: scene
+    # 1 said "your body is nearly all empty space", scene 3 said "humanity
+    # fits in a sugar cube", and scene 6 then restated BOTH combined almost
+    # verbatim as one line -- the same reveal delivered three times with
+    # different words, which is exactly what the escalation-ladder rule is
+    # supposed to prevent. Catch it by checking how many scenes closely
+    # mirror the verified fact itself: one scene doing so is the expected
+    # payoff moment; two or more means the core reveal got restated instead
+    # of the script escalating to something new each time.
+    if fact and fact.get("fact") and len(vos) > 1:
+        fact_text = fact["fact"].lower()
+        # exclude the final scene: the prompt explicitly wants the closing line
+        # to loop back to the hook/central image, which legitimately re-touches
+        # the fact's vocabulary -- that's a deliberate design choice, not a bug.
+        restated = [i + 1 for i, vo in enumerate(vos[:-1])
+                    if difflib.SequenceMatcher(None, vo, fact_text).ratio() > 0.40]
+        if len(restated) > 1:
+            return (f"the verified fact is restated in {len(restated)} scenes {restated} "
+                    f"instead of being revealed once and escalated from")
     # reject if the title's key noun appears in nearly every scene (circling one idea)
     import collections
     words = collections.Counter(re.sub(r"[^a-z ]", "", " ".join(vos)).split())
@@ -430,7 +454,7 @@ def main():
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact))
             m = json.loads(raw)
-            err = validate(m, job_name)
+            err = validate(m, job_name, fact=chosen_fact)
             if err:
                 print(f"  attempt {attempt+1} invalid: {err}")
                 # keep it as a backup if it at least has the core pieces
