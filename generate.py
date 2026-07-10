@@ -584,6 +584,13 @@ def main():
         print(f"  [bank] fact: {chosen_fact['id']}")
     last_job = history[-1].get("viewer_job") if history else None
     jobs = [j for j in VIEWER_JOBS if j[0] != last_job] or VIEWER_JOBS
+    # HOW_TO asks for a household demo the viewer can try. That is incompatible
+    # with a fixed verified fact from the bank: pairing "immortal jellyfish"
+    # with HOW_TO once produced a jellyfish script that bolted an unrelated
+    # dish-soap experiment onto the final scene. When a bank fact is driving
+    # the video, exclude HOW_TO — it only makes sense as a standalone demo job.
+    if chosen_fact:
+        jobs = [j for j in jobs if j[0] != "HOW_TO"] or jobs
     job_name, job_desc = random.choice(jobs)
     print(f"[generate] job={job_name} avoiding={avoid[:80]}")
 
