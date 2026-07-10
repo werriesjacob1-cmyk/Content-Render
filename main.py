@@ -289,12 +289,18 @@ JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call,
                                           # "humanity fits in a sugar cube" line in production
 
 
-def _groq_judge(intent, candidates):
+def _groq_judge(intent, candidates, _allow_retry=True):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
     (the old picker could only choose among candidates, never veto them —
     which is how a belly-button macro ended up illustrating stomach acid).
-    Returns (index, score) or (0, None) when no key / unparseable."""
+    Returns (index, score) or (0, None) when no key / unparseable after retry.
+
+    One retry on an unparseable/empty reply: production logs showed three
+    scenes in one render falling back to "first result" purely because the
+    judge call returned something the regex couldn't parse -- not because
+    the model actually judged the footage irrelevant. A single retry costs
+    one extra Groq call only in that failure case."""
     listing = "\n".join(f"{i}: {c['desc']}" for i, c in enumerate(candidates))
     txt = _groq_chat(
         f"A vertical short-form video scene narrates: \"{intent}\".\n"
@@ -313,6 +319,9 @@ def _groq_judge(intent, candidates):
             idx, score = int(m.group(1)), int(m.group(2))
             if 0 <= idx < len(candidates):
                 return idx, min(score, 10)
+    if _allow_retry:
+        print("  judge: unparseable/empty reply, retrying once...")
+        return _groq_judge(intent, candidates, _allow_retry=False)
     return 0, None
 
 
@@ -361,7 +370,20 @@ def _gather_candidates(query):
             or _coverr_candidates(query))  # Coverr dormant unless COVERR_API_KEY set
 
 
-RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling
+RELEVANCE_FLOOR = 5  # judge score below this = try a better query before settling.
+                      # Raised from 4 now that missing the floor no longer means a
+                      # flat color card -- build_scene renders a designed stat-card
+                      # scene instead, so being pickier here is safe.
+
+FETCH_BUDGET_S = 45     # wall-clock cap for one fetch_clip() call (search + judge +
+                        # requery rounds). Two rescue rounds instead of one means more
+                        # network round trips per scene; bound it the same way
+                        # NASA_BUDGET_S bounds its own fallback source, so a slow judge
+                        #/search chain can't stall the whole render.
+MAX_FETCH_QUERIES = 5   # original query + up to two requery rounds of ~2 queries each
+
+JUDGE_SCORES = []      # every scene's best judged score this render (None excluded);
+                        # printed as a min/avg summary at the end for quick QA of a run
 
 
 def _accept(chosen, dest, query, score):
@@ -374,57 +396,104 @@ def _accept(chosen, dest, query, score):
 
 
 def fetch_clip(query, dest, intent=None):
-    """Search -> judge -> (if judged irrelevant) rewrite the query and retry,
-    keeping the best-scoring clip seen as the fallback. The old behavior of
-    blindly taking the first result for the original query is exactly how a
-    'human stomach anatomy' scene shipped with a belly-button macro."""
+    """Search -> judge -> (if judged irrelevant) rewrite the query and retry, up
+    to two rescue rounds, bounded by FETCH_BUDGET_S/MAX_FETCH_QUERIES so being
+    picky can't stall the render. Nothing clearing RELEVANCE_FLOOR is no longer
+    shipped anyway -- the old "ship the least-bad clip" fallback is exactly how
+    a belly-button macro ended up illustrating stomach acid; now the caller
+    renders a designed stat-card scene instead of a bad clip or a black card.
+
+    Returns (accepted: bool, best_score: float|None). best_score is the best
+    judge score seen across all rounds (None if nothing was ever judged), used
+    both by the caller's stat-card decision and the end-of-render quality
+    summary."""
     intent = intent or query
-    best = None  # (score, cand, query)
+    best_score = None
     queries = [query]
-    for round_no, q in enumerate(queries):
+    deadline = time.time() + FETCH_BUDGET_S
+    round_no = 0
+    while round_no < len(queries) and round_no < MAX_FETCH_QUERIES:
+        if time.time() > deadline:
+            print("  fetch budget exceeded, stopping search")
+            break
+        q = queries[round_no]
         cands = _gather_candidates(q)
         if cands:
             idx, score = _groq_judge(intent, cands)
             chosen = cands[idx]
+            if score is not None and (best_score is None or score > best_score):
+                best_score = score
             if score is None or score >= RELEVANCE_FLOOR:
                 try:
-                    return _accept(chosen, dest, q, score)
+                    _accept(chosen, dest, q, score)
+                    if best_score is not None:
+                        JUDGE_SCORES.append(best_score)
+                    return True, score
                 except Exception as e:
                     print("  download failed:", e)
-            elif best is None or score > best[0]:
-                best = (score, chosen, q)
-            print(f"  weak match ({score}/10) for '{q}' — trying a better query")
+            else:
+                print(f"  weak match ({score}/10) for '{q}' — trying a better query")
         else:
             print(f"  no results for '{q}'")
-        if round_no == 0:  # one rescue round: ask for stock-native rewrites
-            queries.extend(_groq_requery(intent, q))
-    if best:  # nothing cleared the floor; any real footage beats a black card
-        try:
-            return _accept(best[1], dest, best[2], best[0])
-        except Exception as e:
-            print("  download failed:", e)
-    print(f"  No footage: {query} — color card")
-    return False
+        # rescue rounds: ask for stock-native rewrites, up to twice (after the
+        # original query, and again after the first rescue round if still weak)
+        if round_no < 2 and len(queries) < MAX_FETCH_QUERIES:
+            for q2 in _groq_requery(intent, q):
+                if q2 not in queries:
+                    queries.append(q2)
+        round_no += 1
+    if best_score is not None:
+        JUDGE_SCORES.append(best_score)
+    print(f"  No footage cleared the floor for '{query}' (best {best_score}/10)"
+          if best_score is not None else f"  No footage found for '{query}'")
+    return False, best_score
 
 
 # ---------- PER-SCENE VIDEO (motion + color grade) ----------
-def _motion_filter(scene, frames, zspeed):
+# Zoom anchor presets for zoom_in/zoom_out (dead-center plus four off-center
+# points). Previously zoom_in/zoom_out passed no x/y to zoompan at all, which
+# defaults to 0,0 -- i.e. every "zoom" actually crept toward the top-left
+# corner instead of the frame center. Fixed here, and cycled per scene so
+# consecutive same-kind scenes don't play as pixel-identical zooms.
+_ZOOM_ANCHORS = [
+    ("(iw-iw/zoom)/2", "(ih-ih/zoom)/2"),    # center
+    ("(iw-iw/zoom)/2", "(ih-ih/zoom)*0.32"),  # upper third
+    ("(iw-iw/zoom)*0.34", "(ih-ih/zoom)/2"),  # left-biased
+    ("(iw-iw/zoom)*0.66", "(ih-ih/zoom)/2"),  # right-biased
+    ("(iw-iw/zoom)/2", "(ih-ih/zoom)*0.68"),  # lower third
+]
+
+_last_motion_kind = None  # sequential across build_scene calls within one render
+
+
+def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     """Per-scene motion, driven by generate.py's scene['motion'] (zoom_in/zoom_out/
     pan/static) instead of always applying the same zoom-in — same field the LLM
-    already picks for visual variety, previously ignored here."""
+    already picks for visual variety, previously ignored here.
+
+    idx/prev_kind add deterministic variety: when this scene's motion kind
+    repeats the previous scene's, the zoom anchor (or pan direction) is nudged
+    so two back-to-back zoom_ins don't render as the identical move."""
     kind = scene.get("motion", "zoom_in")
+    repeat = prev_kind is not None and kind == prev_kind
+    anchor_i = (idx + (1 if repeat else 0)) % len(_ZOOM_ANCHORS)
+    ax, ay = _ZOOM_ANCHORS[anchor_i]
     base = f"scale=-2:2400,crop={W}:{H},"
     if kind == "static":
         return base
     if kind == "zoom_out":
         z = f"if(lte(on,3),1.12,max(zoom-{zspeed},1.06))"
-        return base + f"zoompan=z='{z}':d={frames}:s={W}x{H}:fps=30,"
+        return base + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W}x{H}:fps=30,"
     if kind == "pan":
-        # fixed mild zoom, slide across the frame left->right over the scene
-        return (base + f"zoompan=z='1.09':x='(iw-iw/zoom)*on/{frames}':"
+        # fixed mild zoom, slide across the frame; direction flips on repeat
+        # (or alternates by index) instead of always going left->right
+        reverse = (idx % 2 == 1) if not repeat else (idx % 2 == 0)
+        x_expr = (f"(iw-iw/zoom)*on/{frames}" if not reverse
+                  else f"(iw-iw/zoom)*(1-on/{frames})")
+        return (base + f"zoompan=z='1.09':x='{x_expr}':"
                         f"y='(ih-ih/zoom)/2':d={frames}:s={W}x{H}:fps=30,")
     z = f"if(lte(on,3),1.06,min(zoom+{zspeed},1.12))"  # zoom_in (default)
-    return base + f"zoompan=z='{z}':d={frames}:s={W}x{H}:fps=30,"
+    return base + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W}x{H}:fps=30,"
 
 
 def build_scene(scene, idx, seg_mp3, seg_dur):
