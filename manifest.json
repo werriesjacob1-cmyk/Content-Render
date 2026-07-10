@@ -1,120 +1,103 @@
 {
-  "title": "The Void Within",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "empty space",
-  "metaphor": "sugar cube",
-  "hook": "Your body is almost entirely empty",
-  "script": "Your body is nearly all empty space. Atoms are mostly void. If emptied, humanity fits in a sugar cube. That's the space inside every human. But that's not the strange part. Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube. This void is what makes life possible. It's what allows atoms to exist. The empty space is what makes us, us. The void within is what makes life worth living. Now, imagine this void in every sugar cube. Save this to remember the void inside a single sugar cube.",
+  "title": "Ocean's Hidden Breath",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "ocean oxygen source",
+  "metaphor": "Plankton Power",
+  "hook": "You breathe ocean air",
+  "script": "You breathe ocean air. Most of it comes from the sea. Tiny plankton produce oxygen. They're the reason we have air. But that's not even the strange part. Well over half of our oxygen is thanks to these tiny creatures. You're alive because of them. They're the unsung heroes of our planet. Save this so you remember it. You breathe ocean air.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your body is nearly all empty space.",
-      "on_screen_text": "Empty Space",
-      "search_query": "sugar cube macro",
+      "voiceover": "You breathe ocean air",
+      "on_screen_text": "Ocean Air",
+      "search_query": "ocean surface waves",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Atoms are mostly void.",
-      "on_screen_text": "Atomic Space",
-      "search_query": "empty warehouse interior",
-      "motion": "pan"
+      "voiceover": "Most of it comes from the sea",
+      "on_screen_text": "Sea Source",
+      "search_query": "sunlight underwater",
+      "motion": "pan_left"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "If emptied, humanity fits in a sugar cube.",
-      "on_screen_text": "Sugar Cube",
-      "search_query": "ocean waves aerial",
+      "voiceover": "Tiny plankton produce oxygen",
+      "on_screen_text": "Plankton Power",
+      "search_query": "bioluminescent plankton ocean",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "That's the space inside every human.",
-      "on_screen_text": "Inner Space",
-      "search_query": "starry night sky",
-      "motion": "zoom_in"
+      "voiceover": "They're the reason we have air",
+      "on_screen_text": "Breath of Life",
+      "search_query": "ocean waves aerial",
+      "motion": "pan_right"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "But that's not the strange part.",
-      "on_screen_text": "The Void",
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "Strange Truth",
       "search_query": "night sky timelapse",
-      "motion": "zoom_out"
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube.",
-      "on_screen_text": "Atomic Void",
+      "voiceover": "Well over half of our oxygen is thanks to these tiny creatures",
+      "on_screen_text": "Ocean Oxygen",
       "search_query": "city street timelapse",
-      "motion": "zoom_out"
+      "motion": "pan_left"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "This void is what makes life possible.",
-      "on_screen_text": "Void Within",
+      "voiceover": "You're alive because of them",
+      "on_screen_text": "Alive Thanks",
       "search_query": "lightning storm clouds",
-      "motion": "zoom_in"
+      "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "It's what allows atoms to exist.",
-      "on_screen_text": "The Void Within",
+      "voiceover": "They're the unsung heroes of our planet",
+      "on_screen_text": "Unsung Heroes",
       "search_query": "forest sunlight drone",
-      "motion": "zoom_in"
+      "motion": "pan_right"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "The empty space is what makes us, us.",
-      "on_screen_text": "Existence",
+      "voiceover": "Save this so you remember it",
+      "on_screen_text": "Save Reminder",
       "search_query": "hourglass sand falling",
       "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "The void within is what makes life worth living.",
-      "on_screen_text": "Share This",
-      "search_query": "people reacting",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 11,
-      "duration": 4,
-      "voiceover": "Now, imagine this void in every sugar cube.",
-      "on_screen_text": "Save This",
-      "search_query": "hands saving phone",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 12,
-      "duration": 4,
-      "voiceover": "Save this to remember the void inside a single sugar cube.",
-      "on_screen_text": "The Void",
+      "voiceover": "You breathe ocean air",
+      "on_screen_text": "Ocean Air",
       "search_query": "hands typing closeup",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know you're mostly empty space? #empty space",
-    "The void within us is what makes us, us",
-    "Tag someone who loves science!"
+    "Did you know the ocean is your main oxygen source?",
+    "Share with someone who loves the ocean",
+    "Tag a friend who needs to know this"
   ],
   "hashtags": [
+    "#ocean",
+    "#plankton",
+    "#oxygen",
     "#science",
-    "#space",
-    "#facts",
-    "#atoms",
-    "#void",
-    "#learnontiktok"
+    "#nature"
   ],
   "render": {
     "voice": "en-US-GuyNeural",

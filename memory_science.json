@@ -23,6 +23,12 @@
       "viewer_job": "EXISTENTIAL_CHILL",
       "title": "The Void Within",
       "fact_id": "atoms_empty"
+    },
+    {
+      "metaphor": "Plankton Power",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "title": "Ocean's Hidden Breath",
+      "fact_id": "ocean_oxygen"
     }
   ]
 }
