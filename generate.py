@@ -304,7 +304,7 @@ def validate(m, job_name, fact=None):
     # clean top-level text
     m["title"] = _clean(m["title"])[:90]
     m["hook"] = _clean(m["hook"])
-    if not (5 <= len(m["hook"].split()) <= 16):
+    if not (4 <= len(m["hook"].split()) <= 16):
         return f"hook length {len(m['hook'].split())} words out of range"
 
     # scenes: clean and validate
@@ -475,18 +475,20 @@ def main():
         nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
         nm["hashtags"] = nm.get("hashtags", ["#science"])
         nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
-        # rotate repair queries through the fact's hints + neutral B-roll so a repaired
-        # video still gets visual variety — the old default gave EVERY scene the same
-        # keyword query, which is how one video showed 3 shots cycled 4 times each
+        # fill in queries the model left out or made un-filmable. Duplicate
+        # queries are deliberately NOT swapped here (they used to be, via a
+        # "seen" set) -- that was the same bug fixed in validate(): main.py's
+        # fetch_clip already excludes previously-used clip ids per scene, so
+        # two scenes sharing a query get different clips automatically, and
+        # swapping to an unrelated pool term (e.g. "night sky timelapse" for
+        # an ocean/plankton scene) was actively making footage LESS relevant,
+        # not preventing repeated footage.
         pool = (chosen_fact.get("queries", []) if chosen_fact else []) + VARIETY_QUERIES
-        seen = set()
         for i, s in enumerate(nm.get("scenes", [])):
             s.setdefault("motion", "zoom_in"); s.setdefault("duration", 5)
             s.setdefault("on_screen_text", "")
-            if not s.get("search_query") or s["search_query"].lower() in seen \
-               or UNSTOCKABLE_Q.search(s.get("search_query", "")):
+            if not s.get("search_query") or UNSTOCKABLE_Q.search(s.get("search_query", "")):
                 s["search_query"] = pool[i % len(pool)]
-            seen.add(s["search_query"].lower())
         manifest = nm
 
     if not manifest:
