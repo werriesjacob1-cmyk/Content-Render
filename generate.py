@@ -78,13 +78,45 @@ def build_prompt(job_name, job_desc, avoid, fact=None):
                         f"Put the series name + part number in the first on_screen_text and first caption.")
     fact_block = ""
     if fact:
+        key_terms = fact.get("key_terms", [])
+        whatif = fact.get("whatif", "")
+        wow = fact.get("wow", "")
+        key_terms_block = ""
+        if key_terms:
+            key_terms_block = (
+                f"- MANDATORY KEY TERMS: the script MUST explicitly SAY at least 2 of these exact "
+                f"specifics somewhere in the voiceover — the real proper noun(s) and/or the real "
+                f"number(s), not a vague paraphrase: {key_terms}. A script that says 'a naturally "
+                f"occurring isotope' instead of 'potassium-40' is a FAILED script. Name the thing. "
+                f"State the number.\n")
+        whatif_block = ""
+        if whatif:
+            whatif_block = (
+                f"- THE CENTRAL QUESTION (curiosity gap): pose this as a genuine question EARLY "
+                f"(in the hook or one of the first 3-4 scenes), in your own words, based on: "
+                f"\"{whatif}\"\n"
+                f"  Then ANSWER it for real as the MIDPOINT TWIST payoff (around scene 5-7) — the "
+                f"actual answer with the real numbers/names, not a tease or a shrug. The viewer must "
+                f"walk away knowing exactly what would really happen.\n")
+        wow_block = ""
+        if wow:
+            wow_block = (
+                f"- ESCALATION FUEL: after the midpoint payoff, use this verified supporting detail "
+                f"as a further escalation rung (a 'but here's the even wilder part') instead of "
+                f"inventing a new stat: \"{wow}\"\n")
         fact_block = (f"\n\n=== THE VERIFIED FACT FOR THIS VIDEO (this is TRUE — build the whole script around it) ===\n"
                       f"\"{fact['fact']}\"\n"
                       f"Angle: {fact['angle']}.\n"
                       f"ABSOLUTE RULES FOR ACCURACY:\n"
                       f"- Center the ENTIRE script on this one fact. Do NOT introduce other topics.\n"
-                      f"- Do NOT invent any statistic, number, or 'fact' that is not in the verified fact above. If you are unsure of a number, do not state one.\n"
+                      f"- Do NOT invent any statistic, number, or 'fact' that is not in the verified fact, "
+                      f"key terms, or wow detail above. If you are unsure of a number, do not state one.\n"
                       f"- Never state two different numbers for the same thing. Accuracy over drama.\n"
+                      f"{key_terms_block}{whatif_block}{wow_block}"
+                      f"- Include at least ONE absurd-but-precise felt comparison that turns a number "
+                      f"into something physically picturable (e.g. not '400 million years' alone but "
+                      f"'before Saturn even had rings', or 'you could watch human civilization rise and "
+                      f"fall 80,000 times over'). Keep it precise — no vague hand-waving.\n"
                       f"- For the footage search_query fields, prefer these proven matches: "
                       f"{[q for q in fact.get('queries', []) if not UNSTOCKABLE_Q.search(q)]}.\n")
     return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}
@@ -238,6 +270,14 @@ def punch_up(m, fact):
     critique-and-rewrite pass fixes delivery; validate() re-guards the result
     and we keep the original whenever the rewrite doesn't survive it."""
     fact_line = fact["fact"] if fact else "the fact stated in the script"
+    key_terms = fact.get("key_terms", []) if fact else []
+    key_terms_rule = ""
+    if key_terms:
+        key_terms_rule = (
+            f"- MUST preserve every one of these exact terms verbatim, spelled exactly as given, "
+            f"somewhere across the rewritten lines: {key_terms}. Do not paraphrase them away or "
+            f"swap a real name/number for a vaguer description — if the original said "
+            f"'potassium-40', the rewrite must still say 'potassium-40', not 'a radioactive isotope'.\n")
     scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
     prompt = f"""You are a short-form script doctor. Rewrite ONLY the voiceover lines below for maximum retention.
 
@@ -255,7 +295,7 @@ RULES:
 - Exactly ONE call-to-action, in the FINAL line only (save OR share OR comment — never two).
 - Final line must also close the loop back to the opening image.
 - Keep any real numbers exactly as they are. Add NO new facts or numbers.
-- Every line ends with proper punctuation (. ? or !) — these are spoken sentences,
+{key_terms_rule}- Every line ends with proper punctuation (. ? or !) — these are spoken sentences,
   and the TTS engine uses end punctuation to pace pauses between scenes.
 
 Scenes: {scenes_json}
@@ -282,6 +322,14 @@ Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}
     for s in trial["scenes"]:
         s["voiceover"] = new_scenes[s["id"]]
     trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
+    if key_terms:
+        orig_text = " ".join(s["voiceover"] for s in m["scenes"])
+        new_text = " ".join(s["voiceover"] for s in trial["scenes"])
+        dropped = [kt for kt in key_terms
+                   if _key_term_present(kt, orig_text) and not _key_term_present(kt, new_text)]
+        if dropped:
+            print(f"  punch-up dropped key term(s) {dropped}, keeping original")
+            return m
     err = validate(trial, m.get("viewer_job", ""), fact=fact)
     if err:
         print(f"  punch-up rejected by validation ({err}), keeping original")
@@ -293,6 +341,70 @@ def _clean(t):
     # strip code fences / markdown / stray quotes the model sometimes adds
     t = str(t).strip().strip("`").strip()
     return re.sub(r"\s+", " ", t)
+
+def _key_term_present(term, text):
+    """Is a dossier key_term actually named in text? Case-insensitive substring
+    match for proper nouns/phrases ("potassium-40", "Mariana Trench"). For terms
+    that lead with a number ("0.1 microsieverts", "5,000 times a second") also
+    match on the bare digit sequence, comma-insensitive, so rounding/formatting
+    differences ("5000" vs "5,000" vs "roughly 5000") don't cause a false
+    negative — the actual proper-noun substring match stays the primary path so
+    a stray shared number elsewhere in the script can't cause a false positive."""
+    term = term.strip()
+    if not term:
+        return False
+    if term.lower() in text.lower():
+        return True
+    if term[0].isdigit():
+        digits = re.findall(r"\d[\d,\.]*", term)
+        norm_text = text.replace(",", "")
+        for d in digits:
+            d_norm = d.rstrip(".").replace(",", "")
+            if d_norm and d_norm in norm_text:
+                return True
+    return False
+
+def check_information_gain(m):
+    """One extra Groq call, run only after structural validate() has already
+    passed: hand the model the numbered voiceover list and ask which scenes (if
+    any) add NO new information beyond an earlier scene. This catches semantic
+    redundancy — the same idea said in different words — that the structural
+    pairwise-similarity and fact-restatement checks in validate() can miss
+    because they only compare surface phrasing.
+
+    MUST fail-open: this is a nice-to-have quality gate, not a correctness gate,
+    and it must never be able to brick generation. Any network error, timeout,
+    malformed JSON, or unexpected shape from the model is treated as a pass.
+    """
+    try:
+        scenes = m.get("scenes", [])
+        if len(scenes) < 2:
+            return None
+        numbered = "\n".join(f"{s['id']}. {s['voiceover']}" for s in scenes)
+        prompt = (
+            "Here is the numbered voiceover script of a short video, in scene order:\n\n"
+            f"{numbered}\n\n"
+            "A scene 'adds no new information' only if everything it says was already "
+            "conveyed — even in different words — by an EARLIER scene in this list. Scene "
+            "1 never counts (there is no earlier scene). A scene that reveals a new number, "
+            "a new mechanism, a new consequence, or a new comparison is NOT redundant even "
+            "if it's on the same topic.\n\n"
+            'Return ONLY valid JSON, exactly: {"no_new_info_scene_ids": [2, 5]} '
+            "-- an empty array if every scene adds something new. No explanation, JSON only."
+        )
+        raw = call_groq(prompt)
+        data = json.loads(raw)
+        ids = data.get("no_new_info_scene_ids", [])
+        if not isinstance(ids, list):
+            return None
+        ids = [i for i in ids if isinstance(i, int)]
+        if len(ids) >= 2:
+            return (f"information-gain check flagged {len(ids)} redundant scenes {ids} "
+                    f"(no new information beyond an earlier scene) — cut or replace them")
+        return None
+    except Exception as e:  # noqa: BLE001 - must fail open, never blocks a run
+        print(f"  info-gain check failed open ({e}), passing")
+        return None
 
 def validate(m, job_name, fact=None):
     for k in ["title", "hook", "script", "scenes", "captions", "hashtags"]:
@@ -371,6 +483,35 @@ def validate(m, job_name, fact=None):
             ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
             if ratio > 0.70:
                 return f"scenes {i+1} and {j+1} too similar (repetition)"
+    # mandatory key-term naming: the real production failure that motivated this
+    # (the potassium-40 banana video) was that topic_bank facts used to be bare
+    # one-liners, so the model never had a specific isotope name or a real dose
+    # figure to reach for and just said "a naturally occurring isotope" instead.
+    # Dossiers now carry key_terms (proper nouns / real numbers the script MUST
+    # say) plus a whatif hypothetical the script must pose early and pay off.
+    key_terms = fact.get("key_terms", []) if fact else []
+    if key_terms:
+        full_text = m["script"] + " " + " ".join(s["voiceover"] for s in m["scenes"])
+        named = [kt for kt in key_terms if _key_term_present(kt, full_text)]
+        if len(named) < 2:
+            return (f"only {len(named)}/{len(key_terms)} mandatory key terms named "
+                     f"({named or 'none'}) — the script must explicitly say at least 2 of "
+                     f"{key_terms}; a script that says 'a naturally occurring isotope' instead "
+                     f"of 'potassium-40' is a failed script")
+        whatif = fact.get("whatif", "")
+        if whatif:
+            q_part, sep, a_part = whatif.partition("?")
+            answer_text = a_part if sep else whatif
+            early_count = min(4, len(m["scenes"]))
+            early_text = m["hook"] + " " + " ".join(s["voiceover"] for s in m["scenes"][:early_count])
+            if "?" not in early_text:
+                return ("whatif curiosity gap never opened — the hook or one of the first few "
+                        "scenes must pose a real question, not just state facts")
+            payoff_terms = [kt for kt in key_terms if _key_term_present(kt, answer_text)] or key_terms
+            if not any(_key_term_present(kt, full_text) for kt in payoff_terms):
+                return (f"whatif payoff never answered — the script must state the real answer "
+                        f"using one of {payoff_terms}, not just pose the question and move on")
+
     # anti-restatement: the pairwise check above only catches near-identical
     # PHRASING between two scenes. It missed a real production failure: scene
     # 1 said "your body is nearly all empty space", scene 3 said "humanity
@@ -464,6 +605,12 @@ def main():
             mt = m.get("metaphor", "").lower()
             if any(mt and mt in h.get("metaphor", "").lower() for h in history):
                 print(f"  attempt {attempt+1} repeats topic, retrying"); continue
+            ig_err = check_information_gain(m)
+            if ig_err:
+                print(f"  attempt {attempt+1} invalid: {ig_err}")
+                if near_miss is None:
+                    near_miss = m
+                continue
             manifest = m; break
         except Exception as e:
             print(f"  attempt {attempt+1} error: {e}")
