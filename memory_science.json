@@ -29,6 +29,12 @@
       "viewer_job": "SOCIAL_CURRENCY",
       "title": "Ocean's Hidden Breath",
       "fact_id": "ocean_oxygen"
+    },
+    {
+      "metaphor": "everyday radioactivity",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "title": "Radioactive Bananas",
+      "fact_id": "banana_radioactive"
     }
   ]
 }

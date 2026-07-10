@@ -1,103 +1,104 @@
 {
-  "title": "Ocean's Hidden Breath",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "ocean oxygen source",
-  "metaphor": "Plankton Power",
-  "hook": "You breathe ocean air",
-  "script": "You breathe ocean air. Most of it comes from the sea. Tiny plankton produce oxygen. They're the reason we have air. But that's not even the strange part. Well over half of our oxygen is thanks to these tiny creatures. You're alive because of them. They're the unsung heroes of our planet. Save this so you remember it. You breathe ocean air.",
+  "title": "Radioactive Bananas",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "radioactive bananas",
+  "metaphor": "everyday radioactivity",
+  "hook": "You are eating radiation daily",
+  "script": "You're consuming radiation daily! Bananas hold a radioactive secret. Potassium is the culprit behind their glow. But that's not even the strange part. Millions of bananas would be needed to see an effect! A naturally occurring isotope is the reason why. This isotope is a radioactive form of potassium. Eating millions at once is the only way it matters. The risk is extremely low with normal consumption. Share this fact about bananas being slightly radioactive!",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You breathe ocean air",
-      "on_screen_text": "Ocean Air",
-      "search_query": "ocean surface waves",
+      "voiceover": "You're consuming radiation daily!",
+      "on_screen_text": "Radioactive",
+      "search_query": "fruit market",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Most of it comes from the sea",
-      "on_screen_text": "Sea Source",
-      "search_query": "sunlight underwater",
-      "motion": "pan_left"
+      "voiceover": "Bananas hold a radioactive secret.",
+      "on_screen_text": "Banana Facts",
+      "search_query": "banana yellow",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Tiny plankton produce oxygen",
-      "on_screen_text": "Plankton Power",
-      "search_query": "bioluminescent plankton ocean",
+      "voiceover": "Potassium is the culprit behind their glow.",
+      "on_screen_text": "Potassium",
+      "search_query": "bananas bunch",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "They're the reason we have air",
-      "on_screen_text": "Breath of Life",
-      "search_query": "ocean waves aerial",
-      "motion": "pan_right"
+      "voiceover": "But that's not even the strange part.",
+      "on_screen_text": "Strange",
+      "search_query": "fruit stand",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Truth",
-      "search_query": "night sky timelapse",
-      "motion": "zoom_in"
+      "voiceover": "Millions of bananas would be needed to see an effect!",
+      "on_screen_text": "Radioactive Bananas",
+      "search_query": "fruit market",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Well over half of our oxygen is thanks to these tiny creatures",
-      "on_screen_text": "Ocean Oxygen",
-      "search_query": "city street timelapse",
-      "motion": "pan_left"
+      "voiceover": "A naturally occurring isotope is the reason why.",
+      "on_screen_text": "Isotope",
+      "search_query": "science lab",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "You're alive because of them",
-      "on_screen_text": "Alive Thanks",
-      "search_query": "lightning storm clouds",
+      "voiceover": "This isotope is a radioactive form of potassium.",
+      "on_screen_text": "Radioactive Potassium",
+      "search_query": "geiger counter",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "They're the unsung heroes of our planet",
-      "on_screen_text": "Unsung Heroes",
-      "search_query": "forest sunlight drone",
-      "motion": "pan_right"
+      "voiceover": "Eating millions at once is the only way it matters.",
+      "on_screen_text": "Harmless",
+      "search_query": "healthy food",
+      "motion": "pan"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Save this so you remember it",
-      "on_screen_text": "Save Reminder",
-      "search_query": "hourglass sand falling",
+      "voiceover": "The risk is extremely low with normal consumption.",
+      "on_screen_text": "Millions",
+      "search_query": "bananas bunch",
       "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "You breathe ocean air",
-      "on_screen_text": "Ocean Air",
-      "search_query": "hands typing closeup",
+      "voiceover": "Share this fact about bananas being slightly radioactive!",
+      "on_screen_text": "Remember",
+      "search_query": "hands holding phone",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know the ocean is your main oxygen source?",
-    "Share with someone who loves the ocean",
-    "Tag a friend who needs to know this"
+    "Did you know bananas are radioactive? #radioactivebananas",
+    "Share with a friend who loves science!",
+    "Tag someone who won't believe this!"
   ],
   "hashtags": [
-    "#ocean",
-    "#plankton",
-    "#oxygen",
     "#science",
-    "#nature"
+    "#radiation",
+    "#bananas",
+    "#facts",
+    "#food",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
