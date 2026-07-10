@@ -519,12 +519,19 @@ def _stat_card_text(scene):
     voiceover."""
     t = (scene.get("on_screen_text") or "").strip()
     if not t or len(t) > 42:
+        # a "key phrase," not a paragraph -- cap word count so the card stays
+        # a punchy headline instead of wrapping into a wall of text
         vo = (scene.get("voiceover") or "").strip()
         words = vo.split()
-        t = " ".join(words[:9]) if words else t
+        t = " ".join(words[:7]) if words else t
     t = t.upper()
-    t = re.sub(r"[^A-Z0-9 %.,\-'!?]", "", t).strip()
-    return t[:70] or "SCIENCE"
+    # '%' trips ffmpeg drawtext's %{...} expansion syntax ("Stray % near ..")
+    # and silently drops the text instead of erroring -- a card rendering
+    # nothing but its background is worse than one that just spells PERCENT.
+    t = t.replace("%", " PERCENT")
+    t = re.sub(r"[^A-Z0-9 .,\-'!?]", "", t).strip()
+    t = re.sub(r"\s+", " ", t)
+    return t[:56] or "SCIENCE"
 
 
 def _fit_text_block(text, max_w, max_h, max_fs=190, min_fs=54, step=4,
@@ -558,13 +565,37 @@ def _fit_text_block(text, max_w, max_h, max_fs=190, min_fs=54, step=4,
     return fallback
 
 
+def _stat_card_safe_zone():
+    """Pick a vertical center + max block height for the card's text that
+    avoids the karaoke caption band. Captions render on top of every scene
+    (stat-cards included) at PROFILE['cap_y'], which moves a lot per profile
+    (top-positioned for dark_mystery, eye-level for science, lower-third for
+    history_pov) -- a fixed centered placement collides with captions on
+    some profiles. The existing footage-scene number-card overlay
+    (_stat_overlay) sidesteps this the same way, at a fixed y=h*0.18; this
+    picks whichever half of the frame is farther from the caption band and
+    sizes the block to fit inside it."""
+    cap_y = PROFILE.get("cap_y", H * 0.4)
+    excl_half = PROFILE.get("cap_size", 120) * 1.3
+    zone_top, zone_bot = cap_y - excl_half, cap_y + excl_half
+    margin = H * 0.05
+    top_span = max(0.0, zone_top - margin)
+    bot_span = max(0.0, (H - margin) - zone_bot)
+    if top_span >= bot_span:
+        center, avail = margin + top_span / 2, top_span
+    else:
+        center, avail = zone_bot + bot_span / 2, bot_span
+    max_h = max(H * 0.16, min(H * 0.42, avail * 0.92))
+    return center, max_h
+
+
 def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
     """Render one typographic stat-card scene. Raises on any ffmpeg failure
     so the caller can fall back to a plain color card -- this must never be
     the reason a render dies."""
     text = _stat_card_text(scene)
     max_w = int(W * 0.86)
-    max_h = int(H * 0.40)
+    center_y, max_h = _stat_card_safe_zone()
     fontsize, lines = _fit_text_block(text, max_w, max_h)
     txt_path = os.path.join(WORK, f"s{idx}_card.txt")
     with open(txt_path, "w") as f:
@@ -573,15 +604,15 @@ def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
     c0, c1 = STAT_CARD_PALETTES[(idx - 1) % len(STAT_CARD_PALETTES)]
     line_h = fontsize * 1.28
     block_h = line_h * len(lines)
-    accent_y = f"(h/2)+{block_h / 2:.1f}+34"
+    accent_y = f"{center_y:.1f}+{block_h / 2:.1f}+34"
 
     vf = (
         f"{motion}"
         f"vignette=PI/5.2,"
         f"drawtext=textfile='{txt_path}':fontfile='{FONT}':fontsize={fontsize}:"
         f"fontcolor=white:borderw=10:bordercolor=black@0.75:line_spacing=18:"
-        f"x=(w-tw)/2:y=(h-th)/2:alpha='if(lt(t,0.3),t/0.3,1)',"
-        f"drawbox=x=(w-140)/2:y='{accent_y}':w=140:h=6:color=white@0.8:t=fill,"
+        f"x=(w-tw)/2:y=({center_y:.1f})-(th/2):alpha='if(lt(t,0.3),t/0.3,1)',"
+        f"drawbox=x=(iw-140)/2:y='{accent_y}':w=140:h=6:color=white@0.8:t=fill,"
         f"setsar=1"
     )
     run(["ffmpeg", "-y",
