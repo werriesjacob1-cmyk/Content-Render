@@ -496,15 +496,121 @@ def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     return base + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W}x{H}:fps=30,"
 
 
+# ---------- TYPOGRAPHIC STAT-CARD SCENES ----------
+# When fetch_clip can't find anything relevant, this renders a designed card
+# instead: dark gradient background, huge bold centered text, the same
+# Ken Burns motion as real footage, subtle vignette. Same W/H/fps/duration
+# contract as build_scene's other two paths so concat doesn't care which one
+# produced a given scene file.
+
+STAT_CARD_PALETTES = [  # (c0, c1) passed to ffmpeg's `gradients` source filter
+    ("#050414", "#1b1140"),  # near-black -> deep indigo
+    ("#020617", "#0d2b3d"),  # near-black -> deep teal
+    ("#0a0410", "#2e0f30"),  # near-black -> deep plum
+    ("#04070a", "#123322"),  # near-black -> deep forest
+    ("#0c0402", "#3a1508"),  # near-black -> deep ember
+    ("#050505", "#232323"),  # near-black -> graphite
+]
+
+
+def _stat_card_text(scene):
+    """Pick the text for the card: on_screen_text if it exists and is short
+    enough to read as a headline, else a trimmed key phrase from the
+    voiceover."""
+    t = (scene.get("on_screen_text") or "").strip()
+    if not t or len(t) > 42:
+        vo = (scene.get("voiceover") or "").strip()
+        words = vo.split()
+        t = " ".join(words[:9]) if words else t
+    t = t.upper()
+    t = re.sub(r"[^A-Z0-9 %.,\-'!?]", "", t).strip()
+    return t[:70] or "SCIENCE"
+
+
+def _fit_text_block(text, max_w, max_h, max_fs=190, min_fs=54, step=4,
+                     char_w_ratio=0.72, line_h_ratio=1.28):
+    """Auto-wrap + auto-shrink: pick the largest fontsize (in `step`
+    decrements) whose wrapped block fits within max_w x max_h, using a
+    DejaVu Sans Bold average-advance-width ratio measured directly off real
+    rendered frames via ffmpeg's `bbox` filter (see scratch notes) rather
+    than a guess -- char_w_ratio=0.72 has margin above the ~0.66 average
+    measured, so wraps err toward wrapping a little early rather than
+    overflowing the frame. Falls back to the smallest size tried if nothing
+    fits (long text is already truncated by _stat_card_text)."""
+    words = text.split() or ["SCIENCE"]
+    fallback = None
+    for fs in range(max_fs, min_fs - 1, -step):
+        max_chars = max(3, int(max_w / (fs * char_w_ratio)))
+        lines, line = [], []
+        for w in words:
+            trial = " ".join(line + [w])
+            if not line or len(trial) <= max_chars:
+                line.append(w)
+            else:
+                lines.append(" ".join(line)); line = [w]
+        if line:
+            lines.append(" ".join(line))
+        fallback = (fs, lines)
+        widest = max((len(l) for l in lines), default=0)
+        block_h = len(lines) * fs * line_h_ratio
+        if block_h <= max_h and widest * fs * char_w_ratio <= max_w:
+            return fs, lines
+    return fallback
+
+
+def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
+    """Render one typographic stat-card scene. Raises on any ffmpeg failure
+    so the caller can fall back to a plain color card -- this must never be
+    the reason a render dies."""
+    text = _stat_card_text(scene)
+    max_w = int(W * 0.86)
+    max_h = int(H * 0.40)
+    fontsize, lines = _fit_text_block(text, max_w, max_h)
+    txt_path = os.path.join(WORK, f"s{idx}_card.txt")
+    with open(txt_path, "w") as f:
+        f.write("\n".join(lines))
+
+    c0, c1 = STAT_CARD_PALETTES[(idx - 1) % len(STAT_CARD_PALETTES)]
+    line_h = fontsize * 1.28
+    block_h = line_h * len(lines)
+    accent_y = f"(h/2)+{block_h / 2:.1f}+34"
+
+    vf = (
+        f"{motion}"
+        f"vignette=PI/5.2,"
+        f"drawtext=textfile='{txt_path}':fontfile='{FONT}':fontsize={fontsize}:"
+        f"fontcolor=white:borderw=10:bordercolor=black@0.75:line_spacing=18:"
+        f"x=(w-tw)/2:y=(h-th)/2:alpha='if(lt(t,0.3),t/0.3,1)',"
+        f"drawbox=x=(w-140)/2:y='{accent_y}':w=140:h=6:color=white@0.8:t=fill,"
+        f"setsar=1"
+    )
+    run(["ffmpeg", "-y",
+         "-f", "lavfi", "-i",
+         f"gradients=s={W}x{H}:d={seg_dur:.3f}:r=30:c0={c0}:c1={c1}:type=radial:"
+         f"speed=0.006:seed={1000 + idx}",
+         "-i", seg_mp3, "-t", f"{seg_dur:.3f}",
+         "-filter_complex", f"[0:v]{vf}[v]",
+         "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+         "-c:v", "libx264", "-c:a", "aac", "-shortest", out_path])
+
+
+STAT_CARD_SCENES = 0  # count of scenes rendered as typographic cards this render,
+                       # for the end-of-render quality summary
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
+    global _last_motion_kind, STAT_CARD_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
-    have = fetch_clip(scene["search_query"], raw, intent=scene.get("voiceover", scene["search_query"]))
+    have, score = fetch_clip(scene["search_query"], raw,
+                              intent=scene.get("voiceover", scene["search_query"]))
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, int(seg_dur * 30))
 
     # motion (Ken Burns zoom/pan, varies per scene.motion) + cinematic color grade
     zspeed = PROFILE["zoom_speed"]
-    motion = _motion_filter(scene, frames, zspeed)
+    kind = scene.get("motion", "zoom_in")
+    motion = _motion_filter(scene, frames, zspeed, idx=idx, prev_kind=_last_motion_kind)
+    _last_motion_kind = kind
     grade = PROFILE["grade"]
     stat = _stat_overlay(scene, seg_dur)
 
@@ -514,10 +620,24 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
              "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
-    else:
-        run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x0a0a0a:s={W}x{H}:d={seg_dur:.3f}:r=30",
-             "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
-             "-pix_fmt", "yuv420p", "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+        return out
+
+    # No clip cleared RELEVANCE_FLOOR (or there were zero results). Render a
+    # designed typographic stat-card scene instead of shipping the least-bad
+    # clip or a flat color card. Must never crash the render: any failure
+    # here falls back to the original plain color card.
+    try:
+        _build_stat_card(scene, idx, seg_mp3, seg_dur, out, motion)
+        STAT_CARD_SCENES += 1
+        tag = f"best {score}/10 below floor" if score is not None else "no candidates"
+        print(f"  stat-card scene ({tag})")
+        return out
+    except Exception as e:
+        print(f"  stat-card render failed ({e}) — falling back to color card")
+
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x0a0a0a:s={W}x{H}:d={seg_dur:.3f}:r=30",
+         "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
+         "-pix_fmt", "yuv420p", "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
     return out
 
 
@@ -627,6 +747,15 @@ def main():
     for i, (sc, (seg_mp3, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
         print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']}")
         scene_files.append(build_scene(sc, i, seg_mp3, seg_dur)); durations.append(seg_dur)
+
+    if JUDGE_SCORES:
+        print(f"[quality] judge scores: min {min(JUDGE_SCORES)}/10, "
+              f"avg {sum(JUDGE_SCORES) / len(JUDGE_SCORES):.1f}/10 "
+              f"across {len(JUDGE_SCORES)} scene(s) scored; "
+              f"{STAT_CARD_SCENES} stat-card scene(s)")
+    else:
+        print(f"[quality] no judge scores recorded this render (no GROQ key / no "
+              f"candidates found); {STAT_CARD_SCENES} stat-card scene(s)")
 
     save_used_footage()  # persist before the render steps below, in case one of them fails
 
