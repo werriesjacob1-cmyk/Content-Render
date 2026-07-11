@@ -8,7 +8,7 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, time, urllib.request, urllib.error, random
+import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
@@ -20,6 +20,71 @@ GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
+
+# ---------------------------------------------------------------------------
+# QUALITY RATCHET — pre-publish self-critique scoring (improvement loop, part 1)
+# ---------------------------------------------------------------------------
+# After a script is built, validated, and punched up, one more Groq call
+# scores it against an explicit rubric BEFORE it ever reaches main.py's
+# expensive render pipeline (TTS + footage search/judge + ffmpeg encode).
+# Below QUALITY_THRESHOLD, the whole video is regenerated from scratch,
+# bounded to QUALITY_MAX_REGENERATIONS extra attempts so the unattended daily
+# run has a hard time/cost ceiling. If nothing clears the bar, the
+# best-scoring attempt ships anyway — this gate must never be able to stop
+# the daily run from producing a video.
+#
+# QUALITY_THRESHOLD starts modest ON PURPOSE: the channel has no track record
+# yet, and setting it too high just burns Groq calls regenerating scripts
+# that are already fine. RATCHET THIS UP over time (e.g. 7.0 -> 7.5 -> 8.0)
+# once perf_<page>.json (see PERF_PATH below) shows higher-scoring scripts
+# actually perform better in real engagement data.
+QUALITY_THRESHOLD = 7.0
+QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first. Keep this SMALL:
+                                 # each one re-runs the full generate+validate+punch-up
+                                 # pipeline (several Groq calls) inside one daily Action run.
+QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
+
+# ---------------------------------------------------------------------------
+# PERFORMANCE MEMORY — bias future generation using REAL engagement data
+# ---------------------------------------------------------------------------
+# perf_<page>.json is OPTIONAL and does not exist by default. Paste one in
+# yourself once you have real analytics for videos this pipeline has posted.
+# Format — a flat object mapping video_id -> engagement metrics:
+#
+#   {
+#     "science_2026-07-11_sharks-vs-trees": {
+#       "views": 18400,
+#       "watch_through_pct": 0.63,
+#       "follows": 41,
+#       "shares": 210
+#     },
+#     "science_2026-07-12_the-void-within": {
+#       "views": 2100,
+#       "watch_through_pct": 0.31,
+#       "follows": 2,
+#       "shares": 4
+#     }
+#   }
+#
+# Keys are the "video_id" values generate.py writes into manifest.json (and
+# main.py copies into out/post.json) on every run — match them up against
+# whatever your posting step or analytics dashboard tells you about that
+# video. Values:
+#   views                total plays
+#   watch_through_pct    average fraction of the video watched, 0..1 (63% -> 0.63)
+#   follows              follows attributed to this video
+#   shares                share count
+# Any subset of keys is fine; missing keys count as 0. A missing, empty, or
+# malformed perf_<page>.json is completely safe: with no usable data,
+# generation is byte-for-byte identical to today's plain random.choice()
+# selection (see score_by_key()/main() below) — no regressions, ever.
+PERF_PATH = os.path.join(ROOT, f"perf_{PAGE}.json")
+PERF_UNSEEN_FLOOR = 0.15   # weight floor given to a fact/job with NO perf data yet,
+                           # so unproven options keep getting picked instead of the
+                           # pool collapsing onto whichever option happened to score first
+EXPLORE_EPSILON = 0.30    # even once perf data exists, this fraction of picks ignore
+                           # the weights and choose uniformly at random — explore, don't
+                           # just exploit past winners forever
 
 def load_bank():
     try:
@@ -66,7 +131,7 @@ def save_memory(history, entry):
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
 
-def build_prompt(job_name, job_desc, avoid, fact=None):
+def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None):
     series_block = ""
     if SERIES:
         part = SERIES_PART or "1"
@@ -119,6 +184,12 @@ def build_prompt(job_name, job_desc, avoid, fact=None):
                       f"fall 80,000 times over'). Keep it precise — no vague hand-waving.\n"
                       f"- For the footage search_query fields, prefer these proven matches: "
                       f"{[q for q in fact.get('queries', []) if not UNSTOCKABLE_Q.search(q)]}.\n")
+    opener_block = ""
+    if avoid_openers:
+        opener_block = (
+            f"\n\nHOOK VARIETY: your last several videos' hooks all opened the same way "
+            f"({avoid_openers}). Start THIS hook with a different sentence structure or "
+            f"opening word — not just a synonym swap of the same structure.")
     return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}
 
 THIS VIDEO'S JOB: {job_name}. {job_desc}
@@ -174,7 +245,7 @@ CONTENT (CRITICAL):
 - Visually deliverable with real stock footage (nature, space, ocean, animals, cities, body, weather, hands, household).
 - No "imagine", no "did you know", no filler.
 
-AVOID these recent topics entirely: {avoid}{series_block}
+AVOID these recent topics entirely: {avoid}{series_block}{opener_block}
 
 FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
 - Each scene needs a 2-5 word stock-footage search query describing something a videographer
@@ -568,39 +639,162 @@ def validate(m, job_name, fact=None):
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None
 
-def main():
-    if not GROQ_KEY:
-        print("ERROR: GROQ_API_KEY not set"); sys.exit(1)
+def score_script(m, fact=None):
+    """Self-critique pass: one Groq call scores the finished, punched-up
+    script against an explicit rubric so a weak script can be caught and
+    regenerated before it ever reaches main.py's render pipeline. See
+    QUALITY_THRESHOLD / QUALITY_MAX_REGENERATIONS above for how the result
+    is used.
 
-    history = load_memory()
-    avoid = ", ".join(h.get("metaphor", "") for h in history) or "none yet"
+    MUST fail OPEN — this pipeline runs unattended once a day. Any Groq
+    error, timeout, or unparseable/out-of-range response returns None, and
+    the caller treats None as "ship this attempt," never as "reject it." A
+    scoring hiccup must never brick the autonomous run.
+    """
+    try:
+        fact_line = fact["fact"] if fact else "(no verified fact; general topic)"
+        whatif = fact.get("whatif", "") if fact else ""
+        scenes_text = "\n".join(f"{s['id']}. {s['voiceover']}" for s in m.get("scenes", []))
+        prompt = f"""You are a brutally honest short-form video editor scoring a finished script BEFORE it is rendered and posted. Be strict — most scripts should NOT score 9 or 10.
 
-    # Path C: pick a verified fact from the bank not used recently
-    bank = load_bank()
-    used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
-    available = [f for f in bank if f["id"] not in used_ids] or bank
-    chosen_fact = random.choice(available) if available else None
-    if chosen_fact:
-        print(f"  [bank] fact: {chosen_fact['id']}")
-    last_job = history[-1].get("viewer_job") if history else None
-    jobs = [j for j in VIEWER_JOBS if j[0] != last_job] or VIEWER_JOBS
-    # HOW_TO asks for a household demo the viewer can try. That is incompatible
-    # with a fixed verified fact from the bank: pairing "immortal jellyfish"
-    # with HOW_TO once produced a jellyfish script that bolted an unrelated
-    # dish-soap experiment onto the final scene. When a bank fact is driving
-    # the video, exclude HOW_TO — it only makes sense as a standalone demo job.
-    if chosen_fact:
-        jobs = [j for j in jobs if j[0] != "HOW_TO"] or jobs
-    job_name, job_desc = random.choice(jobs)
-    print(f"[generate] job={job_name} avoiding={avoid[:80]}")
+TITLE: {m.get('title', '')}
+HOOK (first spoken line): {m.get('hook', '')}
+VERIFIED FACT THIS VIDEO IS BUILT ON: {fact_line}
+CENTRAL QUESTION (if any): {whatif or '(none)'}
 
+FULL SCENE-BY-SCENE SCRIPT:
+{scenes_text}
+
+Score each criterion 0-10 (integers, be strict):
+- hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
+- surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
+- escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
+- payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
+- rewatch: does the ending loop back cleanly to the hook/opening image and invite a save or share, so a replay feels seamless?
+- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+
+Return ONLY valid JSON, exactly:
+{{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+        raw = call_groq(prompt)
+        data = json.loads(raw)
+        scores = {}
+        for k in QUALITY_RUBRIC_CRITERIA:
+            v = data.get(k)
+            if not isinstance(v, (int, float)) or isinstance(v, bool):
+                return None
+            scores[k] = max(0.0, min(10.0, float(v)))
+        # Compute overall ourselves from the per-criterion scores rather than
+        # trusting the model's own arithmetic — a model that returns six 9s
+        # and a self-reported "overall: 3" (or vice versa) can't silently
+        # cause a good script to be rejected or a bad one to ship.
+        scores["overall"] = round(sum(scores[k] for k in QUALITY_RUBRIC_CRITERIA) / len(QUALITY_RUBRIC_CRITERIA), 2)
+        return scores
+    except Exception as e:  # noqa: BLE001 - must fail open, never blocks a run
+        print(f"  [quality] scoring failed open ({e}), treating as pass")
+        return None
+
+
+def _slugify(text, maxlen=40):
+    s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
+    return s[:maxlen] or "video"
+
+
+def load_perf():
+    """Load perf_<page>.json if present (see the format doc near PERF_PATH
+    above). Never raises — a missing file, invalid JSON, or non-dict payload
+    is treated as "no performance data yet," so callers always degrade
+    safely to plain random selection."""
+    try:
+        with open(PERF_PATH) as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _perf_score(entry):
+    """Collapse one video's raw engagement metrics into a single 0..1-ish
+    score used to weight future selection. watch_through_pct is the primary
+    quality signal; follows/shares are rarer, higher-value actions scaled up
+    relative to views so one viral outlier can't own the whole score."""
+    if not isinstance(entry, dict):
+        return 0.0
+    views = max(0.0, float(entry.get("views", 0) or 0))
+    watch = max(0.0, min(1.0, float(entry.get("watch_through_pct", 0) or 0)))
+    follows = max(0.0, float(entry.get("follows", 0) or 0))
+    shares = max(0.0, float(entry.get("shares", 0) or 0))
+    denom = max(views, 1.0)
+    follow_rate = min(1.0, (follows / denom) * 20)
+    share_rate = min(1.0, (shares / denom) * 10)
+    return 0.5 * watch + 0.3 * follow_rate + 0.2 * share_rate
+
+
+def score_by_key(history, perf, key_field):
+    """Mean _perf_score() per distinct value of key_field (e.g. "fact_id" or
+    "viewer_job"), over memory history entries whose video_id has a matching
+    perf_<page>.json entry. Keys with no perf data are simply absent from
+    the result — callers apply PERF_UNSEEN_FLOOR themselves."""
+    buckets = {}
+    for h in history:
+        vid, key = h.get("video_id"), h.get(key_field)
+        if not vid or not key or vid not in perf:
+            continue
+        buckets.setdefault(key, []).append(_perf_score(perf[vid]))
+    return {k: sum(v) / len(v) for k, v in buckets.items() if v}
+
+
+def _weighted_choice(options, weights, epsilon):
+    """Explore/exploit selection. epsilon fraction of calls (and any call
+    where every weight is <= 0) pick uniformly at random across ALL options
+    (explore); otherwise sample proportional to weight (exploit) — so
+    better-performing options get picked more often without unseen/losing
+    options ever dropping to zero chance."""
+    if not options:
+        return None
+    if random.random() < epsilon or sum(weights) <= 0:
+        return random.choice(options)
+    total = sum(weights)
+    r = random.uniform(0, total)
+    upto = 0.0
+    for opt, w in zip(options, weights):
+        upto += max(0.0, w)
+        if upto >= r:
+            return opt
+    return options[-1]
+
+
+def _hook_opener(hook):
+    words = re.sub(r"[^A-Za-z' ]", "", hook or "").split()
+    return " ".join(w.lower() for w in words[:2])
+
+
+def overused_hook_openers(history, min_count=3):
+    """Light freshness guard (improvement loop, part 3): if the last several
+    videos' hooks keep starting with the same 2 words, surface that opener
+    so build_prompt() can nudge the next hook toward a different structure.
+    Advisory only — never blocks generation. With < min_count repeats
+    (including on totally fresh history) this returns [] and behavior is
+    unchanged."""
+    counts = collections.Counter(
+        _hook_opener(h.get("hook", "")) for h in history if h.get("hook"))
+    return [op for op, c in counts.items() if op and c >= min_count]
+
+
+def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None):
+    """Run the full generate -> validate -> info-gain -> punch-up pipeline
+    once and return a finished manifest, or None if nothing usable came out
+    of it. Called once per quality-ratchet attempt (see
+    QUALITY_MAX_REGENERATIONS in main()) — every call is an independent
+    round of Groq attempts with its own near-miss fallback, so a
+    low-quality-score regeneration gets a genuinely fresh script, not a
+    retry of the exact same one."""
     manifest = None
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
     for attempt in range(5):
         try:
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
-            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact))
+            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact, avoid_openers=avoid_openers))
             m = json.loads(raw)
             err = validate(m, job_name, fact=chosen_fact)
             if err:
@@ -646,16 +840,111 @@ def main():
         manifest = nm
 
     if not manifest:
+        return None
+
+    return punch_up(manifest, chosen_fact)
+
+
+def main():
+    if not GROQ_KEY:
+        print("ERROR: GROQ_API_KEY not set"); sys.exit(1)
+
+    history = load_memory()
+    avoid = ", ".join(h.get("metaphor", "") for h in history) or "none yet"
+    avoid_openers = overused_hook_openers(history)
+
+    # Performance-memory scaffold (improvement loop, part 2): fully optional,
+    # fully fail-safe. With no perf_<page>.json (today's reality for every
+    # page), fact_scores/job_scores stay {} and selection below falls
+    # straight through to the exact same random.choice() calls as before.
+    perf = load_perf()
+    fact_scores = score_by_key(history, perf, "fact_id") if perf else {}
+    job_scores = score_by_key(history, perf, "viewer_job") if perf else {}
+
+    # Path C: pick a verified fact from the bank not used recently
+    bank = load_bank()
+    used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
+    available = [f for f in bank if f["id"] not in used_ids] or bank
+    if available and fact_scores:
+        weights = [fact_scores.get(f["id"], 0.0) + PERF_UNSEEN_FLOOR for f in available]
+        chosen_fact = _weighted_choice(available, weights, EXPLORE_EPSILON)
+    else:
+        chosen_fact = random.choice(available) if available else None
+    if chosen_fact:
+        print(f"  [bank] fact: {chosen_fact['id']}")
+    last_job = history[-1].get("viewer_job") if history else None
+    jobs = [j for j in VIEWER_JOBS if j[0] != last_job] or VIEWER_JOBS
+    # HOW_TO asks for a household demo the viewer can try. That is incompatible
+    # with a fixed verified fact from the bank: pairing "immortal jellyfish"
+    # with HOW_TO once produced a jellyfish script that bolted an unrelated
+    # dish-soap experiment onto the final scene. When a bank fact is driving
+    # the video, exclude HOW_TO — it only makes sense as a standalone demo job.
+    if chosen_fact:
+        jobs = [j for j in jobs if j[0] != "HOW_TO"] or jobs
+    if job_scores:
+        weights = [job_scores.get(j[0], 0.0) + PERF_UNSEEN_FLOOR for j in jobs]
+        job_name, job_desc = _weighted_choice(jobs, weights, EXPLORE_EPSILON)
+    else:
+        job_name, job_desc = random.choice(jobs)
+    print(f"[generate] job={job_name} avoiding={avoid[:80]}")
+
+    # Quality ratchet (improvement loop, part 1): generate, self-critique,
+    # and — if the score is below QUALITY_THRESHOLD — regenerate from
+    # scratch, bounded to QUALITY_MAX_REGENERATIONS extra attempts. Keeps
+    # the best-scoring attempt across all rounds and ships it even if none
+    # cleared the bar, so this can never block the daily run.
+    best_manifest, best_overall, best_quality = None, None, None
+    for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
+        candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers)
+        if candidate is None:
+            print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
+            continue
+        quality = score_script(candidate, chosen_fact)
+        if quality is None:
+            # fail OPEN: scoring itself broke, not the script. Ship this
+            # attempt immediately rather than burn remaining regen budget.
+            print(f"  [quality] attempt {regen_i+1}: scoring failed open — shipping this attempt")
+            best_manifest, best_quality, best_overall = candidate, None, None
+            break
+        overall = quality["overall"]
+        print(f"  [quality] attempt {regen_i+1}: overall {overall}/10 {quality}")
+        if best_overall is None or overall > best_overall:
+            best_manifest, best_overall, best_quality = candidate, overall, quality
+        if overall >= QUALITY_THRESHOLD:
+            print(f"  [quality] cleared threshold ({overall} >= {QUALITY_THRESHOLD}) — shipping")
+            break
+    else:
+        if best_manifest is not None:
+            print(f"  [quality] no attempt cleared {QUALITY_THRESHOLD} — shipping best-scoring "
+                  f"attempt (overall {best_overall})")
+
+    manifest = best_manifest
+    if not manifest:
         print("ERROR: could not generate a valid manifest"); sys.exit(1)
 
-    manifest = punch_up(manifest, chosen_fact)
+    # Stable video id for the performance-memory loop: PAGE + date + a title
+    # slug. Written into the manifest so main.py can carry it through to
+    # out/post.json, and into memory_<page>.json so a later perf_<page>.json
+    # can be matched back to this run (see PERF_PATH doc above).
+    video_id = f"{PAGE}_{datetime.date.today().isoformat()}_{_slugify(manifest.get('title', ''))}"
+    manifest["video_id"] = video_id
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
-    save_memory(history, {"metaphor": manifest.get("metaphor", manifest["title"]),
-                          "viewer_job": job_name, "title": manifest["title"],
-                          "fact_id": chosen_fact["id"] if chosen_fact else None})
-    print(f"[generate] wrote {manifest['title']!r} ({job_name}) -> {OUT_MANIFEST}")
+    save_memory(history, {
+        "video_id": video_id,
+        "metaphor": manifest.get("metaphor", manifest["title"]),
+        "viewer_job": job_name,
+        "title": manifest["title"],
+        "fact_id": chosen_fact["id"] if chosen_fact else None,
+        "hook": manifest.get("hook", ""),
+        "structure": {
+            "scene_count": len(manifest.get("scenes", [])),
+            "used_whatif": bool(chosen_fact and chosen_fact.get("whatif")),
+        },
+        "quality": best_quality,
+    })
+    print(f"[generate] wrote {manifest['title']!r} ({job_name}) -> {OUT_MANIFEST} [video_id={video_id}]")
 
 if __name__ == "__main__":
     main()
