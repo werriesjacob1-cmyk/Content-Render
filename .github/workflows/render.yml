@@ -22,6 +22,17 @@ permissions:
                      # back to the repo; without this the GITHUB_TOKEN defaults
                      # to read-only and every `git push` below silently no-ops.
 
+concurrency:
+  # Now that render.yml self-triggers on a schedule, it can overlap with a
+  # manual workflow_dispatch or an n8n repository_dispatch. Both push
+  # manifest.json / used_footage_*.json mid-run; two runs racing on those
+  # pushes is how you get a rejected push (or, worse, one run's dedup
+  # history silently clobbering the other's). Queue instead of running in
+  # parallel -- cancel-in-progress stays false so a scheduled run is never
+  # killed mid-render just because someone kicked off a manual one.
+  group: render-video
+  cancel-in-progress: false
+
 jobs:
   render:
     runs-on: ubuntu-latest
