@@ -1,124 +1,124 @@
 {
-  "title": "Meet the Immortal Jellyfish",
-  "viewer_job": "HOW_TO",
-  "keyword": "immortal jellyfish",
-  "metaphor": "Turritopsis dohrnii",
-  "hook": "You can't kill this jellyfish",
-  "script": "You can't kill this jellyfish. It has a special trick to stay alive. What if aging had a reset button? This jellyfish has one. It's called Turritopsis dohrnii. But how does it work? It transforms its own cells back into a baby polyp. But that's not even the strange part. It does this through transdifferentiation, essentially a butterfly turning back into a caterpillar. This makes it biologically immortal. You could watch every human civilization rise and fall many times over, and this jellyfish would still be alive. Try this: fill a glass with water and add a few drops of dish soap. Now, gently touch the surface with your finger. The soap breaks the surface tension, just like the jellyfish breaks the rules of aging. Save this so you remember it. You can't kill this jellyfish.",
+  "title": "DNA Stretched to the Sun",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "DNA scale",
+  "metaphor": "Cosmic DNA",
+  "hook": "You contain a universe within",
+  "script": "You contain a universe within. What if you unraveled the DNA from every cell in your body? It's a question that sparks curiosity. The answer lies in the microscopic world. Each cell packs a huge amount of genetic material. But that's not even the strange part. The DNA in a single one of your cells would stretch about 2 metres if uncoiled. And all the DNA in your body laid end to end would reach the Sun and back many times. This means every cell is like a tiny, intricate library. The scale is almost impossible to comprehend. You could fit the entire human genome in a space smaller than a grain of salt, yet it contains the blueprint for your entire body. Save this so you remember it.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You can't kill this jellyfish",
-      "on_screen_text": "Immortal",
-      "search_query": "jellyfish glowing ocean",
+      "voiceover": "You contain a universe within",
+      "on_screen_text": "DNA Mystery",
+      "search_query": "twisted rope closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "It has a special trick to stay alive",
-      "on_screen_text": "Turritopsis",
-      "search_query": "jellyfish swimming dark",
+      "voiceover": "What if you unraveled the DNA from every cell in your body?",
+      "on_screen_text": "Cellular Scale",
+      "search_query": "spiral staircase looking up",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "What if aging had a reset button?",
-      "on_screen_text": "Reset Button",
-      "search_query": "hourglass sand falling",
+      "voiceover": "It's a question that sparks curiosity",
+      "on_screen_text": "DNA Curiosity",
+      "search_query": "tangled threads macro",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This jellyfish has one",
-      "on_screen_text": "Immortal Jellyfish",
-      "search_query": "translucent jellyfish underwater",
-      "motion": "zoom_in"
+      "voiceover": "The answer lies in the microscopic world",
+      "on_screen_text": "Microscopic World",
+      "search_query": "ocean waves aerial",
+      "motion": "focus_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "It's called Turritopsis dohrnii",
-      "on_screen_text": "Turritopsis dohrnii",
-      "search_query": "jellyfish glowing ocean",
-      "motion": "zoom_out"
+      "voiceover": "Each cell packs a huge amount of genetic material",
+      "on_screen_text": "Genetic Material",
+      "search_query": "dna double helix",
+      "motion": "rotate"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "But how does it work?",
-      "on_screen_text": "Biologically Immortal",
-      "search_query": "bubbling green liquid",
-      "motion": "zoom_out"
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "The Strange Part",
+      "search_query": "surprised face",
+      "motion": "cut_to"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "It transforms its own cells back into a baby polyp",
-      "on_screen_text": "Cell Transformation",
-      "search_query": "lightning storm slow motion",
-      "motion": "zoom_in"
+      "voiceover": "The DNA in a single one of your cells would stretch about 2 metres if uncoiled",
+      "on_screen_text": "2 Metres Long",
+      "search_query": "measuring tape",
+      "motion": "unroll"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "dominoes falling chain",
-      "motion": "static"
+      "voiceover": "And all the DNA in your body laid end to end would reach the Sun and back many times",
+      "on_screen_text": "Reach the Sun",
+      "search_query": "sunrise space",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "It does this through transdifferentiation, essentially a butterfly turning back into a caterpillar",
-      "on_screen_text": "Transdifferentiation",
-      "search_query": "butterfly caterpillar",
-      "motion": "zoom_out"
+      "voiceover": "This means every cell is like a tiny, intricate library",
+      "on_screen_text": "Cellular Library",
+      "search_query": "bookshelf macro",
+      "motion": "pan_across"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "This makes it biologically immortal",
-      "on_screen_text": "Biologically Immortal",
-      "search_query": "jellyfish swimming dark",
-      "motion": "zoom_in"
+      "voiceover": "The scale is almost impossible to comprehend",
+      "on_screen_text": "Impossible Scale",
+      "search_query": "cityscape tiny",
+      "motion": "tilt_shift"
     },
     {
       "id": 11,
       "duration": 4,
-      "voiceover": "You could watch every human civilization rise and fall many times over, and this jellyfish would still be alive",
-      "on_screen_text": "Civilizations Rise",
-      "search_query": "hourglass sand falling",
-      "motion": "static"
+      "voiceover": "You could fit the entire human genome in a space smaller than a grain of salt, yet it contains the blueprint for your entire body",
+      "on_screen_text": "Genome Blueprint",
+      "search_query": "salt grain macro",
+      "motion": "zoom_in"
     },
     {
       "id": 12,
       "duration": 4,
-      "voiceover": "Try this: fill a glass with water and add a few drops of dish soap",
-      "on_screen_text": "Try This",
-      "search_query": "hands holding glass",
-      "motion": "zoom_out"
+      "voiceover": "Save this so you remember it",
+      "on_screen_text": "Save and Share",
+      "search_query": "hand holding phone",
+      "motion": "cut_to"
     }
   ],
   "captions": [
-    "Meet the immortal jellyfish - can you believe it? #immortaljellyfish",
-    "Learn how to make a surface tension breaker at home",
-    "What's the craziest animal superpower you've heard of?"
+    "Did you know your DNA could reach the Sun? #DNA",
+    "The scale of DNA is mind-blowing",
+    "Tag someone who won't believe this! #DNA scale"
   ],
   "hashtags": [
-    "#immortaljellyfish",
-    "#jellyfish",
+    "#DNA",
     "#science",
-    "#biologicallyimmortal",
-    "#transdifferentiation",
-    "#learnontiktok"
+    "#space",
+    "#facts",
+    "#genetics"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
-  }
+  },
+  "video_id": "science_2026-07-11_dna-stretched-to-the-sun"
 }

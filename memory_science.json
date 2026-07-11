@@ -41,6 +41,27 @@
       "viewer_job": "HOW_TO",
       "title": "Meet the Immortal Jellyfish",
       "fact_id": "immortal_jellyfish"
+    },
+    {
+      "video_id": "science_2026-07-11_dna-stretched-to-the-sun",
+      "metaphor": "Cosmic DNA",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "title": "DNA Stretched to the Sun",
+      "fact_id": "dna_length",
+      "hook": "You contain a universe within",
+      "structure": {
+        "scene_count": 12,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
     }
   ]
 }
