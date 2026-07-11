@@ -893,7 +893,11 @@ def main():
              "-c:a", "aac", "-pix_fmt", "yuv420p", final])
 
     with open(os.path.join(OUT, "post.json"), "w") as f:
-        json.dump({"title": m["title"], "captions": m["captions"], "hashtags": m["hashtags"]}, f, indent=2)
+        # video_id (if present) is the key generate.py's performance-memory
+        # scaffold expects in perf_<page>.json — carry it through so whoever
+        # posts this video can record real engagement against the right id.
+        json.dump({"title": m["title"], "captions": m["captions"], "hashtags": m["hashtags"],
+                   "video_id": m.get("video_id", "")}, f, indent=2)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 
