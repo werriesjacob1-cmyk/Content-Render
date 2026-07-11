@@ -4,6 +4,18 @@ on:
   repository_dispatch:
     types: [render]
   workflow_dispatch:
+  schedule:
+    # Once a day, 13:00 UTC. The "science" profile's intended posting window
+    # is evening (7-10pm) in its audience's local time (see profiles.py
+    # post_window) -- 13:00 UTC lands mid-afternoon US/EU, leaving a buffer
+    # before evening posting for the run to finish (~15-20 min) and for a
+    # human/n8n hand-off to review the artifact before it goes out. One run
+    # per day matches one video per day: the manifest generator's dedup
+    # memory (memory_science.json / used_footage_science.json) is sized and
+    # tuned for a daily cadence, and GitHub Actions cron has no sub-hourly
+    # resolution anyway. Bump the schedule (or add a second cron line for a
+    # different PAGE) if/when the channel is ready to post more than 1x/day.
+    - cron: "0 13 * * *"
 
 permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
@@ -45,7 +57,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Auto-generate a fresh video idea
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
@@ -62,7 +74,7 @@ jobs:
           echo "manifest bytes: $(wc -c < manifest.json)"
 
       - name: Commit memory + manifest
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"

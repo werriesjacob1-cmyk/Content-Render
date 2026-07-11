@@ -289,18 +289,40 @@ JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call,
                                           # "humanity fits in a sugar cube" line in production
 
 
+# Sentinels distinguishing WHY _groq_judge returned no numeric score, since
+# fetch_clip must treat the two cases very differently:
+#   NO_KEY     -- no GROQ_API_KEY at all, judging was never possible. Ship
+#                 the first candidate (the old, still-correct behavior when
+#                 there's no way to judge anything).
+#   UNRESOLVED -- a key WAS present and the model WAS reachable, but neither
+#                 the original call nor the retry returned a parseable
+#                 verdict. This is the scene-7 bug: unresolved used to be
+#                 treated identically to NO_KEY and auto-accepted as
+#                 "first result", which is how a 4/10 clip shipped even
+#                 though judging was available and the model just choked on
+#                 formatting. Now it's treated as failing RELEVANCE_FLOOR --
+#                 another requery round is tried, and if every round is
+#                 exhausted the scene renders as a stat-card instead of an
+#                 unverified clip.
+NO_KEY = "no_key"
+UNRESOLVED = "unresolved"
+
+
 def _groq_judge(intent, candidates, _allow_retry=True):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
     (the old picker could only choose among candidates, never veto them —
     which is how a belly-button macro ended up illustrating stomach acid).
-    Returns (index, score) or (0, None) when no key / unparseable after retry.
+    Returns (index, score) where score is an int 0-10, or the NO_KEY /
+    UNRESOLVED sentinel above when no numeric score exists.
 
     One retry on an unparseable/empty reply: production logs showed three
     scenes in one render falling back to "first result" purely because the
     judge call returned something the regex couldn't parse -- not because
     the model actually judged the footage irrelevant. A single retry costs
     one extra Groq call only in that failure case."""
+    if not os.environ.get("GROQ_API_KEY", ""):
+        return 0, NO_KEY
     listing = "\n".join(f"{i}: {c['desc']}" for i, c in enumerate(candidates))
     txt = _groq_chat(
         f"A vertical short-form video scene narrates: \"{intent}\".\n"
@@ -322,7 +344,9 @@ def _groq_judge(intent, candidates, _allow_retry=True):
     if _allow_retry:
         print("  judge: unparseable/empty reply, retrying once...")
         return _groq_judge(intent, candidates, _allow_retry=False)
-    return 0, None
+    print("  judge: unresolved after retry (key present, no parseable verdict) "
+          "-- treating as below floor")
+    return 0, UNRESOLVED
 
 
 def _groq_requery(intent, failed_query):
@@ -390,7 +414,7 @@ def _accept(chosen, dest, query, score):
     _download(chosen["url"], dest)
     _used_video_ids.add(chosen["id"])
     _used_history.append(chosen["id"])
-    tag = f"judge {score}/10" if score is not None else "first"
+    tag = f"judge {score}/10" if isinstance(score, int) else "first (no judge key)"
     print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
     return True
 
@@ -403,10 +427,17 @@ def fetch_clip(query, dest, intent=None):
     a belly-button macro ended up illustrating stomach acid; now the caller
     renders a designed stat-card scene instead of a bad clip or a black card.
 
-    Returns (accepted: bool, best_score: float|None). best_score is the best
-    judge score seen across all rounds (None if nothing was ever judged), used
-    both by the caller's stat-card decision and the end-of-render quality
-    summary."""
+    A judge verdict of UNRESOLVED (key present, but no parseable score after
+    the retry) is treated the same as a below-floor numeric score -- it does
+    NOT auto-accept. Only NO_KEY (judging genuinely unavailable) still falls
+    back to shipping the first candidate; that's the one case where there is
+    no better option. Conflating the two used to mean an unresolved judge
+    call silently shipped the first, unverified candidate (scene 7's bug).
+
+    Returns (accepted: bool, best_score: int|None). best_score is the best
+    NUMERIC judge score seen across all rounds (None if nothing was ever
+    judged with a number), used both by the caller's stat-card decision and
+    the end-of-render quality summary."""
     intent = intent or query
     best_score = None
     queries = [query]
@@ -421,16 +452,19 @@ def fetch_clip(query, dest, intent=None):
         if cands:
             idx, score = _groq_judge(intent, cands)
             chosen = cands[idx]
-            if score is not None and (best_score is None or score > best_score):
+            numeric = isinstance(score, int)
+            if numeric and (best_score is None or score > best_score):
                 best_score = score
-            if score is None or score >= RELEVANCE_FLOOR:
+            if score == NO_KEY or (numeric and score >= RELEVANCE_FLOOR):
                 try:
                     _accept(chosen, dest, q, score)
                     if best_score is not None:
                         JUDGE_SCORES.append(best_score)
-                    return True, score
+                    return True, best_score
                 except Exception as e:
                     print("  download failed:", e)
+            elif score == UNRESOLVED:
+                print(f"  judge unresolved for '{q}' — trying a better query")
             else:
                 print(f"  weak match ({score}/10) for '{q}' — trying a better query")
         else:
