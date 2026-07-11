@@ -25,7 +25,8 @@ PROFILES = {
         "motion_graphics": True,      # animated number card when a scene has a stat
         # audio
         "music": "music_science.mp3",
-        "music_vol": 0.10,
+        "music_vol": 0.10,   # ~-20dB under the (loudness-normalized) music bed;
+                              # see MUSIC_CREDITS.md for source + license + mix table
         # posting
         "post_window": "evening (7-10pm) — reflective, lean-back learning",
         "hashtags_base": ["#science", "#learnontiktok", "#stem"],
@@ -44,7 +45,7 @@ PROFILES = {
         "grade": "eq=contrast=1.05:saturation=0.92:brightness=-0.01,curves=preset=vintage",
         "zoom_speed": 0.0004,         # slower, contemplative
         "music": "music_history.mp3",
-        "music_vol": 0.12,
+        "music_vol": 0.12,   # ~-18.4dB under the (loudness-normalized) music bed
         "post_window": "morning (7-9am) — commute storytelling",
         "hashtags_base": ["#history", "#historytok", "#ancienthistory"],
         "scene_pace": "slow",         # longer holds
@@ -62,7 +63,8 @@ PROFILES = {
         "grade": "eq=contrast=1.14:saturation=0.80:brightness=-0.05,curves=preset=darker",
         "zoom_speed": 0.0005,
         "music": "music_mystery.mp3",
-        "music_vol": 0.14,
+        "music_vol": 0.11,   # ~-19.2dB under the (loudness-normalized) music bed --
+                              # was 0.14 (~-17.1dB), outside the -18/-22dB target band
         "post_window": "night (9pm-12am) — eerie, high-attention scroll",
         "hashtags_base": ["#unsolved", "#mystery", "#history"],
         "scene_pace": "medium",
@@ -80,7 +82,7 @@ PROFILES = {
         "grade": "eq=contrast=1.10:saturation=1.18:brightness=0.01,curves=preset=lighter",
         "zoom_speed": 0.0007,         # punchy
         "music": "music_ai.mp3",
-        "music_vol": 0.10,
+        "music_vol": 0.10,   # ~-20dB under the (loudness-normalized) music bed
         "post_window": "midday (11am-1pm) + evening — utility/productivity windows",
         "hashtags_base": ["#ai", "#aitools", "#productivity"],
         "scene_pace": "fast",

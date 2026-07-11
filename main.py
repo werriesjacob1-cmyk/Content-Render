@@ -871,9 +871,17 @@ def main():
     if os.path.exists(MUSIC):
         print("[music] mixing bed under voice...")
         crf = random.choice(["19", "20", "21"])
+        # normalize=0: amix's default (normalize=1) auto-attenuates ALL inputs by
+        # ~1/N to guard against clipping, which here means narration itself gets
+        # quietly cut by ~6dB (2 inputs) the moment music is present -- verified
+        # locally: mean_volume dropped from -21.1dB (narration alone) to -27.0dB
+        # with normalize left on, vs -21.0dB (matching narration alone) with it
+        # off. music_vol is already tuned per-profile to sit ~18-20dB under the
+        # voice, so amix doesn't need to do any additional balancing on top.
         run(["ffmpeg", "-y", "-i", captioned, "-stream_loop", "-1", "-i", MUSIC,
              "-filter_complex",
-             f"[1:a]volume={PROFILE['music_vol']}[m];[0:a][m]amix=inputs=2:duration=first:dropout_transition=0[a]",
+             f"[1:a]volume={PROFILE['music_vol']}[m];"
+             f"[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]",
              "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, "-preset", "medium",
              "-c:a", "aac", "-shortest", final])
