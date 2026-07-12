@@ -164,10 +164,17 @@ jobs:
           for f in post platforms platform_text; do
             [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
           done
-          NOTES="Automated render. Platform cuts + per-channel captions attached for Buffer/Zapier pickup. Source run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # release body = per-channel captions in Formatter-friendly markers
+          # (repackage.py writes it); append the source-run link. Fall back to a
+          # one-line note if the body file is somehow missing.
+          if [ -f out/release_body.md ]; then
+            { cat out/release_body.md; echo; echo "Source run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"; } > out/release_notes.md
+          else
+            echo "Automated render. Cuts + captions attached. Source run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > out/release_notes.md
+          fi
           # a same-day re-run would collide on the tag; fall back to a run-suffixed tag
-          gh release create "$VID" $FILES --title "${TITLE:-$VID}" --notes "$NOTES" \
-            || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes "$NOTES" \
+          gh release create "$VID" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
+            || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || echo "release publish skipped"
 
       - name: Notify n8n (optional)

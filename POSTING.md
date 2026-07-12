@@ -95,6 +95,33 @@ secret. Buffer can pull a video from a link, so the fully-automatic path is:
 After this one-time setup, every daily render auto-publishes a Release, Zapier
 catches it, and Buffer queues it to all connected channels — hands-off.
 
+#### Per-platform captions + cuts (recommended — do NOT cross-post identically)
+
+Posting the identical video + caption everywhere suppresses reach. Each render
+already produces a DIFFERENT caption and the correct video cut per platform, and
+every Release now carries them in a Zapier-friendly form. To route each channel
+its own content, build the Zap with **one Buffer action per channel** instead of
+one action fanning out:
+
+1. **Trigger:** GitHub → *New Release* (repo `content-render`).
+2. For each platform's caption, add a **Formatter by Zapier → Text → Extract
+   Pattern** step (Formatter is free, no premium plan needed). Input = the
+   release **Body** from the trigger. Pattern (regex):
+   - TikTok: `===TIKTOK_START===([\s\S]*?)===TIKTOK_END===`
+   - Instagram: `===INSTAGRAM_START===([\s\S]*?)===INSTAGRAM_END===`
+   - Facebook: `===FACEBOOK_START===([\s\S]*?)===FACEBOOK_END===`
+   - (YouTube title/desc and X use their own `===YOUTUBE_TITLE_…===`, `===X_…===` markers if you add those channels.)
+3. **One Buffer *Add to Queue* action per channel**, each mapping:
+   - **TikTok** → media URL `…/releases/download/{{tag}}/tiktok_reels_shorts.mp4`, text = TikTok Formatter output.
+   - **Instagram** → media URL `…/releases/download/{{tag}}/tiktok_reels_shorts.mp4` (IG Reels uses the same 9:16 cut), text = Instagram Formatter output.
+   - **Facebook** → media URL `…/releases/download/{{tag}}/facebook_reels.mp4` (captions raised out of FB's UI), text = Facebook Formatter output.
+   `{{tag}}` is the release tag from the trigger (the video_id). The exact filename→channel mapping is also listed in plain text at the bottom of every release body.
+
+This gives each platform its own optimized caption and correctly-formatted cut
+from a single render, fully automatically. (`platform_text.json` is still
+attached to every release too, if you'd rather pull structured JSON via a
+premium Webhooks/Code step instead of the free Formatter approach.)
+
 > Note: if you'd rather not use Zapier, Buffer also has native Google
 > Drive/Dropbox folder integrations — you'd instead add a workflow step that
 > drops the cuts into that cloud folder. The Release+Zapier path above is

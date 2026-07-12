@@ -448,6 +448,35 @@ def write_platform_text(resolved_files):
         json.dump(out, f, indent=2)
     print("platform_text.json written — native caption/title + AI-disclosure + posting-time per platform.")
 
+    # Also emit a GitHub-Release body (out/release_body.md) that carries each
+    # platform's caption inside unique START/END markers. The Zapier "New
+    # Release" trigger exposes the release body natively, so a NO-premium Zap
+    # can pull each channel's caption with one free Formatter "Extract Pattern"
+    # step (regex ===TIKTOK_START===([\s\S]*?)===TIKTOK_END===) and feed it to
+    # that channel's own Buffer action — giving each platform its own optimized
+    # caption + correct video cut instead of one identical cross-post. See
+    # POSTING.md for the exact per-channel Zap recipe.
+    def _section(marker, text):
+        return f"==={marker}_START===\n{text}\n==={marker}_END===\n"
+    body = ["Automated multi-platform render. Each section below is that channel's",
+            "own caption; attach the matching video asset (files listed at the bottom).",
+            ""]
+    body.append(_section("TIKTOK", out["tiktok"]["caption"]))
+    body.append(_section("INSTAGRAM", out["instagram_reels"]["caption"]))
+    body.append(_section("FACEBOOK", out["facebook_reels"]["caption"]))
+    body.append(_section("YOUTUBE_TITLE", out["youtube_shorts"]["title"]))
+    body.append(_section("YOUTUBE_DESC", out["youtube_shorts"]["description"]))
+    body.append(_section("X", out["x_twitter"]["caption"]))
+    body.append("\nVideo asset for each channel (attached to this release):")
+    body.append(f"- TikTok:          {out['tiktok']['file']}")
+    body.append(f"- Instagram Reels: {out['instagram_reels']['file']}")
+    body.append(f"- Facebook Reels:  {out['facebook_reels']['file']}")
+    body.append(f"- YouTube Shorts:  {out['youtube_shorts']['file']}")
+    body.append(f"- X / feed:        {out['x_twitter']['file']}")
+    with open(os.path.join(OUT, "release_body.md"), "w") as f:
+        f.write("\n".join(body))
+    print("release_body.md written — per-channel captions in Formatter-friendly markers.")
+
 
 def main():
     master = sys.argv[1] if len(sys.argv) > 1 else os.path.join(OUT, "final.mp4")
