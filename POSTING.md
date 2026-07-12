@@ -66,24 +66,39 @@ them as a reasonable starting default, not a guarantee.
 Pick ONE. Both start from the same GitHub Actions artifact; neither requires
 storing publishing credentials in this repo.
 
-### Path A — a multi-platform scheduler (Metricool, Publer, or Buffer)
+### Path A — Buffer via GitHub Releases + Zapier (RECOMMENDED, and wired)
 
-1. Download the run's artifact (or wire the artifact URL into the scheduler
-   if it supports pulling from a URL/webhook — check the specific tool).
-2. In the scheduler, connect each destination account (see account
-   requirements below).
-3. Upload the correct file per platform (see the table above / `platforms.json`)
-   and paste in the matching caption/title from `platform_text.json`.
-4. Enable that platform's AI-disclosure toggle in the scheduler if it exposes
-   one (not all schedulers surface every platform's native disclosure field —
-   verify, and fall back to the `suggested_disclosure_line` in the caption if not).
-5. Schedule using `optimal_post_time` as a starting point, refining once real
-   data exists.
+Every successful render now also publishes a **GitHub Release** (the
+"Publish video as a GitHub Release" step in `render.yml`), tagged with the
+run's `video_id`, with all the platform cuts + `post.json` /
+`platforms.json` / `platform_text.json` attached as assets. That gives each
+video a **stable public URL** with no extra storage account and no new
+secret. Buffer can pull a video from a link, so the fully-automatic path is:
 
-This path is manual per run unless the scheduler's own API/Zapier/automation
-layer is used to pull the artifact automatically — that wiring is intentionally
-left to you, since it depends on which scheduler you pick and what its API
-supports as of when you set it up.
+**GitHub Release → Zapier → Buffer → your channels.** One-time setup:
+
+1. **Connect your channels in Buffer** — TikTok, Instagram, Facebook,
+   YouTube, X (see account-type requirements below). This is where you log
+   into each platform; no credentials ever touch this repo.
+2. **Create a free Zapier account** and build one Zap:
+   - **Trigger:** GitHub → *New Release* → repo `werriesjacob1-cmyk/content-render`.
+   - **Action:** Buffer → *Add to Queue* (a.k.a. Create Post). Map the release's
+     video asset URL to the media field, and the per-channel caption/title from
+     the attached `platform_text.json` to each channel's text. Add each Buffer
+     channel you want this to fan out to.
+3. **Enable AI-content disclosure** per channel in Buffer / the platform (see
+   the AI-disclosure section above; a `suggested_disclosure_line` ships in the
+   metadata as a fallback).
+4. **Set the schedule** in Buffer using `optimal_post_time` as a starting point,
+   then refine once real analytics exist.
+
+After this one-time setup, every daily render auto-publishes a Release, Zapier
+catches it, and Buffer queues it to all connected channels — hands-off.
+
+> Note: if you'd rather not use Zapier, Buffer also has native Google
+> Drive/Dropbox folder integrations — you'd instead add a workflow step that
+> drops the cuts into that cloud folder. The Release+Zapier path above is
+> recommended because it needs no extra storage account.
 
 ### Path B — the existing n8n webhook
 

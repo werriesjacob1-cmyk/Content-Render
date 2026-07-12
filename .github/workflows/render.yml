@@ -143,6 +143,33 @@ jobs:
             out/proof_frame.png
           retention-days: 7
 
+      - name: Publish video as a GitHub Release (Buffer/Zapier pickup)
+        # Gives each finished render a stable PUBLIC url with no extra storage
+        # account and no new secret (uses the built-in GITHUB_TOKEN; the job
+        # already has `permissions: contents: write`). A Zapier "New Release in
+        # GitHub" trigger -> "Buffer: Add to Queue" action fans the attached
+        # cuts + captions out to every connected channel. Runs only on a
+        # successful render (no always()), so a broken run never publishes.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VID=$(python -c "import json;print((json.load(open('out/post.json')).get('video_id') or '').strip())" 2>/dev/null || true)
+          [ -z "$VID" ] && VID="render-${{ github.run_number }}"
+          TITLE=$(python -c "import json;print((json.load(open('out/post.json')).get('title') or '').strip())" 2>/dev/null || true)
+          # attach only the files that actually got produced this run
+          FILES=""
+          for f in tiktok_reels_shorts instagram_reels youtube_shorts facebook_reels square landscape final; do
+            [ -f "out/$f.mp4" ] && FILES="$FILES out/$f.mp4"
+          done
+          for f in post platforms platform_text; do
+            [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
+          done
+          NOTES="Automated render. Platform cuts + per-channel captions attached for Buffer/Zapier pickup. Source run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # a same-day re-run would collide on the tag; fall back to a run-suffixed tag
+          gh release create "$VID" $FILES --title "${TITLE:-$VID}" --notes "$NOTES" \
+            || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes "$NOTES" \
+            || echo "release publish skipped"
+
       - name: Notify n8n (optional)
         if: always()
         env:
