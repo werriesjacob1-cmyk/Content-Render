@@ -118,6 +118,114 @@ VIEWER_JOBS = [
      "Designed to spark comments — people will argue. Plant one line they'll want to reply to."),
 ]
 
+# ---------------------------------------------------------------------------
+# CTA STRATEGY — rotated, content-fit endings (save-worthiness overhaul)
+# ---------------------------------------------------------------------------
+# The channel used to hard-code the SAME closing command on every single video
+# ("Save this so you remember it."). A command doesn't make anyone save a
+# video -- saves come from the content actually being worth referencing again,
+# plus (sometimes) a natural trigger. So: (1) the CONTENT gets an explicit
+# reference-worthy requirement independent of how the video ends (see
+# REFERENCE_WORTHY_RE / the validate() check below and the prompt rule in
+# build_prompt), and (2) the ENDING is chosen per-video from four distinct
+# mechanics instead of one recycled line. Exactly one style per video, picked
+# here in main() (weighted by perf_<page>.json once real data exists, same
+# scaffold as VIEWER_JOBS/fact selection) and threaded through build_prompt /
+# punch_up / score_script so every stage of the pipeline agrees on what
+# "sticking the landing" means for THIS video.
+CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT", "SHARE"]
+
+CTA_ENDING_RULES = {
+    "SAVE_WORTHY": (
+        "ENDING STYLE FOR THIS VIDEO: SAVE-WORTHY PAYOFF. The final line must land on the single "
+        "most reference-worthy detail of the script -- the exact number, rule of thumb, or "
+        "comparison a viewer would actually want to look up again later -- stated cleanly, not "
+        "vaguely. Do NOT command the viewer to save it (never write anything like 'save this so "
+        "you remember it', 'save this so you don't forget', or 'save this for later' -- that command "
+        "is banned). The payoff itself is what earns the save. ONLY if the fact genuinely calls for "
+        "it, you may add ONE short, earned, specific nudge that names what's worth keeping (e.g. "
+        "'that number's worth a screenshot' or 'you'll want that comparison again next time this "
+        "comes up') -- and only as a trailing half-sentence, never as the whole line. If the payoff "
+        "already stands on its own, skip the nudge entirely and just state the fact."
+    ),
+    "LOOP": (
+        "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line must be the single most "
+        "quotable line of the whole script, and it must loop back to the hook's exact opening image "
+        "or phrase so the last frame flows straight back into the first -- a viewer who lets it "
+        "replay shouldn't feel a seam. No explicit call-to-action language at all here (no 'save', "
+        "no 'share', no 'comment') -- the loop itself is the entire mechanic."
+    ),
+    "COMMENT": (
+        "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
+        "question ('Team A or Team B?', 'Would you or no?') or state a claim people will actually "
+        "want to argue with ('and that means everything you learned about X is wrong') -- something "
+        "a real person would stop and type a reply to, not a rhetorical throwaway. Do not also tell "
+        "them to save or share in this line."
+    ),
+    "SHARE": (
+        "ENDING STYLE FOR THIS VIDEO: SHARE TRIGGER. The final line must hand the viewer a concrete, "
+        "identity-specific reason to send this to one particular kind of person ('send this to the "
+        "friend who still doesn't believe you', 'tag the person who needs to see this') tied "
+        "DIRECTLY to the fact just taught -- not a generic 'share this video'. Do not also tell them "
+        "to save or comment in this line."
+    ),
+}
+
+# Rubric wording for score_script()'s "rewatch" criterion -- scored per the
+# style actually assigned to this video, not a one-size-fits-all "did it ask
+# for a save" question.
+CTA_RUBRIC_HINTS = {
+    "SAVE_WORTHY": "does the ending land on a genuinely reference-worthy detail the viewer would "
+                    "want to look up again, WITHOUT relying on a bare command to save it?",
+    "LOOP": "does the ending loop back cleanly to the hook/opening image so a replay feels seamless, "
+            "with no bolted-on CTA language?",
+    "COMMENT": "does the ending pose a real binary question or arguable claim a viewer would "
+               "actually reply to?",
+    "SHARE": "does the ending give a specific, identity-relevant reason to send this to one "
+             "particular kind of person, tied to the fact just taught?",
+}
+
+# Ending rule handed to punch_up()'s rewrite pass -- same style-specific intent,
+# phrased for a line-level rewrite instruction rather than first-draft generation.
+CTA_PUNCHUP_RULES = {
+    "SAVE_WORTHY": "Final line: state the single most reference-worthy detail cleanly. Do NOT "
+                   "write a bare command to save it ('save this so you...' is banned). At most, "
+                   "end with a short earned nudge naming what's worth keeping -- only if the fact "
+                   "doesn't already stand on its own.",
+    "LOOP": "Final line: the most quotable line of the script, looping back to the hook's opening "
+            "image/phrase. No CTA language.",
+    "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
+               "viewer would type a reply to.",
+    "SHARE": "Final line: a specific, identity-relevant reason to send this to one particular kind "
+             "of person, tied to the fact just taught.",
+}
+
+# Banned generic save-command phrasing -- the exact production failure this
+# overhaul targets ("Save this so you remember it." on every video). Any close
+# paraphrase of "save this [so you ...]" fails validation regardless of which
+# CTA style was assigned; SAVE_WORTHY's own rule above still allows a short,
+# specific, earned nudge ("that number's worth a screenshot") because that
+# phrasing doesn't match this pattern.
+GENERIC_SAVE_CMD = re.compile(
+    r"\bsave (this|it)\b[^.!?]{0,40}\b(so you|for later|before you|don'?t forget|remember)\b"
+    r"|\bmake sure (you|to) save\b"
+    r"|\bdon'?t forget to save\b",
+    re.I)
+
+# A "save-worthy" moment is engineered into the CONTENT, not just the ending:
+# a concrete number, or a stated comparison/rule-of-thumb pattern. This is a
+# heuristic, not a semantic check -- it exists to catch the case where a
+# script has literally nothing a viewer could reference again (see
+# validate()). Bank-fact videos almost always pass automatically via their
+# key_terms; this exists for jobs/scripts without a bank fact behind them.
+REFERENCE_WORTHY_RE = re.compile(
+    r"\d"                                    # any concrete number
+    r"|\bthe (size|weight|length|height|speed) of\b"
+    r"|\bequivalent to\b|\bthe same (as|size)\b"
+    r"|\byou could\b|\benough to\b|\bfor every\b",
+    re.I)
+
+
 def load_memory():
     try:
         with open(MEMORY) as f:
@@ -131,7 +239,7 @@ def save_memory(history, entry):
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
 
-def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None):
+def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_style="SAVE_WORTHY"):
     series_block = ""
     if SERIES:
         part = SERIES_PART or "1"
@@ -216,8 +324,8 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
   (not "400 million years" alone — "before Saturn had rings", "you could watch every human
   civilization rise and fall 80,000 times"). One vivid comparison beats three adjectives.
-- The ending must LAND: the single most quotable line of the video, then loop back to the hook's
-  image so the replay feels seamless. Do NOT trail off, restate the premise, or stack two CTAs.
+- The ending must LAND on this video's assigned ending style (see ENDING section below). Do NOT
+  trail off, restate the premise, or stack two different endings together.
 
 SEARCH DISCOVERY (now as important as hashtags):
 - Pick ONE core keyword phrase (what someone would type to find this).
@@ -225,14 +333,25 @@ SEARCH DISCOVERY (now as important as hashtags):
 
 SHARES (THE #1 weighted signal — 10x a like). Engineer the video to be SENT to a friend:
 - The fact must be "send-worthy": so surprising or identity-relevant the viewer thinks "I have to show ___ this."
-- Include one line that hands the viewer a reason to share ("tag someone who won't believe this", or a fact they'll want to prove to a friend).
+- Somewhere in the script (not necessarily the ending), include a beat that hands the viewer a
+  reason to share it with someone specific.
 
-SAVES (5x a like — make every video save-worthy):
-- The final spoken line delivers a payoff AND invites a save ("Save this so you remember it.").
-- Loop the last line back to the hook so it replays cleanly (rewatch = top distribution signal).
+SAVES (5x a like) — THIS COMES FROM THE CONTENT, NOT A COMMAND:
+- Telling someone to save a video does not make them save it. A save happens because the video
+  contains something genuinely worth referencing again. So: somewhere in the script, land at least
+  ONE concrete "screenshot-this" moment — a specific number, a counterintuitive rule of thumb, or a
+  vivid comparison the viewer would actually want to remember or reuse later (prove someone wrong
+  with it, cite it, look it up again). This is mandatory REGARDLESS of this video's ending style
+  below. Do not just assert the fact is surprising — make the actual detail specific enough that a
+  person could repeat it verbatim.
+
+{CTA_ENDING_RULES.get(cta_style, CTA_ENDING_RULES["SAVE_WORTHY"])}
 
 COMMENTS (binary questions outperform — easiest to answer, drive depth):
-- Plant ONE line that provokes a reply: either a BINARY question ("Team A or Team B?", "Did you know this — yes or no?") OR a claim people will argue with ("no way", "that's not true").
+- Independent of the ending style above, plant ONE line somewhere in the script that provokes a
+  reply: either a BINARY question ("Team A or Team B?", "Did you know this — yes or no?") OR a claim
+  people will argue with ("no way", "that's not true"). (If this video's ending style is COMMENT,
+  the ending line itself can serve as this beat — don't force a second one.)
 - Put a binary/question version in the FIRST caption too (comments often come from the caption).
 
 CONTENT (CRITICAL):
@@ -333,13 +452,15 @@ VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street tim
                    "northern lights sky", "rain window closeup", "eagle flying mountains"]
 
 
-def punch_up(m, fact):
+def punch_up(m, fact, cta_style="SAVE_WORTHY"):
     """Second-pass rewrite of the voiceovers only. Structure rules in the main
     prompt get a script that follows the letter of the format but still writes
     flat lines (e.g. following the midpoint twist with 'the difference is
-    almost negligible' — an anti-climax — or stacking two CTAs). A focused
-    critique-and-rewrite pass fixes delivery; validate() re-guards the result
-    and we keep the original whenever the rewrite doesn't survive it."""
+    almost negligible' — an anti-climax — or stacking two different endings).
+    A focused critique-and-rewrite pass fixes delivery; validate() re-guards
+    the result and we keep the original whenever the rewrite doesn't survive
+    it. cta_style pins the final-line rule to the ending style chosen for
+    this video (see CTA_PUNCHUP_RULES) instead of a fixed save-command."""
     fact_line = fact["fact"] if fact else "the fact stated in the script"
     key_terms = fact.get("key_terms", []) if fact else []
     key_terms_rule = ""
@@ -349,6 +470,7 @@ def punch_up(m, fact):
             f"somewhere across the rewritten lines: {key_terms}. Do not paraphrase them away or "
             f"swap a real name/number for a vaguer description — if the original said "
             f"'potassium-40', the rewrite must still say 'potassium-40', not 'a radioactive isotope'.\n")
+    ending_rule = CTA_PUNCHUP_RULES.get(cta_style, CTA_PUNCHUP_RULES["SAVE_WORTHY"])
     scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
     prompt = f"""You are a short-form script doctor. Rewrite ONLY the voiceover lines below for maximum retention.
 
@@ -363,8 +485,9 @@ RULES:
   atomic clock can see it — but it never stops").
 - The line right after any "that's not the strange part"-style interrupt must deliver the
   single most surprising concrete detail of the whole script.
-- Exactly ONE call-to-action, in the FINAL line only (save OR share OR comment — never two).
-- Final line must also close the loop back to the opening image.
+- {ending_rule}
+- Only the FINAL line may carry any ending/CTA language at all — every other line stays pure
+  content, no stray "save"/"share"/"comment" language anywhere else.
 - Keep any real numbers exactly as they are. Add NO new facts or numbers.
 {key_terms_rule}- Every line ends with proper punctuation (. ? or !) — these are spoken sentences,
   and the TTS engine uses end punctuation to pace pauses between scenes.
@@ -526,6 +649,30 @@ def validate(m, job_name, fact=None):
         return f"script word count {wc} out of range"
     m["script"] = _clean(m["script"])
 
+    # CTA overhaul guard 1: the exact production failure this whole rework
+    # targets was every video ending on the same hard-coded command ("Save
+    # this so you remember it."). Reject any script that still contains that
+    # command or a close paraphrase of it, regardless of which CTA style was
+    # assigned — a command is not a substitute for save-worthy content and is
+    # banned outright now, not just discouraged.
+    full_blob = m["script"] + " " + " ".join(s["voiceover"] for s in m["scenes"])
+    if GENERIC_SAVE_CMD.search(full_blob):
+        return ("script contains the banned generic save-command phrasing "
+                "('save this so you...') — the ending must earn a save through "
+                "content, not a command; see this video's assigned CTA style")
+
+    # CTA overhaul guard 2: save-worthiness must be engineered into the
+    # CONTENT, not just claimed by the ending. Require at least one concrete,
+    # specific, reference-worthy detail somewhere in the script (a real
+    # number, or a stated comparison/rule-of-thumb) — the kind of thing a
+    # viewer could actually repeat or look up again. Bank-fact videos already
+    # clear this via mandatory key_terms; this catches jobs/scripts with no
+    # bank fact behind them (e.g. HOW_TO, or a MYTH_BUSTER with no fact_id).
+    if not REFERENCE_WORTHY_RE.search(full_blob):
+        return ("no reference-worthy / 'screenshot-this' detail found anywhere in the "
+                "script — include a specific number, rule of thumb, or vivid comparison "
+                "a viewer would actually want to remember or reuse")
+
     # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
     full = (m["script"] + " " + " ".join(c for c in m.get("captions", []))).lower()
     # map each "number + following noun" and each "number + preceding noun"
@@ -547,10 +694,21 @@ def validate(m, job_name, fact=None):
     # 0.70, not 0.60 — at 0.60 this fired on legitimate scripts (parallel sentence
     # structure reads as similarity), and every false rejection pushed a run toward
     # the much worse near-miss fallback. Catch real restatements only.
+    #
+    # Exception: scene 1 vs. the final scene. The LOOP CTA style (and, before
+    # the CTA-style split, the general "loop back to the hook" ending rule)
+    # deliberately wants the closing line to echo the hook's exact phrasing so
+    # a replay feels seamless — that is the mechanic, not accidental
+    # repetition. The anti-restatement check below already carves out this
+    # same exception for the verified-fact comparison; mirror it here so a
+    # well-executed loop ending can't get rejected for doing exactly what it
+    # was asked to do.
     import difflib
     vos = [s["voiceover"].lower() for s in m["scenes"]]
     for i in range(len(vos)):
         for j in range(i + 1, len(vos)):
+            if i == 0 and j == len(vos) - 1:
+                continue
             ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
             if ratio > 0.70:
                 return f"scenes {i+1} and {j+1} too similar (repetition)"
@@ -639,12 +797,14 @@ def validate(m, job_name, fact=None):
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None
 
-def score_script(m, fact=None):
+def score_script(m, fact=None, cta_style="SAVE_WORTHY"):
     """Self-critique pass: one Groq call scores the finished, punched-up
     script against an explicit rubric so a weak script can be caught and
     regenerated before it ever reaches main.py's render pipeline. See
     QUALITY_THRESHOLD / QUALITY_MAX_REGENERATIONS above for how the result
-    is used.
+    is used. cta_style adjusts the "rewatch" criterion's wording to match
+    this video's assigned ending style (CTA_RUBRIC_HINTS) instead of always
+    asking whether it "invited a save."
 
     MUST fail OPEN — this pipeline runs unattended once a day. Any Groq
     error, timeout, or unparseable/out-of-range response returns None, and
@@ -655,12 +815,14 @@ def score_script(m, fact=None):
         fact_line = fact["fact"] if fact else "(no verified fact; general topic)"
         whatif = fact.get("whatif", "") if fact else ""
         scenes_text = "\n".join(f"{s['id']}. {s['voiceover']}" for s in m.get("scenes", []))
+        rewatch_hint = CTA_RUBRIC_HINTS.get(cta_style, CTA_RUBRIC_HINTS["SAVE_WORTHY"])
         prompt = f"""You are a brutally honest short-form video editor scoring a finished script BEFORE it is rendered and posted. Be strict — most scripts should NOT score 9 or 10.
 
 TITLE: {m.get('title', '')}
 HOOK (first spoken line): {m.get('hook', '')}
 VERIFIED FACT THIS VIDEO IS BUILT ON: {fact_line}
 CENTRAL QUESTION (if any): {whatif or '(none)'}
+THIS VIDEO'S ASSIGNED ENDING STYLE: {cta_style}
 
 FULL SCENE-BY-SCENE SCRIPT:
 {scenes_text}
@@ -670,7 +832,7 @@ Score each criterion 0-10 (integers, be strict):
 - surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
 - payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
-- rewatch: does the ending loop back cleanly to the hook/opening image and invite a save or share, so a replay feels seamless?
+- rewatch: {rewatch_hint}
 - clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
 
 Return ONLY valid JSON, exactly:
@@ -780,21 +942,24 @@ def overused_hook_openers(history, min_count=3):
     return [op for op, c in counts.items() if op and c >= min_count]
 
 
-def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None):
+def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
+                        cta_style="SAVE_WORTHY"):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
     once and return a finished manifest, or None if nothing usable came out
     of it. Called once per quality-ratchet attempt (see
     QUALITY_MAX_REGENERATIONS in main()) — every call is an independent
     round of Groq attempts with its own near-miss fallback, so a
     low-quality-score regeneration gets a genuinely fresh script, not a
-    retry of the exact same one."""
+    retry of the exact same one. cta_style pins which of the four rotated
+    endings (CTA_ENDING_RULES) this attempt is built and punched up toward."""
     manifest = None
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
     for attempt in range(5):
         try:
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
-            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact, avoid_openers=avoid_openers))
+            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
+                                          avoid_openers=avoid_openers, cta_style=cta_style))
             m = json.loads(raw)
             err = validate(m, job_name, fact=chosen_fact)
             if err:
@@ -837,12 +1002,19 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             s.setdefault("on_screen_text", "")
             if not s.get("search_query") or UNSTOCKABLE_Q.search(s.get("search_query", "")):
                 s["search_query"] = pool[i % len(pool)]
+        # strip any lingering banned generic save-command phrasing -- even the
+        # last-resort near-miss path must not ship the old hard-coded line.
+        for s in nm.get("scenes", []):
+            vo = s.get("voiceover", "")
+            if GENERIC_SAVE_CMD.search(vo):
+                s["voiceover"] = GENERIC_SAVE_CMD.sub("", vo).strip(" .") or "Now you know."
+        nm["script"] = " ".join(s.get("voiceover", "") for s in nm.get("scenes", []))
         manifest = nm
 
     if not manifest:
         return None
 
-    return punch_up(manifest, chosen_fact)
+    return punch_up(manifest, chosen_fact, cta_style=cta_style)
 
 
 def main():
@@ -860,6 +1032,7 @@ def main():
     perf = load_perf()
     fact_scores = score_by_key(history, perf, "fact_id") if perf else {}
     job_scores = score_by_key(history, perf, "viewer_job") if perf else {}
+    cta_scores = score_by_key(history, perf, "cta_style") if perf else {}
 
     # Path C: pick a verified fact from the bank not used recently
     bank = load_bank()
@@ -888,6 +1061,23 @@ def main():
         job_name, job_desc = random.choice(jobs)
     print(f"[generate] job={job_name} avoiding={avoid[:80]}")
 
+    # CTA style selection (save-worthiness overhaul, part 2): rotate the
+    # ending mechanic per video instead of always closing on the same save
+    # command. Excludes whatever style the last video used so back-to-back
+    # videos don't repeat an ending, same pattern as last_job above. Once
+    # perf_<page>.json has real engagement data, weights lean toward
+    # styles that actually earn saves/shares/comments/rewatches for THIS
+    # page; until then this is a plain rotation (PERF_UNSEEN_FLOOR keeps
+    # every style in the running).
+    last_cta = history[-1].get("cta_style") if history else None
+    cta_options = [c for c in CTA_STYLES if c != last_cta] or CTA_STYLES
+    if cta_scores:
+        weights = [cta_scores.get(c, 0.0) + PERF_UNSEEN_FLOOR for c in cta_options]
+        cta_style = _weighted_choice(cta_options, weights, EXPLORE_EPSILON)
+    else:
+        cta_style = random.choice(cta_options)
+    print(f"[generate] cta_style={cta_style}")
+
     # Quality ratchet (improvement loop, part 1): generate, self-critique,
     # and — if the score is below QUALITY_THRESHOLD — regenerate from
     # scratch, bounded to QUALITY_MAX_REGENERATIONS extra attempts. Keeps
@@ -895,11 +1085,12 @@ def main():
     # cleared the bar, so this can never block the daily run.
     best_manifest, best_overall, best_quality = None, None, None
     for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
-        candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers)
+        candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
+                                        cta_style=cta_style)
         if candidate is None:
             print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
             continue
-        quality = score_script(candidate, chosen_fact)
+        quality = score_script(candidate, chosen_fact, cta_style=cta_style)
         if quality is None:
             # fail OPEN: scoring itself broke, not the script. Ship this
             # attempt immediately rather than burn remaining regen budget.
@@ -928,6 +1119,10 @@ def main():
     # can be matched back to this run (see PERF_PATH doc above).
     video_id = f"{PAGE}_{datetime.date.today().isoformat()}_{_slugify(manifest.get('title', ''))}"
     manifest["video_id"] = video_id
+    # cta_style is engine-assigned (main() above), not model-authored, but it's
+    # part of the manifest so main.py can carry it through to out/post.json
+    # and so a publisher/scheduler downstream can see which ending shipped.
+    manifest["cta_style"] = cta_style
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
@@ -935,6 +1130,7 @@ def main():
         "video_id": video_id,
         "metaphor": manifest.get("metaphor", manifest["title"]),
         "viewer_job": job_name,
+        "cta_style": cta_style,
         "title": manifest["title"],
         "fact_id": chosen_fact["id"] if chosen_fact else None,
         "hook": manifest.get("hook", ""),
@@ -944,7 +1140,8 @@ def main():
         },
         "quality": best_quality,
     })
-    print(f"[generate] wrote {manifest['title']!r} ({job_name}) -> {OUT_MANIFEST} [video_id={video_id}]")
+    print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
+          f"{OUT_MANIFEST} [video_id={video_id}]")
 
 if __name__ == "__main__":
     main()
