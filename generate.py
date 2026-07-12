@@ -797,6 +797,22 @@ def validate(m, job_name, fact=None):
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None
 
+def _coerce_score(v):
+    """Pull a 0-10 number out of whatever the model returned for a rubric
+    criterion — int, float, "8", "8/10", "8.5 - strong". Returns None only
+    when there's genuinely no number to read (or a bool, which JSON true/false
+    would otherwise smuggle in as 1/0)."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return max(0.0, min(10.0, float(v)))
+    if isinstance(v, str):
+        mm = re.search(r"-?\d+(?:\.\d+)?", v)
+        if mm:
+            return max(0.0, min(10.0, float(mm.group())))
+    return None
+
+
 def score_script(m, fact=None, cta_style="SAVE_WORTHY"):
     """Self-critique pass: one Groq call scores the finished, punched-up
     script against an explicit rubric so a weak script can be caught and
@@ -839,12 +855,26 @@ Return ONLY valid JSON, exactly:
 {{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
         raw = call_groq(prompt)
         data = json.loads(raw)
-        scores = {}
+        # Robust coercion: the model frequently returns a score as a STRING
+        # ("8") or with a suffix ("8/10") even under JSON mode. The old code
+        # required a raw int/float for EVERY criterion and returned None (=
+        # ship unscored, fail-open) if even one was a string — which made the
+        # whole quality ratchet silently inert whenever that happened. Coerce
+        # numbers out of strings, tolerate a minority of unparseable/missing
+        # criteria, and only truly fail open when we can't read a majority.
+        scores, missing = {}, 0
         for k in QUALITY_RUBRIC_CRITERIA:
-            v = data.get(k)
-            if not isinstance(v, (int, float)) or isinstance(v, bool):
-                return None
-            scores[k] = max(0.0, min(10.0, float(v)))
+            sv = _coerce_score(data.get(k))
+            if sv is None:
+                missing += 1
+            else:
+                scores[k] = sv
+        if len(scores) < 4:  # couldn't read a majority of 6 — genuinely unusable
+            return None
+        if missing:  # fill the few unreadable ones with the mean of the rest
+            mean = sum(scores.values()) / len(scores)
+            for k in QUALITY_RUBRIC_CRITERIA:
+                scores.setdefault(k, round(mean, 2))
         # Compute overall ourselves from the per-criterion scores rather than
         # trusting the model's own arithmetic — a model that returns six 9s
         # and a self-reported "overall: 3" (or vice versa) can't silently
