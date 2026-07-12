@@ -131,12 +131,15 @@ jobs:
           name: final-video-${{ github.run_number }}
           path: |
             out/tiktok_reels_shorts.mp4
+            out/instagram_reels.mp4
+            out/youtube_shorts.mp4
             out/facebook_reels.mp4
             out/square.mp4
             out/landscape.mp4
             out/final.mp4
             out/post.json
             out/platforms.json
+            out/platform_text.json
             out/proof_frame.png
           retention-days: 7
 
