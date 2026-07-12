@@ -896,8 +896,13 @@ def main():
         # video_id (if present) is the key generate.py's performance-memory
         # scaffold expects in perf_<page>.json — carry it through so whoever
         # posts this video can record real engagement against the right id.
+        # keyword and cta_style are carried through the same way for
+        # repackage.py's write_platform_text() (search-keyword fallback for
+        # captions, and cta_style so the CTA-rotation save-worthiness overhaul
+        # in generate.py is visible in post-ready metadata, not just logs).
         json.dump({"title": m["title"], "captions": m["captions"], "hashtags": m["hashtags"],
-                   "video_id": m.get("video_id", "")}, f, indent=2)
+                   "video_id": m.get("video_id", ""), "keyword": m.get("keyword", ""),
+                   "cta_style": m.get("cta_style", "")}, f, indent=2)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 
