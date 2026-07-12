@@ -97,6 +97,20 @@
         "used_whatif": true
       },
       "quality": null
+    },
+    {
+      "video_id": "science_2026-07-12_the-silent-void-of-space",
+      "metaphor": "cosmic quiet",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "COMMENT",
+      "title": "The Silent Void of Space",
+      "fact_id": "space_silent",
+      "hook": "You scream in space, but does anyone hear?",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": null
     }
   ]
 }

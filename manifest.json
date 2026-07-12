@@ -1,94 +1,94 @@
 {
-  "title": "Hummingbird Heart Rate",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "hummingbird heart rate",
-  "metaphor": "tiny bird",
-  "hook": "Your heart beats like a hummingbird's?",
-  "script": "Your heart beats like a hummingbird's? What if your heart beat over 1,200 times per minute? You'd have to eat almost constantly just to survive, which is exactly what a hummingbird does. A hummingbird's heart beats incredibly fast, but that's not all - its unique physiology allows it to fly in ways other birds can't. But that's not even the strange part. A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards. Its wings beat up to 80 times a second, letting it hover in place. To put that in perspective, if your heart beat that fast, you could fit over 20 heartbeats in a single second. Your heart beats like a hummingbird's?",
+  "title": "The Silent Void of Space",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "space silence",
+  "metaphor": "cosmic quiet",
+  "hook": "You scream in space, but does anyone hear?",
+  "script": "You scream in space, but does anyone hear? What if you yelled at the top of your lungs in the void? Sound needs a medium to travel, and space is a near-perfect vacuum. This means that no sound can exist there. But that's not even the strange part. A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all. It's like watching a massive bomb go off in complete silence. If you were to compare the energy released by a supernova to something on Earth, it would be like detonating billions of hydrogen bombs simultaneously, yet the result is an eerie, deafening silence. Would you rather experience the silence of space or the roar of a supernova on Earth?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your heart beats like a hummingbird's?",
-      "on_screen_text": "Hummingbird",
-      "search_query": "hummingbird flying",
+      "voiceover": "You scream in space, but does anyone hear?",
+      "on_screen_text": "Space Silence",
+      "search_query": "astronaut space",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "What if your heart beat over 1,200 times per minute?",
-      "on_screen_text": "Fast Heart",
-      "search_query": "bird wings slow motion",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "What if you yelled at the top of your lungs in the void?",
+      "on_screen_text": "Void Yell",
+      "search_query": "deep space stars",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
-      "duration": 3,
-      "voiceover": "You'd have to eat almost constantly just to survive, which is exactly what a hummingbird does.",
-      "on_screen_text": "Eat Constantly",
-      "search_query": "hummingbird flower",
-      "motion": "pan"
+      "duration": 4,
+      "voiceover": "Sound needs a medium to travel, and space is a near-perfect vacuum.",
+      "on_screen_text": "Vacuum Silence",
+      "search_query": "earth from orbit",
+      "motion": "static"
     },
     {
       "id": 4,
-      "duration": 3,
-      "voiceover": "A hummingbird's heart beats incredibly fast, but that's not all - its unique physiology allows it to fly in ways other birds can't.",
-      "on_screen_text": "Unique Fly",
-      "search_query": "hummingbird in flight",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "This means that no sound can exist there.",
+      "on_screen_text": "No Sound",
+      "search_query": "space station",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 4,
+      "duration": 5,
       "voiceover": "But that's not even the strange part.",
       "on_screen_text": "Strange Part",
-      "search_query": "bird in slow motion",
+      "search_query": "supernova explosion",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards.",
-      "on_screen_text": "1,200 Beats",
-      "search_query": "hummingbird flying backwards",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all.",
+      "on_screen_text": "Supernova Silence",
+      "search_query": "space explosion",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
-      "duration": 3,
-      "voiceover": "Its wings beat up to 80 times a second, letting it hover in place.",
-      "on_screen_text": "80 Times",
-      "search_query": "hummingbird wings beating",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "It's like watching a massive bomb go off in complete silence.",
+      "on_screen_text": "Cosmic Bomb",
+      "search_query": "space bomb",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 3,
-      "voiceover": "To put that in perspective, if your heart beat that fast, you could fit over 20 heartbeats in a single second.",
-      "on_screen_text": "20 Heartbeats",
-      "search_query": "heartbeat monitor",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "If you were to compare the energy released by a supernova to something on Earth, it would be like detonating billions of hydrogen bombs simultaneously, yet the result is an eerie, deafening silence.",
+      "on_screen_text": "Eerie Silence",
+      "search_query": "hydrogen bomb",
+      "motion": "pan_out"
     },
     {
       "id": 9,
-      "duration": 4,
-      "voiceover": "Your heart beats like a hummingbird's?",
-      "on_screen_text": "Hummingbird Heart",
-      "search_query": "hummingbird flying",
-      "motion": "zoom_in"
+      "duration": 5,
+      "voiceover": "Would you rather experience the silence of space or the roar of a supernova on Earth?",
+      "on_screen_text": "Space or Earth",
+      "search_query": "space vs earth",
+      "motion": "rotate"
     }
   ],
   "captions": [
-    "Can a hummingbird's heart beat over 1,200 times per minute - yes or no?",
-    "Hummingbirds are the only birds that can fly backwards.",
-    "What's the most surprising fact about hummingbirds?"
+    "What's the most silent place in the universe? #space #silence",
+    "Experience the eerie silence of space",
+    "Share with a friend who loves space!"
   ],
   "hashtags": [
-    "#hummingbird",
-    "#birdfacts",
-    "#heart rate",
-    "#wildlife",
+    "#space",
+    "#silence",
+    "#supernova",
+    "#astronomy",
     "#science"
   ],
   "render": {
@@ -96,6 +96,6 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-12_hummingbird-heart-rate",
-  "cta_style": "LOOP"
+  "video_id": "science_2026-07-12_the-silent-void-of-space",
+  "cta_style": "COMMENT"
 }
