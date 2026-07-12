@@ -1,101 +1,126 @@
 {
-  "title": "The Silent Void of Space",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "space silence",
-  "metaphor": "cosmic quiet",
-  "hook": "You scream in space, but does anyone hear?",
-  "script": "You scream in space, but does anyone hear? What if you yelled at the top of your lungs in the void? Sound needs a medium to travel, and space is a near-perfect vacuum. This means that no sound can exist there. But that's not even the strange part. A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all. It's like watching a massive bomb go off in complete silence. If you were to compare the energy released by a supernova to something on Earth, it would be like detonating billions of hydrogen bombs simultaneously, yet the result is an eerie, deafening silence. Would you rather experience the silence of space or the roar of a supernova on Earth?",
+  "title": "What Happens in Space Without a Suit?",
+  "viewer_job": "REFRAME",
+  "keyword": "space exposure",
+  "metaphor": "space vacuum",
+  "hook": "You'd survive space for 15 seconds",
+  "script": "You'd survive space for 15 seconds. What if an airlock burst open and flung you into space? You wouldn't pop like a balloon. The movies got it wrong. Space is a vacuum, but that's not what kills you. The real danger is the lack of oxygen. But that's not even the strange part. The vacuum causes ebullism, where the water in your body starts to boil at your own temperature. You'd have about 15 conscious seconds before a lack of oxygen knocks you out. That's roughly the time it takes to watch a space helmet reflection for 15 seconds. You could watch the Earth spin about 2 degrees in that time. The vacuum's effect is so extreme that a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out. You'd want to remember that 15 seconds for next time this comes up.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You scream in space, but does anyone hear?",
-      "on_screen_text": "Space Silence",
-      "search_query": "astronaut space",
+      "voiceover": "You'd survive space for 15 seconds",
+      "on_screen_text": "Space Exposure",
+      "search_query": "astronaut spacewalk",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What if you yelled at the top of your lungs in the void?",
-      "on_screen_text": "Void Yell",
-      "search_query": "deep space stars",
-      "motion": "zoom_in"
+      "duration": 3,
+      "voiceover": "What if an airlock burst open and flung you into space?",
+      "on_screen_text": "Airlock Burst",
+      "search_query": "space station explosion",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Sound needs a medium to travel, and space is a near-perfect vacuum.",
-      "on_screen_text": "Vacuum Silence",
-      "search_query": "earth from orbit",
-      "motion": "static"
+      "voiceover": "You wouldn't pop like a balloon",
+      "on_screen_text": "Space Myth",
+      "search_query": "balloon in space",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "This means that no sound can exist there.",
-      "on_screen_text": "No Sound",
-      "search_query": "space station",
+      "duration": 4,
+      "voiceover": "The movies got it wrong",
+      "on_screen_text": "Wrong Answers",
+      "search_query": "space movie scenes",
       "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "But that's not even the strange part.",
-      "on_screen_text": "Strange Part",
-      "search_query": "supernova explosion",
-      "motion": "zoom_in"
+      "voiceover": "The real danger is the lack of oxygen",
+      "on_screen_text": "Oxygen Matters",
+      "search_query": "scuba diver oxygen",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all.",
-      "on_screen_text": "Supernova Silence",
-      "search_query": "space explosion",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "Strange Facts",
+      "search_query": "space weirdness",
+      "motion": "static"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "It's like watching a massive bomb go off in complete silence.",
-      "on_screen_text": "Cosmic Bomb",
-      "search_query": "space bomb",
+      "voiceover": "The vacuum causes ebullism, where the water in your body starts to boil at your own temperature",
+      "on_screen_text": "Ebullism Effect",
+      "search_query": "boiling water",
       "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 5,
-      "voiceover": "If you were to compare the energy released by a supernova to something on Earth, it would be like detonating billions of hydrogen bombs simultaneously, yet the result is an eerie, deafening silence.",
-      "on_screen_text": "Eerie Silence",
-      "search_query": "hydrogen bomb",
-      "motion": "pan_out"
+      "duration": 4,
+      "voiceover": "You'd have about 15 conscious seconds before a lack of oxygen knocks you out",
+      "on_screen_text": "15 Seconds",
+      "search_query": "space helmet reflection",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
+      "duration": 4,
+      "voiceover": "That's roughly the time it takes to watch a space helmet reflection for 15 seconds",
+      "on_screen_text": "Time Comparison",
+      "search_query": "earth from space",
+      "motion": "pan"
+    },
+    {
+      "id": 10,
+      "duration": 4,
+      "voiceover": "You could watch the Earth spin about 2 degrees in that time",
+      "on_screen_text": "Earth Spin",
+      "search_query": "earth rotation",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 11,
       "duration": 5,
-      "voiceover": "Would you rather experience the silence of space or the roar of a supernova on Earth?",
-      "on_screen_text": "Space or Earth",
-      "search_query": "space vs earth",
-      "motion": "rotate"
+      "voiceover": "The vacuum's effect is so extreme that a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out",
+      "on_screen_text": "NASA Test",
+      "search_query": "nasa astronaut training",
+      "motion": "static"
+    },
+    {
+      "id": 12,
+      "duration": 4,
+      "voiceover": "You'd want to remember that 15 seconds for next time this comes up",
+      "on_screen_text": "Remember 15",
+      "search_query": "space facts",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What's the most silent place in the universe? #space #silence",
-    "Experience the eerie silence of space",
-    "Share with a friend who loves space!"
+    "What happens in space without a suit? You'd survive for 15 seconds - yes or no?",
+    "Space exposure is no joke",
+    "Share this with someone who loves space facts"
   ],
   "hashtags": [
     "#space",
-    "#silence",
-    "#supernova",
-    "#astronomy",
-    "#science"
+    "#science",
+    "#facts",
+    "#spaceexposure",
+    "#astronaut",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-12_the-silent-void-of-space",
-  "cta_style": "COMMENT"
+  "video_id": "science_2026-07-12_what-happens-in-space-without-a-suit",
+  "cta_style": "SAVE_WORTHY"
 }
