@@ -1,124 +1,101 @@
 {
-  "title": "Glass Myth Busted",
-  "viewer_job": "REFRAME",
-  "keyword": "glass is not liquid",
-  "metaphor": "old window glass",
-  "hook": "You've been lied to about your windows",
-  "script": "You've been lied to about your windows. What if you waited a thousand years for a window to droop and pool at the bottom? Old windows look thicker at the base. But that's not because the glass is flowing. Those uneven old windows were made by hand. Glass is an amorphous solid, not a liquid. It won't change shape over time. But here's the even wilder part: those old windows were installed heavy-side-down, which is why they look thicker at the base. You could watch every human civilization rise and fall 80,000 times, and the glass would still be the same shape. Save this so you remember it. You've been lied to about your windows.",
+  "title": "Hummingbird Heart Rate",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "hummingbird heart rate",
+  "metaphor": "tiny bird",
+  "hook": "Your heart beats like a hummingbird's?",
+  "script": "Your heart beats like a hummingbird's? What if your heart beat over 1,200 times per minute? You'd have to eat almost constantly just to survive, which is exactly what a hummingbird does. A hummingbird's heart beats incredibly fast, but that's not all - its unique physiology allows it to fly in ways other birds can't. But that's not even the strange part. A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards. Its wings beat up to 80 times a second, letting it hover in place. To put that in perspective, if your heart beat that fast, you could fit over 20 heartbeats in a single second. Your heart beats like a hummingbird's?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You've been lied to about your windows",
-      "on_screen_text": "Glass Myth",
-      "search_query": "old window glass",
+      "voiceover": "Your heart beats like a hummingbird's?",
+      "on_screen_text": "Hummingbird",
+      "search_query": "hummingbird flying",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What if you waited a thousand years for a window to droop and pool at the bottom?",
-      "on_screen_text": "Waiting Game",
-      "search_query": "stained glass texture",
+      "duration": 3,
+      "voiceover": "What if your heart beat over 1,200 times per minute?",
+      "on_screen_text": "Fast Heart",
+      "search_query": "bird wings slow motion",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "Old windows look thicker at the base",
-      "on_screen_text": "Thick Base",
-      "search_query": "old window closeup",
-      "motion": "zoom_in"
+      "duration": 3,
+      "voiceover": "You'd have to eat almost constantly just to survive, which is exactly what a hummingbird does.",
+      "on_screen_text": "Eat Constantly",
+      "search_query": "hummingbird flower",
+      "motion": "pan"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "But that's not because the glass is flowing",
-      "on_screen_text": "Not Flowing",
-      "search_query": "glass texture light",
-      "motion": "zoom_out"
+      "duration": 3,
+      "voiceover": "A hummingbird's heart beats incredibly fast, but that's not all - its unique physiology allows it to fly in ways other birds can't.",
+      "on_screen_text": "Unique Fly",
+      "search_query": "hummingbird in flight",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Those uneven old windows were made by hand",
-      "on_screen_text": "Handmade Glass",
-      "search_query": "glassmaking process",
+      "voiceover": "But that's not even the strange part.",
+      "on_screen_text": "Strange Part",
+      "search_query": "bird in slow motion",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Glass is an amorphous solid, not a liquid",
-      "on_screen_text": "Amorphous Solid",
-      "search_query": "solid materials",
+      "voiceover": "A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards.",
+      "on_screen_text": "1,200 Beats",
+      "search_query": "hummingbird flying backwards",
       "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "It won't change shape over time",
-      "on_screen_text": "Timeless Glass",
-      "search_query": "hourglass sand falling",
-      "motion": "static"
+      "duration": 3,
+      "voiceover": "Its wings beat up to 80 times a second, letting it hover in place.",
+      "on_screen_text": "80 Times",
+      "search_query": "hummingbird wings beating",
+      "motion": "pan"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "But here's the even wilder part: those old windows were installed heavy-side-down",
-      "on_screen_text": "Heavy Side Down",
-      "search_query": "window installation",
-      "motion": "static"
+      "duration": 3,
+      "voiceover": "To put that in perspective, if your heart beat that fast, you could fit over 20 heartbeats in a single second.",
+      "on_screen_text": "20 Heartbeats",
+      "search_query": "heartbeat monitor",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Which is why they look thicker at the base",
-      "on_screen_text": "Thicker Base",
-      "search_query": "old window details",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 10,
-      "duration": 4,
-      "voiceover": "You could watch every human civilization rise and fall 80,000 times, and the glass would still be the same shape",
-      "on_screen_text": "Civilization Rise",
-      "search_query": "human timeline",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 11,
-      "duration": 4,
-      "voiceover": "Save this so you remember it",
-      "on_screen_text": "Remember This",
-      "search_query": "saving knowledge",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 12,
-      "duration": 4,
-      "voiceover": "You've been lied to about your windows",
-      "on_screen_text": "Glass Myth Busted",
-      "search_query": "old window glass",
+      "voiceover": "Your heart beats like a hummingbird's?",
+      "on_screen_text": "Hummingbird Heart",
+      "search_query": "hummingbird flying",
       "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Glass is not liquid, did you know that?",
-    "Old windows have a secret",
-    "Share with someone who loves science"
+    "Can a hummingbird's heart beat over 1,200 times per minute - yes or no?",
+    "Hummingbirds are the only birds that can fly backwards.",
+    "What's the most surprising fact about hummingbirds?"
   ],
   "hashtags": [
-    "#glass",
-    "#science",
-    "#mythbusting",
-    "#facts",
-    "#window"
+    "#hummingbird",
+    "#birdfacts",
+    "#heart rate",
+    "#wildlife",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-12_glass-myth-busted"
+  "video_id": "science_2026-07-12_hummingbird-heart-rate",
+  "cta_style": "LOOP"
 }

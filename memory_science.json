@@ -83,6 +83,20 @@
         "clarity": 9.0,
         "overall": 7.83
       }
+    },
+    {
+      "video_id": "science_2026-07-12_hummingbird-heart-rate",
+      "metaphor": "tiny bird",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "title": "Hummingbird Heart Rate",
+      "fact_id": "hummingbird_heart",
+      "hook": "Your heart beats like a hummingbird's?",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": null
     }
   ]
 }
