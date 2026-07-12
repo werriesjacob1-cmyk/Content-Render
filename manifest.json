@@ -1,124 +1,124 @@
 {
-  "title": "DNA Stretched to the Sun",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "DNA scale",
-  "metaphor": "Cosmic DNA",
-  "hook": "You contain a universe within",
-  "script": "You contain a universe within. What if you unraveled the DNA from every cell in your body? It's a question that sparks curiosity. The answer lies in the microscopic world. Each cell packs a huge amount of genetic material. But that's not even the strange part. The DNA in a single one of your cells would stretch about 2 metres if uncoiled. And all the DNA in your body laid end to end would reach the Sun and back many times. This means every cell is like a tiny, intricate library. The scale is almost impossible to comprehend. You could fit the entire human genome in a space smaller than a grain of salt, yet it contains the blueprint for your entire body. Save this so you remember it.",
+  "title": "Glass Myth Busted",
+  "viewer_job": "REFRAME",
+  "keyword": "glass is not liquid",
+  "metaphor": "old window glass",
+  "hook": "You've been lied to about your windows",
+  "script": "You've been lied to about your windows. What if you waited a thousand years for a window to droop and pool at the bottom? Old windows look thicker at the base. But that's not because the glass is flowing. Those uneven old windows were made by hand. Glass is an amorphous solid, not a liquid. It won't change shape over time. But here's the even wilder part: those old windows were installed heavy-side-down, which is why they look thicker at the base. You could watch every human civilization rise and fall 80,000 times, and the glass would still be the same shape. Save this so you remember it. You've been lied to about your windows.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You contain a universe within",
-      "on_screen_text": "DNA Mystery",
-      "search_query": "twisted rope closeup",
+      "voiceover": "You've been lied to about your windows",
+      "on_screen_text": "Glass Myth",
+      "search_query": "old window glass",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if you unraveled the DNA from every cell in your body?",
-      "on_screen_text": "Cellular Scale",
-      "search_query": "spiral staircase looking up",
+      "voiceover": "What if you waited a thousand years for a window to droop and pool at the bottom?",
+      "on_screen_text": "Waiting Game",
+      "search_query": "stained glass texture",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "It's a question that sparks curiosity",
-      "on_screen_text": "DNA Curiosity",
-      "search_query": "tangled threads macro",
-      "motion": "zoom_out"
+      "voiceover": "Old windows look thicker at the base",
+      "on_screen_text": "Thick Base",
+      "search_query": "old window closeup",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The answer lies in the microscopic world",
-      "on_screen_text": "Microscopic World",
-      "search_query": "ocean waves aerial",
-      "motion": "focus_in"
+      "voiceover": "But that's not because the glass is flowing",
+      "on_screen_text": "Not Flowing",
+      "search_query": "glass texture light",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Each cell packs a huge amount of genetic material",
-      "on_screen_text": "Genetic Material",
-      "search_query": "dna double helix",
-      "motion": "rotate"
+      "voiceover": "Those uneven old windows were made by hand",
+      "on_screen_text": "Handmade Glass",
+      "search_query": "glassmaking process",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "The Strange Part",
-      "search_query": "surprised face",
-      "motion": "cut_to"
+      "voiceover": "Glass is an amorphous solid, not a liquid",
+      "on_screen_text": "Amorphous Solid",
+      "search_query": "solid materials",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The DNA in a single one of your cells would stretch about 2 metres if uncoiled",
-      "on_screen_text": "2 Metres Long",
-      "search_query": "measuring tape",
-      "motion": "unroll"
+      "voiceover": "It won't change shape over time",
+      "on_screen_text": "Timeless Glass",
+      "search_query": "hourglass sand falling",
+      "motion": "static"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "And all the DNA in your body laid end to end would reach the Sun and back many times",
-      "on_screen_text": "Reach the Sun",
-      "search_query": "sunrise space",
-      "motion": "zoom_out"
+      "voiceover": "But here's the even wilder part: those old windows were installed heavy-side-down",
+      "on_screen_text": "Heavy Side Down",
+      "search_query": "window installation",
+      "motion": "static"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "This means every cell is like a tiny, intricate library",
-      "on_screen_text": "Cellular Library",
-      "search_query": "bookshelf macro",
-      "motion": "pan_across"
+      "voiceover": "Which is why they look thicker at the base",
+      "on_screen_text": "Thicker Base",
+      "search_query": "old window details",
+      "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "The scale is almost impossible to comprehend",
-      "on_screen_text": "Impossible Scale",
-      "search_query": "cityscape tiny",
-      "motion": "tilt_shift"
+      "voiceover": "You could watch every human civilization rise and fall 80,000 times, and the glass would still be the same shape",
+      "on_screen_text": "Civilization Rise",
+      "search_query": "human timeline",
+      "motion": "zoom_out"
     },
     {
       "id": 11,
       "duration": 4,
-      "voiceover": "You could fit the entire human genome in a space smaller than a grain of salt, yet it contains the blueprint for your entire body",
-      "on_screen_text": "Genome Blueprint",
-      "search_query": "salt grain macro",
+      "voiceover": "Save this so you remember it",
+      "on_screen_text": "Remember This",
+      "search_query": "saving knowledge",
       "motion": "zoom_in"
     },
     {
       "id": 12,
       "duration": 4,
-      "voiceover": "Save this so you remember it",
-      "on_screen_text": "Save and Share",
-      "search_query": "hand holding phone",
-      "motion": "cut_to"
+      "voiceover": "You've been lied to about your windows",
+      "on_screen_text": "Glass Myth Busted",
+      "search_query": "old window glass",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know your DNA could reach the Sun? #DNA",
-    "The scale of DNA is mind-blowing",
-    "Tag someone who won't believe this! #DNA scale"
+    "Glass is not liquid, did you know that?",
+    "Old windows have a secret",
+    "Share with someone who loves science"
   ],
   "hashtags": [
-    "#DNA",
+    "#glass",
     "#science",
-    "#space",
+    "#mythbusting",
     "#facts",
-    "#genetics"
+    "#window"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-11_dna-stretched-to-the-sun"
+  "video_id": "science_2026-07-12_glass-myth-busted"
 }

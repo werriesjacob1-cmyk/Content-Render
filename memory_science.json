@@ -62,6 +62,27 @@
         "clarity": 9.0,
         "overall": 7.83
       }
+    },
+    {
+      "video_id": "science_2026-07-12_glass-myth-busted",
+      "metaphor": "old window glass",
+      "viewer_job": "REFRAME",
+      "title": "Glass Myth Busted",
+      "fact_id": "glass_solid",
+      "hook": "You've been lied to about your windows",
+      "structure": {
+        "scene_count": 12,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
     }
   ]
 }
