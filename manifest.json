@@ -1,126 +1,125 @@
 {
-  "title": "What Happens in Space Without a Suit?",
-  "viewer_job": "REFRAME",
-  "keyword": "space exposure",
-  "metaphor": "space vacuum",
-  "hook": "You'd survive space for 15 seconds",
-  "script": "You'd survive space for 15 seconds. What if an airlock burst open and flung you into space? You wouldn't pop like a balloon. The movies got it wrong. Space is a vacuum, but that's not what kills you. The real danger is the lack of oxygen. But that's not even the strange part. The vacuum causes ebullism, where the water in your body starts to boil at your own temperature. You'd have about 15 conscious seconds before a lack of oxygen knocks you out. That's roughly the time it takes to watch a space helmet reflection for 15 seconds. You could watch the Earth spin about 2 degrees in that time. The vacuum's effect is so extreme that a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out. You'd want to remember that 15 seconds for next time this comes up.",
+  "title": "You're Always Living in the Past",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "sunlight delay",
+  "metaphor": "Sun's Time Lag",
+  "hook": "You're seeing the Sun as it was, not as it is",
+  "script": "You're seeing the Sun as it was, not as it is What if the Sun simply switched off right now? You wouldn't know for a while The sunlight hitting your skin has traveled a long way Every time you look at the Sun, you're seeing it as it was in the past But that's not even the strange part The sunlight hitting your skin left the Sun about eight minutes ago This means you are always seeing the Sun as it was eight minutes ago, never as it is right now It's like watching a live feed with an eight-minute delay You could drive over 100 miles in that time, or watch an entire episode of your favorite show But here's the even wilder part: every time you look at the Sun, you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now Are you team 'living in the past' or team 'living in the present'?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You'd survive space for 15 seconds",
-      "on_screen_text": "Space Exposure",
-      "search_query": "astronaut spacewalk",
+      "voiceover": "You're seeing the Sun as it was, not as it is",
+      "on_screen_text": "Sun Delay",
+      "search_query": "sun bright sky",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "What if an airlock burst open and flung you into space?",
-      "on_screen_text": "Airlock Burst",
-      "search_query": "space station explosion",
+      "duration": 4,
+      "voiceover": "What if the Sun simply switched off right now?",
+      "on_screen_text": "Sun Switch",
+      "search_query": "sunlight rays",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "You wouldn't pop like a balloon",
-      "on_screen_text": "Space Myth",
-      "search_query": "balloon in space",
-      "motion": "zoom_in"
+      "voiceover": "You wouldn't know for a while",
+      "on_screen_text": "Time Lag",
+      "search_query": "hourglass sand falling",
+      "motion": "static"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The movies got it wrong",
-      "on_screen_text": "Wrong Answers",
-      "search_query": "space movie scenes",
-      "motion": "zoom_out"
+      "voiceover": "The sunlight hitting your skin has traveled a long way",
+      "on_screen_text": "Sunlight Travel",
+      "search_query": "sunrise horizon",
+      "motion": "pan"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "The real danger is the lack of oxygen",
-      "on_screen_text": "Oxygen Matters",
-      "search_query": "scuba diver oxygen",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "Every time you look at the Sun, you're seeing it as it was in the past",
+      "on_screen_text": "Past View",
+      "search_query": "old clock ticking",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
       "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Facts",
-      "search_query": "space weirdness",
-      "motion": "static"
+      "on_screen_text": "Strange Part",
+      "search_query": "bizarre landscape",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "The vacuum causes ebullism, where the water in your body starts to boil at your own temperature",
-      "on_screen_text": "Ebullism Effect",
-      "search_query": "boiling water",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "The sunlight hitting your skin left the Sun about eight minutes ago",
+      "on_screen_text": "8 Minutes Ago",
+      "search_query": "stopwatch counting",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "You'd have about 15 conscious seconds before a lack of oxygen knocks you out",
-      "on_screen_text": "15 Seconds",
-      "search_query": "space helmet reflection",
-      "motion": "zoom_out"
+      "voiceover": "This means you are always seeing the Sun as it was eight minutes ago, never as it is right now",
+      "on_screen_text": "Time Delay",
+      "search_query": "delayed live feed",
+      "motion": "pan"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "That's roughly the time it takes to watch a space helmet reflection for 15 seconds",
-      "on_screen_text": "Time Comparison",
-      "search_query": "earth from space",
-      "motion": "pan"
+      "voiceover": "It's like watching a live feed with an eight-minute delay",
+      "on_screen_text": "Live Feed Delay",
+      "search_query": "tv screen flickering",
+      "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "You could watch the Earth spin about 2 degrees in that time",
-      "on_screen_text": "Earth Spin",
-      "search_query": "earth rotation",
+      "voiceover": "You could drive over 100 miles in that time, or watch an entire episode of your favorite show",
+      "on_screen_text": "Distance Covered",
+      "search_query": "car driving on highway",
       "motion": "zoom_out"
     },
     {
       "id": 11,
-      "duration": 5,
-      "voiceover": "The vacuum's effect is so extreme that a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out",
-      "on_screen_text": "NASA Test",
-      "search_query": "nasa astronaut training",
-      "motion": "static"
+      "duration": 4,
+      "voiceover": "But here's the even wilder part: every time you look at the Sun, you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now",
+      "on_screen_text": "Wilder Part",
+      "search_query": "astronaut in space",
+      "motion": "pan_left"
     },
     {
       "id": 12,
       "duration": 4,
-      "voiceover": "You'd want to remember that 15 seconds for next time this comes up",
-      "on_screen_text": "Remember 15",
-      "search_query": "space facts",
+      "voiceover": "Are you team 'living in the past' or team 'living in the present'?",
+      "on_screen_text": "Team Choice",
+      "search_query": "person looking confused",
       "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What happens in space without a suit? You'd survive for 15 seconds - yes or no?",
-    "Space exposure is no joke",
-    "Share this with someone who loves space facts"
+    "Are you living in the past due to sunlight delay? Yes or no?",
+    "The Sun's time lag is mind-blowing",
+    "Sunlight delay: the ultimate time-traveling experience"
   ],
   "hashtags": [
     "#space",
     "#science",
-    "#facts",
-    "#spaceexposure",
-    "#astronaut",
-    "#learnontiktok"
+    "#Sun",
+    "#time",
+    "#delay"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-12_what-happens-in-space-without-a-suit",
-  "cta_style": "SAVE_WORTHY"
+  "video_id": "science_2026-07-13_you-re-always-living-in-the-past",
+  "cta_style": "COMMENT"
 }

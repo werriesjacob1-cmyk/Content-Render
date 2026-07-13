@@ -133,6 +133,28 @@
         "clarity": 9.0,
         "overall": 7.5
       }
+    },
+    {
+      "video_id": "science_2026-07-13_you-re-always-living-in-the-past",
+      "metaphor": "Sun's Time Lag",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "You're Always Living in the Past",
+      "fact_id": "sun_light_time",
+      "hook": "You're seeing the Sun as it was, not as it is",
+      "structure": {
+        "scene_count": 12,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 5.0,
+        "rewatch": 9.0,
+        "clarity": 8.0,
+        "overall": 7.17
+      }
     }
   ]
 }
