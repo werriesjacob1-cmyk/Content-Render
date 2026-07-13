@@ -685,6 +685,76 @@
     "night photography long exposure",
     "glowing light particles"
    ]
+  },
+  {
+   "id": "axolotl_regeneration",
+   "domain": "animals",
+   "fact": "The axolotl can regrow an entire missing limb, complete with bone, muscle, and nerves, in about 40 to 50 days, and it can also regenerate damaged spinal cord and parts of its heart and brain without forming any scar tissue.",
+   "angle": "an animal that heals like a reset button",
+   "key_terms": ["axolotl", "40 to 50 days", "without scarring"],
+   "whatif": "What if losing a leg were just a temporary inconvenience? For the axolotl it is; sever one of its limbs and a fully functional replacement, bone, muscle, and nerves included, regrows in about 40 to 50 days, with no scar left behind.",
+   "wow": "It can also regenerate damaged spinal cord and even parts of its own heart and brain, which is why labs around the world keep colonies of them alive just to study how it's done.",
+   "queries": [
+    "axolotl aquarium",
+    "salamander water",
+    "pink axolotl swimming"
+   ]
+  },
+  {
+   "id": "naked_mole_rat",
+   "domain": "animals",
+   "fact": "Naked mole rats can survive about 18 minutes with no oxygen at all by switching their metabolism to burn fructose instead of glucose, and they are also remarkably resistant to cancer, living over 30 years despite being mouse-sized.",
+   "angle": "a rodent that breaks the rules of biology",
+   "key_terms": ["18 minutes", "fructose", "naked mole rat"],
+   "whatif": "What if an animal's brain could just switch fuels when the oxygen ran out? A naked mole rat's does; starved of air, it burns fructose instead of glucose, letting it survive about 18 minutes with no oxygen at all.",
+   "wow": "That trick works in its heart and brain too, not just the gut like in other mammals, and on top of it naked mole rats almost never develop cancer, living over 30 years, ten times longer than a mouse their size.",
+   "queries": [
+    "mole rat underground",
+    "burrow tunnel dark",
+    "rodent close up"
+   ]
+  },
+  {
+   "id": "woodpecker_skull",
+   "domain": "animals",
+   "fact": "A woodpecker's head decelerates at roughly 1,000 times the force of gravity with every peck, tens of times harder than a hit that would concuss a person, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
+   "angle": "an animal that headbangs a tree without injury",
+   "key_terms": ["1,000 times the force of gravity", "woodpecker", "20 pecks per second"],
+   "whatif": "What if you slammed your head into a tree trunk 20 times a second? You'd be concussed instantly, but a woodpecker isn't; each strike decelerates its head at roughly 1,000 times the force of gravity, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
+   "wow": "A 2022 study found the skull acts like a stiff hammer, not a cushion, and even the hardest hits stay well below the threshold that would concuss a primate brain.",
+   "queries": [
+    "woodpecker pecking tree",
+    "woodpecker tree trunk",
+    "bird forest closeup"
+   ]
+  },
+  {
+   "id": "aerogel_frozen_smoke",
+   "domain": "materials",
+   "fact": "Aerogel, nicknamed frozen smoke, is up to 99.8 percent air by volume, making it the lightest solid material ever created, yet a thin sheet of it can protect a bare hand from the flame of a blowtorch held right against it.",
+   "angle": "a solid that is almost entirely empty air",
+   "key_terms": ["99.8 percent air", "frozen smoke", "blowtorch"],
+   "whatif": "What if you could hold a blowtorch flame directly against your palm? With a thin layer of aerogel in between you actually could, because this solid, nicknamed frozen smoke, is up to 99.8 percent air yet still blocks heat well enough to protect skin at point-blank range.",
+   "wow": "Despite being almost entirely empty space, aerogel holds more than a dozen Guinness World Records for its extremes, including the lightest solid ever produced.",
+   "queries": [
+    "aerogel material closeup",
+    "blue smoke wisps",
+    "blowtorch flame closeup"
+   ]
+  },
+  {
+   "id": "earths_core_hot_as_sun",
+   "domain": "earth",
+   "fact": "Earth's solid inner core runs about 5,400 degrees Celsius, roughly as hot as the surface of the Sun, and it stays solid only because the crushing pressure at the centre of the planet keeps iron from melting.",
+   "angle": "the middle of our planet is as hot as a star",
+   "key_terms": ["5,400 degrees Celsius", "inner core", "surface of the Sun"],
+   "whatif": "What if the centre of the Earth were somehow cooler than we think? It isn't; the inner core runs about 5,400 degrees Celsius, roughly matching the Sun's surface, and it only stays solid because the pressure down there is extreme enough to stop iron from melting despite the heat.",
+   "wow": "That means the ball of solid iron at the middle of our planet is, temperature for temperature, about as hot as the glowing surface of the star we orbit.",
+   "queries": [
+    "erupting volcano lava",
+    "molten rock glowing",
+    "earth from space rotating"
+   ]
   }
  ]
 }
