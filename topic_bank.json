@@ -601,6 +601,90 @@
     "spiral staircase looking up",
     "tangled threads macro"
    ]
+  },
+  {
+   "id": "giant_squid_eye",
+   "domain": "ocean",
+   "fact": "The giant squid has the largest eye of any animal, up to about 25 centimetres across, roughly the size of a dinner plate, evolved to catch the faint glow stirred up by a hunting sperm whale.",
+   "angle": "an eye built like an early-warning system",
+   "key_terms": ["25 centimetres", "sperm whale", "120 metres"],
+   "whatif": "What if you needed to spot a predator in pitch darkness a football field away? A giant squid can; its eye, about 25 centimetres across, is built to catch the faint bioluminescent stir of a sperm whale swimming up to 120 metres off, buying it just enough warning to flee.",
+   "wow": "That's roughly triple the width of a human eye, and the next largest eye in the ocean, a swordfish's, is barely a third of the size.",
+   "queries": [
+    "giant squid deep sea",
+    "sperm whale ocean",
+    "deep sea diver flashlight"
+   ]
+  },
+  {
+   "id": "vent_tube_worms",
+   "domain": "ocean",
+   "fact": "The giant tube worm Riftia pachyptila has no mouth or gut at all; it survives entirely on bacteria living inside it that turn the toxic hydrogen sulfide pouring from deep-sea hydrothermal vents into food.",
+   "angle": "an animal that never eats a single meal",
+   "key_terms": ["Riftia pachyptila", "hydrogen sulfide", "50 percent of its body weight"],
+   "whatif": "What if an animal never had to eat a bite its whole life? The giant tube worm Riftia pachyptila doesn't; with no mouth or gut, it lives entirely off bacteria inside it that turn a hydrothermal vent's toxic hydrogen sulfide into food.",
+   "wow": "Those bacteria can make up as much as 50 percent of its body weight, and its blood-red plume is red because it's packed with hemoglobin, ferrying oxygen and sulfide down to feed them.",
+   "queries": [
+    "hydrothermal vent deep sea",
+    "tube worms ocean floor",
+    "deep sea vent bubbles"
+   ]
+  },
+  {
+   "id": "mercury_extremes",
+   "domain": "space",
+   "fact": "Mercury has the wildest temperature swings of any planet: daytime surface heat reaches about 430 degrees Celsius, while at night it plunges to about minus 180 Celsius.",
+   "angle": "the planet closest to the Sun is also brutally cold",
+   "key_terms": ["430 degrees Celsius", "minus 180 Celsius", "Mercury"],
+   "whatif": "What if you stood on Mercury as the Sun set? Within hours the ground would cool from a scorching 430 degrees Celsius to a frozen minus 180 Celsius, the biggest day-to-night temperature swing of any planet in the solar system.",
+   "wow": "Mercury sits closest to the Sun, yet Venus is actually the hotter planet overall, because Mercury has almost no atmosphere left to trap any of that heat once night falls.",
+   "queries": [
+    "planet mercury surface",
+    "sun close up space",
+    "cratered planet surface"
+   ]
+  },
+  {
+   "id": "muon_time_dilation",
+   "domain": "physics",
+   "fact": "Muons created when cosmic rays strike the upper atmosphere have a lifespan of just 2.2 microseconds, far too short to fall 15 kilometres to the ground, yet at near light speed, time dilation lets billions of them reach the surface anyway.",
+   "angle": "relativity proving itself over your head right now",
+   "key_terms": ["2.2 microseconds", "muons", "time dilation"],
+   "whatif": "What if a clock ticking near light speed actually ran slower? A muon's does; born 15 kilometres up with only 2.2 microseconds to live, it should decay long before reaching the ground, but relativistic time dilation stretches that lifespan just enough for it to survive the fall.",
+   "wow": "About one of these muons passes through every square centimetre of ground every minute, meaning a real proof of Einstein's relativity is quietly raining down on you right now.",
+   "queries": [
+    "mountain peak sunrise",
+    "night sky stars timelapse",
+    "scientist laboratory equipment"
+   ]
+  },
+  {
+   "id": "liver_regrows",
+   "domain": "body",
+   "fact": "The liver can regenerate itself: after a living donor gives away as much as 65 percent of it for a transplant, both the donor's remaining liver and the piece given to the recipient regrow to nearly full size within about 8 to 10 weeks.",
+   "angle": "the one organ that grows itself back",
+   "key_terms": ["65 percent", "8 to 10 weeks", "liver"],
+   "whatif": "What if you cut away most of an organ and expected it to just grow back? A liver donor's does; after giving up as much as 65 percent of it, the remaining tissue regenerates to nearly full size and function within about 8 to 10 weeks.",
+   "wow": "It's the only solid organ in the body that can do this, regrowing real working tissue instead of just scarring over, which is exactly why living-donor liver transplants are possible.",
+   "queries": [
+    "surgeons operating room",
+    "hospital corridor walking",
+    "medical team surgery"
+   ]
+  },
+  {
+   "id": "human_bioluminescence",
+   "domain": "body",
+   "fact": "The human body emits a faint visible glow of light, invisible to the naked eye but caught by an ultra-sensitive camera in a 2009 study, and its brightness rises and falls on a daily rhythm, peaking in the afternoon.",
+   "angle": "you glow like a firefly, just too dimly to see",
+   "key_terms": ["1,000 times", "biophotons", "circadian rhythm"],
+   "whatif": "What if your body glowed like a firefly, just too dimly to notice? It does; a 2009 study used a camera cooled to nearly minus 120 degrees Celsius to catch the light and found it's about 1,000 times too faint for the naked eye to ever see.",
+   "wow": "The glow isn't constant either; these biophotons brighten and dim across the day in step with your circadian rhythm, peaking in the afternoon around your cheeks and forehead.",
+   "queries": [
+    "person silhouette dark room",
+    "night photography long exposure",
+    "glowing light particles"
+   ]
   }
  ]
 }
