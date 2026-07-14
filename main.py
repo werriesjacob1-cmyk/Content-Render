@@ -881,6 +881,65 @@ def build_ass(scenes, plan, new_starts, path):
         f.write(_ass_header() + "\n".join(events) + "\n")
 
 
+# ---------- CONCAT: crossfade chain (soft cuts) with hard-cut fallback ----------
+# Feedback: renders feel "choppy" -- every scene boundary was a hard cut via
+# the concat demuxer. This replaces that with a real xfade (video) +
+# acrossfade (audio) chain so consecutive scenes blend for CROSSFADE_S
+# instead of jump-cutting. The crossfade window is designed (via the
+# breathing-gap/lead-silence padding above) to land entirely inside silence
+# on both sides, so it never blends over spoken words.
+#
+# xfade chain math for N clips of duration d_0..d_{n-1} with a fixed fade
+# duration f: merging clips sequentially, the offset for the transition that
+# introduces clip i (i=1..n-1) into the accumulated stream is
+#   offset_i = sum(d_0..d_{i-1}) - i*f
+# and the final duration is sum(d_i) - (n-1)*f. acrossfade needs no offset --
+# it always crossfades the tail of stream A with the head of stream B, which
+# chains the same way automatically.
+def build_body_xfade(scene_files, shot_durs, fade, out_path):
+    """Raises on any failure (bad offset, ffmpeg error, mismatched inputs) so
+    the caller can fall back to the plain concat demuxer -- a render must
+    never die because the crossfade chain didn't like something."""
+    n = len(scene_files)
+    if n == 0:
+        raise RuntimeError("no scene files to concat")
+    if n == 1:
+        shutil.copy(scene_files[0], out_path)
+        return
+    inputs = []
+    for f in scene_files:
+        inputs += ["-i", f]
+    vlabel, alabel = "0:v", "0:a"
+    filters = []
+    cum = shot_durs[0]
+    for i in range(1, n):
+        offset = cum - i * fade
+        if offset < 0.05:
+            raise RuntimeError(f"negative/degenerate xfade offset ({offset:.3f}) at clip {i}")
+        vout, aout = f"v{i}", f"a{i}"
+        filters.append(f"[{vlabel}][{i}:v]xfade=transition=fade:duration={fade:.3f}:offset={offset:.3f}[{vout}]")
+        filters.append(f"[{alabel}][{i}:a]acrossfade=d={fade:.3f}[{aout}]")
+        vlabel, alabel = vout, aout
+        cum += shot_durs[i]
+    cmd = (["ffmpeg", "-y"] + inputs +
+           ["-filter_complex", ";".join(filters),
+            "-map", f"[{vlabel}]", "-map", f"[{alabel}]",
+            "-r", "30", "-pix_fmt", "yuv420p",
+            "-c:v", "libx264", "-c:a", "aac", out_path])
+    run(cmd)
+
+
+def build_body_concat(scene_files, out_path):
+    """Original hard-cut concat demuxer path -- the fallback when the xfade
+    chain can't be built or fails to render."""
+    listfile = os.path.join(WORK, "list.txt")
+    with open(listfile, "w") as lf:
+        for f in scene_files:
+            lf.write(f"file '{os.path.abspath(f)}'\n")
+    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listfile,
+         "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", out_path])
+
+
 # ---------- MAIN ----------
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
@@ -938,17 +997,21 @@ def main():
 
     save_used_footage()  # persist before the render steps below, in case one of them fails
 
-    # concat: plain hard-cut concat demuxer (no duration collapsing, so the
-    # caption shift below uses fade=0.0 -- see build_body_xfade for the
-    # crossfade version of this step)
-    listfile = os.path.join(WORK, "list.txt")
-    with open(listfile, "w") as lf:
-        for f in scene_files:
-            lf.write(f"file '{os.path.abspath(f)}'\n")
+    # concat: soft crossfade chain between scenes (item 1 -- replaces hard
+    # cuts), falling back to the original hard-cut concat demuxer on any
+    # failure so the render always completes either way.
     body = os.path.join(WORK, "body.mp4")
-    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listfile,
-         "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", body])
-    new_starts = compute_new_starts(durations, 0.0)
+    fade_used = 0.0
+    try:
+        build_body_xfade(scene_files, durations, CROSSFADE_S, body)
+        fade_used = CROSSFADE_S if len(scene_files) > 1 else 0.0
+        print(f"[concat] xfade chain OK ({len(scene_files)} scenes, "
+              f"{CROSSFADE_S:.2f}s crossfades)")
+    except Exception as e:
+        print(f"[concat] xfade chain failed ({e}) -- falling back to hard-cut concat")
+        build_body_concat(scene_files, body)
+        fade_used = 0.0
+    new_starts = compute_new_starts(durations, fade_used)
 
     # captions (karaoke) + hook title card (first 2.6s, top) — the docstring
     # always promised a hook overlay but none was ever rendered; the written
