@@ -84,35 +84,46 @@ def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
     el_key = os.environ.get("ELEVENLABS_API_KEY", "")
     if el_key:
-        try:
-            url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE}/with-timestamps"
-            headers = {"xi-api-key": el_key, "Content-Type": "application/json", "Accept": "application/json"}
-            payload = json.dumps({
-                "text": full_text,
-                "model_id": "eleven_turbo_v2",
-                "voice_settings": PROFILE["voice_settings"]
-            }).encode()
-            req = urllib.request.Request(url, data=payload, headers=headers)
-            with urllib.request.urlopen(req, timeout=90) as r:
-                data = json.loads(r.read().decode())
-            import base64 as _b64
-            with open(out_mp3, "wb") as f:
-                f.write(_b64.b64decode(data["audio_base64"]))
-            al = data.get("alignment") or {}
-            chars = al.get("characters", [])
-            starts = al.get("character_start_times_seconds", [])
-            ends = al.get("character_end_times_seconds", [])
-            if chars and starts and ends:
-                WORD_TIMINGS = _chars_to_words(chars, starts, ends)
-                print(f"  ElevenLabs SUCCESS ({len(WORD_TIMINGS)} word timings)")
-            else:
-                print("  ElevenLabs SUCCESS (no timings)")
-            if os.path.getsize(out_mp3) > 1000:
-                return True
-        except urllib.error.HTTPError as e:
-            print(f"  ElevenLabs HTTP {e.code}: {e.read().decode()[:200]}")
-        except Exception as e:
-            print(f"  ElevenLabs failed: {e}")
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE}/with-timestamps"
+        headers = {"xi-api-key": el_key, "Content-Type": "application/json", "Accept": "application/json"}
+        vs_full = dict(PROFILE["voice_settings"])
+        # Try with the requested 'speed' setting; if this model rejects it, retry
+        # once WITHOUT speed so we still get the chosen (deep) voice rather than
+        # silently dropping to the edge-tts fallback voice.
+        variants = [vs_full] + ([{k: v for k, v in vs_full.items() if k != "speed"}]
+                                if "speed" in vs_full else [])
+        for vi, vs in enumerate(variants):
+            try:
+                payload = json.dumps({"text": full_text, "model_id": "eleven_turbo_v2",
+                                      "voice_settings": vs}).encode()
+                req = urllib.request.Request(url, data=payload, headers=headers)
+                with urllib.request.urlopen(req, timeout=90) as r:
+                    data = json.loads(r.read().decode())
+                import base64 as _b64
+                with open(out_mp3, "wb") as f:
+                    f.write(_b64.b64decode(data["audio_base64"]))
+                al = data.get("alignment") or {}
+                chars = al.get("characters", [])
+                starts = al.get("character_start_times_seconds", [])
+                ends = al.get("character_end_times_seconds", [])
+                if chars and starts and ends:
+                    WORD_TIMINGS = _chars_to_words(chars, starts, ends)
+                    note = " [speed unsupported, dropped]" if "speed" not in vs and "speed" in vs_full else ""
+                    print(f"  ElevenLabs SUCCESS ({len(WORD_TIMINGS)} word timings){note}")
+                else:
+                    print("  ElevenLabs SUCCESS (no timings)")
+                if os.path.getsize(out_mp3) > 1000:
+                    return True
+            except urllib.error.HTTPError as e:
+                body = e.read().decode()[:200]
+                print(f"  ElevenLabs HTTP {e.code}: {body}")
+                if vi == 0 and len(variants) > 1 and "speed" in body.lower():
+                    print("  retrying ElevenLabs without the 'speed' setting")
+                    continue
+                break
+            except Exception as e:
+                print(f"  ElevenLabs failed: {e}")
+                break
     try:
         run(["edge-tts", f"--voice={voice}", f"--rate={rate}",
              f"--text={full_text}", f"--write-media={out_mp3}"])

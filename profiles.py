@@ -10,9 +10,11 @@ Select with env PAGE (default "science").
 PROFILES = {
     "science": {
         "name": "Science, Stranger Than It Sounds",
-        "eleven_voice": "JBFqnCBsd6RMkjVDRZzb",   # George — warm British
-        "voice_settings": {"stability": 0.40, "similarity_boost": 0.80, "style": 0.30, "use_speaker_boost": True},
-        "edge_voice": "en-US-GuyNeural",
+        "eleven_voice": "onwK4e9ZLuTAKqWW03F9",   # Daniel — deep, authoritative British (documentary/"intelligent" read)
+        # speed 0.9 = ~10% slower delivery (viewer feedback: "make it speak slower");
+        # higher stability = a measured, composed read rather than an excitable one.
+        "voice_settings": {"stability": 0.55, "similarity_boost": 0.80, "style": 0.20, "use_speaker_boost": True, "speed": 0.9},
+        "edge_voice": "en-GB-RyanNeural",   # deeper British fallback to match Daniel if ElevenLabs is unavailable
         # captions
         "cap_font": "DejaVu Sans",
         "cap_size": 120,
