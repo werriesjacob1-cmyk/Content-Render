@@ -91,6 +91,17 @@ def cerebras_models():
             print(f"  [model] cerebras /v1/models lookup failed ({e}); skipping Cerebras this run")
     _CEREBRAS_MODELS_CACHE = out
     return _CEREBRAS_MODELS_CACHE
+
+
+# FOURTH free provider: OpenRouter. Its free tier ("...:free" model slugs) serves
+# genuinely strong models — notably llama-3.3-70b — which is a big step up from
+# Cerebras' free gemma-4-31b for a weak-model day, and it's a SEPARATE free daily
+# bucket, so it stretches how many videos we can render for $0. OpenAI-compatible
+# endpoint, so it reuses _call_openai_compat. Optional/env-gated (no key = skip).
+# Free key (no card): https://openrouter.ai/keys . Add as OPENROUTER_API_KEY.
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free",
+                     "deepseek/deepseek-chat-v3-0324:free"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -689,6 +700,11 @@ def _call_model(model, prompt):
                                GROQ_KEY, model, prompt)
 
 
+def _call_openrouter(model, prompt):
+    return _call_openai_compat("https://openrouter.ai/api/v1/chat/completions",
+                               OPENROUTER_KEY, model, prompt)
+
+
 def _call_cerebras(model, prompt):
     """Cerebras call with a per-minute-limit self-heal. Cerebras' free tier caps
     requests-per-minute, and one render's burst of generation calls trips it
@@ -805,9 +821,11 @@ def call_groq(prompt):
     global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
-    # Order = free-quota headroom: Gemini (2.5-flash-lite ~1000 RPD) → Cerebras
-    # (very generous free tier) → Groq (tiny daily budget, last resort).
+    # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
+    # (llama-3.3-70b:free, strongest free model, separate daily bucket) →
+    # Cerebras (gemma-4-31b, RPM-limited) → Groq (100k tokens/day, last resort).
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
+            ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
             [("cerebras", m) for m in cerebras_models()] + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
     # try the cached working provider first (also re-walks the chain if it now
@@ -820,6 +838,8 @@ def call_groq(prompt):
         try:
             if prov == "gemini":
                 out = _call_gemini(model, prompt)
+            elif prov == "openrouter":
+                out = _call_openrouter(model, prompt)
             elif prov == "cerebras":
                 out = _call_cerebras(model, prompt)
             else:

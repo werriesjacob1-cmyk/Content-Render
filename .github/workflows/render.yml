@@ -78,6 +78,10 @@ jobs:
           # Cerebras = 3rd free provider (backup when Gemini is rate-limited AND
           # Groq's daily budget is spent). Optional; free key: cloud.cerebras.ai
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          # OpenRouter = 4th free provider; its free tier includes llama-3.3-70b
+          # (stronger than Cerebras' free model) on a separate daily bucket.
+          # Optional; free key (no card): openrouter.ai/keys
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # CRITICAL: never fall back to a hardcoded example on failure. Doing
           # that (the old `|| cp manifest_example.json`) published the IDENTICAL
@@ -119,6 +123,7 @@ jobs:
           # Pexels result when Groq is rate-limited.
           GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
           CEREBRAS_API_KEY:    ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY:  ${{ secrets.OPENROUTER_API_KEY }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history

@@ -584,6 +584,19 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to Cerebras/Groq
             print("  Gemini judge call failed, trying Cerebras/Groq:", e)
+    # OpenRouter: free tier includes a strong llama-3.3-70b:free — a good judge,
+    # separate free bucket. Tried after Gemini, before Cerebras. Env-gated.
+    or_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if or_key:
+        try:
+            out = _openai_compat_chat("https://openrouter.ai/api/v1/chat/completions",
+                                      or_key, "meta-llama/llama-3.3-70b-instruct:free",
+                                      prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through
+            print("  OpenRouter judge call failed, trying Cerebras/Groq:", e)
     # Cerebras: free, generous, OpenAI-compatible — the backup judge when Gemini
     # is rate-limited, tried before Groq's tiny budget. Env-gated; no key = skip.
     cere_key = os.environ.get("CEREBRAS_API_KEY", "")
@@ -599,9 +612,9 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
             print("  Cerebras judge call failed, trying Groq:", e)
     key = os.environ.get("GROQ_API_KEY", "")
     if not key:
-        # No Groq either. If Gemini/Cerebras were configured but errored, that's a
-        # real outage → signal unavailable so the caller ships the top clip.
-        if os.environ.get("GEMINI_API_KEY", "") or cere_key:
+        # No Groq either. If any other provider was configured but errored, that's
+        # a real outage → signal unavailable so the caller ships the top clip.
+        if os.environ.get("GEMINI_API_KEY", "") or or_key or cere_key:
             _LAST_GROQ_FAILED = True
             _judge_note(False)
         return None
