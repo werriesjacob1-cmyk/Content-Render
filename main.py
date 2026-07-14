@@ -472,10 +472,18 @@ def _gather_candidates(query):
             or _coverr_candidates(query))  # Coverr dormant unless COVERR_API_KEY set
 
 
-RELEVANCE_FLOOR = 5  # judge score below this = try a better query before settling.
-                      # Raised from 4 now that missing the floor no longer means a
-                      # flat color card -- build_scene renders a designed stat-card
-                      # scene instead, so being pickier here is safe.
+RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling.
+                      # Was briefly 5, but combined with the stat-card fallback that
+                      # made the judge reject SO much footage that whole videos
+                      # collapsed into a slideshow of text cards (the "Crushing
+                      # Pressure" video was 5 text cards in a row). A real, imperfect
+                      # deep-sea clip beats another caption on a gradient -- 4 lets
+                      # more genuine footage through, and MAX_STAT_CARDS below caps
+                      # how many cards a single video can ever contain.
+MAX_STAT_CARDS = 2   # a designed text card is a fine RARE accent, but a wall of them
+                      # reads as cheap/broken. Once this many scenes have carded,
+                      # every remaining weak scene takes its BEST-available real clip
+                      # (fetch_clip accept_best=True) instead of carding again.
 
 FETCH_BUDGET_S = 45     # wall-clock cap for one fetch_clip() call (search + judge +
                         # requery rounds). Two rescue rounds instead of one means more
@@ -497,7 +505,7 @@ def _accept(chosen, dest, query, score):
     return True
 
 
-def fetch_clip(query, dest, intent=None):
+def fetch_clip(query, dest, intent=None, accept_best=False):
     """Search -> judge -> (if judged irrelevant) rewrite the query and retry, up
     to two rescue rounds, bounded by FETCH_BUDGET_S/MAX_FETCH_QUERIES so being
     picky can't stall the render. Nothing clearing RELEVANCE_FLOOR is no longer
@@ -518,6 +526,8 @@ def fetch_clip(query, dest, intent=None):
     the end-of-render quality summary."""
     intent = intent or query
     best_score = None
+    best_cand = None   # remember the best clip seen so a beyond-cap scene (accept_best)
+    best_q = None      # can still use REAL footage instead of another text card
     queries = [query]
     deadline = time.time() + FETCH_BUDGET_S
     round_no = 0
@@ -533,6 +543,7 @@ def fetch_clip(query, dest, intent=None):
             numeric = isinstance(score, int)
             if numeric and (best_score is None or score > best_score):
                 best_score = score
+                best_cand, best_q = chosen, q
             if score == NO_KEY or (numeric and score >= RELEVANCE_FLOOR):
                 try:
                     _accept(chosen, dest, q, score)
@@ -556,6 +567,15 @@ def fetch_clip(query, dest, intent=None):
         round_no += 1
     if best_score is not None:
         JUDGE_SCORES.append(best_score)
+    # Stat-card cap reached: use the best REAL clip we saw rather than card again.
+    if accept_best and best_cand is not None:
+        try:
+            _accept(best_cand, dest, best_q, best_score)
+            print(f"  accept-best ({best_score}/10) — stat-card cap reached, "
+                  f"real footage beats another text card")
+            return True, best_score
+        except Exception as e:  # noqa: BLE001 - fall through to card on download failure
+            print("  accept-best download failed:", e)
     print(f"  No footage cleared the floor for '{query}' (best {best_score}/10)"
           if best_score is not None else f"  No footage found for '{query}'")
     return False, best_score
@@ -744,8 +764,11 @@ STAT_CARD_SCENES = 0  # count of scenes rendered as typographic cards this rende
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
+    # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
+    # its best real clip instead of adding to a wall of text cards.
     have, score = fetch_clip(scene["search_query"], raw,
-                              intent=scene.get("voiceover", scene["search_query"]))
+                              intent=scene.get("voiceover", scene["search_query"]),
+                              accept_best=(STAT_CARD_SCENES >= MAX_STAT_CARDS))
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, round(seg_dur * 30))
 
