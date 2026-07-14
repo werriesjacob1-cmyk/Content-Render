@@ -240,6 +240,19 @@ REFERENCE_WORTHY_RE = re.compile(
     r"|\byou could\b|\benough to\b|\bfor every\b",
     re.I)
 
+# The specific abstraction failure the Sun video's hook shipped with: a
+# "perception vs. reality" construction that only makes sense once the viewer
+# already knows the twist ("You're seeing the Sun as it was, not as it is").
+# As a FIRST line this reads as confusing, not curious. Deliberately narrow
+# (this exact construction) rather than a general vagueness detector, which
+# would be too easy to false-positive on legitimately concrete hooks.
+ABSTRACT_HOOK_RE = re.compile(
+    r"\bas it (was|is),?\s*not as it (is|was)\b"
+    r"|\bnot as it (seems|appears)\b"
+    r"|\bthings? (aren'?t|are not) what (it|they) (seem|seems|appear|appears)\b"
+    r"|\breality isn'?t what it seems\b",
+    re.I)
+
 
 def load_memory():
     try:
@@ -322,6 +335,17 @@ PROVEN RULES (every one is backed by 2026 TikTok performance data — follow the
 HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
+- CONCRETE, NOT ABSTRACT (critical): the hook must be something a viewer instantly PICTURES, self-
+  contained with no setup needed — not a mood, not a musing about perception vs. reality, not a
+  sentence that only makes sense once you already know the twist.
+  GOOD: "Your body is mostly empty space." (a concrete, physical, immediately graspable claim)
+  GOOD: "Sharks are older than trees." (a specific, checkable, instantly pictured comparison)
+  BAD: "You're seeing the Sun as it was, not as it is." (abstract — the viewer can't picture
+  anything from this alone; it only lands after the explanation, so it reads as confusing, not
+  intriguing, as the FIRST line of the video)
+  BAD: "Reality isn't what it seems." (vague fortune-cookie phrasing, not a real claim)
+  If your hook needs the rest of the script to make sense, rewrite it — name the concrete thing
+  (a body part, an animal, an object, a number) up front.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 8-10 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
@@ -712,6 +736,17 @@ def validate(m, job_name, fact=None):
     m["hook"] = _clean(m["hook"])
     if not (4 <= len(m["hook"].split()) <= 16):
         return f"hook length {len(m['hook'].split())} words out of range"
+    # Concrete-hook guard: catches the exact abstraction failure the Sun video
+    # shipped with ("You're seeing the Sun as it was, not as it is" -- reads
+    # as confusing, not intriguing, as a viewer's very first line because it
+    # only makes sense once you already know the twist). Narrow phrase match
+    # by design -- it targets this specific "as it was/is, not as it is/was"
+    # perception-vs-reality construction, not hooks in general, so it can't
+    # false-positive on a normal concrete hook.
+    if ABSTRACT_HOOK_RE.search(m["hook"]):
+        return (f"hook '{m['hook']}' is too abstract/vague — a viewer can't picture anything "
+                f"concrete from it alone; open with a self-contained, concrete image or claim "
+                f"instead (see the good/bad hook examples in the prompt)")
 
     # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
