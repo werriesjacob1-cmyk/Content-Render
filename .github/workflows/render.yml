@@ -123,6 +123,15 @@ jobs:
           ls -la out/proof_frame.png
 
       - name: Repackage for all platforms
+        # BIO_LINK / CHANNEL_HANDLE / LIST_NAME drive funnel.py's bio CTA,
+        # pinned comment, and newsletter blurb. Set them once as repo VARIABLES
+        # (Settings -> Secrets and variables -> Actions -> Variables) after you
+        # create your bio-link + newsletter; until then funnel.py uses readable
+        # placeholders so the metadata is still valid. See MONETIZATION.md.
+        env:
+          BIO_LINK:       ${{ vars.BIO_LINK }}
+          CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
+          LIST_NAME:      ${{ vars.LIST_NAME }}
         run: python repackage.py out/final.mp4
 
       - name: Upload all platform cuts
@@ -140,6 +149,7 @@ jobs:
             out/post.json
             out/platforms.json
             out/platform_text.json
+            out/funnel.json
             out/proof_frame.png
           retention-days: 7
 
@@ -161,7 +171,7 @@ jobs:
           for f in tiktok_reels_shorts instagram_reels youtube_shorts facebook_reels square landscape final; do
             [ -f "out/$f.mp4" ] && FILES="$FILES out/$f.mp4"
           done
-          for f in post platforms platform_text; do
+          for f in post platforms platform_text funnel; do
             [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
           done
           # release body = per-channel captions in Formatter-friendly markers

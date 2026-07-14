@@ -1032,7 +1032,10 @@ def main():
         # in generate.py is visible in post-ready metadata, not just logs).
         json.dump({"title": m["title"], "captions": m["captions"], "hashtags": m["hashtags"],
                    "video_id": m.get("video_id", ""), "keyword": m.get("keyword", ""),
-                   "cta_style": m.get("cta_style", "")}, f, indent=2)
+                   "cta_style": m.get("cta_style", ""),
+                   # hook + domain feed funnel.py (topic-matched affiliate angle,
+                   # pinned comment, newsletter blurb — see repackage.py).
+                   "hook": m.get("hook", ""), "domain": m.get("domain", "")}, f, indent=2)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 

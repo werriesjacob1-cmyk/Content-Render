@@ -44,6 +44,8 @@ W, H = 1080, 1920  # matches main.py's master resolution
 import profiles
 PROFILE, PAGE = profiles.get_profile()
 
+import funnel  # monetization funnel: bio CTA, pinned comment, newsletter, affiliate
+
 
 # ---------------------------------------------------------------------------
 # PLATFORM_SPECS — researched 2026 specs. Each entry documents what
@@ -396,6 +398,15 @@ def write_platform_text(resolved_files):
     cta_style = post.get("cta_style", "")
     base_cap = caps[0] if caps else title
 
+    # Monetization funnel assets for this render (bio CTA, pinned comment,
+    # newsletter blurb, topic-matched affiliate). The bio CTA is added only to
+    # the platforms where a link/CTA reads naturally (YouTube description,
+    # Facebook) — NOT stamped on every caption — so nothing feels spammy. The
+    # pinned comment (the real list-building ask) ships in funnel.json + the
+    # release body for the poster to drop as a first comment on every platform.
+    fnl = funnel.build_funnel(post)
+    bio_line = fnl["bio_cta"]
+
     # TikTok: keyword-stuffed caption + question (search + comments). Tags inline, heavy.
     tiktok = _truncate(f"{base_cap} {' '.join(tags[:5])}", CAPTION_LIMITS["tiktok"])
     # Instagram Reels: share-prompt framing, fewer tags, cleaner. 'Send this to...' drives DM sends.
@@ -409,10 +420,11 @@ def write_platform_text(resolved_files):
     # YouTube Shorts: real searchable TITLE + description (Shorts has search discovery).
     yt_title = _truncate(title, CAPTION_LIMITS["youtube_shorts_title"] - len(" #shorts")) + " #shorts"
     yt_desc = _truncate(
-        f"{base_cap}\n\n{(caps[1] if len(caps) > 1 else '')}\n\n{' '.join(tags[:8])}",
+        f"{base_cap}\n\n{(caps[1] if len(caps) > 1 else '')}\n\n{bio_line}\n\n{' '.join(tags[:8])}",
         CAPTION_LIMITS["youtube_shorts_desc"])
-    # Facebook: sound-off world, slightly longer caption restating the hook as text.
-    facebook = _truncate(f"{base_cap}\n\n{(caps[2] if len(caps) > 2 else base_cap)}",
+    # Facebook: sound-off world, slightly longer caption restating the hook as
+    # text. FB's older audience clicks links, so the bio CTA earns its place here.
+    facebook = _truncate(f"{base_cap}\n\n{(caps[2] if len(caps) > 2 else base_cap)}\n\n{bio_line}",
                           CAPTION_LIMITS["facebook_reels"])
     # X: punchy one-liner, 1-2 tags max -- 280-char hard limit enforced via truncation.
     x = _truncate(f"{base_cap} {' '.join(tags[:2])}", CAPTION_LIMITS["x_twitter"])
@@ -448,6 +460,14 @@ def write_platform_text(resolved_files):
         json.dump(out, f, indent=2)
     print("platform_text.json written — native caption/title + AI-disclosure + posting-time per platform.")
 
+    # funnel.json — the monetization bundle for whoever posts this video:
+    # the pinned comment to drop as a first comment on every platform, the
+    # ready-to-send newsletter teaser, and the topic-matched affiliate angle.
+    with open(os.path.join(OUT, "funnel.json"), "w") as f:
+        json.dump(fnl, f, indent=2)
+    print("funnel.json written — pinned comment + newsletter + affiliate ("
+          f"affiliate: {fnl['affiliate']['search']}).")
+
     # Also emit a GitHub-Release body (out/release_body.md) that carries each
     # platform's caption inside unique START/END markers. The Zapier "New
     # Release" trigger exposes the release body natively, so a NO-premium Zap
@@ -467,6 +487,10 @@ def write_platform_text(resolved_files):
     body.append(_section("YOUTUBE_TITLE", out["youtube_shorts"]["title"]))
     body.append(_section("YOUTUBE_DESC", out["youtube_shorts"]["description"]))
     body.append(_section("X", out["x_twitter"]["caption"]))
+    # PINNED_COMMENT: the funnel's list-building ask, meant to be posted as the
+    # FIRST COMMENT on every platform (pinned where supported). Kept out of the
+    # video and out of the main captions so nothing feels like a hard sell.
+    body.append(_section("PINNED_COMMENT", fnl["pinned_comment"]))
     body.append("\nVideo asset for each channel (attached to this release):")
     body.append(f"- TikTok:          {out['tiktok']['file']}")
     body.append(f"- Instagram Reels: {out['instagram_reels']['file']}")

@@ -1461,6 +1461,9 @@ def main():
     # part of the manifest so main.py can carry it through to out/post.json
     # and so a publisher/scheduler downstream can see which ending shipped.
     manifest["cta_style"] = cta_style
+    # Carry the topic domain through to the manifest (and thus out/post.json)
+    # so funnel.py can pick the topic-matched affiliate angle per video.
+    manifest["domain"] = chosen_fact.get("domain") if chosen_fact else None
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
