@@ -198,6 +198,59 @@ def tts_full(full_text, out_mp3, voice, rate):
     return False
 
 
+def _align_words_by_content(script_words, heard):
+    """Anchor each clean script word to the REAL spoken time of the matching
+    whisper word, matching by CONTENT (difflib) rather than by position, so a
+    single segmentation difference doesn't shift every later caption. For the few
+    script words whisper didn't match (it dropped/merged them), interpolate a
+    time linearly between the surrounding matched words. Returns
+    [(script_word, start, end)] or [] if nothing could be matched."""
+    import difflib
+    if not script_words or not heard:
+        return []
+
+    def norm(w):
+        return re.sub(r"[^a-z0-9]", "", w.lower())
+
+    s_norm = [norm(w) for w in script_words]
+    h_norm = [norm(h[0]) for h in heard]
+    sm = difflib.SequenceMatcher(None, s_norm, h_norm, autojunk=False)
+    s2h = {}
+    for a, b, size in sm.get_matching_blocks():
+        for k in range(size):
+            s2h[a + k] = b + k
+    if not s2h:
+        return []
+
+    n = len(script_words)
+    times = [None] * n  # (start, end) per script word
+    for i in range(n):
+        if i in s2h:
+            hs = heard[s2h[i]]
+            times[i] = (hs[1], hs[2])
+    # interpolate unmatched words between their nearest matched neighbours
+    i = 0
+    while i < n:
+        if times[i] is not None:
+            i += 1
+            continue
+        p = i - 1
+        q = i
+        while q < n and times[q] is None:
+            q += 1
+        left_end = times[p][1] if p >= 0 and times[p] else (times[q][0] if q < n and times[q] else 0.0)
+        right_start = times[q][0] if q < n and times[q] else left_end + 0.3 * (q - i + 1)
+        gap = max(q - i, 1)
+        span = max(right_start - left_end, 0.0)
+        step = span / gap if gap else 0.0
+        for k in range(i, q):
+            st = left_end + step * (k - i)
+            en = left_end + step * (k - i + 1) if step > 0 else st + 0.25
+            times[k] = (st, en)
+        i = q
+    return [(script_words[i], times[i][0], times[i][1]) for i in range(n)]
+
+
 def whisper_align(mp3_path, script_text):
     """FREE forced alignment — the reliable caption-sync fix for the free voice.
     ElevenLabs returns exact char timings, but the free edge-tts fallback often
@@ -226,17 +279,18 @@ def whisper_align(mp3_path, script_text):
             print("  whisper align: no words recovered; keeping estimate")
             return []
         script_words = script_text.split()
-        # If whisper heard about the same number of words, display the CLEAN
-        # script words at whisper's REAL times (index-aligned). Otherwise use
-        # whisper's own transcribed words+times (still real timing, just its
-        # spelling). Either way the timing is real, not guessed.
-        if abs(len(heard) - len(script_words)) <= max(4, int(0.15 * len(script_words))):
-            n = min(len(heard), len(script_words))
-            out = [(script_words[i], heard[i][1], heard[i][2]) for i in range(n)]
-            out += list(heard[n:])  # keep any trailing heard words
-        else:
-            out = heard
-        print(f"  whisper align: {len(out)} REAL word timings ({model_name} model)")
+        # Map the CLEAN script words onto whisper's REAL times by CONTENT, not by
+        # index. Index-alignment drifts the moment whisper's word segmentation
+        # diverges from the script even once (e.g. it hears "42" + "degrees"
+        # where the script has one token, or drops a filler word) — from that
+        # point every caption is paired with the wrong word's time, which is the
+        # persistent 'subtitles slightly off' complaint. Content-alignment keeps
+        # each script word anchored to the instant that word is actually spoken,
+        # and interpolates timing for the few words whisper missed.
+        out = _align_words_by_content(script_words, heard)
+        if not out:
+            out = heard  # alignment produced nothing usable -> whisper's own words+times
+        print(f"  whisper align: {len(out)} REAL word timings ({model_name} model, content-aligned)")
         return out
     except Exception as e:
         print(f"  whisper align failed ({e}); keeping caption estimate")
