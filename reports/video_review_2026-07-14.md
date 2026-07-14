@@ -151,3 +151,16 @@ Coincidence). Reaching 5 good different-topic videos is now purely gated by
 Groq's free daily budget resetting — the code is proven. Rescheduling the loop
 wide (~3h) and staying patient; will surface to the user at the 5-good milestone
 or on a new problem, not on routine quota-aborts.
+
+## Cycle 8 — timing fixes partial; Groq spent again; awaiting user decision
+Run 45 (816ca4d) SUCCEEDED: number overlay REMOVED (confirmed), sentence pauses
++ slower rate applied (35s). BUT log showed 'edge-tts boundaries: 0 word' — the
+free endpoint withheld word timings, so captions stayed on the drifting estimate
+(the user's #1 complaint, still unfixed on the free voice). f488386 instruments
+word-vs-sentence boundary counts. Run 46 (f488386) FAILED at Auto-generate (Groq
+daily budget spent again after run 45). So the boundary diagnostic must wait for
+the next Groq reset. Told the user honestly: overlay/pauses/speed landed, sync
+did NOT; recommended ~$5 ElevenLabs (fixes deep voice + reliable word timing in
+one) — AWAITING their decision. Not churning renders against dead Groq; backing
+off ~3h. If they fund ElevenLabs, sync+voice are solved; if not, next render's
+boundary log decides whether a sentence-anchored fallback is viable.
