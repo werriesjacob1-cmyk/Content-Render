@@ -35,9 +35,16 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
     print(f"  [model] WARNING: GEMINI_API_KEY starts with '{GEMINI_KEY[:3]}...', which is "
           f"neither a legacy 'AIza' key nor a new 'AQ.' auth key. If Gemini 400s, get a "
           f"fresh key at https://aistudio.google.com/apikey")
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+# gemini-1.5-flash was RETIRED (v1beta returns 404 "not found ... not supported
+# for generateContent"), so it wasted a fallback slot on every call. Current
+# free-tier flash models only. 2.5-flash-lite has the most generous free RPM/RPD,
+# so it's the last-resort model that's most likely to answer when 2.0/2.5 are
+# rate-limited. (Verified against the run-53 log: 1.5-flash 404'd, the others 429'd.)
+GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
-MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
+# llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
+# so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
+MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
