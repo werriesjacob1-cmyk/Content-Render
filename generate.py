@@ -690,8 +690,29 @@ def _call_model(model, prompt):
 
 
 def _call_cerebras(model, prompt):
-    return _call_openai_compat("https://api.cerebras.ai/v1/chat/completions",
-                               CEREBRAS_KEY, model, prompt)
+    """Cerebras call with a per-minute-limit self-heal. Cerebras' free tier caps
+    requests-per-minute, and one render's burst of generation calls trips it
+    ('Requests per minute limit exceeded', code request_quota_exceeded) — which
+    otherwise falls straight through to Groq's spent daily budget and fails the
+    whole attempt. When we hit the RPM cap, sleep briefly and retry the SAME
+    model once so generation stays on Cerebras (often the only live provider on a
+    day Gemini+Groq are exhausted). A real daily/other 429 (no 'minute'/quota
+    signal) is re-raised immediately to fall through."""
+    url = "https://api.cerebras.ai/v1/chat/completions"
+    for attempt in range(2):
+        try:
+            return _call_openai_compat(url, CEREBRAS_KEY, model, prompt)
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt == 0:
+                try:
+                    detail = e.read().decode("utf-8", "replace").lower()
+                except Exception:  # noqa: BLE001
+                    detail = ""
+                if "minute" in detail or "request_quota_exceeded" in detail:
+                    print(f"  [model] cerebras:{model} hit RPM cap — waiting 15s and retrying once")
+                    time.sleep(15)
+                    continue
+            raise
 
 def _extract_json(text):
     """Return the bare JSON object from a model reply. Gemini (without forced
