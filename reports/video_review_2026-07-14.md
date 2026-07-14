@@ -78,3 +78,11 @@ ocean, just gradient cards reading "TURTLE SURVIVAL", "OXYGEN ABSORPTION",
 (manifest fallback, footage starvation). Next: prove a spaced single render
 produces REAL footage, then attack script repetition/fragmentation so the
 script itself is tight and specific across topics.
+
+## Cycle 3 — guard confirmed working; Groq quota still recovering
+Run 40 (fixed code 55dc78b) FAILED at step 7 (Auto-generate) — generation
+failed twice → clean abort, no duplicate shipped. Confirms the abort guard
+works. Groq free quota still exhausted (succeeded 08:04 for run 39, spent again
+by 08:29). No new video to judge. Backing off the cadence further (~45min) to
+let Groq recover; next cycle triggers a fresh render at its start, then judges.
+Script-repetition/fragmentation fix still pending a successful render to test on.
