@@ -195,3 +195,37 @@ Groq's tiny budget. Told the user (again) the exact 3-step free Gemini setup +
 that the code already prefers Gemini. Not triggering renders 30 min after the
 last Groq-spend (would just fast-fail); backing off ~2.5h for a real reset. Once
 generation succeeds, the whole backlog validates in one render.
+
+## Cycle N+1 — GEMINI_API_KEY added; root cause fully diagnosed via new logging
+User added the key (new-format `AQ.` auth key — Google migrated AI Studio keys
+from `AIza` to `AQ.Ab...` through 2026; the AQ key is VALID and authenticating).
+Triggered runs 52 (Bananas Radioactive) + 53 (Rainbow Deception). Both SUCCEEDED
+end-to-end but shipped DEGRADED near-miss videos (thin, ~66-85 words, repeated
+scenes, generic Pexels footage). Added provider fall-through logging to see WHY
+Gemini wasn't being used. Run-53 generate log gave the definitive answer:
+  - gemini-2.0-flash / 2.5-flash -> HTTP 429 "You exceeded your current quota"
+  - gemini-1.5-flash -> HTTP 404 (RETIRED, not supported for generateContent)
+  - groq llama-3.3-70b -> HTTP 429 "tokens per day (TPD): Limit 100000, Used 99291"
+  - groq llama-3.1-70b -> HTTP 400 "model_decommissioned"
+So: key is fine; BOTH free quotas were exhausted by today's repeated test renders
+(50-53), AND two dead models were silently eating fallback slots.
+
+Fixes shipped this cycle (all free, no user action):
+  1. Dropped retired/decommissioned models: GEMINI_MODELS -> 2.0-flash, 2.5-flash,
+     2.5-flash-lite (lite has the most generous free RPM/RPD as last resort);
+     Groq MODEL_CHAIN -> 3.3-70b, 3.1-8b-instant.
+  2. ABORT-ON-DEGRADED: a near-miss candidate is now marked _degraded; when quality
+     scoring is unavailable (LLM 429), we only ship a CLEAN (validate()-passing)
+     script — a degraded+unscored candidate is refused, and if every attempt is
+     degraded+unscored the run ABORTS (exit 1 -> no render, no release). No more
+     thin fallback videos published on quota-starved days.
+  3. Provider fall-through logging (prov:model + HTTP code + server error body).
+  4. Gemini RPM self-heal: honor the 429 retryDelay with a short (<=20s) backoff +
+     one same-model retry, so a per-minute burst stays on Gemini instead of
+     falling through; a long retryDelay (daily quota gone) falls through at once.
+  5. Recognize AQ. keys as valid (only warn on a credential matching neither shape).
+
+STATUS: both free quotas spent for today -> NOT triggering more renders (they'd
+just abort now, correctly). Next validation render should run after the quotas
+reset (Gemini free tier + Groq TPD reset daily). Then confirm the log shows
+`[model] using gemini:...` carrying generation, and build the 5-topic sample.
