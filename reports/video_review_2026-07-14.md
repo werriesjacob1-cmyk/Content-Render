@@ -229,3 +229,49 @@ STATUS: both free quotas spent for today -> NOT triggering more renders (they'd
 just abort now, correctly). Next validation render should run after the quotas
 reset (Gemini free tier + Groq TPD reset daily). Then confirm the log shows
 `[model] using gemini:...` carrying generation, and build the 5-topic sample.
+
+## Cycle N+2 — acting on Rainbow Deception feedback (8 commits) + reliability
+User watched run 53 (Rainbow Deception — a DEGRADED near-miss, not Gemini-powered)
+and still called it "good progress." Detailed feedback, all addressed this cycle:
+
+RELIABILITY (the top ask — "figure out Gemini" + "backup plan"):
+- WHY we hit Gemini limits so fast: the free tier's DAILY request cap on the
+  flash models is low (~200/day 2.0-flash, ~250 2.5-flash) and we ran 4 test
+  renders (50-53) x ~25-40 LLM calls each in ~90 min -> daily quota gone + RPM
+  bursts. Not a key problem (AQ key is valid).
+- FIX 1: gemini-2.5-flash-lite is now PRIMARY — ~1000 RPD free (4-5x headroom);
+  2.0/2.5-flash are higher-capability fallbacks. (Answers "how to set up lite":
+  it's just the first model in GEMINI_MODELS, same key, no extra setup.)
+- FIX 2: added CEREBRAS as a 3rd free provider (free, generous, OpenAI-compatible,
+  same Llama models) between Gemini and Groq in BOTH generate.py and the main.py
+  judge. Env-gated CEREBRAS_API_KEY (free key: cloud.cerebras.ai). This is the
+  backup plan for a Gemini+Groq double-outage.
+- FIX 3: dossier computed ONCE per run (was per regen attempt) — fewer calls.
+- (prev cycle) RPM self-heal via 429 retryDelay backoff; abort-on-degraded gate.
+
+CONTENT (prompt):
+- Killed the "that's not even the strange part" crutch (BANNED that + similar stock
+  transitions); the midpoint turn is now carried by the new fact, stated plainly.
+- PLAIN SPOKEN ENGLISH rule: banned purple verbs ("unfurls") + unexplained jargon
+  ("antisolar point") — explain terms in everyday words. A smart 15-yo must get it.
+- Reworked the vivid-comparison examples (the "80,000 times" example was being
+  echoed literally into the meaningless "80,000 fleeting civilizations"); comparisons
+  must be true + graspable, technique-not-text.
+- STRONGEST PAYOFF rule: concrete repeatable consequence ("why a rainbow has no
+  bottom") over abstract musing ("everyone sees their own rainbow").
+
+FOOTAGE / SYNC:
+- Diversify duplicate footage queries within a video (run 53 scenes 2 AND 6 both
+  "sunlight water droplets" -> end lingered on water droplets). Duplicates are
+  rebuilt from that scene's own voiceover keywords -> distinct, on-topic footage.
+- Caption sync: content-align whisper words (difflib) instead of index-align — a
+  single segmentation diff (86 heard vs 85 script) had been shifting every later
+  caption; now each word stays anchored, dropped words interpolated. Unit-tested.
+
+STILL OPEN (next): footage UNIQUENESS vs other pages (engage archival stills more —
+run 53 had 0 archival scenes); confirm caption sync feel on a real Gemini render.
+
+NEXT VALIDATION: render armed for 2026-07-15 07:45 UTC (after Gemini ~07:00 reset).
+Goal: first render where Gemini/Cerebras actually CARRIES generation (log shows
+"[model] using gemini:gemini-2.5-flash-lite" or cerebras), a clean non-degraded
+video, then watch it and build the 5-topic sample.
