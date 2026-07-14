@@ -37,14 +37,28 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
           f"fresh key at https://aistudio.google.com/apikey")
 # gemini-1.5-flash was RETIRED (v1beta returns 404 "not found ... not supported
 # for generateContent"), so it wasted a fallback slot on every call. Current
-# free-tier flash models only. 2.5-flash-lite has the most generous free RPM/RPD,
-# so it's the last-resort model that's most likely to answer when 2.0/2.5 are
-# rate-limited. (Verified against the run-53 log: 1.5-flash 404'd, the others 429'd.)
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+# free-tier flash models only.
+#
+# ORDER MATTERS — 2.5-flash-lite is FIRST on purpose. On the free tier its daily
+# request cap (RPD) is ~1000/day vs only ~200 for 2.0-flash and ~250 for
+# 2.5-flash. That 4-5x headroom is the single thing that stops us blowing the
+# free daily quota after a handful of renders (which is exactly what 429'd runs
+# 52/53). It's a touch less capable than 2.0-flash, but the quality gate +
+# regeneration catches any weak script, and 2.0/2.5-flash remain as automatic
+# higher-capability fallbacks for when lite is rate-limited or refuses.
+GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
 MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+# THIRD free provider (backup to Gemini + Groq). Cerebras' free tier is far more
+# generous than Groq's (millions of tokens/day, high RPM) and serves the same
+# Llama models on an OpenAI-compatible endpoint, so it's the workhorse fallback
+# when Gemini is rate-limited and Groq's tiny daily budget is spent — the exact
+# double-outage that shipped degraded videos. Optional: env-gated, no key = skip.
+# Free key (no card): https://cloud.cerebras.ai . Add as CEREBRAS_API_KEY.
+CEREBRAS_KEY = os.environ.get("CEREBRAS_API_KEY", "")
+CEREBRAS_MODELS = ["llama-3.3-70b", "llama3.1-8b"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -584,7 +598,10 @@ Return ONLY valid JSON, no markdown, exactly:
   "render": {{"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"}}
 }}"""
 
-def _call_model(model, prompt):
+def _call_openai_compat(url, key, model, prompt):
+    """One call to any OpenAI-compatible chat endpoint (Groq, Cerebras, ...).
+    Both serve Llama models with the same request/response shape, so the only
+    per-provider difference is the base URL and bearer key."""
     body = json.dumps({
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
@@ -593,13 +610,23 @@ def _call_model(model, prompt):
         "response_format": {"type": "json_object"}
     }).encode()
     req = urllib.request.Request(
-        "https://api.groq.com/openai/v1/chat/completions",
+        url,
         data=body,
-        headers={"Authorization": f"Bearer {GROQ_KEY}",
+        headers={"Authorization": f"Bearer {key}",
                  "Content-Type": "application/json",
                  "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+
+
+def _call_model(model, prompt):
+    return _call_openai_compat("https://api.groq.com/openai/v1/chat/completions",
+                               GROQ_KEY, model, prompt)
+
+
+def _call_cerebras(model, prompt):
+    return _call_openai_compat("https://api.cerebras.ai/v1/chat/completions",
+                               CEREBRAS_KEY, model, prompt)
 
 def _extract_json(text):
     """Return the bare JSON object from a model reply. Gemini (without forced
@@ -692,7 +719,10 @@ def call_groq(prompt):
     global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
+    # Order = free-quota headroom: Gemini (2.5-flash-lite ~1000 RPD) → Cerebras
+    # (very generous free tier) → Groq (tiny daily budget, last resort).
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
+            ([("cerebras", m) for m in CEREBRAS_MODELS] if CEREBRAS_KEY else []) + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
@@ -702,7 +732,12 @@ def call_groq(prompt):
     last_err = None
     for prov, model in chain:
         try:
-            out = _call_gemini(model, prompt) if prov == "gemini" else _call_model(model, prompt)
+            if prov == "gemini":
+                out = _call_gemini(model, prompt)
+            elif prov == "cerebras":
+                out = _call_cerebras(model, prompt)
+            else:
+                out = _call_model(model, prompt)
             if _WORKING_MODEL != (prov, model):
                 print(f"  [model] using {prov}:{model}")
             _WORKING_MODEL = (prov, model)

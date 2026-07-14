@@ -445,6 +445,23 @@ def _judge_note(ok):
                   "shipping the top stock clip for the rest of this run (no more doomed judge calls)")
 
 
+def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
+    """One judge call to any OpenAI-compatible chat endpoint (Groq, Cerebras).
+    Returns the message content string. Raises on transport failure so the
+    caller can fall through to the next provider."""
+    body = json.dumps({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature, "max_tokens": max_tokens
+    }).encode()
+    req = urllib.request.Request(url, data=body,
+                                 headers={"Authorization": f"Bearer {key}",
+                                          "Content-Type": "application/json",
+                                          "User-Agent": "content-render/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+
+
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
     # Prefer Gemini (far larger free quota) for the judge too, so batch rendering
     # keeps judging footage relevance instead of 429'ing and shipping the top
@@ -468,29 +485,31 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
             if out is not None:
                 _judge_note(True)
                 return out
+        except Exception as e:  # noqa: BLE001 - fall through to Cerebras/Groq
+            print("  Gemini judge call failed, trying Cerebras/Groq:", e)
+    # Cerebras: free, generous, OpenAI-compatible — the backup judge when Gemini
+    # is rate-limited, tried before Groq's tiny budget. Env-gated; no key = skip.
+    cere_key = os.environ.get("CEREBRAS_API_KEY", "")
+    if cere_key:
+        try:
+            out = _openai_compat_chat("https://api.cerebras.ai/v1/chat/completions",
+                                      cere_key, "llama-3.3-70b", prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
         except Exception as e:  # noqa: BLE001 - fall through to Groq
-            print("  Gemini judge call failed, trying Groq:", e)
+            print("  Cerebras judge call failed, trying Groq:", e)
     key = os.environ.get("GROQ_API_KEY", "")
     if not key:
-        # No Groq either. If Gemini was configured but errored, that's a real
-        # outage → signal unavailable so the caller ships the top clip.
-        if os.environ.get("GEMINI_API_KEY", ""):
+        # No Groq either. If Gemini/Cerebras were configured but errored, that's a
+        # real outage → signal unavailable so the caller ships the top clip.
+        if os.environ.get("GEMINI_API_KEY", "") or cere_key:
             _LAST_GROQ_FAILED = True
             _judge_note(False)
         return None
     try:
-        body = json.dumps({
-            "model": model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": temperature, "max_tokens": max_tokens
-        }).encode()
-        req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",
-                                     data=body,
-                                     headers={"Authorization": f"Bearer {key}",
-                                              "Content-Type": "application/json",
-                                              "User-Agent": "content-render/1.0"})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            out = json.loads(r.read().decode())["choices"][0]["message"]["content"]
+        out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
+                                  key, model, prompt, max_tokens, temperature)
         _judge_note(True)
         return out
     except Exception as e:

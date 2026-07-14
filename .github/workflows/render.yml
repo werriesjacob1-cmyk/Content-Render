@@ -75,6 +75,9 @@ jobs:
           # generate.py prefers it so renders stop aborting at this step. Optional
           # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Cerebras = 3rd free provider (backup when Gemini is rate-limited AND
+          # Groq's daily budget is spent). Optional; free key: cloud.cerebras.ai
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
         run: |
           # CRITICAL: never fall back to a hardcoded example on failure. Doing
           # that (the old `|| cp manifest_example.json`) published the IDENTICAL
@@ -115,6 +118,7 @@ jobs:
           # rendering keeps picking relevant clips instead of shipping the top
           # Pexels result when Groq is rate-limited.
           GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY:    ${{ secrets.CEREBRAS_API_KEY }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
