@@ -1,92 +1,94 @@
 {
-  "title": "You're Made of Dust",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "house dust",
-  "metaphor": "Skin Cells",
-  "hook": "You shed skin every minute",
-  "script": "You shed skin every minute What if you tracked where all your dead skin actually ends up? You lose skin cells constantly This process is natural But that's not even the strange part You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year That's like filling a small bag with you every year",
+  "title": "Unseen Oceans",
+  "viewer_job": "REFRAME",
+  "keyword": "deep ocean exploration",
+  "metaphor": "ocean floor mystery",
+  "hook": "You've seen more of Mars than the ocean floor",
+  "script": "You've seen more of Mars than the ocean floor What if you could drain every ocean overnight? You'd reveal Earth's tallest mountain range and canyons deeper than any on land But that's not even the strange part We have mapped more of the surface of Mars than the floor of our own oceans More people have walked on the Moon than have reached the deepest point of the ocean floor Over 80 percent of the ocean floor remains unseen, an area larger than the surface of Mars That number's worth a screenshot",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You shed skin every minute",
-      "on_screen_text": "Skin Cells",
-      "search_query": "dust light beam",
+      "voiceover": "You've seen more of Mars than the ocean floor",
+      "on_screen_text": "Mars vs Ocean",
+      "search_query": "deep ocean dark",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 3,
-      "voiceover": "What if you tracked where all your dead skin actually ends up?",
-      "on_screen_text": "House Dust",
-      "search_query": "skin macro",
-      "motion": "static"
+      "voiceover": "What if you could drain every ocean overnight?",
+      "on_screen_text": "Drain Oceans",
+      "search_query": "underwater abyss",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "You lose skin cells constantly",
-      "on_screen_text": "Dead Skin",
-      "search_query": "sunlight dust particles",
-      "motion": "zoom_out"
+      "voiceover": "You'd reveal Earth's tallest mountain range and canyons deeper than any on land",
+      "on_screen_text": "Tallest Mountains",
+      "search_query": "deep sea landscape",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 3,
-      "voiceover": "This process is natural",
-      "on_screen_text": "Natural Shedding",
-      "search_query": "human skin closeup",
-      "motion": "static"
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "Strange Part",
+      "search_query": "submarine deep sea",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "The Strange Part",
-      "search_query": "dust in sunlight",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "We have mapped more of the surface of Mars than the floor of our own oceans",
+      "on_screen_text": "Mars Mapped",
+      "search_query": "space vs ocean",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you",
-      "on_screen_text": "House Dust Fact",
-      "search_query": "home dust accumulation",
-      "motion": "pan_right"
+      "voiceover": "More people have walked on the Moon than have reached the deepest point of the ocean floor",
+      "on_screen_text": "Moon Walkers",
+      "search_query": "deep ocean explorers",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year",
-      "on_screen_text": "Skin Replacement",
-      "search_query": "lightning storm clouds",
-      "motion": "zoom_out"
+      "voiceover": "Over 80 percent of the ocean floor remains unseen, an area larger than the surface of Mars",
+      "on_screen_text": "Unseen Oceans",
+      "search_query": "deep ocean mystery",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 3,
-      "voiceover": "That's like filling a small bag with you every year",
-      "on_screen_text": "You in a Bag",
-      "search_query": "small bag of dust",
-      "motion": "static"
+      "voiceover": "That number's worth a screenshot",
+      "on_screen_text": "Save This",
+      "search_query": "ocean facts",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Are you made of house dust? Yes or no?",
-    "You're shedding skin right now",
-    "Share if you're shocked"
+    "Have you explored the deep ocean? Yes or no?",
+    "Unseen oceans are waiting to be discovered",
+    "What's hiding in the deep ocean?"
   ],
   "hashtags": [
-    "#science",
-    "#skin",
-    "#dust"
+    "#ocean",
+    "#space",
+    "#Mars",
+    "#deepsea",
+    "#exploration"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_you-re-made-of-dust",
-  "cta_style": "COMMENT",
-  "domain": "body"
+  "video_id": "science_2026-07-14_unseen-oceans",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "ocean"
 }

@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "everyday radioactivity",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "title": "Radioactive Bananas",
-      "fact_id": "banana_radioactive"
-    },
-    {
       "metaphor": "Turritopsis dohrnii",
       "viewer_job": "HOW_TO",
       "title": "Meet the Immortal Jellyfish",
@@ -216,6 +210,21 @@
       "fact_id": "skin_cells",
       "domain": "body",
       "hook": "You shed skin every minute",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_unseen-oceans",
+      "metaphor": "ocean floor mystery",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Unseen Oceans",
+      "fact_id": "ocean_unmapped",
+      "domain": "ocean",
+      "hook": "You've seen more of Mars than the ocean floor",
       "structure": {
         "scene_count": 8,
         "used_whatif": true
