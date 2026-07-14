@@ -86,3 +86,28 @@ works. Groq free quota still exhausted (succeeded 08:04 for run 39, spent again
 by 08:29). No new video to judge. Backing off the cadence further (~45min) to
 let Groq recover; next cycle triggers a fresh render at its start, then judges.
 Script-repetition/fragmentation fix still pending a successful render to test on.
+
+## Cycle 4 — the ACTUAL blocker found + fixed (judge resilience)
+Run 41: generation SUCCEEDED with a GOOD script — Mauna Kea taller than Everest
+("stack two Everests and still be shorter", "over 10,000 metres", "100
+skyscrapers"): concrete hook, specific numbers, vivid comparison, full
+sentences. This CONFIRMS the turtle script was a quota-degraded fluke and the
+prompt is fine (did NOT touch it — correct call).
+
+But the render still failed, and the real root cause emerged from the log:
+- ElevenLabs quota nearly exhausted (115/10000 credits) → deep Daniel voice
+  UNAVAILABLE, fell back to edge-tts (en-US-GuyNeural). Quota issue, not code.
+- The Groq footage JUDGE got 429'd on ~every scene. The code treated
+  'judge unreachable (429)' identically to 'judge answered garbled' (UNRESOLVED)
+  → rejected the clip → text card → footage-starvation guard aborted the whole
+  render. So a transient Groq rate-limit silently killed good videos.
+
+Fix (commit 8e7c546): distinguish transport failure (429/5xx/network) from an
+unparseable reply. New JUDGE_UNAVAILABLE sentinel; fetch_clip ships the top
+stock clip (like no-key) when the judge is unreachable, instead of carding.
+Unit-tested all three verdict paths. This should let renders SUCCEED with real
+footage + the good script even under Groq pressure — the key unblock.
+
+Still pending: watch a render that clears end-to-end (real footage + good
+script) and judge it honestly; the ElevenLabs voice will be edge-tts until its
+monthly credits reset (user should know: deep voice is quota-gated).
