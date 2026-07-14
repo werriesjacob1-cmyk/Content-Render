@@ -80,6 +80,37 @@ def _chars_to_words(chars, starts, ends):
         words.append((cur, w_start, prev_end))
     return words
 
+# edge-tts speaks briskly by default; a mild slow-down reads calmer and gives
+# the (now word-accurate) captions room to breathe. NOT a heavy slow-down —
+# an earlier big slow-down bloated a video to ~55s and felt forced; this is a
+# few percent under the previously-requested -5%, keeping a ~30s cut ~30-35s.
+EDGE_RATE = "-12%"
+
+
+def _edge_tts_with_timings(text, voice, rate, out_mp3):
+    """Synthesize with edge-tts via its Python API AND capture real per-word
+    timing from WordBoundary events. Writes the mp3 to out_mp3 and returns
+    [(word, start_s, end_s), ...] (offsets are in 100-ns units → seconds).
+    Raises on failure so the caller can fall back to the CLI/estimate."""
+    import asyncio
+    import edge_tts
+    words = []
+
+    async def _run():
+        comm = edge_tts.Communicate(text, voice, rate=rate)
+        with open(out_mp3, "wb") as f:
+            async for chunk in comm.stream():
+                if chunk["type"] == "audio":
+                    f.write(chunk["data"])
+                elif chunk["type"] == "WordBoundary":
+                    st = chunk["offset"] / 1e7
+                    du = chunk["duration"] / 1e7
+                    words.append((chunk["text"], st, st + du))
+
+    asyncio.run(_run())
+    return words
+
+
 def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
     el_key = os.environ.get("ELEVENLABS_API_KEY", "")
@@ -124,8 +155,32 @@ def tts_full(full_text, out_mp3, voice, rate):
             except Exception as e:
                 print(f"  ElevenLabs failed: {e}")
                 break
+    # edge-tts fallback (when ElevenLabs is unavailable / out of credits). Two
+    # fixes vs the old plain CLI call, both aimed at the "narrator too fast and
+    # the subtitles can't keep up" complaint:
+    #  1) Capture REAL per-word timing from edge-tts's WordBoundary events (the
+    #     Python API exposes them; the CLI --write-media does not), so the free
+    #     voice gets word-accurate captions + scene cuts exactly like ElevenLabs
+    #     instead of the old proportional GUESS that drifted behind fast speech.
+    #  2) Speak a bit slower (EDGE_RATE) — edge-tts's default cadence is quick.
+    # Only trust the captured timings if their count is close to the script's
+    # word count (a big mismatch means edge tokenised numbers/hyphenates oddly);
+    # otherwise fall through to the proportional estimate rather than desync.
     try:
-        run(["edge-tts", f"--voice={voice}", f"--rate={rate}",
+        wt = _edge_tts_with_timings(full_text, voice, EDGE_RATE, out_mp3)
+        if os.path.getsize(out_mp3) > 1000:
+            script_words = len(full_text.split())
+            if wt and abs(len(wt) - script_words) <= max(3, 0.2 * script_words):
+                WORD_TIMINGS = wt
+                print(f"  edge-tts SUCCESS ({len(wt)} real word timings, rate {EDGE_RATE})")
+            else:
+                print(f"  edge-tts SUCCESS (got {len(wt)} timings vs {script_words} words — "
+                      f"count mismatch, using proportional caption estimate)")
+            return True
+    except Exception as e:
+        print("  edge-tts (python api) failed, trying CLI:", e)
+    try:
+        run(["edge-tts", f"--voice={voice}", f"--rate={EDGE_RATE}",
              f"--text={full_text}", f"--write-media={out_mp3}"])
         if os.path.getsize(out_mp3) > 1000:
             return True
@@ -958,7 +1013,18 @@ def main():
     # word-for-word) — this is what split_audio's word-timing cuts and the
     # karaoke captions both key off of, so TTS/captions/scene-cuts must all
     # measure the same text or they drift out of sync with each other.
-    full_script = " ".join(s["voiceover"] for s in m["scenes"])
+    # Join scene voiceovers into one narration for TTS, ENSURING each scene ends
+    # with sentence-final punctuation. The model often writes scene lines with no
+    # trailing period ("...the same size", "...were closer"), so the TTS engine
+    # runs every sentence together with no beat — exactly the "no pause between
+    # sentences, sounds rushed" complaint. A terminal '.' makes both ElevenLabs
+    # and edge-tts insert a natural sentence pause. This changes only the spoken
+    # text's punctuation, not the words, so per-scene word counts (and thus the
+    # caption/scene-cut word indexing) are unchanged.
+    def _terminate(vo):
+        vo = (vo or "").strip()
+        return vo if vo[-1:] in ".!?…:" else vo + "."
+    full_script = " ".join(_terminate(s["voiceover"]) for s in m["scenes"])
     full_mp3 = os.path.join(WORK, "full_vo.mp3")
     if not tts_full(full_script, full_mp3, voice, rate):
         silent_track(sum(float(s.get("duration", 3)) for s in m["scenes"]), full_mp3)

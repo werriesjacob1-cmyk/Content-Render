@@ -26,7 +26,13 @@ PROFILES = {
         # look
         "grade": "eq=contrast=1.08:saturation=1.12:brightness=-0.02,curves=preset=medium_contrast",
         "zoom_speed": 0.0006,         # slow cinematic
-        "motion_graphics": True,      # animated number card when a scene has a stat
+        # Number overlay DISABLED (was True): the floating "3.8" / "80,000 times"
+        # card popped at the top of the frame and lingered — read as clutter
+        # (user feedback on the Cosmic Coincidence video). The figure is already
+        # spoken and in the karaoke caption, so a third on-screen copy just
+        # competes with the subtitles. Re-enable only with a cleaner, tightly
+        # word-synced treatment.
+        "motion_graphics": False,     # animated number card when a scene has a stat
         # audio
         "music": "music_science.mp3",
         "music_vol": 0.10,   # ~-20dB under the (loudness-normalized) music bed;
