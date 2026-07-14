@@ -46,3 +46,35 @@ fixes. Next real, unique render is the first true test — must watch its frames
 **Honest note on iteration speed:** free-tier Groq quota caps how fast this loop
 can render/iterate. Rapid generate→watch→improve cycles are not feasible on the
 free tier; realistic cadence is a few good renders spaced out, not a burst.
+
+## Cycle 2 — first real generated video, and the all-text-card disaster
+
+Render 39 (post-abort-fix) SUCCEEDED generation and produced a UNIQUE topic:
+"Turtles Breathe Through Rear Ends" (cloacal respiration, domain animals). So
+the abort fix works and Groq recovered. But watching the frames exposed a
+second, equally-bad systemic failure:
+
+**The video was 18.7s of 10/10 TEXT CARDS — zero real footage.** No turtles, no
+ocean, just gradient cards reading "TURTLE SURVIVAL", "OXYGEN ABSORPTION",
+"MAIN OXYGEN", "HUMAN SKIN". Unwatchable.
+
+- Root cause: Pexels free tier (200 req/hr) was ALSO exhausted by the render
+  burst, so `_gather_candidates` returned zero clips for every scene. With no
+  clip to fall back to, `accept_best` couldn't rescue and MAX_STAT_CARDS=2 was
+  silently bypassed — every scene carded.
+- Fix (commit fd18861): if STAT_CARD_SCENES > MAX_STAT_CARDS, main.py now
+  exits non-zero → no release. A footage-starved slideshow can never publish.
+
+**Script problems also visible (next cycle's work, NOT yet fixed):**
+- Repetition: scenes 5/6/8 restate the same oxygen fact 3× ("supplies most of
+  the oxygen" / "absorb oxygen through their tissues" / "main oxygen source").
+- Fragmentation: 10 micro-scenes of 2-5 words each ("Some turtles do this",
+  "They use their rear ends") → ~60 words total, 1.9s/scene, choppy.
+- No specifics: never says which turtles, how long they stay down, or a number.
+- Caption clutter: karaoke word + card label both on screen (e.g. "SURFACING" +
+  "TURTLE SURVIVAL"), meaningless one-word fragments.
+
+**Consistency status: NOT ready.** Two "ships broken output" bugs now fixed
+(manifest fallback, footage starvation). Next: prove a spaced single render
+produces REAL footage, then attack script repetition/fragmentation so the
+script itself is tight and specific across topics.
