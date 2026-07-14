@@ -254,6 +254,51 @@ ABSTRACT_HOOK_RE = re.compile(
     re.I)
 
 
+# ---------- TOPIC NOVELTY / DEDUP ----------
+# Concepts we never want to repeat regardless of what memory currently holds --
+# e.g. the starling-murmuration / flocking / emergence video the user flagged
+# as "we have used this idea before". Matched as substrings against a
+# candidate's metaphor + title (and injected into the prompt's avoid list).
+BANNED_CONCEPTS = [
+    "murmuration", "starling", "flock", "flocking", "swarm", "swarming",
+    "emergence", "emergent", "hive mind", "school of fish", "self-organiz",
+]
+RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
+TOPIC_SIM_THRESHOLD = 0.62  # difflib ratio between metaphors above this = dupe
+TOPIC_TOKEN_OVERLAP = 0.6   # content-word overlap fraction above this = dupe
+
+
+def _metaphor_too_similar(metaphor, history):
+    """True if `metaphor` is a near-duplicate of any recent video's metaphor:
+    substring either way, high difflib ratio, or heavy content-word overlap.
+    Catches 'bird flock' vs 'starling murmuration' style repeats that an exact
+    or substring-only check would miss."""
+    import difflib
+    c = (metaphor or "").lower().strip()
+    if not c:
+        return False
+    c_tokens = set(re.findall(r"[a-z]{3,}", c))
+    for h in history:
+        hm = (h.get("metaphor", "") or "").lower().strip()
+        if not hm:
+            continue
+        if hm in c or c in hm:
+            return True
+        if difflib.SequenceMatcher(None, c, hm).ratio() >= TOPIC_SIM_THRESHOLD:
+            return True
+        h_tokens = set(re.findall(r"[a-z]{3,}", hm))
+        if c_tokens and h_tokens:
+            shared = c_tokens & h_tokens
+            if shared and len(shared) / min(len(c_tokens), len(h_tokens)) >= TOPIC_TOKEN_OVERLAP:
+                return True
+    return False
+
+
+def _hits_banned_concept(*texts):
+    blob = " ".join(t or "" for t in texts).lower()
+    return any(b in blob for b in BANNED_CONCEPTS)
+
+
 def load_memory():
     try:
         with open(MEMORY) as f:
@@ -1175,9 +1220,11 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 if all(k in m for k in ("title", "hook", "script", "scenes", "captions")) and near_miss is None:
                     near_miss = m
                 continue
-            mt = m.get("metaphor", "").lower()
-            if any(mt and mt in h.get("metaphor", "").lower() for h in history):
-                print(f"  attempt {attempt+1} repeats topic, retrying"); continue
+            if _hits_banned_concept(m.get("metaphor", ""), m.get("title", "")):
+                print(f"  attempt {attempt+1} hits a banned concept "
+                      f"(flocking/emergence/etc), retrying"); continue
+            if _metaphor_too_similar(m.get("metaphor", ""), history):
+                print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
             ig_err = check_information_gain(m)
             if ig_err:
                 print(f"  attempt {attempt+1} invalid: {ig_err}")
@@ -1275,7 +1322,11 @@ def main():
         print("ERROR: GROQ_API_KEY not set"); sys.exit(1)
 
     history = load_memory()
-    avoid = ", ".join(h.get("metaphor", "") for h in history) or "none yet"
+    # avoid list = recent metaphors PLUS the always-banned concepts, so the
+    # model is steered off both recent topics and the flagged flocking/
+    # emergence idea from the very first attempt.
+    _recent_metaphors = [h.get("metaphor", "") for h in history if h.get("metaphor")]
+    avoid = ", ".join(_recent_metaphors + BANNED_CONCEPTS) or "none yet"
     avoid_openers = overused_hook_openers(history)
 
     # Performance-memory scaffold (improvement loop, part 2): fully optional,
@@ -1287,10 +1338,27 @@ def main():
     job_scores = score_by_key(history, perf, "viewer_job") if perf else {}
     cta_scores = score_by_key(history, perf, "cta_style") if perf else {}
 
-    # Path C: pick a verified fact from the bank not used recently
+    # Path C: pick a verified fact from the bank not used recently. Dedup is
+    # now two-layered: exclude the exact fact_id used before AND exclude the
+    # DOMAIN of the last RECENT_DOMAIN_WINDOW videos, so a different exact fact
+    # that is still "the same kind of video" (two space facts, two animal
+    # facts) doesn't ship back to back. Domain comes from the new memory field
+    # with a bank lookup fallback for older entries that predate it. Filters
+    # widen gracefully if they would empty the pool.
     bank = load_bank()
     used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
-    available = [f for f in bank if f["id"] not in used_ids] or bank
+    _id_to_domain = {f["id"]: f.get("domain") for f in bank}
+    recent_domains = set()
+    for h in history[-RECENT_DOMAIN_WINDOW:]:
+        d = h.get("domain") or _id_to_domain.get(h.get("fact_id"))
+        if d:
+            recent_domains.add(d)
+    fresh = [f for f in bank
+             if f["id"] not in used_ids and f.get("domain") not in recent_domains]
+    available = fresh or [f for f in bank if f["id"] not in used_ids] or bank
+    if recent_domains:
+        print(f"  [bank] avoiding recent domains {sorted(recent_domains)} "
+              f"({len(fresh)} of {len(bank)} facts fresh)")
     if available and fact_scores:
         weights = [fact_scores.get(f["id"], 0.0) + PERF_UNSEEN_FLOOR for f in available]
         chosen_fact = _weighted_choice(available, weights, EXPLORE_EPSILON)
@@ -1403,6 +1471,7 @@ def main():
         "cta_style": cta_style,
         "title": manifest["title"],
         "fact_id": chosen_fact["id"] if chosen_fact else None,
+        "domain": chosen_fact.get("domain") if chosen_fact else None,
         "hook": manifest.get("hook", ""),
         "structure": {
             "scene_count": len(manifest.get("scenes", [])),
