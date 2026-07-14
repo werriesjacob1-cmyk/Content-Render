@@ -1,760 +1,1265 @@
 {
- "facts": [
-  {
-   "id": "rainbow_circle",
-   "domain": "light",
-   "fact": "A rainbow is actually a full circle; the ground simply cuts off the bottom. From a plane you can see the entire ring.",
-   "angle": "reframes something everyone thinks they know",
-   "key_terms": ["full circle", "42 degrees", "antisolar point"],
-   "whatif": "What if you could get high enough off the ground? From a plane or a mountaintop you'd see the rainbow as a complete 360-degree circle, glowing at a fixed 42 degrees around the point opposite the Sun.",
-   "wow": "A rainbow isn't an object with a location, it's an angle, so every person is looking at their own private rainbow made by different raindrops.",
-   "queries": [
-    "rainbow sky",
-    "airplane window clouds",
-    "double rainbow field"
-   ]
-  },
-  {
-   "id": "stomach_lining",
-   "domain": "body",
-   "fact": "Your stomach lining rebuilds itself every few days, because the hydrochloric acid inside is strong enough that the stomach would otherwise digest itself.",
-   "angle": "your own body is doing something alarming right now",
-   "key_terms": ["hydrochloric acid", "pH of 1.5", "every 3 to 4 days"],
-   "whatif": "What if your stomach stopped making fresh lining? The hydrochloric acid at a pH of about 1.5 would start digesting your own stomach wall, which is exactly what a bleeding ulcer is.",
-   "wow": "That acid is strong enough to dissolve a razor blade or a nail, yet a fresh layer of protective cells rebuilds the wall every 3 to 4 days.",
-   "queries": [
-    "bubbling green liquid",
-    "pouring chemical beaker",
-    "person eating burger"
-   ]
-  },
-  {
-   "id": "taller_morning",
-   "domain": "body",
-   "fact": "You are up to a couple of centimetres taller in the morning than at night, because the soft discs in your spine compress under your weight all day.",
-   "angle": "a hidden daily change in your own body",
-   "key_terms": ["spinal discs", "2 centimetres", "astronauts"],
-   "whatif": "What if gravity never pressed on you? It happens to astronauts, whose spinal discs decompress in zero gravity, so they grow up to 5 centimetres taller in space before shrinking back on Earth.",
-   "wow": "Over a single day your spinal discs slowly squeeze out water and lose up to 2 centimetres of height, then soak it back overnight while you sleep.",
-   "queries": [
-    "person stretching morning",
-    "measuring tape closeup",
-    "waking up bed"
-   ]
-  },
-  {
-   "id": "neutron_star_spoon",
-   "domain": "space",
-   "fact": "A single teaspoon of a neutron star would weigh roughly a billion tons, because its matter is crushed almost beyond belief.",
-   "angle": "a number that sounds fake but is true",
-   "key_terms": ["neutron star", "a billion tons", "teaspoon"],
-   "whatif": "What if a teaspoon of a neutron star appeared in your hand? At a billion tons it would punch straight through the floor, through the Earth, and keep falling toward the planet's core.",
-   "wow": "The star packs more mass than our Sun into a ball the size of a city, and some spin over 700 times every single second.",
-   "queries": [
-    "neutron star space",
-    "galaxy stars",
-    "deep space nebula"
-   ]
-  },
-  {
-   "id": "venus_day",
-   "domain": "space",
-   "fact": "A day on Venus is longer than its year: one rotation takes 243 Earth days, while one trip around the Sun takes only 225.",
-   "angle": "time itself works differently elsewhere",
-   "key_terms": ["243 Earth days", "225 days", "retrograde"],
-   "whatif": "What if you tried to live out a single year on Venus? You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year.",
-   "wow": "Venus also spins in retrograde, the opposite direction to almost every other planet, so the Sun there rises in the west and sets in the east.",
-   "queries": [
-    "planet venus surface",
-    "planets orbiting sun",
-    "space planet rotation"
-   ]
-  },
-  {
-   "id": "saturn_floats",
-   "domain": "space",
-   "fact": "Saturn is so light for its size that it would float in water; its average density is only 0.687 grams per cubic centimetre, less than water itself.",
-   "angle": "counterintuitive scale of a giant",
-   "key_terms": ["0.687", "less dense than water", "float"],
-   "whatif": "What if you found a bathtub big enough? Saturn would bob on the surface like a beach ball, because at 0.687 grams per cubic centimetre it is less dense than water.",
-   "wow": "Saturn is a ball of mostly hydrogen and helium with no solid surface, so there is nothing to stand on beneath its clouds.",
-   "queries": [
-    "planet saturn rings",
-    "saturn space",
-    "gas giant planet"
-   ]
-  },
-  {
-   "id": "eclipse_coincidence",
-   "domain": "space",
-   "fact": "The Sun is about 400 times wider than the Moon and also about 400 times farther away, which is the only reason they look the same size and we get perfect eclipses.",
-   "angle": "a cosmic coincidence you never noticed",
-   "key_terms": ["400 times", "same size", "total eclipse"],
-   "whatif": "What if the Moon were slightly closer or farther? The perfect match, 400 times smaller but 400 times nearer, would break, and total eclipses would simply never happen.",
-   "wow": "The Moon drifts about 3.8 centimetres farther away every year, so in a few hundred million years total eclipses will vanish from the sky forever.",
-   "queries": [
-    "solar eclipse",
-    "moon sky",
-    "sun corona eclipse"
-   ]
-  },
-  {
-   "id": "diamond_rain",
-   "domain": "space",
-   "fact": "On Neptune and Uranus it likely rains solid diamonds, as extreme pressure squeezes carbon in the atmosphere into crystals.",
-   "angle": "alien weather",
-   "key_terms": ["Neptune", "Uranus", "diamond rain"],
-   "whatif": "What if you could stand under the sky of Neptune? Crushing pressure would squeeze carbon into solid diamonds that fall like hail, so it literally rains gemstones.",
-   "wow": "Those diamonds may sink for thousands of kilometres and pool into a slushy ocean of liquid diamond deep inside the planet.",
-   "queries": [
-    "planet neptune",
-    "blue planet space",
-    "diamond crystal"
-   ]
-  },
-  {
-   "id": "ocean_unmapped",
-   "domain": "ocean",
-   "fact": "We have mapped more of the surface of Mars than the floor of our own oceans; most of the deep sea has never been seen.",
-   "angle": "the unknown is right here, not in space",
-   "key_terms": ["Mars", "ocean floor", "80 percent"],
-   "whatif": "What if you could drain every ocean overnight? You'd reveal Earth's tallest mountain range and canyons deeper than any on land, terrain that over 80 percent of which no human has ever seen.",
-   "wow": "More people have walked on the Moon than have reached the deepest point of the ocean floor.",
-   "queries": [
-    "deep ocean dark",
-    "underwater abyss",
-    "submarine deep sea"
-   ]
-  },
-  {
-   "id": "ocean_oxygen",
-   "domain": "ocean",
-   "fact": "Most of the oxygen you breathe comes from the ocean, not forests; tiny drifting plankton produce over half of it.",
-   "angle": "reframes where your air comes from",
-   "key_terms": ["plankton", "50 percent", "Prochlorococcus"],
-   "whatif": "What if every forest on Earth burned but the plankton survived? You'd still breathe, because the ocean's plankton, not the rainforest, makes at least 50 percent of Earth's oxygen.",
-   "wow": "A single type of these microbes, Prochlorococcus, is the most abundant photosynthetic life on the planet and makes up to one in five breaths you take.",
-   "queries": [
-    "ocean surface waves",
-    "bioluminescent plankton ocean",
-    "sunlight underwater"
-   ]
-  },
-  {
-   "id": "mauna_kea",
-   "domain": "earth",
-   "fact": "Everest is the highest point above sea level, but Mauna Kea in Hawaii is the tallest mountain on Earth measured from its base on the ocean floor.",
-   "angle": "the famous answer is technically wrong",
-   "key_terms": ["Mauna Kea", "10,000 metres", "Everest"],
-   "whatif": "What if you measured mountains from their true base instead of sea level? Everest loses its crown to Mauna Kea, which stands over 10,000 metres tall, most of it hidden underwater.",
-   "wow": "From base to summit Mauna Kea is more than 1,000 metres taller than Everest, but you only ever see the top 4,000 metres above the waves.",
-   "queries": [
-    "mountain peak snow",
-    "hawaii volcano",
-    "underwater mountain"
-   ]
-  },
-  {
-   "id": "lightning_hotter",
-   "domain": "physics",
-   "fact": "A bolt of lightning is about five times hotter than the surface of the Sun, reaching roughly 30,000 degrees in a fraction of a second.",
-   "angle": "everyday thing is more extreme than the Sun",
-   "key_terms": ["30,000 degrees", "five times hotter", "surface of the Sun"],
-   "whatif": "What if you could touch a lightning channel for an instant? It flashes to about 30,000 degrees, five times hotter than the surface of the Sun, in a few millionths of a second.",
-   "wow": "That bolt heats the air so violently that it explodes outward, and the shockwave slamming back together is the crack of thunder you hear.",
-   "queries": [
-    "lightning strike storm",
-    "thunderstorm sky",
-    "lightning night"
-   ]
-  },
-  {
-   "id": "atoms_empty",
-   "domain": "physics",
-   "fact": "Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube.",
-   "angle": "reality is mostly nothing",
-   "key_terms": ["empty space", "sugar cube", "nucleus"],
-   "whatif": "What if you squeezed the empty space out of every human on Earth? All 8 billion of us would pack down into a single sugar cube.",
-   "wow": "The nucleus is about 100,000 times smaller than the atom around it, so if an atom were a stadium, the nucleus would be a single pea at the centre.",
-   "queries": [
-    "sugar cube macro",
-    "empty warehouse interior",
-    "starry night sky"
-   ]
-  },
-  {
-   "id": "head_ages_faster",
-   "domain": "physics",
-   "fact": "Time runs very slightly faster for your head than your feet, because gravity is weaker further from Earth, and it has been measured with atomic clocks.",
-   "angle": "time bends inside your own body",
-   "key_terms": ["your head ages faster", "atomic clocks", "33 centimetres"],
-   "whatif": "What if you spent your whole life lying flat instead of standing? Your head and feet would age at almost the same rate, because standing up, your head genuinely ages faster than your feet.",
-   "wow": "Scientists proved it with atomic clocks raised just 33 centimetres apart, though over an 80-year lifetime your head gains only about 90 billionths of a second.",
-   "queries": [
-    "clock ticking closeup",
-    "skyscraper looking up",
-    "earth from space"
-   ]
-  },
-  {
-   "id": "octopus_hearts",
-   "domain": "animals",
-   "fact": "An octopus has three hearts and blue blood, and the main heart stops beating when it swims, which is why it prefers to crawl.",
-   "angle": "alien biology on Earth",
-   "key_terms": ["three hearts", "blue blood", "copper"],
-   "whatif": "What if an octopus had to race for its life? Its main heart stops beating the moment it swims, so it tires quickly and would rather crawl along the seabed.",
-   "wow": "Its blood is blue because it carries oxygen with a copper-based molecule called hemocyanin instead of the iron that makes our blood red.",
-   "queries": [
-    "octopus ocean",
-    "octopus swimming",
-    "deep sea creature"
-   ]
-  },
-  {
-   "id": "tardigrade",
-   "domain": "animals",
-   "fact": "The tardigrade, a microscopic animal, can survive being frozen, boiled, crushed, and even the vacuum of outer space.",
-   "angle": "the toughest animal is invisible",
-   "key_terms": ["tardigrade", "vacuum of space", "1,000 times", "cryptobiosis"],
-   "whatif": "What if you left a tardigrade in the open vacuum of space? It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you and temperatures near absolute zero.",
-   "wow": "It pulls in its legs and dries into a glass-like husk called a tun, dropping its metabolism to almost zero and waiting, sometimes for decades, for water to return.",
-   "queries": [
-    "moss macro dew",
-    "water droplet macro",
-    "frozen ice crystals"
-   ]
-  },
-  {
-   "id": "mantis_shrimp",
-   "domain": "animals",
-   "fact": "The mantis shrimp punches so fast it boils the water around its claw, creating a flash of light and heat.",
-   "angle": "a tiny animal breaks physics",
-   "key_terms": ["mantis shrimp", "cavitation bubble", "20,000 degrees"],
-   "whatif": "What if the mantis shrimp's punch actually misses its target? It barely matters, because the collapsing cavitation bubble left behind strikes a second time, flashing to nearly 20,000 degrees.",
-   "wow": "The punch accelerates faster than a bullet, over 10,000 g, and the collapsing bubble briefly glows with real light hotter than the surface of the Sun.",
-   "queries": [
-    "mantis shrimp colorful",
-    "underwater shrimp",
-    "ocean reef creature"
-   ]
-  },
-  {
-   "id": "sharks_older_trees",
-   "domain": "animals",
-   "fact": "Sharks are older than trees; sharks have existed for over 400 million years, predating the first trees by tens of millions of years.",
-   "angle": "scrambles your sense of timeline",
-   "key_terms": ["sharks", "450 million years", "trees"],
-   "whatif": "What if you lined up the whole history of life on Earth? Sharks appear around 450 million years ago, roughly 50 million years before the very first tree ever grew.",
-   "wow": "That means sharks are older than Saturn's rings, older than the North Star, and they outlived the dinosaurs too.",
-   "queries": [
-    "shark swimming ocean",
-    "ancient forest",
-    "shark deep blue"
-   ]
-  },
-  {
-   "id": "honey_never_spoils",
-   "domain": "body",
-   "fact": "Honey never spoils; sealed honey found in 3,000-year-old Egyptian tombs was still perfectly edible.",
-   "angle": "a food that defeats time",
-   "key_terms": ["3,000-year-old", "never spoils", "hydrogen peroxide"],
-   "whatif": "What if you ate honey sealed inside an Egyptian tomb 3,000 years ago? It would be perfectly safe to eat, because honey is one food that essentially never spoils.",
-   "wow": "Honey is so low in water and so acidic that bacteria die in it, and bees add an enzyme that produces small amounts of hydrogen peroxide as a preservative.",
-   "queries": [
-    "honey jar golden",
-    "honeycomb bees",
-    "honey dripping"
-   ]
-  },
-  {
-   "id": "blood_vessels_length",
-   "domain": "body",
-   "fact": "If you laid out all the blood vessels in your body end to end, they would wrap around the entire Earth roughly two and a half times.",
-   "angle": "hidden scale inside you",
-   "key_terms": ["60,000 miles", "twice around the Earth", "blood vessels"],
-   "whatif": "What if you could unspool every blood vessel in your body into a single line? The roughly 60,000 miles of them would circle the entire Earth more than twice.",
-   "wow": "Most of that staggering length is capillaries so narrow that your blood cells have to squeeze through them single file.",
-   "queries": [
-    "red liquid flowing",
-    "river delta aerial",
-    "earth from space"
-   ]
-  },
-  {
-   "id": "nerve_speed",
-   "domain": "body",
-   "fact": "Your nerves carry signals to your brain at speeds of up to about 270 miles per hour, faster than a Formula 1 car.",
-   "angle": "your body is faster than you think",
-   "key_terms": ["270 miles per hour", "nerves", "Formula 1"],
-   "whatif": "What if your nerves fired even a little slower? You already feel a stubbed toe a beat late, because touch races to your brain at up to 270 miles per hour while pain crawls on slower nerve fibres.",
-   "wow": "That's about 120 metres every second, quicker than a Formula 1 car at full throttle, all happening inside your own body.",
-   "queries": [
-    "lightning storm night",
-    "race car speed",
-    "fiber optic lights"
-   ]
-  },
-  {
-   "id": "more_bacteria",
-   "domain": "body",
-   "fact": "You carry roughly as many bacterial cells as human cells, meaning you are, by cell count, about half not-you.",
-   "angle": "unsettling truth about identity",
-   "key_terms": ["38 trillion bacteria", "30 trillion", "microbiome"],
-   "whatif": "What if you wiped out every microbe living on and inside you? You'd lose about 38 trillion cells, because by count you are slightly more them than you.",
-   "wow": "The famous claim that microbes outnumber your cells 10 to 1 was wrong; your microbiome is closer to a 1.3 to 1 ratio, about 38 trillion bacteria to 30 trillion human cells.",
-   "queries": [
-    "petri dish science",
-    "yogurt spoon closeup",
-    "crowd people walking"
-   ]
-  },
-  {
-   "id": "footprints_moon",
-   "domain": "space",
-   "fact": "The footprints left on the Moon will likely last millions of years, because there is no wind or water to erase them.",
-   "angle": "permanence in an empty place",
-   "key_terms": ["footprints", "no wind", "millions of years"],
-   "whatif": "What if you returned to the Moon a million years from now? Neil Armstrong's footprints would almost certainly still be there, because there is no wind or water to wear them away.",
-   "wow": "With no atmosphere to erode anything, the flags, the rover tracks, and every bootprint may outlast most human monuments on Earth.",
-   "queries": [
-    "moon surface",
-    "astronaut footprint moon",
-    "lunar landscape"
-   ]
-  },
-  {
-   "id": "space_silent",
-   "domain": "space",
-   "fact": "Space is completely silent; sound needs a material to travel through, and space is a near-perfect vacuum, so no sound can exist.",
-   "angle": "an eerie absence",
-   "key_terms": ["silent", "vacuum", "sound needs a medium"],
-   "whatif": "What if you screamed at the top of your lungs in space? No one could ever hear it, because sound needs a medium to travel and space is a near-perfect vacuum.",
-   "wow": "A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all.",
-   "queries": [
-    "astronaut space",
-    "deep space stars",
-    "earth from orbit"
-   ]
-  },
-  {
-   "id": "sun_light_time",
-   "domain": "space",
-   "fact": "The sunlight hitting your skin left the Sun about eight minutes ago, so you are always seeing the Sun as it was in the past.",
-   "angle": "you live slightly in the past",
-   "key_terms": ["eight minutes", "the past", "Sun"],
-   "whatif": "What if the Sun simply switched off right this second? You wouldn't know for about eight minutes, because that's how long its light takes to travel to your eyes.",
-   "wow": "Every time you look at the Sun you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now.",
-   "queries": [
-    "sun bright sky",
-    "sunlight rays",
-    "sunrise horizon"
-   ]
-  },
-  {
-   "id": "star_sand",
-   "domain": "space",
-   "fact": "There are more stars in the observable universe than there are grains of sand on every beach on Earth combined.",
-   "angle": "scale beyond comprehension",
-   "key_terms": ["more stars", "grains of sand", "every beach"],
-   "whatif": "What if you counted every single grain of sand on every beach on Earth? You'd still fall short, because the universe holds far more stars than that, by thousands of times over.",
-   "wow": "The best estimates put the count near a 1 followed by 24 zeros, a number so large your brain physically cannot picture it.",
-   "queries": [
-    "milky way stars",
-    "beach sand closeup",
-    "night sky galaxy"
-   ]
-  },
-  {
-   "id": "glass_solid",
-   "domain": "physics",
-   "fact": "Glass is not a slow-moving liquid; old windows are thicker at the bottom because of how they were made, not because glass flows.",
-   "angle": "busts a famous myth",
-   "key_terms": ["amorphous solid", "not a liquid", "old windows"],
-   "whatif": "What if you waited a thousand years for a window to droop and pool at the bottom? It never would, because glass is an amorphous solid, not a slow-moving liquid.",
-   "wow": "Those uneven old windows look thicker at the base only because they were made by hand and installed heavy-side-down, not because the glass slid.",
-   "queries": [
-    "old window glass",
-    "stained glass",
-    "glass texture light"
-   ]
-  },
-  {
-   "id": "whale_heart",
-   "domain": "animals",
-   "fact": "A blue whale's heart weighs about 400 pounds, and each beat pushes roughly 60 gallons of blood.",
-   "angle": "scale of the largest animal ever",
-   "key_terms": ["400 pounds", "blue whale", "60 gallons"],
-   "whatif": "What if you could stand next to a blue whale's beating heart? It's the size of a small car, around 400 pounds, and each beat moves about 60 gallons of blood.",
-   "wow": "That heartbeat is so powerful it can be detected from about two miles away underwater.",
-   "queries": [
-    "blue whale ocean",
-    "whale underwater",
-    "whale diving deep"
-   ]
-  },
-  {
-   "id": "turtle_breathing",
-   "domain": "animals",
-   "fact": "Some turtles can breathe through their rear ends, absorbing oxygen through their tissues to survive long winters underwater.",
-   "angle": "absurd but true biology",
-   "key_terms": ["rear ends", "cloaca", "oxygen"],
-   "whatif": "What if a pond froze solid all winter and a turtle was trapped beneath the ice? It would simply breathe through its rear end, pulling oxygen from the water through an opening called the cloaca.",
-   "wow": "This is called cloacal respiration, and for some turtles it supplies most of the oxygen they need to survive months underwater without surfacing.",
-   "queries": [
-    "turtle underwater",
-    "pond turtle swimming",
-    "turtle close up"
-   ]
-  },
-  {
-   "id": "hummingbird_heart",
-   "domain": "animals",
-   "fact": "A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards.",
-   "angle": "extreme engineering in a tiny body",
-   "key_terms": ["1,200 times per minute", "fly backwards", "hummingbird"],
-   "whatif": "What if your heart beat like a hummingbird's? At over 1,200 beats a minute you'd have to eat almost constantly just to survive, which is exactly what a hummingbird does.",
-   "wow": "Its wings beat up to 80 times a second, letting it hover in place and become the only bird on Earth that can truly fly backwards.",
-   "queries": [
-    "hummingbird flying",
-    "hummingbird flower",
-    "bird wings slow motion"
-   ]
-  },
-  {
-   "id": "skin_cells",
-   "domain": "body",
-   "fact": "You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you.",
-   "angle": "slightly disturbing everyday fact",
-   "key_terms": ["dead skin cells", "house dust", "every minute"],
-   "whatif": "What if you tracked where all your dead skin actually ends up? A large share of the house dust drifting through your home is you, because you shed tens of thousands of dead skin cells every minute.",
-   "wow": "You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year.",
-   "queries": [
-    "dust light beam",
-    "skin macro",
-    "sunlight dust particles"
-   ]
-  },
-  {
-   "id": "lightning_strikes_earth",
-   "domain": "earth",
-   "fact": "About 8 million lightning bolts strike the Earth every single day, roughly 100 every second.",
-   "angle": "constant violence you never notice",
-   "key_terms": ["8 million", "100 every second", "lightning"],
-   "whatif": "What if you could see every lightning strike on Earth at once? The planet is hit by about 8 million bolts a day, which works out to roughly 100 every single second.",
-   "wow": "That means somewhere on Earth, right now as you watch this, lightning is striking about a hundred times over.",
-   "queries": [
-    "lightning storm",
-    "multiple lightning strikes",
-    "storm clouds dramatic"
-   ]
-  },
-  {
-   "id": "alcohol_cloud",
-   "domain": "space",
-   "fact": "There is a vast cloud in space, Sagittarius B2, containing enough alcohol to dwarf anything on Earth, drifting near the center of our galaxy.",
-   "angle": "bizarre cosmic chemistry",
-   "key_terms": ["Sagittarius B2", "alcohol", "galaxy"],
-   "whatif": "What if you could bottle a cloud in space? Sagittarius B2, near the center of our galaxy, holds enough alcohol to dwarf every drop that has ever existed on Earth.",
-   "wow": "It's mostly undrinkable methanol and vinyl alcohol, not the kind in a drink, but the sheer quantity is billions of billions of times anything on our planet.",
-   "queries": [
-    "space gas cloud",
-    "galaxy center",
-    "nebula colorful"
-   ]
-  },
-  {
-   "id": "banana_radioactive",
-   "domain": "physics",
-   "fact": "Bananas are slightly radioactive because they contain potassium-40, a naturally radioactive isotope; a single banana gives a dose of about 0.1 microsieverts.",
-   "angle": "harmless everyday radioactivity",
-   "key_terms": ["potassium-40", "0.1 microsieverts", "5,000 times a second"],
-   "whatif": "What would actually happen if you ate a million bananas at once? You'd die from the potassium itself, ordinary potassium poisoning that stops your heart, long before the radiation from potassium-40 ever mattered.",
-   "wow": "You are more radioactive than the banana; your own body fires roughly 5,000 potassium-40 decays every single second, and your kidneys flush the extra potassium so the dose never adds up.",
-   "queries": [
-    "bananas bunch",
-    "banana yellow",
-    "fruit market"
-   ]
-  },
-  {
-   "id": "heart_beats_day",
-   "domain": "body",
-   "fact": "Your heart beats around 100,000 times a day, pumping blood through your body without ever taking a single break.",
-   "angle": "tireless hidden machine",
-   "key_terms": ["100,000 times a day", "heart", "2.5 billion"],
-   "whatif": "What if your heart took a single day off in your entire life? It never does; it beats about 100,000 times a day, every day, from before you're born until the moment you die.",
-   "wow": "Over an average lifetime that's roughly 2.5 billion beats, pushing around 2,000 gallons of blood through you every single day.",
-   "queries": [
-    "heartbeat monitor hospital",
-    "runner chest breathing",
-    "drummer drumming fast"
-   ]
-  },
-  {
-   "id": "eye_colors",
-   "domain": "body",
-   "fact": "The human eye can distinguish around ten million different colors, yet we have names for only a tiny fraction of them.",
-   "angle": "the limits of language vs perception",
-   "key_terms": ["ten million colors", "cones", "tetrachromat"],
-   "whatif": "What if you had a fourth type of color-sensing cone? A rare few people, called tetrachromats, do, and they may see up to a hundred times more colors than everyone else.",
-   "wow": "Your ten million colors come from just three types of cones in your eye, while most of those shades have no name in any language.",
-   "queries": [
-    "human eye closeup",
-    "color spectrum",
-    "colorful gradient"
-   ]
-  },
-  {
-   "id": "human_vacuum",
-   "domain": "space",
-   "fact": "If you were exposed to space without a suit, you would not freeze solid or explode; you'd stay conscious for about 15 seconds before the oxygen leaves your blood.",
-   "angle": "the movies got it completely wrong",
-   "key_terms": ["15 seconds", "ebullism", "vacuum"],
-   "whatif": "What if an airlock burst open and flung you into space? You wouldn't pop like a balloon; you'd have about 15 conscious seconds before a lack of oxygen knocks you out.",
-   "wow": "The vacuum causes ebullism, where the water in your body starts to boil at your own temperature, and a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out.",
-   "queries": [
-    "astronaut spacewalk",
-    "outer space stars",
-    "space helmet reflection"
-   ]
-  },
-  {
-   "id": "immortal_jellyfish",
-   "domain": "animals",
-   "fact": "The immortal jellyfish, Turritopsis dohrnii, can reverse its own life cycle, reverting to a juvenile form when injured or old and starting over, potentially forever.",
-   "angle": "an animal that cheats death",
-   "key_terms": ["Turritopsis dohrnii", "transdifferentiation", "biologically immortal"],
-   "whatif": "What if aging had a reset button? This jellyfish has one; facing death, Turritopsis dohrnii transforms its own cells back into a baby polyp and begins its entire life again.",
-   "wow": "It does this through transdifferentiation, essentially a butterfly turning back into a caterpillar, which makes it the only animal known to be biologically immortal.",
-   "queries": [
-    "jellyfish glowing ocean",
-    "jellyfish swimming dark",
-    "translucent jellyfish underwater"
-   ]
-  },
-  {
-   "id": "bootes_void",
-   "domain": "space",
-   "fact": "There is a region of space called the Bootes void, about 330 million light-years across and almost completely empty, a giant hole in the universe.",
-   "angle": "the emptiest place we know of",
-   "key_terms": ["Bootes void", "330 million light-years", "empty"],
-   "whatif": "What if our galaxy floated in the middle of the Bootes void? The night sky would look almost starless, because the nearest galaxies would be hundreds of millions of light-years away.",
-   "wow": "This bubble of nothing is 330 million light-years across yet holds only a few dozen galaxies, where thousands should be; if we lived inside it, we might not have discovered other galaxies existed until the 1960s.",
-   "queries": [
-    "deep space darkness",
-    "empty starfield space",
-    "distant galaxies black"
-   ]
-  },
-  {
-   "id": "andromeda_time",
-   "domain": "space",
-   "fact": "The Andromeda galaxy is the farthest thing you can see with the naked eye, and its light left 2.5 million years ago, so you are literally seeing into the deep past.",
-   "angle": "you can see time travel with your own eyes",
-   "key_terms": ["Andromeda", "2.5 million years", "naked eye"],
-   "whatif": "What if Andromeda vanished completely tonight? You would keep seeing it in the sky for 2.5 million more years, because that's how long its light takes to reach your naked eye.",
-   "wow": "The light landing on your eye tonight left Andromeda before modern humans existed, back when our ancestors were first chipping stone tools.",
-   "queries": [
-    "andromeda galaxy night",
-    "milky way night sky",
-    "stargazing telescope"
-   ]
-  },
-  {
-   "id": "mariana_pressure",
-   "domain": "ocean",
-   "fact": "At the bottom of the Mariana Trench, the water presses down at about 8 tons per square inch, over 1,000 times the pressure at the surface.",
-   "angle": "a crushing world right below us",
-   "key_terms": ["Mariana Trench", "8 tons per square inch", "1,000 times"],
-   "whatif": "What if you dived to the bottom of the Mariana Trench without protection? The pressure of about 8 tons per square inch would crush your lungs and collapse your body almost instantly.",
-   "wow": "That's like balancing dozens of jumbo jets on your body, yet delicate creatures like the snailfish live down there perfectly happily.",
-   "queries": [
-    "deep sea trench dark",
-    "submersible deep ocean",
-    "underwater abyss glowing fish"
-   ]
-  },
-  {
-   "id": "cell_replacement",
-   "domain": "body",
-   "fact": "Most of your body is only a few years old because you constantly replace billions of cells, but the neurons in your brain and the lenses of your eyes are as old as you are.",
-   "angle": "you are and aren't the same person you were",
-   "key_terms": ["neurons", "lenses of your eyes", "as old as you"],
-   "whatif": "What if you're basically a brand-new person every few years? Almost, but not entirely; the neurons in your brain and the lenses of your eyes are never replaced, staying exactly as old as you are.",
-   "wow": "Your skeleton fully renews itself about every 10 years and your gut lining every few days, yet you carry the same original brain cells your whole life.",
-   "queries": [
-    "hourglass sand falling",
-    "time lapse city people",
-    "old photographs fading"
-   ]
-  },
-  {
-   "id": "dna_length",
-   "domain": "body",
-   "fact": "The DNA in a single one of your cells would stretch about 2 metres if uncoiled, and all the DNA in your body laid end to end would reach the Sun and back many times.",
-   "angle": "impossible scale folded inside you",
-   "key_terms": ["2 metres", "reach the Sun and back", "DNA"],
-   "whatif": "What if you unravelled the DNA from every cell in your body and laid it in one line? It would stretch to the Sun and back dozens of times over.",
-   "wow": "Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells.",
-   "queries": [
-    "twisted rope closeup",
-    "spiral staircase looking up",
-    "tangled threads macro"
-   ]
-  },
-  {
-   "id": "giant_squid_eye",
-   "domain": "ocean",
-   "fact": "The giant squid has the largest eye of any animal, up to about 25 centimetres across, roughly the size of a dinner plate, evolved to catch the faint glow stirred up by a hunting sperm whale.",
-   "angle": "an eye built like an early-warning system",
-   "key_terms": ["25 centimetres", "sperm whale", "120 metres"],
-   "whatif": "What if you needed to spot a predator in pitch darkness a football field away? A giant squid can; its eye, about 25 centimetres across, is built to catch the faint bioluminescent stir of a sperm whale swimming up to 120 metres off, buying it just enough warning to flee.",
-   "wow": "That's roughly triple the width of a human eye, and the next largest eye in the ocean, a swordfish's, is barely a third of the size.",
-   "queries": [
-    "giant squid deep sea",
-    "sperm whale ocean",
-    "deep sea diver flashlight"
-   ]
-  },
-  {
-   "id": "vent_tube_worms",
-   "domain": "ocean",
-   "fact": "The giant tube worm Riftia pachyptila has no mouth or gut at all; it survives entirely on bacteria living inside it that turn the toxic hydrogen sulfide pouring from deep-sea hydrothermal vents into food.",
-   "angle": "an animal that never eats a single meal",
-   "key_terms": ["Riftia pachyptila", "hydrogen sulfide", "50 percent of its body weight"],
-   "whatif": "What if an animal never had to eat a bite its whole life? The giant tube worm Riftia pachyptila doesn't; with no mouth or gut, it lives entirely off bacteria inside it that turn a hydrothermal vent's toxic hydrogen sulfide into food.",
-   "wow": "Those bacteria can make up as much as 50 percent of its body weight, and its blood-red plume is red because it's packed with hemoglobin, ferrying oxygen and sulfide down to feed them.",
-   "queries": [
-    "hydrothermal vent deep sea",
-    "tube worms ocean floor",
-    "deep sea vent bubbles"
-   ]
-  },
-  {
-   "id": "mercury_extremes",
-   "domain": "space",
-   "fact": "Mercury has the wildest temperature swings of any planet: daytime surface heat reaches about 430 degrees Celsius, while at night it plunges to about minus 180 Celsius.",
-   "angle": "the planet closest to the Sun is also brutally cold",
-   "key_terms": ["430 degrees Celsius", "minus 180 Celsius", "Mercury"],
-   "whatif": "What if you stood on Mercury as the Sun set? Within hours the ground would cool from a scorching 430 degrees Celsius to a frozen minus 180 Celsius, the biggest day-to-night temperature swing of any planet in the solar system.",
-   "wow": "Mercury sits closest to the Sun, yet Venus is actually the hotter planet overall, because Mercury has almost no atmosphere left to trap any of that heat once night falls.",
-   "queries": [
-    "planet mercury surface",
-    "sun close up space",
-    "cratered planet surface"
-   ]
-  },
-  {
-   "id": "muon_time_dilation",
-   "domain": "physics",
-   "fact": "Muons created when cosmic rays strike the upper atmosphere have a lifespan of just 2.2 microseconds, far too short to fall 15 kilometres to the ground, yet at near light speed, time dilation lets billions of them reach the surface anyway.",
-   "angle": "relativity proving itself over your head right now",
-   "key_terms": ["2.2 microseconds", "muons", "time dilation"],
-   "whatif": "What if a clock ticking near light speed actually ran slower? A muon's does; born 15 kilometres up with only 2.2 microseconds to live, it should decay long before reaching the ground, but relativistic time dilation stretches that lifespan just enough for it to survive the fall.",
-   "wow": "About one of these muons passes through every square centimetre of ground every minute, meaning a real proof of Einstein's relativity is quietly raining down on you right now.",
-   "queries": [
-    "mountain peak sunrise",
-    "night sky stars timelapse",
-    "scientist laboratory equipment"
-   ]
-  },
-  {
-   "id": "liver_regrows",
-   "domain": "body",
-   "fact": "The liver can regenerate itself: after a living donor gives away as much as 65 percent of it for a transplant, both the donor's remaining liver and the piece given to the recipient regrow to nearly full size within about 8 to 10 weeks.",
-   "angle": "the one organ that grows itself back",
-   "key_terms": ["65 percent", "8 to 10 weeks", "liver"],
-   "whatif": "What if you cut away most of an organ and expected it to just grow back? A liver donor's does; after giving up as much as 65 percent of it, the remaining tissue regenerates to nearly full size and function within about 8 to 10 weeks.",
-   "wow": "It's the only solid organ in the body that can do this, regrowing real working tissue instead of just scarring over, which is exactly why living-donor liver transplants are possible.",
-   "queries": [
-    "surgeons operating room",
-    "hospital corridor walking",
-    "medical team surgery"
-   ]
-  },
-  {
-   "id": "human_bioluminescence",
-   "domain": "body",
-   "fact": "The human body emits a faint visible glow of light, invisible to the naked eye but caught by an ultra-sensitive camera in a 2009 study, and its brightness rises and falls on a daily rhythm, peaking in the afternoon.",
-   "angle": "you glow like a firefly, just too dimly to see",
-   "key_terms": ["1,000 times", "biophotons", "circadian rhythm"],
-   "whatif": "What if your body glowed like a firefly, just too dimly to notice? It does; a 2009 study used a camera cooled to nearly minus 120 degrees Celsius to catch the light and found it's about 1,000 times too faint for the naked eye to ever see.",
-   "wow": "The glow isn't constant either; these biophotons brighten and dim across the day in step with your circadian rhythm, peaking in the afternoon around your cheeks and forehead.",
-   "queries": [
-    "person silhouette dark room",
-    "night photography long exposure",
-    "glowing light particles"
-   ]
-  },
-  {
-   "id": "axolotl_regeneration",
-   "domain": "animals",
-   "fact": "The axolotl can regrow an entire missing limb, complete with bone, muscle, and nerves, in about 40 to 50 days, and it can also regenerate damaged spinal cord and parts of its heart and brain without forming any scar tissue.",
-   "angle": "an animal that heals like a reset button",
-   "key_terms": ["axolotl", "40 to 50 days", "without scarring"],
-   "whatif": "What if losing a leg were just a temporary inconvenience? For the axolotl it is; sever one of its limbs and a fully functional replacement, bone, muscle, and nerves included, regrows in about 40 to 50 days, with no scar left behind.",
-   "wow": "It can also regenerate damaged spinal cord and even parts of its own heart and brain, which is why labs around the world keep colonies of them alive just to study how it's done.",
-   "queries": [
-    "axolotl aquarium",
-    "salamander water",
-    "pink axolotl swimming"
-   ]
-  },
-  {
-   "id": "naked_mole_rat",
-   "domain": "animals",
-   "fact": "Naked mole rats can survive about 18 minutes with no oxygen at all by switching their metabolism to burn fructose instead of glucose, and they are also remarkably resistant to cancer, living over 30 years despite being mouse-sized.",
-   "angle": "a rodent that breaks the rules of biology",
-   "key_terms": ["18 minutes", "fructose", "naked mole rat"],
-   "whatif": "What if an animal's brain could just switch fuels when the oxygen ran out? A naked mole rat's does; starved of air, it burns fructose instead of glucose, letting it survive about 18 minutes with no oxygen at all.",
-   "wow": "That trick works in its heart and brain too, not just the gut like in other mammals, and on top of it naked mole rats almost never develop cancer, living over 30 years, ten times longer than a mouse their size.",
-   "queries": [
-    "mole rat underground",
-    "burrow tunnel dark",
-    "rodent close up"
-   ]
-  },
-  {
-   "id": "woodpecker_skull",
-   "domain": "animals",
-   "fact": "A woodpecker's head decelerates at roughly 1,000 times the force of gravity with every peck, tens of times harder than a hit that would concuss a person, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
-   "angle": "an animal that headbangs a tree without injury",
-   "key_terms": ["1,000 times the force of gravity", "woodpecker", "20 pecks per second"],
-   "whatif": "What if you slammed your head into a tree trunk 20 times a second? You'd be concussed instantly, but a woodpecker isn't; each strike decelerates its head at roughly 1,000 times the force of gravity, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
-   "wow": "A 2022 study found the skull acts like a stiff hammer, not a cushion, and even the hardest hits stay well below the threshold that would concuss a primate brain.",
-   "queries": [
-    "woodpecker pecking tree",
-    "woodpecker tree trunk",
-    "bird forest closeup"
-   ]
-  },
-  {
-   "id": "aerogel_frozen_smoke",
-   "domain": "materials",
-   "fact": "Aerogel, nicknamed frozen smoke, is up to 99.8 percent air by volume, making it the lightest solid material ever created, yet a thin sheet of it can protect a bare hand from the flame of a blowtorch held right against it.",
-   "angle": "a solid that is almost entirely empty air",
-   "key_terms": ["99.8 percent air", "frozen smoke", "blowtorch"],
-   "whatif": "What if you could hold a blowtorch flame directly against your palm? With a thin layer of aerogel in between you actually could, because this solid, nicknamed frozen smoke, is up to 99.8 percent air yet still blocks heat well enough to protect skin at point-blank range.",
-   "wow": "Despite being almost entirely empty space, aerogel holds more than a dozen Guinness World Records for its extremes, including the lightest solid ever produced.",
-   "queries": [
-    "aerogel material closeup",
-    "blue smoke wisps",
-    "blowtorch flame closeup"
-   ]
-  },
-  {
-   "id": "earths_core_hot_as_sun",
-   "domain": "earth",
-   "fact": "Earth's solid inner core runs about 5,400 degrees Celsius, roughly as hot as the surface of the Sun, and it stays solid only because the crushing pressure at the centre of the planet keeps iron from melting.",
-   "angle": "the middle of our planet is as hot as a star",
-   "key_terms": ["5,400 degrees Celsius", "inner core", "surface of the Sun"],
-   "whatif": "What if the centre of the Earth were somehow cooler than we think? It isn't; the inner core runs about 5,400 degrees Celsius, roughly matching the Sun's surface, and it only stays solid because the pressure down there is extreme enough to stop iron from melting despite the heat.",
-   "wow": "That means the ball of solid iron at the middle of our planet is, temperature for temperature, about as hot as the glowing surface of the star we orbit.",
-   "queries": [
-    "erupting volcano lava",
-    "molten rock glowing",
-    "earth from space rotating"
-   ]
-  }
- ]
+  "facts": [
+    {
+      "id": "rainbow_circle",
+      "domain": "light",
+      "fact": "A rainbow is actually a full circle; the ground simply cuts off the bottom. From a plane you can see the entire ring.",
+      "angle": "reframes something everyone thinks they know",
+      "key_terms": [
+        "full circle",
+        "42 degrees",
+        "antisolar point"
+      ],
+      "whatif": "What if you could get high enough off the ground? From a plane or a mountaintop you'd see the rainbow as a complete 360-degree circle, glowing at a fixed 42 degrees around the point opposite the Sun.",
+      "wow": "A rainbow isn't an object with a location, it's an angle, so every person is looking at their own private rainbow made by different raindrops.",
+      "queries": [
+        "rainbow sky",
+        "airplane window clouds",
+        "double rainbow field"
+      ]
+    },
+    {
+      "id": "stomach_lining",
+      "domain": "body",
+      "fact": "Your stomach lining rebuilds itself every few days, because the hydrochloric acid inside is strong enough that the stomach would otherwise digest itself.",
+      "angle": "your own body is doing something alarming right now",
+      "key_terms": [
+        "hydrochloric acid",
+        "pH of 1.5",
+        "every 3 to 4 days"
+      ],
+      "whatif": "What if your stomach stopped making fresh lining? The hydrochloric acid at a pH of about 1.5 would start digesting your own stomach wall, which is exactly what a bleeding ulcer is.",
+      "wow": "That acid is strong enough to dissolve a razor blade or a nail, yet a fresh layer of protective cells rebuilds the wall every 3 to 4 days.",
+      "queries": [
+        "bubbling green liquid",
+        "pouring chemical beaker",
+        "person eating burger"
+      ]
+    },
+    {
+      "id": "taller_morning",
+      "domain": "body",
+      "fact": "You are up to a couple of centimetres taller in the morning than at night, because the soft discs in your spine compress under your weight all day.",
+      "angle": "a hidden daily change in your own body",
+      "key_terms": [
+        "spinal discs",
+        "2 centimetres",
+        "astronauts"
+      ],
+      "whatif": "What if gravity never pressed on you? It happens to astronauts, whose spinal discs decompress in zero gravity, so they grow up to 5 centimetres taller in space before shrinking back on Earth.",
+      "wow": "Over a single day your spinal discs slowly squeeze out water and lose up to 2 centimetres of height, then soak it back overnight while you sleep.",
+      "queries": [
+        "person stretching morning",
+        "measuring tape closeup",
+        "waking up bed"
+      ]
+    },
+    {
+      "id": "neutron_star_spoon",
+      "domain": "space",
+      "fact": "A single teaspoon of a neutron star would weigh roughly a billion tons, because its matter is crushed almost beyond belief.",
+      "angle": "a number that sounds fake but is true",
+      "key_terms": [
+        "neutron star",
+        "a billion tons",
+        "teaspoon"
+      ],
+      "whatif": "What if a teaspoon of a neutron star appeared in your hand? At a billion tons it would punch straight through the floor, through the Earth, and keep falling toward the planet's core.",
+      "wow": "The star packs more mass than our Sun into a ball the size of a city, and some spin over 700 times every single second.",
+      "queries": [
+        "neutron star space",
+        "galaxy stars",
+        "deep space nebula"
+      ]
+    },
+    {
+      "id": "venus_day",
+      "domain": "space",
+      "fact": "A day on Venus is longer than its year: one rotation takes 243 Earth days, while one trip around the Sun takes only 225.",
+      "angle": "time itself works differently elsewhere",
+      "key_terms": [
+        "243 Earth days",
+        "225 days",
+        "retrograde"
+      ],
+      "whatif": "What if you tried to live out a single year on Venus? You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year.",
+      "wow": "Venus also spins in retrograde, the opposite direction to almost every other planet, so the Sun there rises in the west and sets in the east.",
+      "queries": [
+        "planet venus surface",
+        "planets orbiting sun",
+        "space planet rotation"
+      ]
+    },
+    {
+      "id": "saturn_floats",
+      "domain": "space",
+      "fact": "Saturn is so light for its size that it would float in water; its average density is only 0.687 grams per cubic centimetre, less than water itself.",
+      "angle": "counterintuitive scale of a giant",
+      "key_terms": [
+        "0.687",
+        "less dense than water",
+        "float"
+      ],
+      "whatif": "What if you found a bathtub big enough? Saturn would bob on the surface like a beach ball, because at 0.687 grams per cubic centimetre it is less dense than water.",
+      "wow": "Saturn is a ball of mostly hydrogen and helium with no solid surface, so there is nothing to stand on beneath its clouds.",
+      "queries": [
+        "planet saturn rings",
+        "saturn space",
+        "gas giant planet"
+      ]
+    },
+    {
+      "id": "eclipse_coincidence",
+      "domain": "space",
+      "fact": "The Sun is about 400 times wider than the Moon and also about 400 times farther away, which is the only reason they look the same size and we get perfect eclipses.",
+      "angle": "a cosmic coincidence you never noticed",
+      "key_terms": [
+        "400 times",
+        "same size",
+        "total eclipse"
+      ],
+      "whatif": "What if the Moon were slightly closer or farther? The perfect match, 400 times smaller but 400 times nearer, would break, and total eclipses would simply never happen.",
+      "wow": "The Moon drifts about 3.8 centimetres farther away every year, so in a few hundred million years total eclipses will vanish from the sky forever.",
+      "queries": [
+        "solar eclipse",
+        "moon sky",
+        "sun corona eclipse"
+      ]
+    },
+    {
+      "id": "diamond_rain",
+      "domain": "space",
+      "fact": "On Neptune and Uranus it likely rains solid diamonds, as extreme pressure squeezes carbon in the atmosphere into crystals.",
+      "angle": "alien weather",
+      "key_terms": [
+        "Neptune",
+        "Uranus",
+        "diamond rain"
+      ],
+      "whatif": "What if you could stand under the sky of Neptune? Crushing pressure would squeeze carbon into solid diamonds that fall like hail, so it literally rains gemstones.",
+      "wow": "Those diamonds may sink for thousands of kilometres and pool into a slushy ocean of liquid diamond deep inside the planet.",
+      "queries": [
+        "planet neptune",
+        "blue planet space",
+        "diamond crystal"
+      ]
+    },
+    {
+      "id": "ocean_unmapped",
+      "domain": "ocean",
+      "fact": "We have mapped more of the surface of Mars than the floor of our own oceans; most of the deep sea has never been seen.",
+      "angle": "the unknown is right here, not in space",
+      "key_terms": [
+        "Mars",
+        "ocean floor",
+        "80 percent"
+      ],
+      "whatif": "What if you could drain every ocean overnight? You'd reveal Earth's tallest mountain range and canyons deeper than any on land, terrain that over 80 percent of which no human has ever seen.",
+      "wow": "More people have walked on the Moon than have reached the deepest point of the ocean floor.",
+      "queries": [
+        "deep ocean dark",
+        "underwater abyss",
+        "submarine deep sea"
+      ]
+    },
+    {
+      "id": "ocean_oxygen",
+      "domain": "ocean",
+      "fact": "Most of the oxygen you breathe comes from the ocean, not forests; tiny drifting plankton produce over half of it.",
+      "angle": "reframes where your air comes from",
+      "key_terms": [
+        "plankton",
+        "50 percent",
+        "Prochlorococcus"
+      ],
+      "whatif": "What if every forest on Earth burned but the plankton survived? You'd still breathe, because the ocean's plankton, not the rainforest, makes at least 50 percent of Earth's oxygen.",
+      "wow": "A single type of these microbes, Prochlorococcus, is the most abundant photosynthetic life on the planet and makes up to one in five breaths you take.",
+      "queries": [
+        "ocean surface waves",
+        "bioluminescent plankton ocean",
+        "sunlight underwater"
+      ]
+    },
+    {
+      "id": "mauna_kea",
+      "domain": "earth",
+      "fact": "Everest is the highest point above sea level, but Mauna Kea in Hawaii is the tallest mountain on Earth measured from its base on the ocean floor.",
+      "angle": "the famous answer is technically wrong",
+      "key_terms": [
+        "Mauna Kea",
+        "10,000 metres",
+        "Everest"
+      ],
+      "whatif": "What if you measured mountains from their true base instead of sea level? Everest loses its crown to Mauna Kea, which stands over 10,000 metres tall, most of it hidden underwater.",
+      "wow": "From base to summit Mauna Kea is more than 1,000 metres taller than Everest, but you only ever see the top 4,000 metres above the waves.",
+      "queries": [
+        "mountain peak snow",
+        "hawaii volcano",
+        "underwater mountain"
+      ]
+    },
+    {
+      "id": "lightning_hotter",
+      "domain": "physics",
+      "fact": "A bolt of lightning is about five times hotter than the surface of the Sun, reaching roughly 30,000 degrees in a fraction of a second.",
+      "angle": "everyday thing is more extreme than the Sun",
+      "key_terms": [
+        "30,000 degrees",
+        "five times hotter",
+        "surface of the Sun"
+      ],
+      "whatif": "What if you could touch a lightning channel for an instant? It flashes to about 30,000 degrees, five times hotter than the surface of the Sun, in a few millionths of a second.",
+      "wow": "That bolt heats the air so violently that it explodes outward, and the shockwave slamming back together is the crack of thunder you hear.",
+      "queries": [
+        "lightning strike storm",
+        "thunderstorm sky",
+        "lightning night"
+      ]
+    },
+    {
+      "id": "atoms_empty",
+      "domain": "physics",
+      "fact": "Atoms are almost entirely empty space; if you removed it all, the entire human race would fit inside a single sugar cube.",
+      "angle": "reality is mostly nothing",
+      "key_terms": [
+        "empty space",
+        "sugar cube",
+        "nucleus"
+      ],
+      "whatif": "What if you squeezed the empty space out of every human on Earth? All 8 billion of us would pack down into a single sugar cube.",
+      "wow": "The nucleus is about 100,000 times smaller than the atom around it, so if an atom were a stadium, the nucleus would be a single pea at the centre.",
+      "queries": [
+        "sugar cube macro",
+        "empty warehouse interior",
+        "starry night sky"
+      ]
+    },
+    {
+      "id": "head_ages_faster",
+      "domain": "physics",
+      "fact": "Time runs very slightly faster for your head than your feet, because gravity is weaker further from Earth, and it has been measured with atomic clocks.",
+      "angle": "time bends inside your own body",
+      "key_terms": [
+        "your head ages faster",
+        "atomic clocks",
+        "33 centimetres"
+      ],
+      "whatif": "What if you spent your whole life lying flat instead of standing? Your head and feet would age at almost the same rate, because standing up, your head genuinely ages faster than your feet.",
+      "wow": "Scientists proved it with atomic clocks raised just 33 centimetres apart, though over an 80-year lifetime your head gains only about 90 billionths of a second.",
+      "queries": [
+        "clock ticking closeup",
+        "skyscraper looking up",
+        "earth from space"
+      ]
+    },
+    {
+      "id": "octopus_hearts",
+      "domain": "animals",
+      "fact": "An octopus has three hearts and blue blood, and the main heart stops beating when it swims, which is why it prefers to crawl.",
+      "angle": "alien biology on Earth",
+      "key_terms": [
+        "three hearts",
+        "blue blood",
+        "copper"
+      ],
+      "whatif": "What if an octopus had to race for its life? Its main heart stops beating the moment it swims, so it tires quickly and would rather crawl along the seabed.",
+      "wow": "Its blood is blue because it carries oxygen with a copper-based molecule called hemocyanin instead of the iron that makes our blood red.",
+      "queries": [
+        "octopus ocean",
+        "octopus swimming",
+        "deep sea creature"
+      ]
+    },
+    {
+      "id": "tardigrade",
+      "domain": "animals",
+      "fact": "The tardigrade, a microscopic animal, can survive being frozen, boiled, crushed, and even the vacuum of outer space.",
+      "angle": "the toughest animal is invisible",
+      "key_terms": [
+        "tardigrade",
+        "vacuum of space",
+        "1,000 times",
+        "cryptobiosis"
+      ],
+      "whatif": "What if you left a tardigrade in the open vacuum of space? It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you and temperatures near absolute zero.",
+      "wow": "It pulls in its legs and dries into a glass-like husk called a tun, dropping its metabolism to almost zero and waiting, sometimes for decades, for water to return.",
+      "queries": [
+        "moss macro dew",
+        "water droplet macro",
+        "frozen ice crystals"
+      ]
+    },
+    {
+      "id": "mantis_shrimp",
+      "domain": "animals",
+      "fact": "The mantis shrimp punches so fast it boils the water around its claw, creating a flash of light and heat.",
+      "angle": "a tiny animal breaks physics",
+      "key_terms": [
+        "mantis shrimp",
+        "cavitation bubble",
+        "20,000 degrees"
+      ],
+      "whatif": "What if the mantis shrimp's punch actually misses its target? It barely matters, because the collapsing cavitation bubble left behind strikes a second time, flashing to nearly 20,000 degrees.",
+      "wow": "The punch accelerates faster than a bullet, over 10,000 g, and the collapsing bubble briefly glows with real light hotter than the surface of the Sun.",
+      "queries": [
+        "mantis shrimp colorful",
+        "underwater shrimp",
+        "ocean reef creature"
+      ]
+    },
+    {
+      "id": "sharks_older_trees",
+      "domain": "animals",
+      "fact": "Sharks are older than trees; sharks have existed for over 400 million years, predating the first trees by tens of millions of years.",
+      "angle": "scrambles your sense of timeline",
+      "key_terms": [
+        "sharks",
+        "450 million years",
+        "trees"
+      ],
+      "whatif": "What if you lined up the whole history of life on Earth? Sharks appear around 450 million years ago, roughly 50 million years before the very first tree ever grew.",
+      "wow": "That means sharks are older than Saturn's rings, older than the North Star, and they outlived the dinosaurs too.",
+      "queries": [
+        "shark swimming ocean",
+        "ancient forest",
+        "shark deep blue"
+      ]
+    },
+    {
+      "id": "honey_never_spoils",
+      "domain": "body",
+      "fact": "Honey never spoils; sealed honey found in 3,000-year-old Egyptian tombs was still perfectly edible.",
+      "angle": "a food that defeats time",
+      "key_terms": [
+        "3,000-year-old",
+        "never spoils",
+        "hydrogen peroxide"
+      ],
+      "whatif": "What if you ate honey sealed inside an Egyptian tomb 3,000 years ago? It would be perfectly safe to eat, because honey is one food that essentially never spoils.",
+      "wow": "Honey is so low in water and so acidic that bacteria die in it, and bees add an enzyme that produces small amounts of hydrogen peroxide as a preservative.",
+      "queries": [
+        "honey jar golden",
+        "honeycomb bees",
+        "honey dripping"
+      ]
+    },
+    {
+      "id": "blood_vessels_length",
+      "domain": "body",
+      "fact": "If you laid out all the blood vessels in your body end to end, they would wrap around the entire Earth roughly two and a half times.",
+      "angle": "hidden scale inside you",
+      "key_terms": [
+        "60,000 miles",
+        "twice around the Earth",
+        "blood vessels"
+      ],
+      "whatif": "What if you could unspool every blood vessel in your body into a single line? The roughly 60,000 miles of them would circle the entire Earth more than twice.",
+      "wow": "Most of that staggering length is capillaries so narrow that your blood cells have to squeeze through them single file.",
+      "queries": [
+        "red liquid flowing",
+        "river delta aerial",
+        "earth from space"
+      ]
+    },
+    {
+      "id": "nerve_speed",
+      "domain": "body",
+      "fact": "Your nerves carry signals to your brain at speeds of up to about 270 miles per hour, faster than a Formula 1 car.",
+      "angle": "your body is faster than you think",
+      "key_terms": [
+        "270 miles per hour",
+        "nerves",
+        "Formula 1"
+      ],
+      "whatif": "What if your nerves fired even a little slower? You already feel a stubbed toe a beat late, because touch races to your brain at up to 270 miles per hour while pain crawls on slower nerve fibres.",
+      "wow": "That's about 120 metres every second, quicker than a Formula 1 car at full throttle, all happening inside your own body.",
+      "queries": [
+        "lightning storm night",
+        "race car speed",
+        "fiber optic lights"
+      ]
+    },
+    {
+      "id": "more_bacteria",
+      "domain": "body",
+      "fact": "You carry roughly as many bacterial cells as human cells, meaning you are, by cell count, about half not-you.",
+      "angle": "unsettling truth about identity",
+      "key_terms": [
+        "38 trillion bacteria",
+        "30 trillion",
+        "microbiome"
+      ],
+      "whatif": "What if you wiped out every microbe living on and inside you? You'd lose about 38 trillion cells, because by count you are slightly more them than you.",
+      "wow": "The famous claim that microbes outnumber your cells 10 to 1 was wrong; your microbiome is closer to a 1.3 to 1 ratio, about 38 trillion bacteria to 30 trillion human cells.",
+      "queries": [
+        "petri dish science",
+        "yogurt spoon closeup",
+        "crowd people walking"
+      ]
+    },
+    {
+      "id": "footprints_moon",
+      "domain": "space",
+      "fact": "The footprints left on the Moon will likely last millions of years, because there is no wind or water to erase them.",
+      "angle": "permanence in an empty place",
+      "key_terms": [
+        "footprints",
+        "no wind",
+        "millions of years"
+      ],
+      "whatif": "What if you returned to the Moon a million years from now? Neil Armstrong's footprints would almost certainly still be there, because there is no wind or water to wear them away.",
+      "wow": "With no atmosphere to erode anything, the flags, the rover tracks, and every bootprint may outlast most human monuments on Earth.",
+      "queries": [
+        "moon surface",
+        "astronaut footprint moon",
+        "lunar landscape"
+      ]
+    },
+    {
+      "id": "space_silent",
+      "domain": "space",
+      "fact": "Space is completely silent; sound needs a material to travel through, and space is a near-perfect vacuum, so no sound can exist.",
+      "angle": "an eerie absence",
+      "key_terms": [
+        "silent",
+        "vacuum",
+        "sound needs a medium"
+      ],
+      "whatif": "What if you screamed at the top of your lungs in space? No one could ever hear it, because sound needs a medium to travel and space is a near-perfect vacuum.",
+      "wow": "A star can explode as a supernova with the energy of billions of Suns and make absolutely no sound at all.",
+      "queries": [
+        "astronaut space",
+        "deep space stars",
+        "earth from orbit"
+      ]
+    },
+    {
+      "id": "sun_light_time",
+      "domain": "space",
+      "fact": "The sunlight hitting your skin left the Sun about eight minutes ago, so you are always seeing the Sun as it was in the past.",
+      "angle": "you live slightly in the past",
+      "key_terms": [
+        "eight minutes",
+        "the past",
+        "Sun"
+      ],
+      "whatif": "What if the Sun simply switched off right this second? You wouldn't know for about eight minutes, because that's how long its light takes to travel to your eyes.",
+      "wow": "Every time you look at the Sun you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now.",
+      "queries": [
+        "sun bright sky",
+        "sunlight rays",
+        "sunrise horizon"
+      ]
+    },
+    {
+      "id": "star_sand",
+      "domain": "space",
+      "fact": "There are more stars in the observable universe than there are grains of sand on every beach on Earth combined.",
+      "angle": "scale beyond comprehension",
+      "key_terms": [
+        "more stars",
+        "grains of sand",
+        "every beach"
+      ],
+      "whatif": "What if you counted every single grain of sand on every beach on Earth? You'd still fall short, because the universe holds far more stars than that, by thousands of times over.",
+      "wow": "The best estimates put the count near a 1 followed by 24 zeros, a number so large your brain physically cannot picture it.",
+      "queries": [
+        "milky way stars",
+        "beach sand closeup",
+        "night sky galaxy"
+      ]
+    },
+    {
+      "id": "glass_solid",
+      "domain": "physics",
+      "fact": "Glass is not a slow-moving liquid; old windows are thicker at the bottom because of how they were made, not because glass flows.",
+      "angle": "busts a famous myth",
+      "key_terms": [
+        "amorphous solid",
+        "not a liquid",
+        "old windows"
+      ],
+      "whatif": "What if you waited a thousand years for a window to droop and pool at the bottom? It never would, because glass is an amorphous solid, not a slow-moving liquid.",
+      "wow": "Those uneven old windows look thicker at the base only because they were made by hand and installed heavy-side-down, not because the glass slid.",
+      "queries": [
+        "old window glass",
+        "stained glass",
+        "glass texture light"
+      ]
+    },
+    {
+      "id": "whale_heart",
+      "domain": "animals",
+      "fact": "A blue whale's heart weighs about 400 pounds, and each beat pushes roughly 60 gallons of blood.",
+      "angle": "scale of the largest animal ever",
+      "key_terms": [
+        "400 pounds",
+        "blue whale",
+        "60 gallons"
+      ],
+      "whatif": "What if you could stand next to a blue whale's beating heart? It's the size of a small car, around 400 pounds, and each beat moves about 60 gallons of blood.",
+      "wow": "That heartbeat is so powerful it can be detected from about two miles away underwater.",
+      "queries": [
+        "blue whale ocean",
+        "whale underwater",
+        "whale diving deep"
+      ]
+    },
+    {
+      "id": "turtle_breathing",
+      "domain": "animals",
+      "fact": "Some turtles can breathe through their rear ends, absorbing oxygen through their tissues to survive long winters underwater.",
+      "angle": "absurd but true biology",
+      "key_terms": [
+        "rear ends",
+        "cloaca",
+        "oxygen"
+      ],
+      "whatif": "What if a pond froze solid all winter and a turtle was trapped beneath the ice? It would simply breathe through its rear end, pulling oxygen from the water through an opening called the cloaca.",
+      "wow": "This is called cloacal respiration, and for some turtles it supplies most of the oxygen they need to survive months underwater without surfacing.",
+      "queries": [
+        "turtle underwater",
+        "pond turtle swimming",
+        "turtle close up"
+      ]
+    },
+    {
+      "id": "hummingbird_heart",
+      "domain": "animals",
+      "fact": "A hummingbird's heart can beat over 1,200 times per minute, and they are the only birds that can fly backwards.",
+      "angle": "extreme engineering in a tiny body",
+      "key_terms": [
+        "1,200 times per minute",
+        "fly backwards",
+        "hummingbird"
+      ],
+      "whatif": "What if your heart beat like a hummingbird's? At over 1,200 beats a minute you'd have to eat almost constantly just to survive, which is exactly what a hummingbird does.",
+      "wow": "Its wings beat up to 80 times a second, letting it hover in place and become the only bird on Earth that can truly fly backwards.",
+      "queries": [
+        "hummingbird flying",
+        "hummingbird flower",
+        "bird wings slow motion"
+      ]
+    },
+    {
+      "id": "skin_cells",
+      "domain": "body",
+      "fact": "You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you.",
+      "angle": "slightly disturbing everyday fact",
+      "key_terms": [
+        "dead skin cells",
+        "house dust",
+        "every minute"
+      ],
+      "whatif": "What if you tracked where all your dead skin actually ends up? A large share of the house dust drifting through your home is you, because you shed tens of thousands of dead skin cells every minute.",
+      "wow": "You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year.",
+      "queries": [
+        "dust light beam",
+        "skin macro",
+        "sunlight dust particles"
+      ]
+    },
+    {
+      "id": "lightning_strikes_earth",
+      "domain": "earth",
+      "fact": "About 8 million lightning bolts strike the Earth every single day, roughly 100 every second.",
+      "angle": "constant violence you never notice",
+      "key_terms": [
+        "8 million",
+        "100 every second",
+        "lightning"
+      ],
+      "whatif": "What if you could see every lightning strike on Earth at once? The planet is hit by about 8 million bolts a day, which works out to roughly 100 every single second.",
+      "wow": "That means somewhere on Earth, right now as you watch this, lightning is striking about a hundred times over.",
+      "queries": [
+        "lightning storm",
+        "multiple lightning strikes",
+        "storm clouds dramatic"
+      ]
+    },
+    {
+      "id": "alcohol_cloud",
+      "domain": "space",
+      "fact": "There is a vast cloud in space, Sagittarius B2, containing enough alcohol to dwarf anything on Earth, drifting near the center of our galaxy.",
+      "angle": "bizarre cosmic chemistry",
+      "key_terms": [
+        "Sagittarius B2",
+        "alcohol",
+        "galaxy"
+      ],
+      "whatif": "What if you could bottle a cloud in space? Sagittarius B2, near the center of our galaxy, holds enough alcohol to dwarf every drop that has ever existed on Earth.",
+      "wow": "It's mostly undrinkable methanol and vinyl alcohol, not the kind in a drink, but the sheer quantity is billions of billions of times anything on our planet.",
+      "queries": [
+        "space gas cloud",
+        "galaxy center",
+        "nebula colorful"
+      ]
+    },
+    {
+      "id": "banana_radioactive",
+      "domain": "physics",
+      "fact": "Bananas are slightly radioactive because they contain potassium-40, a naturally radioactive isotope; a single banana gives a dose of about 0.1 microsieverts.",
+      "angle": "harmless everyday radioactivity",
+      "key_terms": [
+        "potassium-40",
+        "0.1 microsieverts",
+        "5,000 times a second"
+      ],
+      "whatif": "What would actually happen if you ate a million bananas at once? You'd die from the potassium itself, ordinary potassium poisoning that stops your heart, long before the radiation from potassium-40 ever mattered.",
+      "wow": "You are more radioactive than the banana; your own body fires roughly 5,000 potassium-40 decays every single second, and your kidneys flush the extra potassium so the dose never adds up.",
+      "queries": [
+        "bananas bunch",
+        "banana yellow",
+        "fruit market"
+      ]
+    },
+    {
+      "id": "heart_beats_day",
+      "domain": "body",
+      "fact": "Your heart beats around 100,000 times a day, pumping blood through your body without ever taking a single break.",
+      "angle": "tireless hidden machine",
+      "key_terms": [
+        "100,000 times a day",
+        "heart",
+        "2.5 billion"
+      ],
+      "whatif": "What if your heart took a single day off in your entire life? It never does; it beats about 100,000 times a day, every day, from before you're born until the moment you die.",
+      "wow": "Over an average lifetime that's roughly 2.5 billion beats, pushing around 2,000 gallons of blood through you every single day.",
+      "queries": [
+        "heartbeat monitor hospital",
+        "runner chest breathing",
+        "drummer drumming fast"
+      ]
+    },
+    {
+      "id": "eye_colors",
+      "domain": "body",
+      "fact": "The human eye can distinguish around ten million different colors, yet we have names for only a tiny fraction of them.",
+      "angle": "the limits of language vs perception",
+      "key_terms": [
+        "ten million colors",
+        "cones",
+        "tetrachromat"
+      ],
+      "whatif": "What if you had a fourth type of color-sensing cone? A rare few people, called tetrachromats, do, and they may see up to a hundred times more colors than everyone else.",
+      "wow": "Your ten million colors come from just three types of cones in your eye, while most of those shades have no name in any language.",
+      "queries": [
+        "human eye closeup",
+        "color spectrum",
+        "colorful gradient"
+      ]
+    },
+    {
+      "id": "human_vacuum",
+      "domain": "space",
+      "fact": "If you were exposed to space without a suit, you would not freeze solid or explode; you'd stay conscious for about 15 seconds before the oxygen leaves your blood.",
+      "angle": "the movies got it completely wrong",
+      "key_terms": [
+        "15 seconds",
+        "ebullism",
+        "vacuum"
+      ],
+      "whatif": "What if an airlock burst open and flung you into space? You wouldn't pop like a balloon; you'd have about 15 conscious seconds before a lack of oxygen knocks you out.",
+      "wow": "The vacuum causes ebullism, where the water in your body starts to boil at your own temperature, and a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out.",
+      "queries": [
+        "astronaut spacewalk",
+        "outer space stars",
+        "space helmet reflection"
+      ]
+    },
+    {
+      "id": "immortal_jellyfish",
+      "domain": "animals",
+      "fact": "The immortal jellyfish, Turritopsis dohrnii, can reverse its own life cycle, reverting to a juvenile form when injured or old and starting over, potentially forever.",
+      "angle": "an animal that cheats death",
+      "key_terms": [
+        "Turritopsis dohrnii",
+        "transdifferentiation",
+        "biologically immortal"
+      ],
+      "whatif": "What if aging had a reset button? This jellyfish has one; facing death, Turritopsis dohrnii transforms its own cells back into a baby polyp and begins its entire life again.",
+      "wow": "It does this through transdifferentiation, essentially a butterfly turning back into a caterpillar, which makes it the only animal known to be biologically immortal.",
+      "queries": [
+        "jellyfish glowing ocean",
+        "jellyfish swimming dark",
+        "translucent jellyfish underwater"
+      ]
+    },
+    {
+      "id": "bootes_void",
+      "domain": "space",
+      "fact": "There is a region of space called the Bootes void, about 330 million light-years across and almost completely empty, a giant hole in the universe.",
+      "angle": "the emptiest place we know of",
+      "key_terms": [
+        "Bootes void",
+        "330 million light-years",
+        "empty"
+      ],
+      "whatif": "What if our galaxy floated in the middle of the Bootes void? The night sky would look almost starless, because the nearest galaxies would be hundreds of millions of light-years away.",
+      "wow": "This bubble of nothing is 330 million light-years across yet holds only a few dozen galaxies, where thousands should be; if we lived inside it, we might not have discovered other galaxies existed until the 1960s.",
+      "queries": [
+        "deep space darkness",
+        "empty starfield space",
+        "distant galaxies black"
+      ]
+    },
+    {
+      "id": "andromeda_time",
+      "domain": "space",
+      "fact": "The Andromeda galaxy is the farthest thing you can see with the naked eye, and its light left 2.5 million years ago, so you are literally seeing into the deep past.",
+      "angle": "you can see time travel with your own eyes",
+      "key_terms": [
+        "Andromeda",
+        "2.5 million years",
+        "naked eye"
+      ],
+      "whatif": "What if Andromeda vanished completely tonight? You would keep seeing it in the sky for 2.5 million more years, because that's how long its light takes to reach your naked eye.",
+      "wow": "The light landing on your eye tonight left Andromeda before modern humans existed, back when our ancestors were first chipping stone tools.",
+      "queries": [
+        "andromeda galaxy night",
+        "milky way night sky",
+        "stargazing telescope"
+      ]
+    },
+    {
+      "id": "mariana_pressure",
+      "domain": "ocean",
+      "fact": "At the bottom of the Mariana Trench, the water presses down at about 8 tons per square inch, over 1,000 times the pressure at the surface.",
+      "angle": "a crushing world right below us",
+      "key_terms": [
+        "Mariana Trench",
+        "8 tons per square inch",
+        "1,000 times"
+      ],
+      "whatif": "What if you dived to the bottom of the Mariana Trench without protection? The pressure of about 8 tons per square inch would crush your lungs and collapse your body almost instantly.",
+      "wow": "That's like balancing dozens of jumbo jets on your body, yet delicate creatures like the snailfish live down there perfectly happily.",
+      "queries": [
+        "deep sea trench dark",
+        "submersible deep ocean",
+        "underwater abyss glowing fish"
+      ]
+    },
+    {
+      "id": "cell_replacement",
+      "domain": "body",
+      "fact": "Most of your body is only a few years old because you constantly replace billions of cells, but the neurons in your brain and the lenses of your eyes are as old as you are.",
+      "angle": "you are and aren't the same person you were",
+      "key_terms": [
+        "neurons",
+        "lenses of your eyes",
+        "as old as you"
+      ],
+      "whatif": "What if you're basically a brand-new person every few years? Almost, but not entirely; the neurons in your brain and the lenses of your eyes are never replaced, staying exactly as old as you are.",
+      "wow": "Your skeleton fully renews itself about every 10 years and your gut lining every few days, yet you carry the same original brain cells your whole life.",
+      "queries": [
+        "hourglass sand falling",
+        "time lapse city people",
+        "old photographs fading"
+      ]
+    },
+    {
+      "id": "dna_length",
+      "domain": "body",
+      "fact": "The DNA in a single one of your cells would stretch about 2 metres if uncoiled, and all the DNA in your body laid end to end would reach the Sun and back many times.",
+      "angle": "impossible scale folded inside you",
+      "key_terms": [
+        "2 metres",
+        "reach the Sun and back",
+        "DNA"
+      ],
+      "whatif": "What if you unravelled the DNA from every cell in your body and laid it in one line? It would stretch to the Sun and back dozens of times over.",
+      "wow": "Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells.",
+      "queries": [
+        "twisted rope closeup",
+        "spiral staircase looking up",
+        "tangled threads macro"
+      ]
+    },
+    {
+      "id": "giant_squid_eye",
+      "domain": "ocean",
+      "fact": "The giant squid has the largest eye of any animal, up to about 25 centimetres across, roughly the size of a dinner plate, evolved to catch the faint glow stirred up by a hunting sperm whale.",
+      "angle": "an eye built like an early-warning system",
+      "key_terms": [
+        "25 centimetres",
+        "sperm whale",
+        "120 metres"
+      ],
+      "whatif": "What if you needed to spot a predator in pitch darkness a football field away? A giant squid can; its eye, about 25 centimetres across, is built to catch the faint bioluminescent stir of a sperm whale swimming up to 120 metres off, buying it just enough warning to flee.",
+      "wow": "That's roughly triple the width of a human eye, and the next largest eye in the ocean, a swordfish's, is barely a third of the size.",
+      "queries": [
+        "giant squid deep sea",
+        "sperm whale ocean",
+        "deep sea diver flashlight"
+      ]
+    },
+    {
+      "id": "vent_tube_worms",
+      "domain": "ocean",
+      "fact": "The giant tube worm Riftia pachyptila has no mouth or gut at all; it survives entirely on bacteria living inside it that turn the toxic hydrogen sulfide pouring from deep-sea hydrothermal vents into food.",
+      "angle": "an animal that never eats a single meal",
+      "key_terms": [
+        "Riftia pachyptila",
+        "hydrogen sulfide",
+        "50 percent of its body weight"
+      ],
+      "whatif": "What if an animal never had to eat a bite its whole life? The giant tube worm Riftia pachyptila doesn't; with no mouth or gut, it lives entirely off bacteria inside it that turn a hydrothermal vent's toxic hydrogen sulfide into food.",
+      "wow": "Those bacteria can make up as much as 50 percent of its body weight, and its blood-red plume is red because it's packed with hemoglobin, ferrying oxygen and sulfide down to feed them.",
+      "queries": [
+        "hydrothermal vent deep sea",
+        "tube worms ocean floor",
+        "deep sea vent bubbles"
+      ]
+    },
+    {
+      "id": "mercury_extremes",
+      "domain": "space",
+      "fact": "Mercury has the wildest temperature swings of any planet: daytime surface heat reaches about 430 degrees Celsius, while at night it plunges to about minus 180 Celsius.",
+      "angle": "the planet closest to the Sun is also brutally cold",
+      "key_terms": [
+        "430 degrees Celsius",
+        "minus 180 Celsius",
+        "Mercury"
+      ],
+      "whatif": "What if you stood on Mercury as the Sun set? Within hours the ground would cool from a scorching 430 degrees Celsius to a frozen minus 180 Celsius, the biggest day-to-night temperature swing of any planet in the solar system.",
+      "wow": "Mercury sits closest to the Sun, yet Venus is actually the hotter planet overall, because Mercury has almost no atmosphere left to trap any of that heat once night falls.",
+      "queries": [
+        "planet mercury surface",
+        "sun close up space",
+        "cratered planet surface"
+      ]
+    },
+    {
+      "id": "muon_time_dilation",
+      "domain": "physics",
+      "fact": "Muons created when cosmic rays strike the upper atmosphere have a lifespan of just 2.2 microseconds, far too short to fall 15 kilometres to the ground, yet at near light speed, time dilation lets billions of them reach the surface anyway.",
+      "angle": "relativity proving itself over your head right now",
+      "key_terms": [
+        "2.2 microseconds",
+        "muons",
+        "time dilation"
+      ],
+      "whatif": "What if a clock ticking near light speed actually ran slower? A muon's does; born 15 kilometres up with only 2.2 microseconds to live, it should decay long before reaching the ground, but relativistic time dilation stretches that lifespan just enough for it to survive the fall.",
+      "wow": "About one of these muons passes through every square centimetre of ground every minute, meaning a real proof of Einstein's relativity is quietly raining down on you right now.",
+      "queries": [
+        "mountain peak sunrise",
+        "night sky stars timelapse",
+        "scientist laboratory equipment"
+      ]
+    },
+    {
+      "id": "liver_regrows",
+      "domain": "body",
+      "fact": "The liver can regenerate itself: after a living donor gives away as much as 65 percent of it for a transplant, both the donor's remaining liver and the piece given to the recipient regrow to nearly full size within about 8 to 10 weeks.",
+      "angle": "the one organ that grows itself back",
+      "key_terms": [
+        "65 percent",
+        "8 to 10 weeks",
+        "liver"
+      ],
+      "whatif": "What if you cut away most of an organ and expected it to just grow back? A liver donor's does; after giving up as much as 65 percent of it, the remaining tissue regenerates to nearly full size and function within about 8 to 10 weeks.",
+      "wow": "It's the only solid organ in the body that can do this, regrowing real working tissue instead of just scarring over, which is exactly why living-donor liver transplants are possible.",
+      "queries": [
+        "surgeons operating room",
+        "hospital corridor walking",
+        "medical team surgery"
+      ]
+    },
+    {
+      "id": "human_bioluminescence",
+      "domain": "body",
+      "fact": "The human body emits a faint visible glow of light, invisible to the naked eye but caught by an ultra-sensitive camera in a 2009 study, and its brightness rises and falls on a daily rhythm, peaking in the afternoon.",
+      "angle": "you glow like a firefly, just too dimly to see",
+      "key_terms": [
+        "1,000 times",
+        "biophotons",
+        "circadian rhythm"
+      ],
+      "whatif": "What if your body glowed like a firefly, just too dimly to notice? It does; a 2009 study used a camera cooled to nearly minus 120 degrees Celsius to catch the light and found it's about 1,000 times too faint for the naked eye to ever see.",
+      "wow": "The glow isn't constant either; these biophotons brighten and dim across the day in step with your circadian rhythm, peaking in the afternoon around your cheeks and forehead.",
+      "queries": [
+        "person silhouette dark room",
+        "night photography long exposure",
+        "glowing light particles"
+      ]
+    },
+    {
+      "id": "axolotl_regeneration",
+      "domain": "animals",
+      "fact": "The axolotl can regrow an entire missing limb, complete with bone, muscle, and nerves, in about 40 to 50 days, and it can also regenerate damaged spinal cord and parts of its heart and brain without forming any scar tissue.",
+      "angle": "an animal that heals like a reset button",
+      "key_terms": [
+        "axolotl",
+        "40 to 50 days",
+        "without scarring"
+      ],
+      "whatif": "What if losing a leg were just a temporary inconvenience? For the axolotl it is; sever one of its limbs and a fully functional replacement, bone, muscle, and nerves included, regrows in about 40 to 50 days, with no scar left behind.",
+      "wow": "It can also regenerate damaged spinal cord and even parts of its own heart and brain, which is why labs around the world keep colonies of them alive just to study how it's done.",
+      "queries": [
+        "axolotl aquarium",
+        "salamander water",
+        "pink axolotl swimming"
+      ]
+    },
+    {
+      "id": "naked_mole_rat",
+      "domain": "animals",
+      "fact": "Naked mole rats can survive about 18 minutes with no oxygen at all by switching their metabolism to burn fructose instead of glucose, and they are also remarkably resistant to cancer, living over 30 years despite being mouse-sized.",
+      "angle": "a rodent that breaks the rules of biology",
+      "key_terms": [
+        "18 minutes",
+        "fructose",
+        "naked mole rat"
+      ],
+      "whatif": "What if an animal's brain could just switch fuels when the oxygen ran out? A naked mole rat's does; starved of air, it burns fructose instead of glucose, letting it survive about 18 minutes with no oxygen at all.",
+      "wow": "That trick works in its heart and brain too, not just the gut like in other mammals, and on top of it naked mole rats almost never develop cancer, living over 30 years, ten times longer than a mouse their size.",
+      "queries": [
+        "mole rat underground",
+        "burrow tunnel dark",
+        "rodent close up"
+      ]
+    },
+    {
+      "id": "woodpecker_skull",
+      "domain": "animals",
+      "fact": "A woodpecker's head decelerates at roughly 1,000 times the force of gravity with every peck, tens of times harder than a hit that would concuss a person, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
+      "angle": "an animal that headbangs a tree without injury",
+      "key_terms": [
+        "1,000 times the force of gravity",
+        "woodpecker",
+        "20 pecks per second"
+      ],
+      "whatif": "What if you slammed your head into a tree trunk 20 times a second? You'd be concussed instantly, but a woodpecker isn't; each strike decelerates its head at roughly 1,000 times the force of gravity, yet its tiny, lightweight brain is simply too small for that force to cause damage.",
+      "wow": "A 2022 study found the skull acts like a stiff hammer, not a cushion, and even the hardest hits stay well below the threshold that would concuss a primate brain.",
+      "queries": [
+        "woodpecker pecking tree",
+        "woodpecker tree trunk",
+        "bird forest closeup"
+      ]
+    },
+    {
+      "id": "aerogel_frozen_smoke",
+      "domain": "materials",
+      "fact": "Aerogel, nicknamed frozen smoke, is up to 99.8 percent air by volume, making it the lightest solid material ever created, yet a thin sheet of it can protect a bare hand from the flame of a blowtorch held right against it.",
+      "angle": "a solid that is almost entirely empty air",
+      "key_terms": [
+        "99.8 percent air",
+        "frozen smoke",
+        "blowtorch"
+      ],
+      "whatif": "What if you could hold a blowtorch flame directly against your palm? With a thin layer of aerogel in between you actually could, because this solid, nicknamed frozen smoke, is up to 99.8 percent air yet still blocks heat well enough to protect skin at point-blank range.",
+      "wow": "Despite being almost entirely empty space, aerogel holds more than a dozen Guinness World Records for its extremes, including the lightest solid ever produced.",
+      "queries": [
+        "aerogel material closeup",
+        "blue smoke wisps",
+        "blowtorch flame closeup"
+      ]
+    },
+    {
+      "id": "earths_core_hot_as_sun",
+      "domain": "earth",
+      "fact": "Earth's solid inner core runs about 5,400 degrees Celsius, roughly as hot as the surface of the Sun, and it stays solid only because the crushing pressure at the centre of the planet keeps iron from melting.",
+      "angle": "the middle of our planet is as hot as a star",
+      "key_terms": [
+        "5,400 degrees Celsius",
+        "inner core",
+        "surface of the Sun"
+      ],
+      "whatif": "What if the centre of the Earth were somehow cooler than we think? It isn't; the inner core runs about 5,400 degrees Celsius, roughly matching the Sun's surface, and it only stays solid because the pressure down there is extreme enough to stop iron from melting despite the heat.",
+      "wow": "That means the ball of solid iron at the middle of our planet is, temperature for temperature, about as hot as the glowing surface of the star we orbit.",
+      "queries": [
+        "erupting volcano lava",
+        "molten rock glowing",
+        "earth from space rotating"
+      ]
+    },
+    {
+      "id": "gold_neutron_origin",
+      "domain": "chemistry",
+      "fact": "Much of the gold on Earth was forged in the collision of neutron stars, the most violent explosions in the universe, long before the Sun existed.",
+      "angle": "an everyday object with an unimaginably violent origin",
+      "key_terms": [
+        "neutron star",
+        "collision",
+        "heavier than iron"
+      ],
+      "whatif": "What if you could trace your wedding ring back to its birth? Every gold atom in it was hammered into existence when two dead stars slammed together and briefly outshone entire galaxies.",
+      "wow": "The gold in your jewelry is older than the Sun and was made in an explosion so powerful it bent the fabric of space itself.",
+      "queries": [
+        "gold jewelry closeup",
+        "galaxy collision space",
+        "molten gold pour"
+      ]
+    },
+    {
+      "id": "water_expands_ice",
+      "domain": "chemistry",
+      "fact": "Water is one of the only substances that expands when it freezes, which is why ice floats and why freezing water can shatter solid rock.",
+      "angle": "a familiar substance that breaks a basic rule",
+      "key_terms": [
+        "expands",
+        "floats",
+        "less dense"
+      ],
+      "whatif": "What if ice sank instead of floated? Lakes and oceans would freeze solid from the bottom up, and almost nothing could survive a winter.",
+      "wow": "The same quirk that makes ice float is the reason a bottle of water can burst in your freezer and why potholes appear every spring.",
+      "queries": [
+        "ice floating water",
+        "frozen lake surface",
+        "cracked ice macro"
+      ]
+    },
+    {
+      "id": "petrichor_rain_smell",
+      "domain": "weather",
+      "fact": "That fresh smell after rain has a name, petrichor, and it comes partly from a compound called geosmin made by soil bacteria that your nose can detect at a few parts per trillion.",
+      "angle": "a familiar sensation with a hidden biological source",
+      "key_terms": [
+        "petrichor",
+        "geosmin",
+        "soil bacteria"
+      ],
+      "whatif": "What if you could out-smell a shark? For this one compound you already can, detecting geosmin at concentrations far too faint for most animals.",
+      "wow": "The smell of rain is really the scent of bacteria, and your nose is more sensitive to it than to almost anything else on Earth.",
+      "queries": [
+        "rain falling ground",
+        "wet soil closeup",
+        "rain on pavement"
+      ]
+    },
+    {
+      "id": "raindrop_shape",
+      "domain": "weather",
+      "fact": "Raindrops are not teardrop-shaped. Small ones are near-perfect spheres, and large ones flatten into the shape of a hamburger bun before breaking apart.",
+      "angle": "corrects an image everyone draws wrong",
+      "key_terms": [
+        "sphere",
+        "flattened",
+        "air resistance"
+      ],
+      "whatif": "What if you drew a raindrop the way it really falls? It would look less like a tear and more like a tiny parachute being pushed flat by the air.",
+      "wow": "The classic teardrop raindrop doesn't exist in nature, it's flattened by the very air it falls through.",
+      "queries": [
+        "raindrop slow motion",
+        "water droplet splash",
+        "rain window closeup"
+      ]
+    },
+    {
+      "id": "earth_magnetic_flip",
+      "domain": "earth",
+      "fact": "Earth's magnetic north and south poles have completely swapped places hundreds of times, and the last full flip was about 780,000 years ago.",
+      "angle": "the ground under you is less permanent than it feels",
+      "key_terms": [
+        "pole reversal",
+        "molten core",
+        "compass"
+      ],
+      "whatif": "What if your compass pointed south? For most of a past era it did, and one day it will again when the poles flip once more.",
+      "wow": "The record of these flips is frozen into the rock of the ocean floor like a barcode written by the planet itself.",
+      "queries": [
+        "compass needle closeup",
+        "earth from space",
+        "molten lava flow"
+      ]
+    },
+    {
+      "id": "largest_fungus",
+      "domain": "fungi",
+      "fact": "The largest living thing on Earth is not a whale or a tree but a single fungus in Oregon that spreads across more than three square miles and may be thousands of years old.",
+      "angle": "the biggest organism is one you can barely see",
+      "key_terms": [
+        "honey fungus",
+        "underground",
+        "single organism"
+      ],
+      "whatif": "What if the biggest creature alive was hiding under a forest? It is, woven invisibly through the soil across an area larger than a thousand football fields.",
+      "wow": "Almost all of this giant lives underground as a web of threads, and most of it has never been seen by anyone.",
+      "queries": [
+        "forest floor moss",
+        "mushrooms growing",
+        "dark forest canopy"
+      ]
+    },
+    {
+      "id": "wood_wide_web",
+      "domain": "plants",
+      "fact": "Trees quietly trade sugar and send warning signals to each other through an underground network of fungi that scientists nicknamed the wood wide web.",
+      "angle": "a hidden social life beneath a silent forest",
+      "key_terms": [
+        "mycorrhizal network",
+        "fungi",
+        "warning signals"
+      ],
+      "whatif": "What if a forest was really one connected community? A dying tree can pump its remaining sugar to its neighbors through the fungal threads linking their roots.",
+      "wow": "Beneath a quiet forest, trees are constantly sharing food and sounding alarms through a living underground internet.",
+      "queries": [
+        "forest tree roots",
+        "sunlight through trees",
+        "forest floor closeup"
+      ]
+    },
+    {
+      "id": "banana_berry",
+      "domain": "plants",
+      "fact": "Botanically, a banana is a berry, but a strawberry is not a berry at all.",
+      "angle": "the categories you learned are backwards",
+      "key_terms": [
+        "berry",
+        "botany",
+        "fruit"
+      ],
+      "whatif": "What if the fruit aisle was lying to you? By the actual botanical rules, bananas, grapes and even watermelons are berries, while strawberries and raspberries are not.",
+      "wow": "The definition of a berry has nothing to do with size or seeds on the outside, which is why a banana qualifies and a strawberry doesn't.",
+      "queries": [
+        "bananas bunch",
+        "strawberries closeup",
+        "fruit market stall"
+      ]
+    },
+    {
+      "id": "bamboo_growth",
+      "domain": "plants",
+      "fact": "Some species of bamboo grow almost a meter in a single day, fast enough that you could nearly watch it rise.",
+      "angle": "a plant moving at a visible speed",
+      "key_terms": [
+        "fastest growing",
+        "meter a day",
+        "grass"
+      ],
+      "whatif": "What if a plant could outpace you? Certain bamboo shoots add height faster than a snail moves, climbing nearly a meter between sunrise and sunset.",
+      "wow": "Bamboo isn't a tree at all, it's a grass, and it's the fastest growing plant on the planet.",
+      "queries": [
+        "bamboo forest",
+        "green bamboo stalks",
+        "bamboo grove sunlight"
+      ]
+    },
+    {
+      "id": "sound_faster_water",
+      "domain": "physics",
+      "fact": "Sound travels more than four times faster through water than through air, which is how whales can call to each other across entire oceans.",
+      "angle": "a familiar sense behaving strangely in a new medium",
+      "key_terms": [
+        "1480 meters per second",
+        "denser medium",
+        "whale song"
+      ],
+      "whatif": "What if you shouted underwater? The sound would race away from you far faster than in air, but your ears would struggle to tell where it came from.",
+      "wow": "A whale's call can cross an ocean because sound moves through water at nearly a mile every second.",
+      "queries": [
+        "underwater ocean blue",
+        "whale swimming",
+        "sound wave water"
+      ]
+    },
+    {
+      "id": "krakatoa_loudest",
+      "domain": "physics",
+      "fact": "The 1883 eruption of Krakatoa is the loudest sound in recorded history, heard 3,000 miles away, and its pressure wave circled the entire planet multiple times.",
+      "angle": "an event so extreme it broke the scale",
+      "key_terms": [
+        "pressure wave",
+        "3000 miles",
+        "circled the globe"
+      ],
+      "whatif": "What if a sound could travel around the world? Krakatoa's did, its shockwave lapping the planet several times and registering on instruments everywhere.",
+      "wow": "The blast was so powerful that sailors 40 miles away had their eardrums ruptured, and it was heard across a thirteenth of the Earth.",
+      "queries": [
+        "volcano eruption",
+        "volcanic ash cloud",
+        "ocean storm waves"
+      ]
+    },
+    {
+      "id": "birthday_paradox",
+      "domain": "math",
+      "fact": "In a room of just 23 people, there is a better than even chance that two of them share the same birthday.",
+      "angle": "an answer that feels impossible but is provably true",
+      "key_terms": [
+        "23 people",
+        "probability",
+        "coincidence"
+      ],
+      "whatif": "What if you bet on a shared birthday in a small group? With only 23 people the odds are already in your favor, and with 70 it is almost certain.",
+      "wow": "Your intuition says you'd need hundreds of people, but the math only needs a couple of dozen because it counts every possible pair.",
+      "queries": [
+        "crowd of people",
+        "birthday candles cake",
+        "classroom students"
+      ]
+    },
+    {
+      "id": "phone_vs_apollo",
+      "domain": "technology",
+      "fact": "The phone in your pocket has millions of times more computing power than all of NASA possessed for the entire Apollo program that landed humans on the Moon.",
+      "angle": "scale of change hidden in an everyday object",
+      "key_terms": [
+        "computing power",
+        "Apollo guidance computer",
+        "millions of times"
+      ],
+      "whatif": "What if you handed your phone to a 1969 engineer? You'd be giving them more computing power than launched every Apollo mission combined, and they'd use it to check messages.",
+      "wow": "We carry supercomputers that dwarf the Apollo program in our pockets and mostly use them to scroll.",
+      "queries": [
+        "smartphone in hand",
+        "vintage mission control",
+        "rocket launch"
+      ]
+    },
+    {
+      "id": "ocean_viruses",
+      "domain": "biology",
+      "fact": "There are more viruses in a single liter of seawater than there are people on Earth, and most are completely harmless to us.",
+      "angle": "an invisible scale hiding in plain water",
+      "key_terms": [
+        "viruses",
+        "seawater",
+        "harmless"
+      ],
+      "whatif": "What if you scooped up a bottle of seawater? You'd be holding more virus particles than the entire human population, quietly running the ocean's food web.",
+      "wow": "These ocean viruses aren't a threat, they recycle nutrients on a scale that helps keep the whole planet alive.",
+      "queries": [
+        "ocean water surface",
+        "sea foam waves",
+        "blue ocean aerial"
+      ]
+    },
+    {
+      "id": "gps_relativity",
+      "domain": "physics",
+      "fact": "GPS satellites have to correct for Einstein's relativity. Their clocks tick faster than clocks on the ground, and without the fix your maps would drift off by miles every single day.",
+      "angle": "abstract physics running invisibly in daily life",
+      "key_terms": [
+        "relativity",
+        "time runs faster",
+        "clock correction"
+      ],
+      "whatif": "What if we ignored Einstein? Your phone's navigation would be wrong by about ten kilometers after just one day, useless for finding anything.",
+      "wow": "Every time you follow a map, your phone is silently accounting for the fact that time itself runs at different speeds in orbit.",
+      "queries": [
+        "satellite orbit earth",
+        "gps navigation phone",
+        "city map aerial"
+      ]
+    },
+    {
+      "id": "shape_memory_metal",
+      "domain": "materials",
+      "fact": "Some metals can remember their shape. Bend them out of form, warm them up, and they snap back to exactly how they started.",
+      "angle": "a material that behaves like it's alive",
+      "key_terms": [
+        "shape memory alloy",
+        "nitinol",
+        "returns to shape"
+      ],
+      "whatif": "What if you could crumple a paperclip and have it heal itself? A shape-memory metal wire does exactly that the instant you add a little heat.",
+      "wow": "These metals are used in everything from bendable glasses frames to tiny stents that unfold inside the body once they reach body temperature.",
+      "queries": [
+        "metal wire bending",
+        "eyeglasses frame closeup",
+        "heated metal glow"
+      ]
+    }
+  ]
 }
