@@ -947,6 +947,25 @@ def main():
         print(f"[quality] no judge scores recorded this render (no GROQ key / no "
               f"candidates found); {STAT_CARD_SCENES} stat-card scene(s)")
 
+    # FOOTAGE-STARVATION GUARD. MAX_STAT_CARDS is a *design* cap (a rare text
+    # card is a fine accent), but it only holds when Pexels actually returns
+    # clips to fall back to. When Pexels itself is unavailable (free-tier
+    # rate-limit/quota exhausted, network) it returns ZERO candidates for every
+    # scene, best_cand stays None, accept_best can't rescue, and EVERY scene
+    # silently becomes a text card — an all-slideshow video with no real
+    # footage (the turtle render: 10/10 cards, unwatchable). That must NOT be
+    # published. Same principle as generate.py's abort-on-failure: degrade to
+    # NO video, never to a broken one. Exit non-zero so the workflow's release
+    # step (success-only) never ships a footage-starved slideshow; the daily
+    # cron simply tries again once the quota resets.
+    if STAT_CARD_SCENES > MAX_STAT_CARDS:
+        print(f"ERROR: {STAT_CARD_SCENES}/{len(m['scenes'])} scenes fell back to "
+              f"text cards (> MAX_STAT_CARDS={MAX_STAT_CARDS}). Real footage was "
+              f"unavailable (Pexels rate-limit/quota or no relevant results). "
+              f"Aborting so a no-footage slideshow is never published — retry "
+              f"after the stock-footage quota resets.")
+        sys.exit(1)
+
     save_used_footage()  # persist before the render steps below, in case one of them fails
 
     # concat: clean HARD CUTS on exact word-timing boundaries. Each scene's
