@@ -1,141 +1,110 @@
 {
-  "title": "Morning Height Boost",
-  "viewer_job": "REFRAME",
-  "keyword": "spinal discs",
-  "metaphor": "morning height",
-  "hook": "You're taller in the morning",
-  "script": "You're taller in the morning What if gravity never pressed on you? Astronauts experience this Their spinal discs decompress in zero gravity But here's what happens on Earth Your spinal discs slowly squeeze out water and lose height You're up to a couple of centimetres taller in the morning than at night It's because the soft discs in your spine compress under your weight all day You could fit a pencil in the space your spine shrinks each day But that's not even the strange part You soak it back overnight while you sleep You're like an astronaut, but on Earth Your body is always changing You're taller in the morning",
+  "title": "Crushing Pressure",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "Mariana Trench",
+  "metaphor": "Deep Sea Pressure",
+  "hook": "You'd be crushed instantly",
+  "script": "You'd be crushed instantly. What if you dived to the bottom of the ocean? The deepest part is the Mariana Trench. It's a dark, cold place. The pressure is extreme. It's about 8 tons per square inch. That's 1,000 times the pressure at the surface. It's like balancing dozens of jumbo jets on your body. Delicate creatures like the snailfish live down there perfectly happily. That number's worth a screenshot.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You're taller in the morning",
-      "on_screen_text": "Morning Height",
-      "search_query": "person stretching morning",
+      "voiceover": "You'd be crushed instantly",
+      "on_screen_text": "Mariana Trench",
+      "search_query": "deep sea trench dark",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 3,
-      "voiceover": "What if gravity never pressed on you?",
-      "on_screen_text": "Zero Gravity",
-      "search_query": "astronauts in space",
-      "motion": "pan_left"
+      "voiceover": "What if you dived to the bottom of the ocean?",
+      "on_screen_text": "Ocean Depth",
+      "search_query": "underwater abyss glowing fish",
+      "motion": "static"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Astronauts experience this",
-      "on_screen_text": "Astronauts",
-      "search_query": "astronauts on space station",
+      "voiceover": "The deepest part is the Mariana Trench",
+      "on_screen_text": "Mariana Trench",
+      "search_query": "deep sea trench map",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Their spinal discs decompress in zero gravity",
-      "on_screen_text": "Spinal Discs",
-      "search_query": "spinal discs animation",
-      "motion": "rotate"
+      "duration": 3,
+      "voiceover": "It's a dark, cold place",
+      "on_screen_text": "Dark Ocean",
+      "search_query": "deep sea darkness",
+      "motion": "pan"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "But here's what happens on Earth",
-      "on_screen_text": "Earth",
-      "search_query": "person on earth",
-      "motion": "zoom_in"
+      "duration": 5,
+      "voiceover": "The pressure is extreme",
+      "on_screen_text": "Extreme Pressure",
+      "search_query": "submersible deep ocean",
+      "motion": "static"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Your spinal discs slowly squeeze out water and lose height",
-      "on_screen_text": "Losing Height",
-      "search_query": "measuring tape closeup",
-      "motion": "slide_left"
+      "voiceover": "It's about 8 tons per square inch",
+      "on_screen_text": "8 Tons",
+      "search_query": "weight crushing objects",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "You're up to a couple of centimetres taller in the morning than at night",
-      "on_screen_text": "2 Centimetres",
-      "search_query": "ruler measurement",
+      "voiceover": "That's 1,000 times the pressure at the surface",
+      "on_screen_text": "1,000 Times",
+      "search_query": "jumbo jets taking off",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "It's because the soft discs in your spine compress under your weight all day",
-      "on_screen_text": "Spine Compression",
-      "search_query": "person standing",
-      "motion": "pan_right"
+      "voiceover": "It's like balancing dozens of jumbo jets on your body",
+      "on_screen_text": "Jumbo Jets",
+      "search_query": "jumbo jets on runway",
+      "motion": "zoom_in"
     },
     {
       "id": 9,
-      "duration": 4,
-      "voiceover": "You could fit a pencil in the space your spine shrinks each day",
-      "on_screen_text": "Pencil Space",
-      "search_query": "pencil in hand",
-      "motion": "rotate"
+      "duration": 3,
+      "voiceover": "Delicate creatures like the snailfish live down there perfectly happily",
+      "on_screen_text": "Snailfish",
+      "search_query": "snailfish underwater",
+      "motion": "pan"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "person surprised",
+      "voiceover": "That number's worth a screenshot",
+      "on_screen_text": "8 Tons",
+      "search_query": "phone screenshot",
       "motion": "zoom_in"
-    },
-    {
-      "id": 11,
-      "duration": 4,
-      "voiceover": "You soak it back overnight while you sleep",
-      "on_screen_text": "Sleep",
-      "search_query": "waking up bed",
-      "motion": "slide_right"
-    },
-    {
-      "id": 12,
-      "duration": 4,
-      "voiceover": "You're like an astronaut, but on Earth",
-      "on_screen_text": "Astronaut on Earth",
-      "search_query": "person in space suit",
-      "motion": "pan_left"
-    },
-    {
-      "id": 13,
-      "duration": 4,
-      "voiceover": "Your body is always changing",
-      "on_screen_text": "Body Changing",
-      "search_query": "person transforming",
-      "motion": "rotate"
-    },
-    {
-      "id": 14,
-      "duration": 4,
-      "voiceover": "You're taller in the morning",
-      "on_screen_text": "Morning Height",
-      "search_query": "person stretching morning",
-      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know your spinal discs change height daily? #spinaldiscs",
-    "Astronauts experience zero gravity, but what about you on Earth?",
-    "Share with a friend who needs to know about their spinal discs!"
+    "What's the most crushing pressure in the Mariana Trench - yes or no?",
+    "Deep sea creatures are weird",
+    "You won't believe the pressure at the bottom of the ocean"
   ],
   "hashtags": [
+    "#marianatrench",
+    "#deepsea",
+    "#oceanfacts",
     "#science",
-    "#space",
-    "#spinaldiscs",
-    "#health",
-    "#body"
+    "#pressure",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_morning-height-boost",
-  "cta_style": "LOOP"
+  "video_id": "science_2026-07-14_crushing-pressure",
+  "cta_style": "SAVE_WORTHY"
 }

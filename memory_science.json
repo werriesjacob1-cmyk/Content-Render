@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "Ancient Ocean",
-      "viewer_job": "MYTH_BUSTER",
-      "title": "Sharks vs Trees",
-      "fact_id": "sharks_older_trees"
-    },
-    {
       "metaphor": "Gravity's Time Trick",
       "viewer_job": "REFRAME",
       "title": "Time Dilation in Your Body",
@@ -177,6 +171,20 @@
         "clarity": 9.0,
         "overall": 7.83
       }
+    },
+    {
+      "video_id": "science_2026-07-14_crushing-pressure",
+      "metaphor": "Deep Sea Pressure",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Crushing Pressure",
+      "fact_id": "mariana_pressure",
+      "hook": "You'd be crushed instantly",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": null
     }
   ]
 }
