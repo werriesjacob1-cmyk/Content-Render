@@ -164,3 +164,19 @@ did NOT; recommended ~$5 ElevenLabs (fixes deep voice + reliable word timing in
 one) — AWAITING their decision. Not churning renders against dead Groq; backing
 off ~3h. If they fund ElevenLabs, sync+voice are solved; if not, next render's
 boundary log decides whether a sentence-anchored fallback is viable.
+
+## Cycle 9 — CAPTION SYNC FIXED + VERIFIED (run 47, "Unseen Oceans")
+Whisper forced-alignment fix (1841d39) validated end-to-end on the runner:
+log showed 'edge-tts boundaries: 0 word, 8 sentence' then 'whisper align: 92
+REAL word timings (base model)'. So captions were placed at TRUE spoken times,
+not the estimate. INDEPENDENTLY VERIFIED locally: downloaded the audio,
+re-aligned with whisper → 92 words, monotonic, 0.0→35.0s — matches. faster-
+whisper installed + ran fine on the runner (~2 min added). Video: strong hook
+("You've seen more of Mars than the ocean floor"), all real ocean footage
+(divers, turtles, cliffs, deep-sea) 0 cards, deeper voice (en-GB-RyanNeural),
+no number overlay, 36s. Sent to the user to confirm the feel. 
+CAVEAT: script shipped via near-miss (Groq 429'd mid-generation → quality gates
+bypassed); hook is good but generation wasn't gated. GEMINI_API_KEY still empty
+(user hasn't added it) — adding it fixes generation reliability + enables batch.
+Consistency: Cosmic Coincidence + Unseen Oceans = 2 good (Oceans is first with
+verified sync). Keep building toward 5 different-topic + confirm the sync feel.
