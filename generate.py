@@ -513,17 +513,32 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   never a rephrasing of the reveal in new words. A script that circles back to the same reveal even
   twice is an automatic FAIL: each scene is a NEW fact about the topic, not an echo of the last one:
   what -> how -> why it's stranger than it sounds -> what it means for YOU.
-- MIDPOINT TWIST: around scene 5-7, plant a pattern interrupt that reopens curiosity, e.g.
-  "But that's not even the strange part." / "And here's where it stops making sense." CRITICAL:
-  the line right AFTER the interrupt must deliver a GENUINELY NEW fact the viewer has not heard
-  yet in this video — a second, escalated surprise. It must NOT restate, rephrase, or circle back
-  to the hook or anything already said (the #1 failure: "that's not even the strange part" followed
-  by a reworded version of the opening — that makes the promise land on nothing and feels
-  repetitive). If you don't have a real second surprise to reveal, do NOT use the interrupt at all.
-  Pay it off ONCE and never return to it.
-- MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
-  (not "400 million years" alone — "before Saturn had rings", "you could watch every human
-  civilization rise and fall 80,000 times"). One vivid comparison beats three adjectives.
+- MIDPOINT TURN: around scene 5-7, pivot to a genuinely NEW dimension of the topic — a second,
+  independent surprise the viewer has not heard yet. The turn is carried by the NEW FACT itself,
+  not by a stock transition phrase. BANNED opener phrases (overused, and they force the script into
+  a vague "even weirder" register instead of just telling the next real thing): "that's not even
+  the strange/strangest part", "but here's where it gets weird", "and here's where it stops making
+  sense", "but that's not all". Just STATE the new fact plainly and let it surprise on its own
+  ("The same physics is why a rainbow has no bottom." lands harder than "and that's not even the
+  strangest part"). The turn must NOT restate, rephrase, or circle back to the hook or anything
+  already said. If you don't have a real second surprise, don't force a turn — keep teaching new facts.
+- MAKE IT FELT, not just stated: convert a number into ONE physical comparison a viewer can picture
+  — e.g. "older than Saturn's rings", or "as tall as a 20-storey building". Use such comparisons as
+  a WRITING TECHNIQUE, never copy these exact examples, and every comparison must be literally TRUE
+  and mean something concrete. Do NOT manufacture grand-sounding but meaningless phrases (e.g.
+  "we are witness to 80,000 fleeting civilizations" says nothing a viewer can picture or verify).
+  If a comparison isn't both accurate and instantly graspable, just state the plain fact instead.
+- PLAIN SPOKEN ENGLISH (a smart 15-year-old must get every line on first listen): this is narration,
+  not an essay. Use everyday words. If a precise scientific term is the actual subject, EXPLAIN it in
+  plain words instead of just naming it — say "the point in the sky opposite the sun" rather than
+  "the antisolar point"; say "spreads out" or "opens up" rather than "unfurls". BANNED: literary/purple
+  verbs (unfurls, cascades, dances, whispers, beckons) and unexplained jargon (antisolar point,
+  refraction index, angular radius). One unfamiliar word is enough to make a viewer feel dumb and
+  swipe. Clear and concrete beats clever and ornate every time.
+- STRONGEST PAYOFF WINS: prefer a concrete, surprising, everyday consequence over an abstract musing.
+  For a rainbow, "this is why a rainbow has no bottom — and why you can never reach the end of one"
+  beats "everyone sees their own private rainbow". Ask: does the payoff give the viewer a crisp new
+  thing they can repeat to a friend? If it's a vague feeling, replace it with the concrete fact behind it.
 - The ending must LAND on this video's assigned ending style (see ENDING section below). Do NOT
   trail off, restate the premise, or stack two different endings together.
 
