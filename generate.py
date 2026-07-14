@@ -17,6 +17,14 @@ SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
+# Google Gemini free tier has a FAR higher daily quota than Groq's free tier
+# (~1500 requests/day vs a handful of renders), so when GEMINI_API_KEY is set we
+# prefer it for generation — this is what lets many videos batch-render in a day
+# without hitting the wall that keeps aborting renders on Groq. Groq stays as an
+# automatic fallback. Get a free key at aistudio.google.com (no card) and add it
+# as the GEMINI_API_KEY repo secret.
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
@@ -509,25 +517,57 @@ def _call_model(model, prompt):
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())["choices"][0]["message"]["content"]
 
+def _call_gemini(model, prompt):
+    """Google Gemini generateContent (JSON mode). Same contract as _call_model:
+    returns the model's text (a JSON string). Raises HTTPError on failure so the
+    provider chain can fall through to Groq."""
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048,
+                             "responseMimeType": "application/json"},
+    }).encode()
+    req = urllib.request.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+        data=body,
+        headers={"Content-Type": "application/json",
+                 "x-goog-api-key": GEMINI_KEY,
+                 "User-Agent": "content-render/1.0"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        data = json.loads(r.read().decode())
+    return data["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def call_groq(prompt):
+    """Call the LLM for a JSON response. Prefers Gemini (much higher free quota)
+    when GEMINI_API_KEY is set, then falls back to Groq automatically. Name kept
+    as call_groq so every existing call site is unchanged."""
     global _WORKING_MODEL
     # if we already found a working model, use it
     if _WORKING_MODEL:
-        return _call_model(_WORKING_MODEL, prompt)
-    # otherwise walk the chain, caching the first that works
+        prov, model = _WORKING_MODEL
+        return _call_gemini(model, prompt) if prov == "gemini" else _call_model(model, prompt)
     last_err = None
-    for model in MODEL_CHAIN:
+    # Provider chain: Gemini first (if keyed), then Groq. Cache the first that works.
+    chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
+            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
+    for prov, model in chain:
         try:
-            out = _call_model(model, prompt)
-            _WORKING_MODEL = model
-            print(f"  [model] using {model}")
+            out = _call_gemini(model, prompt) if prov == "gemini" else _call_model(model, prompt)
+            _WORKING_MODEL = (prov, model)
+            print(f"  [model] using {prov}:{model}")
             return out
         except urllib.error.HTTPError as e:
-            if e.code in (403, 404):   # not available to this account — try next
-                print(f"  [model] {model} unavailable ({e.code}), trying next")
+            # 403/404 = model/provider not available to this key → try next.
+            # 429 (rate limit) on a whole provider → also try the next provider
+            # (e.g. Gemini quota hit → fall through to Groq) rather than dying.
+            if e.code in (403, 404, 429):
+                print(f"  [model] {prov}:{model} unavailable ({e.code}), trying next")
                 last_err = e; continue
-            raise   # 429/500 etc — let the retry loop handle it
-    raise last_err if last_err else RuntimeError("no model available")
+            raise   # 5xx etc — let the outer retry loop handle it
+        except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next provider
+            print(f"  [model] {prov}:{model} error ({e}), trying next")
+            last_err = e; continue
+    raise last_err if last_err else RuntimeError("no LLM provider available")
 
 # basic safety net for HOW_TO output
 UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|candle|stove|boil|boiling|"

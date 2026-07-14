@@ -362,11 +362,47 @@ _LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
                             # unparseably" (keep vetoing, avoids the belly-button bug).
 
 
+def _gemini_chat(prompt, max_tokens, temperature):
+    """Google Gemini generateContent for the footage judge. Returns text or None.
+    Raises on transport failure so the caller can fall back to Groq."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not key:
+        return None
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
+    }).encode()
+    req = urllib.request.Request(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        data=body,
+        headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                 "User-Agent": "content-render/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        data = json.loads(r.read().decode())
+    return data["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
+    # Prefer Gemini (far larger free quota) for the judge too, so batch rendering
+    # keeps judging footage relevance instead of 429'ing and shipping the top
+    # Pexels result. Falls back to Groq. _LAST_GROQ_FAILED is only set when BOTH
+    # providers are unreachable, so the JUDGE_UNAVAILABLE path still means "no
+    # judge available at all" (ship top clip) rather than "one provider blipped".
     global _LAST_GROQ_FAILED
     _LAST_GROQ_FAILED = False
+    if os.environ.get("GEMINI_API_KEY", ""):
+        try:
+            out = _gemini_chat(prompt, max_tokens, temperature)
+            if out is not None:
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through to Groq
+            print("  Gemini judge call failed, trying Groq:", e)
     key = os.environ.get("GROQ_API_KEY", "")
     if not key:
+        # No Groq either. If Gemini was configured but errored, that's a real
+        # outage → signal unavailable so the caller ships the top clip.
+        if os.environ.get("GEMINI_API_KEY", ""):
+            _LAST_GROQ_FAILED = True
         return None
     try:
         body = json.dumps({

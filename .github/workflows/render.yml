@@ -71,6 +71,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          # Gemini's free tier has a far larger daily quota than Groq's; when set,
+          # generate.py prefers it so renders stop aborting at this step. Optional
+          # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           # CRITICAL: never fall back to a hardcoded example on failure. Doing
           # that (the old `|| cp manifest_example.json`) published the IDENTICAL
@@ -107,6 +111,10 @@ jobs:
           PEXELS_API_KEY:      ${{ secrets.PEXELS_API_KEY }}
           ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
           GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
+          # footage-relevance judge prefers Gemini too (free-tier quota) so batch
+          # rendering keeps picking relevant clips instead of shipping the top
+          # Pexels result when Groq is rate-limited.
+          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
