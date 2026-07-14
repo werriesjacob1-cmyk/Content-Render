@@ -24,15 +24,17 @@ GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # automatic fallback. Get a free key at aistudio.google.com (no card) and add it
 # as the GEMINI_API_KEY repo secret.
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
-# A real AI Studio key starts with "AIza" and is ~39 chars. A long token
-# starting with something else (e.g. "AQ.", an OAuth access token from the Cloud
-# Console) is the wrong credential type and Gemini rejects it with HTTP 400.
-# Warn loudly rather than silently 400ing every call — the fix is a key from
-# https://aistudio.google.com/apikey , NOT console.cloud.google.com.
-if GEMINI_KEY and not GEMINI_KEY.startswith("AIza"):
-    print(f"  [model] WARNING: GEMINI_API_KEY does not look like an AI Studio key "
-          f"(starts with '{GEMINI_KEY[:3]}...', expected 'AIza...'). Gemini will likely "
-          f"return HTTP 400. Get the right key at https://aistudio.google.com/apikey")
+# AI Studio keys come in TWO valid shapes: the legacy "AIza..." (~39 chars) and
+# the new "AQ.Ab..." auth keys that Google rolled out through 2026 (legacy
+# unrestricted "AIza" keys are being rejected from June 2026, so new keys are
+# AQ.* by default). Both work against generativelanguage.googleapis.com with the
+# x-goog-api-key header we use. Only warn on something that matches NEITHER shape
+# (e.g. a "ya29." OAuth access token pasted by mistake), since that really will
+# 400. Get keys at https://aistudio.google.com/apikey .
+if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("AQ.")):
+    print(f"  [model] WARNING: GEMINI_API_KEY starts with '{GEMINI_KEY[:3]}...', which is "
+          f"neither a legacy 'AIza' key nor a new 'AQ.' auth key. If Gemini 400s, get a "
+          f"fresh key at https://aistudio.google.com/apikey")
 GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
