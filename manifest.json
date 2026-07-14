@@ -1,125 +1,141 @@
 {
-  "title": "You're Always Living in the Past",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "sunlight delay",
-  "metaphor": "Sun's Time Lag",
-  "hook": "You're seeing the Sun as it was, not as it is",
-  "script": "You're seeing the Sun as it was, not as it is What if the Sun simply switched off right now? You wouldn't know for a while The sunlight hitting your skin has traveled a long way Every time you look at the Sun, you're seeing it as it was in the past But that's not even the strange part The sunlight hitting your skin left the Sun about eight minutes ago This means you are always seeing the Sun as it was eight minutes ago, never as it is right now It's like watching a live feed with an eight-minute delay You could drive over 100 miles in that time, or watch an entire episode of your favorite show But here's the even wilder part: every time you look at the Sun, you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now Are you team 'living in the past' or team 'living in the present'?",
+  "title": "Morning Height Boost",
+  "viewer_job": "REFRAME",
+  "keyword": "spinal discs",
+  "metaphor": "morning height",
+  "hook": "You're taller in the morning",
+  "script": "You're taller in the morning What if gravity never pressed on you? Astronauts experience this Their spinal discs decompress in zero gravity But here's what happens on Earth Your spinal discs slowly squeeze out water and lose height You're up to a couple of centimetres taller in the morning than at night It's because the soft discs in your spine compress under your weight all day You could fit a pencil in the space your spine shrinks each day But that's not even the strange part You soak it back overnight while you sleep You're like an astronaut, but on Earth Your body is always changing You're taller in the morning",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You're seeing the Sun as it was, not as it is",
-      "on_screen_text": "Sun Delay",
-      "search_query": "sun bright sky",
+      "voiceover": "You're taller in the morning",
+      "on_screen_text": "Morning Height",
+      "search_query": "person stretching morning",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What if the Sun simply switched off right now?",
-      "on_screen_text": "Sun Switch",
-      "search_query": "sunlight rays",
-      "motion": "zoom_out"
+      "duration": 3,
+      "voiceover": "What if gravity never pressed on you?",
+      "on_screen_text": "Zero Gravity",
+      "search_query": "astronauts in space",
+      "motion": "pan_left"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "You wouldn't know for a while",
-      "on_screen_text": "Time Lag",
-      "search_query": "hourglass sand falling",
-      "motion": "static"
+      "voiceover": "Astronauts experience this",
+      "on_screen_text": "Astronauts",
+      "search_query": "astronauts on space station",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The sunlight hitting your skin has traveled a long way",
-      "on_screen_text": "Sunlight Travel",
-      "search_query": "sunrise horizon",
-      "motion": "pan"
+      "voiceover": "Their spinal discs decompress in zero gravity",
+      "on_screen_text": "Spinal Discs",
+      "search_query": "spinal discs animation",
+      "motion": "rotate"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Every time you look at the Sun, you're seeing it as it was in the past",
-      "on_screen_text": "Past View",
-      "search_query": "old clock ticking",
+      "voiceover": "But here's what happens on Earth",
+      "on_screen_text": "Earth",
+      "search_query": "person on earth",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "bizarre landscape",
-      "motion": "zoom_out"
+      "voiceover": "Your spinal discs slowly squeeze out water and lose height",
+      "on_screen_text": "Losing Height",
+      "search_query": "measuring tape closeup",
+      "motion": "slide_left"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The sunlight hitting your skin left the Sun about eight minutes ago",
-      "on_screen_text": "8 Minutes Ago",
-      "search_query": "stopwatch counting",
+      "voiceover": "You're up to a couple of centimetres taller in the morning than at night",
+      "on_screen_text": "2 Centimetres",
+      "search_query": "ruler measurement",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "This means you are always seeing the Sun as it was eight minutes ago, never as it is right now",
-      "on_screen_text": "Time Delay",
-      "search_query": "delayed live feed",
-      "motion": "pan"
+      "voiceover": "It's because the soft discs in your spine compress under your weight all day",
+      "on_screen_text": "Spine Compression",
+      "search_query": "person standing",
+      "motion": "pan_right"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "It's like watching a live feed with an eight-minute delay",
-      "on_screen_text": "Live Feed Delay",
-      "search_query": "tv screen flickering",
-      "motion": "zoom_in"
+      "voiceover": "You could fit a pencil in the space your spine shrinks each day",
+      "on_screen_text": "Pencil Space",
+      "search_query": "pencil in hand",
+      "motion": "rotate"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "You could drive over 100 miles in that time, or watch an entire episode of your favorite show",
-      "on_screen_text": "Distance Covered",
-      "search_query": "car driving on highway",
-      "motion": "zoom_out"
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "Strange Part",
+      "search_query": "person surprised",
+      "motion": "zoom_in"
     },
     {
       "id": 11,
       "duration": 4,
-      "voiceover": "But here's the even wilder part: every time you look at the Sun, you are seeing it as it was eight minutes and twenty seconds in the past, never as it is right now",
-      "on_screen_text": "Wilder Part",
-      "search_query": "astronaut in space",
-      "motion": "pan_left"
+      "voiceover": "You soak it back overnight while you sleep",
+      "on_screen_text": "Sleep",
+      "search_query": "waking up bed",
+      "motion": "slide_right"
     },
     {
       "id": 12,
       "duration": 4,
-      "voiceover": "Are you team 'living in the past' or team 'living in the present'?",
-      "on_screen_text": "Team Choice",
-      "search_query": "person looking confused",
-      "motion": "zoom_in"
+      "voiceover": "You're like an astronaut, but on Earth",
+      "on_screen_text": "Astronaut on Earth",
+      "search_query": "person in space suit",
+      "motion": "pan_left"
+    },
+    {
+      "id": 13,
+      "duration": 4,
+      "voiceover": "Your body is always changing",
+      "on_screen_text": "Body Changing",
+      "search_query": "person transforming",
+      "motion": "rotate"
+    },
+    {
+      "id": 14,
+      "duration": 4,
+      "voiceover": "You're taller in the morning",
+      "on_screen_text": "Morning Height",
+      "search_query": "person stretching morning",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Are you living in the past due to sunlight delay? Yes or no?",
-    "The Sun's time lag is mind-blowing",
-    "Sunlight delay: the ultimate time-traveling experience"
+    "Did you know your spinal discs change height daily? #spinaldiscs",
+    "Astronauts experience zero gravity, but what about you on Earth?",
+    "Share with a friend who needs to know about their spinal discs!"
   ],
   "hashtags": [
-    "#space",
     "#science",
-    "#Sun",
-    "#time",
-    "#delay"
+    "#space",
+    "#spinaldiscs",
+    "#health",
+    "#body"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-13_you-re-always-living-in-the-past",
-  "cta_style": "COMMENT"
+  "video_id": "science_2026-07-14_morning-height-boost",
+  "cta_style": "LOOP"
 }

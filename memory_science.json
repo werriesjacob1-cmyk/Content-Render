@@ -155,6 +155,28 @@
         "clarity": 8.0,
         "overall": 7.17
       }
+    },
+    {
+      "video_id": "science_2026-07-14_morning-height-boost",
+      "metaphor": "morning height",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "title": "Morning Height Boost",
+      "fact_id": "taller_morning",
+      "hook": "You're taller in the morning",
+      "structure": {
+        "scene_count": 14,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
     }
   ]
 }
