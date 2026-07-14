@@ -427,18 +427,46 @@ def _gemini_chat(prompt, max_tokens, temperature):
     return data["candidates"][0]["content"]["parts"][0]["text"]
 
 
+_JUDGE_CONSEC_FAILS = 0   # consecutive transport failures of the footage judge
+_JUDGE_CIRCUIT_OPEN = False  # once open, the judge stops making doomed calls
+
+
+def _judge_note(ok):
+    """Track judge health for the circuit breaker: a success closes it, 3
+    back-to-back transport failures open it (stop making doomed calls)."""
+    global _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN
+    if ok:
+        _JUDGE_CONSEC_FAILS = 0
+    else:
+        _JUDGE_CONSEC_FAILS += 1
+        if _JUDGE_CONSEC_FAILS >= 3 and not _JUDGE_CIRCUIT_OPEN:
+            _JUDGE_CIRCUIT_OPEN = True
+            print("  [judge] circuit OPEN — footage judge rate-limited 3x in a row; "
+                  "shipping the top stock clip for the rest of this run (no more doomed judge calls)")
+
+
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
     # Prefer Gemini (far larger free quota) for the judge too, so batch rendering
     # keeps judging footage relevance instead of 429'ing and shipping the top
     # Pexels result. Falls back to Groq. _LAST_GROQ_FAILED is only set when BOTH
     # providers are unreachable, so the JUDGE_UNAVAILABLE path still means "no
     # judge available at all" (ship top clip) rather than "one provider blipped".
-    global _LAST_GROQ_FAILED
+    #
+    # CIRCUIT BREAKER: after 3 back-to-back transport failures, the judge is
+    # clearly down for this run (rate-limited) — stop calling it. Every further
+    # call short-circuits to "unavailable" (ship the top stock clip), instead of
+    # firing ~2-5 doomed calls per scene x every scene (~40 wasted calls that just
+    # burn the quota and stall the render). Real judging resumes next run.
+    global _LAST_GROQ_FAILED, _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN
     _LAST_GROQ_FAILED = False
+    if _JUDGE_CIRCUIT_OPEN:
+        _LAST_GROQ_FAILED = True   # signal "judge unavailable" → caller ships top clip
+        return None
     if os.environ.get("GEMINI_API_KEY", ""):
         try:
             out = _gemini_chat(prompt, max_tokens, temperature)
             if out is not None:
+                _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to Groq
             print("  Gemini judge call failed, trying Groq:", e)
@@ -448,6 +476,7 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
         # outage → signal unavailable so the caller ships the top clip.
         if os.environ.get("GEMINI_API_KEY", ""):
             _LAST_GROQ_FAILED = True
+            _judge_note(False)
         return None
     try:
         body = json.dumps({
@@ -461,10 +490,13 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                                               "Content-Type": "application/json",
                                               "User-Agent": "content-render/1.0"})
         with urllib.request.urlopen(req, timeout=30) as r:
-            return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+            out = json.loads(r.read().decode())["choices"][0]["message"]["content"]
+        _judge_note(True)
+        return out
     except Exception as e:
         print("  Groq call failed:", e)
         _LAST_GROQ_FAILED = True
+        _judge_note(False)
         return None
 
 

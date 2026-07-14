@@ -603,36 +603,52 @@ def _call_gemini(model, prompt):
     return data["candidates"][0]["content"]["parts"][0]["text"]
 
 
+_CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
+_CIRCUIT_OPEN = False     # once open, calls fail fast instead of hammering dead quota
+
+
 def call_groq(prompt):
     """Call the LLM for a JSON response. Prefers Gemini (much higher free quota)
     when GEMINI_API_KEY is set, then falls back to Groq automatically. Name kept
-    as call_groq so every existing call site is unchanged."""
-    global _WORKING_MODEL
-    # if we already found a working model, use it
-    if _WORKING_MODEL:
-        prov, model = _WORKING_MODEL
-        return _call_gemini(model, prompt) if prov == "gemini" else _call_model(model, prompt)
-    last_err = None
-    # Provider chain: Gemini first (if keyed), then Groq. Cache the first that works.
+    as call_groq so every existing call site is unchanged.
+
+    CIRCUIT BREAKER: if every provider rate-limits 3 calls in a row, the circuit
+    opens and further calls fail instantly for the rest of this run. Without it,
+    an exhausted-quota render burned ~4 minutes retrying doomed calls (5 attempts
+    x escalating sleeps x every pipeline stage) AND wasted whatever little quota
+    remained. Fail-fast = the render aborts in seconds and stops hammering the
+    limit. When the LLM is healthy the circuit never opens (behaviour identical)."""
+    global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN
+    if _CIRCUIT_OPEN:
+        raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
+    # try the cached working provider first (also re-walks the chain if it now
+    # fails, fixing the old bug where a cached model that started 429ing raised
+    # without ever falling back to the other provider).
+    if _WORKING_MODEL and _WORKING_MODEL in chain:
+        chain = [_WORKING_MODEL] + [c for c in chain if c != _WORKING_MODEL]
+    last_err = None
     for prov, model in chain:
         try:
             out = _call_gemini(model, prompt) if prov == "gemini" else _call_model(model, prompt)
+            if _WORKING_MODEL != (prov, model):
+                print(f"  [model] using {prov}:{model}")
             _WORKING_MODEL = (prov, model)
-            print(f"  [model] using {prov}:{model}")
+            _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
             return out
         except urllib.error.HTTPError as e:
-            # 403/404 = model/provider not available to this key → try next.
-            # 429 (rate limit) on a whole provider → also try the next provider
-            # (e.g. Gemini quota hit → fall through to Groq) rather than dying.
-            if e.code in (403, 404, 429):
-                print(f"  [model] {prov}:{model} unavailable ({e.code}), trying next")
+            if e.code in (403, 404, 429):   # unavailable/rate-limited → try next provider
                 last_err = e; continue
             raise   # 5xx etc — let the outer retry loop handle it
         except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next provider
-            print(f"  [model] {prov}:{model} error ({e}), trying next")
             last_err = e; continue
+    # every provider failed this call
+    _CONSEC_EXHAUSTIONS += 1
+    if _CONSEC_EXHAUSTIONS >= 3 and not _CIRCUIT_OPEN:
+        _CIRCUIT_OPEN = True
+        print("  [model] circuit OPEN — all LLM providers rate-limited 3x in a row; "
+              "failing fast for the rest of this run (add GEMINI_API_KEY for a much larger free quota)")
     raise last_err if last_err else RuntimeError("no LLM provider available")
 
 # basic safety net for HOW_TO output
