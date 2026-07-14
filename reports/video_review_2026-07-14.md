@@ -111,3 +111,14 @@ footage + the good script even under Groq pressure — the key unblock.
 Still pending: watch a render that clears end-to-end (real footage + good
 script) and judge it honestly; the ElevenLabs voice will be edge-tts until its
 monthly credits reset (user should know: deep voice is quota-gated).
+
+## Cycle 5 — Groq free DAILY quota depleted; backing off hours
+Run 42 (judge-fix 6146fe4) FAILED at Auto-generate — generation itself failed
+twice → clean abort. Groq gave only brief windows today (08:04, 09:47) and is
+out again by 10:06; ~9 renders today (34-42) consumed the free daily token
+budget. The judge-resilience fix (8e7c546) is committed/unit-tested but can't be
+validated until a generation succeeds. Continuing to trigger every 30-45min just
+churns Actions minutes against a dead quota. Backing the loop off to ~3h so the
+daily quota can actually reset before the next attempt. No user message (quota
+story already given). Guards all confirmed working; code is resilient — the only
+blocker now is raw free-tier quota, which is time (or a few $ of paid tier).
