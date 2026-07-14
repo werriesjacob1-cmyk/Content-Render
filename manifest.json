@@ -1,94 +1,78 @@
 {
-  "title": "Unseen Oceans",
-  "viewer_job": "REFRAME",
-  "keyword": "deep ocean exploration",
-  "metaphor": "ocean floor mystery",
-  "hook": "You've seen more of Mars than the ocean floor",
-  "script": "You've seen more of Mars than the ocean floor What if you could drain every ocean overnight? You'd reveal Earth's tallest mountain range and canyons deeper than any on land But that's not even the strange part We have mapped more of the surface of Mars than the floor of our own oceans More people have walked on the Moon than have reached the deepest point of the ocean floor Over 80 percent of the ocean floor remains unseen, an area larger than the surface of Mars That number's worth a screenshot",
+  "title": "Bananas are Slightly Radioactive",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "bananas radioactive",
+  "metaphor": "hidden dangers in food",
+  "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
+  "script": "Bananas contain potassium-40, a naturally radioactive isotope. A single banana gives a dose of about 0.1 microsieverts. You are more radioactive than the banana. Your own body fires roughly 5,000 potassium-40 decays every single second. And your kidneys flush the extra potassium so the dose never adds up. This means you've been exposed to more radiation from your own body than from eating bananas.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You've seen more of Mars than the ocean floor",
-      "on_screen_text": "Mars vs Ocean",
-      "search_query": "deep ocean dark",
+      "voiceover": "Bananas contain potassium-40, a naturally radioactive isotope.",
+      "on_screen_text": "Radioactive Bananas",
+      "search_query": "bananas bunch",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "What if you could drain every ocean overnight?",
-      "on_screen_text": "Drain Oceans",
-      "search_query": "underwater abyss",
+      "duration": 4,
+      "voiceover": "A single banana gives a dose of about 0.1 microsieverts.",
+      "on_screen_text": "0.1 microsieverts",
+      "search_query": "banana yellow",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "You'd reveal Earth's tallest mountain range and canyons deeper than any on land",
-      "on_screen_text": "Tallest Mountains",
-      "search_query": "deep sea landscape",
-      "motion": "pan"
+      "voiceover": "You are more radioactive than the banana.",
+      "on_screen_text": "Radioactive You",
+      "search_query": "fruit market",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 3,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "submarine deep sea",
+      "duration": 4,
+      "voiceover": "Your own body fires roughly 5,000 potassium-40 decays every single second.",
+      "on_screen_text": "5,000 decays",
+      "search_query": "potassium-40 decay",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "We have mapped more of the surface of Mars than the floor of our own oceans",
-      "on_screen_text": "Mars Mapped",
-      "search_query": "space vs ocean",
+      "voiceover": "And your kidneys flush the extra potassium so the dose never adds up.",
+      "on_screen_text": "Kidney Flush",
+      "search_query": "kidney function",
       "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "More people have walked on the Moon than have reached the deepest point of the ocean floor",
-      "on_screen_text": "Moon Walkers",
-      "search_query": "deep ocean explorers",
+      "voiceover": "This means you've been exposed to more radiation from your own body than from eating bananas.",
+      "on_screen_text": "Own Body Radiation",
+      "search_query": "body radiation",
       "motion": "zoom_in"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "Over 80 percent of the ocean floor remains unseen, an area larger than the surface of Mars",
-      "on_screen_text": "Unseen Oceans",
-      "search_query": "deep ocean mystery",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 3,
-      "voiceover": "That number's worth a screenshot",
-      "on_screen_text": "Save This",
-      "search_query": "ocean facts",
-      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Have you explored the deep ocean? Yes or no?",
-    "Unseen oceans are waiting to be discovered",
-    "What's hiding in the deep ocean?"
+    "Did you know bananas are radioactive? #science #facts",
+    "Bananas are secretly giving you a tiny dose of radiation.",
+    "Your bananas are more radioactive than you think."
   ],
   "hashtags": [
-    "#ocean",
-    "#space",
-    "#Mars",
-    "#deepsea",
-    "#exploration"
+    "#science",
+    "#facts",
+    "#bananas",
+    "#radiation",
+    "#health"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_unseen-oceans",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "ocean"
+  "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
+  "cta_style": "COMMENT",
+  "domain": "physics"
 }

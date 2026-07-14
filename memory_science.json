@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "Turritopsis dohrnii",
-      "viewer_job": "HOW_TO",
-      "title": "Meet the Immortal Jellyfish",
-      "fact_id": "immortal_jellyfish"
-    },
-    {
       "video_id": "science_2026-07-11_dna-stretched-to-the-sun",
       "metaphor": "Cosmic DNA",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -227,6 +221,21 @@
       "hook": "You've seen more of Mars than the ocean floor",
       "structure": {
         "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
+      "metaphor": "hidden dangers in food",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "Bananas are Slightly Radioactive",
+      "fact_id": "banana_radioactive",
+      "domain": "physics",
+      "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
+      "structure": {
+        "scene_count": 6,
         "used_whatif": true
       },
       "quality": null
