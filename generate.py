@@ -33,12 +33,27 @@ BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 # best-scoring attempt ships anyway — this gate must never be able to stop
 # the daily run from producing a video.
 #
-# QUALITY_THRESHOLD starts modest ON PURPOSE: the channel has no track record
-# yet, and setting it too high just burns Groq calls regenerating scripts
-# that are already fine. RATCHET THIS UP over time (e.g. 7.0 -> 7.5 -> 8.0)
-# once perf_<page>.json (see PERF_PATH below) shows higher-scoring scripts
-# actually perform better in real engagement data.
-QUALITY_THRESHOLD = 7.0
+# QUALITY_THRESHOLD started modest on purpose while the channel had no track
+# record. RATCHET THIS UP over time (e.g. 7.0 -> 7.5 -> 8.0) once
+# perf_<page>.json (see PERF_PATH below) shows higher-scoring scripts actually
+# perform better in real engagement data. Raised 7.0 -> 7.5 after "You're
+# Always Living in the Past" shipped at overall 7.17 despite payoff:5 and
+# blatant 5x repetition of its one reveal — averaging across six criteria let
+# a badly broken script hide behind a couple of high scores (rewatch:9).
+QUALITY_THRESHOLD = 7.5
+
+# PER-CRITERION FLOORS — the averaging failure above is why these exist. A
+# script can have a great hook/surprise/rewatch and still be a bad video if
+# it never pays off, doesn't escalate, or opens on a confusing hook — no
+# average should be able to paper over that. ANY real score (not a fail-open
+# None) below its floor forces a regeneration REGARDLESS of the overall
+# average, even if overall clears QUALITY_THRESHOLD. This alone would have
+# caught the Sun video: payoff scored 5, floor is 6.
+QUALITY_CRITERION_FLOORS = {
+    "hook": 6,
+    "escalation": 7,
+    "payoff": 6,
+}
 QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first. Keep this SMALL:
                                  # each one re-runs the full generate+validate+punch-up
                                  # pipeline (several Groq calls) inside one daily Action run.
@@ -1113,7 +1128,7 @@ def main():
     # scratch, bounded to QUALITY_MAX_REGENERATIONS extra attempts. Keeps
     # the best-scoring attempt across all rounds and ships it even if none
     # cleared the bar, so this can never block the daily run.
-    best_manifest, best_overall, best_quality = None, None, None
+    best_manifest, best_overall, best_quality, best_rank = None, None, None, None
     for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
         candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
                                         cta_style=cta_style)
@@ -1128,16 +1143,33 @@ def main():
             best_manifest, best_quality, best_overall = candidate, None, None
             break
         overall = quality["overall"]
-        print(f"  [quality] attempt {regen_i+1}: overall {overall}/10 {quality}")
-        if best_overall is None or overall > best_overall:
-            best_manifest, best_overall, best_quality = candidate, overall, quality
+        # A REAL score (as opposed to the fail-open None above) that breaks a
+        # per-criterion floor must trigger regeneration NO MATTER how high the
+        # average is -- this is what catches a script like the Sun video
+        # (overall 7.17, payoff 5).
+        violations = {k: quality[k] for k, floor in QUALITY_CRITERION_FLOORS.items()
+                      if quality.get(k, 10) < floor}
+        flag = f" — FLOOR VIOLATION {violations} (floors: {QUALITY_CRITERION_FLOORS})" if violations else ""
+        print(f"  [quality] attempt {regen_i+1}: overall {overall}/10 {quality}{flag}")
+        # Rank best-so-far by (no floor violation, overall) so that, if the
+        # regen budget runs out, we ship the best NON-violating attempt we
+        # saw rather than whichever had the highest average regardless of a
+        # broken payoff/hook/escalation.
+        rank = (0 if violations else 1, overall)
+        if best_rank is None or rank > best_rank:
+            best_manifest, best_overall, best_quality, best_rank = candidate, overall, quality, rank
+        if violations:
+            print(f"  [quality] attempt {regen_i+1} rejected: per-criterion floor broken "
+                  f"regardless of overall {overall} — regenerating")
+            continue
         if overall >= QUALITY_THRESHOLD:
-            print(f"  [quality] cleared threshold ({overall} >= {QUALITY_THRESHOLD}) — shipping")
+            print(f"  [quality] cleared threshold ({overall} >= {QUALITY_THRESHOLD}) with no "
+                  f"floor violations — shipping")
             break
     else:
         if best_manifest is not None:
-            print(f"  [quality] no attempt cleared {QUALITY_THRESHOLD} — shipping best-scoring "
-                  f"attempt (overall {best_overall})")
+            print(f"  [quality] no attempt cleared {QUALITY_THRESHOLD} with all floors intact — "
+                  f"shipping best-scoring attempt (overall {best_overall})")
 
     manifest = best_manifest
     if not manifest:
