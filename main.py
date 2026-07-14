@@ -461,9 +461,16 @@ _LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
                             # unparseably" (keep vetoing, avoids the belly-button bug).
 
 
+JUDGE_GEMINI_MODEL = "gemini-2.5-flash-lite"  # highest free daily quota (~1000 RPD
+                                              # vs ~200 for 2.0-flash); the judge
+                                              # fires several calls per render, so it
+                                              # should sit on the roomiest free model,
+                                              # same reasoning as generate.py.
+
+
 def _gemini_chat(prompt, max_tokens, temperature):
     """Google Gemini generateContent for the footage judge. Returns text or None.
-    Raises on transport failure so the caller can fall back to Groq."""
+    Raises on transport failure so the caller can fall back to Cerebras/Groq."""
     key = os.environ.get("GEMINI_API_KEY", "")
     if not key:
         return None
@@ -472,7 +479,7 @@ def _gemini_chat(prompt, max_tokens, temperature):
         "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
     }).encode()
     req = urllib.request.Request(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent",
         data=body,
         headers={"Content-Type": "application/json", "x-goog-api-key": key,
                  "User-Agent": "content-render/1.0"})

@@ -58,7 +58,10 @@ MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
 # double-outage that shipped degraded videos. Optional: env-gated, no key = skip.
 # Free key (no card): https://cloud.cerebras.ai . Add as CEREBRAS_API_KEY.
 CEREBRAS_KEY = os.environ.get("CEREBRAS_API_KEY", "")
-CEREBRAS_MODELS = ["llama-3.3-70b", "llama3.1-8b"]
+# llama-3.3-70b is Cerebras' current generous free model. (Do NOT add
+# llama3.1-8b — Cerebras deprecated it on 2026-05-27, so it now 404s and would
+# just waste a fallback slot, the same dead-model trap we hit with Groq/Gemini.)
+CEREBRAS_MODELS = ["llama-3.3-70b"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
