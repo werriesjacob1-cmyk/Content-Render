@@ -762,11 +762,20 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
 
 def _stat_overlay(scene, seg_dur):
     """Return an ffmpeg drawtext snippet for an animated number card, or '' if none/disabled.
-    OFF unless PROFILE.get('motion_graphics') is True. Fully optional + safe."""
+    OFF unless PROFILE.get('motion_graphics') is True. Fully optional + safe.
+
+    The number is drawn ONLY when those exact digits are actually SPOKEN in
+    this scene's voiceover -- so the card always has context (the narrator is
+    saying the number the moment it pops on). It deliberately does NOT read
+    on_screen_text: the murmuration render had scene voiceover 'nearest seven
+    neighbors' (word 'seven', no digit) but on_screen_text 'Watch 7 neighbors',
+    which fired a big contextless '7' on screen. Parsing the voiceover only
+    means a spelled-out 'seven' shows nothing, and a real spoken figure like
+    '400 million years' still gets its card."""
     if not PROFILE.get("motion_graphics"):
         return ""
     import re as _re
-    text = f"{scene.get('on_screen_text','')} {scene.get('voiceover','')}"
+    text = scene.get("voiceover", "")
     m = _re.search(r"(\d[\d,\.]*\s?(?:%|x|mph|m-?per-?hour|times|million|billion|degrees|tons?)?)", text)
     if not m:
         return ""
