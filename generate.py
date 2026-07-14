@@ -349,7 +349,8 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 8-10 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 90-130 words (~35-50 seconds spoken). Write the FULL script. Too short = rejected.
+- Total narration MUST be 90-120 words (~30-40 seconds spoken). Write the FULL script. Too short = rejected.
+  A tight 30-40s video beats a padded 60s one: competitors win on completion, so cut every non-essential line.
 - PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -725,10 +726,11 @@ def validate(m, job_name, fact=None):
     for k in ["title", "hook", "script", "scenes", "captions", "hashtags"]:
         if k not in m:
             return f"missing {k}"
-    # Scene-count ceiling tightened 14 -> 11 (target is 8-10, see build_prompt):
-    # the Sun video ran 12 scenes at 166 words and read as "does not stop
-    # talking" -- fewer, better-paced scenes beat cramming in more reveals.
-    if not isinstance(m["scenes"], list) or not (6 <= len(m["scenes"]) <= 11):
+    # Scene-count ceiling tightened 14 -> 11 -> 10 (target is 8-10, see
+    # build_prompt): the Sun video ran 12 scenes at 166 words and read as
+    # "does not stop talking" -- fewer, better-paced scenes beat cramming in
+    # more reveals, and a tight ~30-40s video wins on completion.
+    if not isinstance(m["scenes"], list) or not (6 <= len(m["scenes"]) <= 10):
         return f"scene count {len(m.get('scenes', []))} out of range"
 
     # clean top-level text
@@ -783,14 +785,14 @@ def validate(m, job_name, fact=None):
         if s.get("motion") not in ("zoom_in", "zoom_out", "pan", "static"):
             s["motion"] = random.choice(["zoom_in", "zoom_out", "pan", "static"])
 
-    # script length sanity: target is 90-130 words (~35-50s spoken, see
-    # build_prompt); hard ceiling tightened 240 -> 150 -- the Sun video ran
-    # 166 words across 12 scenes and read as relentless / "does not stop
-    # talking". Floor kept at 70 so a legitimately tight script isn't
-    # penalized for being efficient.
+    # script length sanity: target is 90-120 words (~30-40s spoken, see
+    # build_prompt); hard ceiling tightened 240 -> 150 -> 135 -- the Sun video
+    # ran 166 words and read as relentless / "does not stop talking", and a
+    # tight 30-40s video beats a padded 60s one on completion. Floor kept at
+    # 70 so a legitimately tight script isn't penalized for being efficient.
     wc = len(_clean(m["script"]).split())
-    if not (70 <= wc <= 150):
-        return f"script word count {wc} out of range (target 90-130, hard cap 150)"
+    if not (70 <= wc <= 135):
+        return f"script word count {wc} out of range (target 90-120, hard cap 135)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
