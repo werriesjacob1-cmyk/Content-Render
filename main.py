@@ -1007,7 +1007,13 @@ def main():
     with open(mpath) as f:
         m = json.load(f)
     global voice, rate
-    voice = m.get("render", {}).get("voice", "en-US-GuyNeural")
+    # Prefer the PROFILE's edge_voice (a deeper, more documentary-sounding free
+    # voice — en-GB-RyanNeural for science) over the manifest's generic default.
+    # The manifest is written by generate.py with a fixed "en-US-GuyNeural"; the
+    # profile is where the channel's intended voice lives. This makes the free
+    # fallback voice sound closer to the deep read the channel wants (the paid
+    # ElevenLabs voice is still used first whenever credits are available).
+    voice = PROFILE.get("edge_voice") or m.get("render", {}).get("voice", "en-US-GuyNeural")
     rate  = m.get("render", {}).get("rate", "-5%")
 
     for d in (WORK, OUT):
