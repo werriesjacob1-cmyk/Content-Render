@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "Gravity's Time Trick",
-      "viewer_job": "REFRAME",
-      "title": "Time Dilation in Your Body",
-      "fact_id": "head_ages_faster"
-    },
-    {
       "metaphor": "Tiny Animal Superpower",
       "viewer_job": "MYTH_BUSTER",
       "title": "Mantis Shrimp Punches Break Physics",
@@ -180,6 +174,21 @@
       "title": "Crushing Pressure",
       "fact_id": "mariana_pressure",
       "hook": "You'd be crushed instantly",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_turtles-breathe-through-rear-ends",
+      "metaphor": "turtle cloaca",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "COMMENT",
+      "title": "Turtles Breathe Through Rear Ends",
+      "fact_id": "turtle_breathing",
+      "domain": "animals",
+      "hook": "You can survive underwater without surfacing",
       "structure": {
         "scene_count": 10,
         "used_whatif": true
