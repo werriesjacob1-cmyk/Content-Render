@@ -737,6 +737,7 @@ def _gather_candidates(query):
     return (_pexels_candidates(query)
             or _nasa_candidates(query)
             or _wikimedia_candidates(query)   # no key: archival/scientific clips
+            or _archive_candidates(query)     # no key: Internet Archive documentary film
             or _coverr_candidates(query))     # Coverr dormant unless COVERR_API_KEY set
 
 
@@ -1144,6 +1145,67 @@ def _wikimedia_candidates(query):
         print(f"  Wikimedia HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
         print("  Wikimedia failed:", e)
+    return out
+
+
+ARCHIVE_MAX_VIDEO_BYTES = 45 * 1024 * 1024  # Internet Archive holds full-length
+                                            # films; only take a small derivative
+                                            # (we loop a few seconds anyway)
+ARCHIVE_ITEM_LIMIT = 5      # metadata round-trips are the cost; cap how many items
+ARCHIVE_BUDGET_S = 18       # hard wall-clock cap for the whole source (like NASA)
+
+
+def _archive_candidates(query):
+    """No-key VIDEO source: the Internet Archive (archive.org). Public-domain /
+    openly-licensed archival & documentary film that stock libraries simply don't
+    have — the strongest 'we don't look like every other faceless page' lever.
+    Two-step API like NASA: advancedsearch gives movie identifiers, then each
+    item's metadata lists its files; we pick the SMALLEST real .mp4 under
+    ARCHIVE_MAX_VIDEO_BYTES (IA also stores multi-GB masters, so size-gating is
+    mandatory — an unbounded pick would stall the render or fill the disk).
+    Bounded by ARCHIVE_BUDGET_S so a slow item can't hang the run."""
+    out = []
+    deadline = time.time() + ARCHIVE_BUDGET_S
+    try:
+        q = urllib.parse.quote(f"{query.strip()[:80]} AND mediatype:movies")
+        url = (f"https://archive.org/advancedsearch.php?q={q}"
+               "&fl[]=identifier&fl[]=title&rows=8&output=json")
+        docs = (_http_json(url, {"User-Agent": WIKI_UA}, timeout=12)
+                .get("response", {}).get("docs", []))
+        for doc in docs[:ARCHIVE_ITEM_LIMIT]:
+            if time.time() > deadline:
+                break
+            ident = doc.get("identifier")
+            if not ident or ident in _used_video_ids:
+                continue
+            try:
+                meta = _http_json(f"https://archive.org/metadata/{ident}",
+                                  {"User-Agent": WIKI_UA}, timeout=10)
+            except Exception:
+                continue
+            # smallest playable mp4 within the size cap (h.264 derivatives are
+            # small; masters are huge and get skipped)
+            best = None
+            for f in meta.get("files", []):
+                name = f.get("name", "")
+                if not name.lower().endswith(".mp4"):
+                    continue
+                size = int(f.get("size", 0) or 0)
+                if size == 0 or size > ARCHIVE_MAX_VIDEO_BYTES:
+                    continue
+                if best is None or size < best[1]:
+                    best = (name, size)
+            if best:
+                out.append({
+                    "id": ident,
+                    "url": f"https://archive.org/download/{ident}/{urllib.parse.quote(best[0])}",
+                    "desc": (doc.get("title") or query)[:200],
+                    "source": "Archive",
+                })
+    except urllib.error.HTTPError as e:
+        print(f"  Archive HTTP {e.code}: {e.read().decode()[:160]}")
+    except Exception as e:
+        print("  Archive failed:", e)
     return out
 
 
