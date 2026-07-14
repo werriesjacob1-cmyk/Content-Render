@@ -1,102 +1,110 @@
 {
-  "title": "Mauna Kea: The Tallest Mountain",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "Mauna Kea vs Everest",
-  "metaphor": "Mountain Height Comparison",
-  "hook": "You think Everest is the tallest?",
-  "script": "You think Everest is the tallest? But what if you measured from the base? Mauna Kea stands over 10,000 metres tall. From base to summit Mauna Kea is more than 1,000 metres taller than Everest. You could stack two Everests on top of each other and still be shorter than Mauna Kea. That's like piling over 100 skyscrapers on top of each other. Mauna Kea is the real tallest mountain, with most of it hidden underwater. Share this with a friend who loves geography! Remember, Mauna Kea is over 10,000 metres tall, that number's worth a screenshot!",
+  "title": "Cosmic Coincidence",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "solar eclipse",
+  "metaphor": "cosmic coincidence",
+  "hook": "You see the Sun and Moon as the same size",
+  "script": "You see the Sun and Moon as the same size But what if the Moon were closer The Sun is about 400 times wider than the Moon The Sun is also about 400 times farther away This is why we get perfect eclipses But that's not even the strange part The Moon drifts about 3.8 centimeters farther away every year In a few hundred million years, total eclipses will vanish from the sky forever You could watch human civilization rise and fall 80,000 times over before that happens Your view of the Sun and Moon will change forever",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You think Everest is the tallest?",
-      "on_screen_text": "Mountain Height",
-      "search_query": "mountain peak snow",
+      "voiceover": "You see the Sun and Moon as the same size",
+      "on_screen_text": "Sun Moon",
+      "search_query": "sun and moon",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "But what if you measured from the base?",
-      "on_screen_text": "Base Measurement",
-      "search_query": "hawaii volcano",
-      "motion": "pan"
+      "duration": 3,
+      "voiceover": "But what if the Moon were closer",
+      "on_screen_text": "Moon Close",
+      "search_query": "moon orbit",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Mauna Kea stands over 10,000 metres tall.",
-      "on_screen_text": "Mauna Kea Height",
-      "search_query": "underwater mountain",
-      "motion": "zoom_out"
+      "voiceover": "The Sun is about 400 times wider than the Moon",
+      "on_screen_text": "400 Times",
+      "search_query": "sun corona eclipse",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "From base to summit Mauna Kea is more than 1,000 metres taller than Everest.",
-      "on_screen_text": "Height Comparison",
-      "search_query": "mountain range",
-      "motion": "zoom_in"
+      "duration": 3,
+      "voiceover": "The Sun is also about 400 times farther away",
+      "on_screen_text": "Far Away",
+      "search_query": "sun distance",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "You could stack two Everests on top of each other and still be shorter than Mauna Kea.",
-      "on_screen_text": "Everest Comparison",
-      "search_query": "mountain peak comparison",
+      "voiceover": "This is why we get perfect eclipses",
+      "on_screen_text": "Total Eclipse",
+      "search_query": "solar eclipse",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "That's like piling over 100 skyscrapers on top of each other.",
-      "on_screen_text": "Skyscraper Comparison",
-      "search_query": "city skyline",
+      "duration": 3,
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "Strange Part",
+      "search_query": "moon sky",
       "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Mauna Kea is the real tallest mountain, with most of it hidden underwater.",
-      "on_screen_text": "Mauna Kea Facts",
-      "search_query": "hawaii ocean floor",
+      "voiceover": "The Moon drifts about 3.8 centimeters farther away every year",
+      "on_screen_text": "Moon Drift",
+      "search_query": "moon orbit",
       "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "Share this with a friend who loves geography!",
-      "on_screen_text": "Share With Friend",
-      "search_query": "friends talking",
-      "motion": "static"
+      "duration": 3,
+      "voiceover": "In a few hundred million years, total eclipses will vanish from the sky forever",
+      "on_screen_text": "No More Eclipses",
+      "search_query": "sun corona eclipse",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Remember, Mauna Kea is over 10,000 metres tall, that number's worth a screenshot!",
-      "on_screen_text": "Mauna Kea Height",
-      "search_query": "phone screenshot",
-      "motion": "zoom_out"
+      "voiceover": "You could watch human civilization rise and fall 80,000 times over before that happens",
+      "on_screen_text": "Civilization Rise",
+      "search_query": "human civilization",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 10,
+      "duration": 3,
+      "voiceover": "Your view of the Sun and Moon will change forever",
+      "on_screen_text": "Sun Moon",
+      "search_query": "sun and moon",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What's the tallest mountain, really? Mauna Kea vs Everest",
-    "Mind blown by Mauna Kea's height!",
-    "Share your thoughts on the tallest mountain!"
+    "What if the Moon were slightly closer or farther? #solar eclipse #space #facts",
+    "The Sun and Moon, a cosmic coincidence? #space #science",
+    "Share with a friend who loves space! #solar eclipse #space"
   ],
   "hashtags": [
-    "#MaunaKea",
-    "#Everest",
-    "#MountainFacts",
-    "#Geography",
-    "#Science"
+    "#science",
+    "#space",
+    "#facts",
+    "#eclipse",
+    "#sun"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "earth"
+  "video_id": "science_2026-07-14_cosmic-coincidence",
+  "cta_style": "LOOP",
+  "domain": "space"
 }

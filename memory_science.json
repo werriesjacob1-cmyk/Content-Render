@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "sugar cube",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "title": "The Void Within",
-      "fact_id": "atoms_empty"
-    },
-    {
       "metaphor": "Plankton Power",
       "viewer_job": "SOCIAL_CURRENCY",
       "title": "Ocean's Hidden Breath",
@@ -200,6 +194,21 @@
       "hook": "You think Everest is the tallest?",
       "structure": {
         "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_cosmic-coincidence",
+      "metaphor": "cosmic coincidence",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "title": "Cosmic Coincidence",
+      "fact_id": "eclipse_coincidence",
+      "domain": "space",
+      "hook": "You see the Sun and Moon as the same size",
+      "structure": {
+        "scene_count": 10,
         "used_whatif": true
       },
       "quality": null
