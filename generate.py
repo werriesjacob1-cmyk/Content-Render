@@ -617,13 +617,38 @@ def _extract_json(text):
     return t
 
 
+GEMINI_RPM_MAX_WAIT = 20   # seconds; a 429 asking to wait longer than this is a
+                           # DAILY-quota exhaustion, not a per-minute burst —
+                           # don't stall the render, fall through to the next model.
+
+
+def _gemini_retry_delay(err):
+    """Pull the retryDelay Gemini attaches to a 429 (e.g. '"retryDelay": "6s"').
+    Returns the seconds as a float, or None if absent/unparseable. A small delay
+    means we merely hit the free-tier per-minute (RPM) cap and a short sleep lets
+    the very next call succeed; a large one means the daily quota is gone."""
+    try:
+        body = err.read().decode("utf-8", "replace")
+        m = re.search(r'"retryDelay"\s*:\s*"?(\d+(?:\.\d+)?)s"?', body)
+        return float(m.group(1)) if m else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _call_gemini(model, prompt):
     """Google Gemini generateContent. Same contract as _call_model: returns the
     model's text (a JSON string). Raises HTTPError on failure so the provider
     chain can fall through. NOTE: no responseMimeType — an earlier version set
     responseMimeType='application/json' and Gemini returned HTTP 400 on every
     call; a plain generateContent works on every model, and _extract_json handles
-    any markdown fences the reply might carry."""
+    any markdown fences the reply might carry.
+
+    RPM SELF-HEAL: one render fires ~25-40 LLM calls in a burst, which trips the
+    free tier's per-minute cap (~15 RPM) even with a full daily quota. On a 429
+    whose retryDelay is short, sleep it out and retry the SAME model ONCE — that
+    turns a fall-through-to-Groq into a Gemini success and keeps generation on the
+    high-quota provider. A long retryDelay (daily quota gone) is re-raised so the
+    chain falls through immediately instead of stalling."""
     body = json.dumps({
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096},
@@ -634,9 +659,19 @@ def _call_gemini(model, prompt):
         headers={"Content-Type": "application/json",
                  "x-goog-api-key": GEMINI_KEY,
                  "User-Agent": "content-render/1.0"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        data = json.loads(r.read().decode())
-    return _extract_json(data["candidates"][0]["content"]["parts"][0]["text"])
+    for _attempt in range(2):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                data = json.loads(r.read().decode())
+            return _extract_json(data["candidates"][0]["content"]["parts"][0]["text"])
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and _attempt == 0:
+                delay = _gemini_retry_delay(e)
+                if delay is not None and 0 < delay <= GEMINI_RPM_MAX_WAIT:
+                    print(f"  [model] gemini:{model} hit RPM cap — waiting {delay:.0f}s and retrying once")
+                    time.sleep(delay + 0.5)
+                    continue
+            raise
 
 
 _CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
