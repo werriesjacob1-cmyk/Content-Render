@@ -890,8 +890,44 @@ STAT_CARD_SCENES = 0  # count of scenes rendered as typographic cards this rende
                        # for the end-of-render quality summary
 
 
+ARCHIVAL_SCENES = 0  # scenes rendered from an Openverse archival still this render
+
+
+def _openverse_image(query, dest):
+    """Fetch a Creative-Commons / public-domain STILL from Openverse (Hubble,
+    NASA, microscopy, archival photography) for a scene where stock VIDEO failed.
+    A real archival image with Ken Burns motion beats a gradient text card AND
+    gives the page a documentary/scientific look that generic-stock pages don't
+    have (idea 3 in PLATFORM.md). Downloads a jpg to `dest`; returns True on
+    success, never raises. No API key required."""
+    try:
+        q = urllib.parse.quote(query.strip()[:80])
+        url = (f"https://api.openverse.org/v1/images/?q={q}"
+               f"&license_type=commercial&page_size=8&mature=false")
+        req = urllib.request.Request(url, headers={"User-Agent": "content-render/1.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read().decode())
+        for res in (data.get("results") or []):
+            img = res.get("url") or res.get("thumbnail")
+            if not img:
+                continue
+            try:
+                ireq = urllib.request.Request(img, headers={"User-Agent": "content-render/1.0"})
+                with urllib.request.urlopen(ireq, timeout=20) as ir:
+                    blob = ir.read()
+                if len(blob) > 8000:  # skip tiny/placeholder images
+                    with open(dest, "wb") as f:
+                        f.write(blob)
+                    return True
+            except Exception:
+                continue
+    except Exception as e:
+        print(f"  openverse lookup failed ({e})")
+    return False
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
-    global _last_motion_kind, STAT_CARD_SCENES
+    global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
     # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
     # its best real clip instead of adding to a wall of text cards.
@@ -916,6 +952,28 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
         return out
+
+    # ARCHIVAL STILL fallback (idea 3): stock VIDEO failed for this scene — before
+    # dropping to a text card, try a real Creative-Commons archival/scientific
+    # image (Openverse) and Ken-Burns it. A genuine Hubble/microscopy/archival
+    # photo looks like a documentary, not a gradient card, AND it means a
+    # Pexels-video outage no longer forces the all-text-card failure mode. These
+    # do NOT count as stat cards (they're real imagery), so they don't trip the
+    # footage-starvation abort.
+    if PROFILE.get("archival_stills", True):
+        img = os.path.join(WORK, f"s{idx}_img.jpg")
+        if _openverse_image(scene.get("voiceover", "") or scene["search_query"], img):
+            try:
+                run(["ffmpeg", "-y", "-loop", "1", "-i", img, "-i", seg_mp3,
+                     "-t", f"{seg_dur:.3f}", "-r", "30",
+                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
+                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                ARCHIVAL_SCENES += 1
+                print("  archival still scene (Openverse CC image + Ken Burns)")
+                return out
+            except Exception as e:
+                print(f"  archival still render failed ({e}) — falling back to card")
 
     # No clip cleared RELEVANCE_FLOOR (or there were zero results). Render a
     # designed typographic stat-card scene instead of shipping the least-bad
@@ -1149,10 +1207,11 @@ def main():
         print(f"[quality] judge scores: min {min(JUDGE_SCORES)}/10, "
               f"avg {sum(JUDGE_SCORES) / len(JUDGE_SCORES):.1f}/10 "
               f"across {len(JUDGE_SCORES)} scene(s) scored; "
-              f"{STAT_CARD_SCENES} stat-card scene(s)")
+              f"{STAT_CARD_SCENES} stat-card, {ARCHIVAL_SCENES} archival-still scene(s)")
     else:
         print(f"[quality] no judge scores recorded this render (no GROQ key / no "
-              f"candidates found); {STAT_CARD_SCENES} stat-card scene(s)")
+              f"candidates found); {STAT_CARD_SCENES} stat-card, "
+              f"{ARCHIVAL_SCENES} archival-still scene(s)")
 
     # FOOTAGE-STARVATION GUARD. MAX_STAT_CARDS is a *design* cap (a rare text
     # card is a fine accent), but it only holds when Pexels actually returns
