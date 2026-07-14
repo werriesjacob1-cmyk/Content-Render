@@ -674,10 +674,23 @@ def call_groq(prompt):
                 # 403/404 = unavailable; 429 = rate-limited. All are
                 # model/provider-specific, so fall through to the next entry
                 # instead of aborting the whole run. If EVERY provider fails the
-                # chain still ends by raising last_err below.
+                # chain still ends by raising last_err below. Log the server's
+                # error body (truncated) — without it a silently-failing Gemini
+                # looks identical to a healthy one that just chose Groq, which is
+                # exactly how a bad key hid for a whole run.
+                try:
+                    detail = e.read().decode("utf-8", "replace")[:300]
+                except Exception:  # noqa: BLE001
+                    detail = ""
+                print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
+                      + (f" :: {detail}" if detail else ""))
                 last_err = e; continue
             raise   # 5xx etc — let the outer retry loop handle it
         except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next provider
+            # e.g. Gemini returned 200 but the reply was truncated/safety-blocked
+            # so ["candidates"][0]... KeyError'd. Log it so this failure mode is
+            # visible instead of silently dropping to the next provider.
+            print(f"  [model] {prov}:{model} failed ({type(e).__name__}: {str(e)[:160]}) — falling through")
             last_err = e; continue
     # every provider failed this call
     _CONSEC_EXHAUSTIONS += 1
