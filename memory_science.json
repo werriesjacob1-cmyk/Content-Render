@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "Plankton Power",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "title": "Ocean's Hidden Breath",
-      "fact_id": "ocean_oxygen"
-    },
-    {
       "metaphor": "everyday radioactivity",
       "viewer_job": "EXISTENTIAL_CHILL",
       "title": "Radioactive Bananas",
@@ -209,6 +203,21 @@
       "hook": "You see the Sun and Moon as the same size",
       "structure": {
         "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_you-re-made-of-dust",
+      "metaphor": "Skin Cells",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "You're Made of Dust",
+      "fact_id": "skin_cells",
+      "domain": "body",
+      "hook": "You shed skin every minute",
+      "structure": {
+        "scene_count": 8,
         "used_whatif": true
       },
       "quality": null

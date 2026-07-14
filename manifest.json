@@ -1,110 +1,92 @@
 {
-  "title": "Cosmic Coincidence",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "solar eclipse",
-  "metaphor": "cosmic coincidence",
-  "hook": "You see the Sun and Moon as the same size",
-  "script": "You see the Sun and Moon as the same size But what if the Moon were closer The Sun is about 400 times wider than the Moon The Sun is also about 400 times farther away This is why we get perfect eclipses But that's not even the strange part The Moon drifts about 3.8 centimeters farther away every year In a few hundred million years, total eclipses will vanish from the sky forever You could watch human civilization rise and fall 80,000 times over before that happens Your view of the Sun and Moon will change forever",
+  "title": "You're Made of Dust",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "house dust",
+  "metaphor": "Skin Cells",
+  "hook": "You shed skin every minute",
+  "script": "You shed skin every minute What if you tracked where all your dead skin actually ends up? You lose skin cells constantly This process is natural But that's not even the strange part You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year That's like filling a small bag with you every year",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You see the Sun and Moon as the same size",
-      "on_screen_text": "Sun Moon",
-      "search_query": "sun and moon",
+      "voiceover": "You shed skin every minute",
+      "on_screen_text": "Skin Cells",
+      "search_query": "dust light beam",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 3,
-      "voiceover": "But what if the Moon were closer",
-      "on_screen_text": "Moon Close",
-      "search_query": "moon orbit",
-      "motion": "zoom_out"
+      "voiceover": "What if you tracked where all your dead skin actually ends up?",
+      "on_screen_text": "House Dust",
+      "search_query": "skin macro",
+      "motion": "static"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The Sun is about 400 times wider than the Moon",
-      "on_screen_text": "400 Times",
-      "search_query": "sun corona eclipse",
-      "motion": "zoom_in"
+      "voiceover": "You lose skin cells constantly",
+      "on_screen_text": "Dead Skin",
+      "search_query": "sunlight dust particles",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 3,
-      "voiceover": "The Sun is also about 400 times farther away",
-      "on_screen_text": "Far Away",
-      "search_query": "sun distance",
-      "motion": "zoom_out"
+      "voiceover": "This process is natural",
+      "on_screen_text": "Natural Shedding",
+      "search_query": "human skin closeup",
+      "motion": "static"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This is why we get perfect eclipses",
-      "on_screen_text": "Total Eclipse",
-      "search_query": "solar eclipse",
+      "duration": 5,
+      "voiceover": "But that's not even the strange part",
+      "on_screen_text": "The Strange Part",
+      "search_query": "dust in sunlight",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 3,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Part",
-      "search_query": "moon sky",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "You shed tens of thousands of dead skin cells every minute, and much of the dust in your home is actually made of you",
+      "on_screen_text": "House Dust Fact",
+      "search_query": "home dust accumulation",
+      "motion": "pan_right"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The Moon drifts about 3.8 centimeters farther away every year",
-      "on_screen_text": "Moon Drift",
-      "search_query": "moon orbit",
-      "motion": "zoom_in"
+      "voiceover": "You replace your entire outer layer of skin roughly every two to four weeks, losing around a full pound of skin cells each year",
+      "on_screen_text": "Skin Replacement",
+      "search_query": "lightning storm clouds",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 3,
-      "voiceover": "In a few hundred million years, total eclipses will vanish from the sky forever",
-      "on_screen_text": "No More Eclipses",
-      "search_query": "sun corona eclipse",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 9,
-      "duration": 4,
-      "voiceover": "You could watch human civilization rise and fall 80,000 times over before that happens",
-      "on_screen_text": "Civilization Rise",
-      "search_query": "human civilization",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 10,
-      "duration": 3,
-      "voiceover": "Your view of the Sun and Moon will change forever",
-      "on_screen_text": "Sun Moon",
-      "search_query": "sun and moon",
-      "motion": "zoom_in"
+      "voiceover": "That's like filling a small bag with you every year",
+      "on_screen_text": "You in a Bag",
+      "search_query": "small bag of dust",
+      "motion": "static"
     }
   ],
   "captions": [
-    "What if the Moon were slightly closer or farther? #solar eclipse #space #facts",
-    "The Sun and Moon, a cosmic coincidence? #space #science",
-    "Share with a friend who loves space! #solar eclipse #space"
+    "Are you made of house dust? Yes or no?",
+    "You're shedding skin right now",
+    "Share if you're shocked"
   ],
   "hashtags": [
     "#science",
-    "#space",
-    "#facts",
-    "#eclipse",
-    "#sun"
+    "#skin",
+    "#dust"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_cosmic-coincidence",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-14_you-re-made-of-dust",
+  "cta_style": "COMMENT",
+  "domain": "body"
 }
