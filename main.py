@@ -173,7 +173,7 @@ def silent_track(secs, out_mp3):
     run(["ffmpeg", "-y", "-i", wav, out_mp3]); os.remove(wav)
 
 
-# ---------- SCENE PLAN ----------
+# ---------- SCENE TIMING ----------
 # Each scene is exactly as long as its OWN spoken audio segment (split_audio's
 # cut on that scene's last word). No padding, no injected inter-scene silence,
 # no minimum on-screen hold: natural pacing comes from the script's sentence
@@ -181,32 +181,13 @@ def silent_track(secs, out_mp3):
 # shot hold" pass bloated a ~30-40s script to ~55s ("talking too slow") and,
 # because it shifted every word off the timeline WORD_TIMINGS is anchored to,
 # desynced the captions from the narration. Removed.
-CROSSFADE_S = 0.3    # xfade duration between scene clips (visual soft cut only)
 
 
-def compute_scene_plan(segments):
-    """segments: split_audio's output [(speech_mp3_path, speech_dur), ...],
-    cut back-to-back on the full_vo.mp3 timeline WORD_TIMINGS is anchored to.
-    Returns one dict per scene; shot_dur == speech_dur (no padding at all), so
-    the on-screen duration equals exactly the spoken audio for that scene."""
-    plan, cursor = [], 0.0
-    for path, speech_dur in segments:
-        plan.append({"speech_path": path, "speech_dur": speech_dur,
-                     "orig_start": cursor, "lead": 0.0, "trail": 0.0,
-                     "shot_dur": speech_dur})
-        cursor += speech_dur
-    return plan
-
-
-def compute_new_starts(shot_durs, fade):
-    """Start time of each scene's own clip (its local t=0) on the FINAL
-    concatenated timeline, given the crossfade duration actually used to
-    build that timeline (0.0 if the plain hard-cut concat demuxer was used
-    instead of the xfade chain -- see build_body_xfade's fallback)."""
-    starts, prefix = [], 0.0
-    for i, d in enumerate(shot_durs):
-        starts.append(prefix - i * fade)
-        prefix += d
+def _prefix_starts(durs):
+    """Cumulative start offset of each item: starts[i] = sum(durs[:i])."""
+    starts, cursor = [], 0.0
+    for d in durs:
+        starts.append(cursor); cursor += d
     return starts
 
 
@@ -828,43 +809,65 @@ def _event(start, end, word):
     tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
-def build_ass(scenes, plan, new_starts, path):
-    """plan/new_starts (from compute_scene_plan/compute_new_starts) describe
-    how each scene's speech got shifted by the breathing-gap/min-hold padding
-    and, later, the crossfade concat's duration-collapsing -- both must be
-    accounted for here or captions drift out of sync with the words as soon
-    as any padding/crossfade is added between scenes."""
+def build_ass(scenes, segments, actual_durs, path):
+    """Place every word's caption at the SAME instant it is actually spoken in
+    the final concatenated audio.
+
+    With no padding and clean hard-cut concat, the final audio is just the
+    per-scene spoken segments joined back-to-back, so a word maps to its raw
+    ElevenLabs WORD_TIMINGS start -- corrected ONLY for the tiny per-scene cut
+    rounding between each segment's REQUESTED length (seg_dur, the boundary
+    WORD_TIMINGS is anchored to) and the segment's ACTUALLY-rendered length
+    (actual_durs, ffprobed off the built scene clips). That correction is the
+    scene's shift:
+        shift_i = final_start_i - orig_start_i
+    where orig_start_i = sum of requested seg_durs before scene i (original
+    full_vo timeline) and final_start_i = sum of actual scene durations before
+    scene i (assembled-audio timeline). No pause/crossfade offsets exist
+    anymore, so shift_i is only ever a few ms of cut rounding.
+
+    segments:    split_audio output [(speech_mp3_path, seg_dur), ...]
+    actual_durs: ffprobe duration of each rendered scene clip (or seg_dur if a
+                 scene clip couldn't be probed)."""
     events = []
-    # per-scene start-of-speech on the FINAL rendered timeline, and how far
-    # that is from where the scene's speech started on the ORIGINAL
-    # back-to-back full_vo.mp3 timeline WORD_TIMINGS is anchored to
-    shifts = [new_starts[i] + plan[i]["lead"] - plan[i]["orig_start"] for i in range(len(plan))]
+    seg_durs = [d for _, d in segments]
+    orig_starts = _prefix_starts(seg_durs)
+    final_starts = _prefix_starts(actual_durs)
+
+    def _shift(i):
+        j = min(i, len(orig_starts) - 1, len(final_starts) - 1)
+        if j < 0:
+            return 0.0
+        return final_starts[j] - orig_starts[j]
+
     if WORD_TIMINGS:
-        # exact: drive captions from ElevenLabs word timings, shifted per-scene
+        # exact: drive captions from ElevenLabs word timings, per-scene shift
         word_i = 0
         for i, sc in enumerate(scenes):
             n_words = len(sc["voiceover"].split())
-            shift = shifts[i] if i < len(shifts) else (shifts[-1] if shifts else 0.0)
+            shift = _shift(i)
             for w, st, en in WORD_TIMINGS[word_i:word_i + n_words]:
                 if re.sub(r"[^A-Za-z0-9]", "", w):
                     events.append(_event(st + shift, en + shift, w))
             word_i += n_words
         # any leftover words beyond the scenes' combined word count (rare
         # mismatch) -- keep them, shifted by the last scene's offset
-        if word_i < len(WORD_TIMINGS) and shifts:
+        if word_i < len(WORD_TIMINGS):
+            shift = _shift(len(scenes) - 1)
             for w, st, en in WORD_TIMINGS[word_i:]:
                 if re.sub(r"[^A-Za-z0-9]", "", w):
-                    events.append(_event(st + shifts[-1], en + shifts[-1], w))
+                    events.append(_event(st + shift, en + shift, w))
     else:
-        # fallback: estimate by word length within each scene's SPEECH span
-        # only (not the padded shot_dur, which includes silence) so words
-        # don't get spread out over the breathing gap / hold padding
+        # fallback (no ElevenLabs timings): estimate by word length within each
+        # scene's actual audio span, anchored at the scene's real start on the
+        # assembled timeline.
         for i, sc in enumerate(scenes):
             words = sc["voiceover"].split()
             if not words:
                 continue
-            speech_dur = plan[i]["speech_dur"]
-            clock = new_starts[i] + plan[i]["lead"]
+            speech_dur = actual_durs[i] if i < len(actual_durs) else (
+                seg_durs[i] if i < len(seg_durs) else 3.0)
+            clock = final_starts[i] if i < len(final_starts) else 0.0
             weights = [max(2, len(re.sub(r"[^A-Za-z0-9]", "", w))) for w in words]
             total = sum(weights) or 1
             for w, wt in zip(words, weights):
@@ -918,15 +921,13 @@ def main():
     if not tts_full(full_script, full_mp3, voice, rate):
         silent_track(sum(float(s.get("duration", 3)) for s in m["scenes"]), full_mp3)
 
+    # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
-    plan = compute_scene_plan(segments)
 
-    scene_files, durations = [], []
-    for i, (sc, item) in enumerate(zip(m["scenes"], plan), 1):
-        print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']} "
-              f"(speech {item['speech_dur']:.2f}s)")
-        scene_files.append(build_scene(sc, i, item["speech_path"], item["shot_dur"]))
-        durations.append(item["shot_dur"])
+    scene_files = []
+    for i, (sc, (seg_path, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
+        print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']} (speech {seg_dur:.2f}s)")
+        scene_files.append(build_scene(sc, i, seg_path, seg_dur))
 
     if JUDGE_SCORES:
         print(f"[quality] judge scores: min {min(JUDGE_SCORES)}/10, "
@@ -941,22 +942,24 @@ def main():
 
     # concat: clean HARD CUTS on exact word-timing boundaries. Each scene's
     # audio is its full, uncut spoken segment; concatenating them back-to-back
-    # reproduces the original full_vo timeline exactly, so no word is ever
+    # reproduces the original full_vo timeline, so no word is ever
     # crossfaded/clipped at a scene change (the old acrossfade overlapped and
-    # cut off the end of each sentence). fade_used=0: captions map 1:1 to the
-    # original WORD_TIMINGS with no offset.
+    # cut off the end of each sentence).
     body = os.path.join(WORK, "body.mp4")
-    fade_used = 0.0
     build_body_concat(scene_files, body)
     print(f"[concat] hard-cut concat OK ({len(scene_files)} scenes, no audio crossfade)")
-    new_starts = compute_new_starts(durations, fade_used)
 
     # captions (karaoke) + hook title card (first 2.6s, top) — the docstring
     # always promised a hook overlay but none was ever rendered; the written
     # hook only existed in the audio. Burning it in gives scrollers a reason
     # to stop before the voiceover even registers.
+    #
+    # Caption sync: each word maps to its raw ElevenLabs WORD_TIMINGS, corrected
+    # per-scene only for the few-ms cut rounding between the requested segment
+    # length and the actually-rendered scene audio (ffprobed below).
+    actual_durs = [ffprobe_dur(f) for f in scene_files]
     ass = os.path.join(WORK, "captions.ass")
-    build_ass(m["scenes"], plan, new_starts, ass)
+    build_ass(m["scenes"], segments, actual_durs, ass)
     body_dur = ffprobe_dur(body)
     fade_out_start = max(0.0, body_dur - 0.3)
     hook_filter = ""
