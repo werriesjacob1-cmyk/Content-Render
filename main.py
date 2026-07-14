@@ -977,6 +977,58 @@ def _openverse_image(query, dest):
     return False
 
 
+_QUERY_STOPWORDS = {
+    "the", "a", "an", "of", "to", "in", "on", "at", "is", "are", "was", "were", "be", "and",
+    "but", "or", "so", "that", "this", "these", "those", "it", "its", "as", "by", "for", "with",
+    "from", "into", "your", "you", "we", "our", "their", "they", "not", "even", "more", "most",
+    "than", "then", "when", "where", "why", "how", "what", "which", "can", "could", "would",
+    "will", "just", "only", "about", "over", "under", "up", "down", "out", "same", "one", "two",
+    "here", "there", "part", "thing", "things", "actually", "really", "very",
+}
+
+
+def _keywords_from_text(text, k=3):
+    """Pull the k most salient (longest, non-stopword) words from a scene's
+    voiceover to seed a fresh footage search — a scene that lazily reused an
+    earlier scene's query gets a query that reflects what THIS scene is about."""
+    words = re.findall(r"[A-Za-z][A-Za-z-]+", (text or "").lower())
+    cand = [w for w in words if w not in _QUERY_STOPWORDS and len(w) > 3]
+    # keep original order but prefer longer/rarer words; de-dup preserving order
+    seen, ordered = set(), []
+    for w in sorted(cand, key=len, reverse=True):
+        if w not in seen:
+            seen.add(w); ordered.append(w)
+    return " ".join(ordered[:k])
+
+
+def _diversify_scene_queries(scenes):
+    """Guarantee every scene searches for a VISUALLY DISTINCT subject. The LLM is
+    told to do this, but a rate-limited/near-miss script sometimes repeats a
+    search_query (run 53: scenes 2 AND 6 both 'sunlight water droplets', so the
+    end lingered ~20s on the same footage). When a query repeats an earlier
+    scene's, rebuild it from that scene's own voiceover keywords; if that still
+    collides or is empty, fall back to the on_screen_text. Purely additive — a
+    script with already-distinct queries is left untouched."""
+    seen = {}
+    for i, sc in enumerate(scenes, 1):
+        q = (sc.get("search_query") or "").strip()
+        key = q.lower()
+        if key and key not in seen:
+            seen[key] = i
+            continue
+        # duplicate (or empty) — derive a fresh, scene-specific query
+        alt = _keywords_from_text(sc.get("voiceover", ""))
+        if not alt or alt.lower() in seen:
+            alt = (sc.get("on_screen_text") or alt or q).strip()
+        if alt and alt.lower() != key:
+            print(f"  [footage] scene {i} query '{q}' duplicated scene {seen.get(key)} "
+                  f"— diversified to '{alt}'")
+            sc["search_query"] = alt
+            seen[alt.lower()] = i
+        else:
+            seen[key] = seen.get(key, i)
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
@@ -1248,6 +1300,8 @@ def main():
 
     # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
+
+    _diversify_scene_queries(m["scenes"])
 
     scene_files = []
     for i, (sc, (seg_path, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
