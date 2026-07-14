@@ -122,3 +122,23 @@ churns Actions minutes against a dead quota. Backing the loop off to ~3h so the
 daily quota can actually reset before the next attempt. No user message (quota
 story already given). Guards all confirmed working; code is resilient — the only
 blocker now is raw free-tier quota, which is time (or a few $ of paid tier).
+
+## Cycle 6 — FIRST GENUINELY WATCHABLE VIDEO ✓ (run 43, "Cosmic Coincidence")
+Groq daily quota reset; run 43 SUCCEEDED end-to-end on the fully-fixed code.
+Topic: the Sun/Moon 400× coincidence + eclipses fading. WATCHED the frames:
+- REAL RELEVANT FOOTAGE on every scene (crescent moon, full moon, Sun surface,
+  horizon silhouette, eclipse, crowds for "civilization") — ZERO text cards.
+  The judge-resilience fix delivered: footage shipped on every scene.
+- Script: concrete hook ("You see the Sun and Moon as the same size"),
+  full-sentence scenes (7-14 words), real numbers (400×, 3.8 cm/yr, 80,000
+  civilizations), clean escalation with a midpoint twist, satisfying payoff.
+  98 words, 28.4s. No restatement.
+- On-screen numbers (400 times, 3.8, 80,000 times) land on the right scenes.
+VERDICT: genuinely watchable — the first one. Validates the whole fixed
+pipeline (generate → real footage → good script → tight cut).
+Minor polish (not blockers): some one-word on_screen_text labels ("WERE",
+"THE", "EVEN", "HAPPENS") are filler; scenes 8-9 reuse the same crowd clip.
+Voice is almost certainly edge-tts (ElevenLabs still exhausted) — user can't
+judge the deep voice from this one.
+CONSISTENCY: this is ONE good video. Per the user's "not 1 good then 1 shit"
+bar, do NOT declare ready — need ≥5 different-topic videos this good. Continue.
