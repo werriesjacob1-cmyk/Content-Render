@@ -506,6 +506,35 @@ def _judge_note(ok):
                   "shipping the top stock clip for the rest of this run (no more doomed judge calls)")
 
 
+_CEREBRAS_JUDGE_MODEL_CACHE = None
+
+
+def _cerebras_judge_model():
+    """The Cerebras model THIS key can use for the judge, discovered via
+    /v1/models (cached). A hardcoded 'llama-3.3-70b' 404'd with 'you do not have
+    access to it' on the free account, wasting a call per scene; discovery uses
+    whatever the key is actually granted (preferring a 70B Llama), or None to
+    skip Cerebras entirely — mirrors generate.py's cerebras_models()."""
+    global _CEREBRAS_JUDGE_MODEL_CACHE
+    if _CEREBRAS_JUDGE_MODEL_CACHE is not None:
+        return _CEREBRAS_JUDGE_MODEL_CACHE or None
+    key = os.environ.get("CEREBRAS_API_KEY", "")
+    picked = ""
+    if key:
+        try:
+            req = urllib.request.Request(
+                "https://api.cerebras.ai/v1/models",
+                headers={"Authorization": f"Bearer {key}", "User-Agent": "content-render/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                ids = [m.get("id") for m in json.loads(r.read().decode()).get("data", []) if m.get("id")]
+            ids.sort(key=lambda x: (0 if "70b" in x.lower() else 1, 0 if "llama" in x.lower() else 1, x))
+            picked = ids[0] if ids else ""
+        except Exception as e:  # noqa: BLE001
+            print(f"  Cerebras /v1/models lookup failed ({e}); skipping Cerebras judge")
+    _CEREBRAS_JUDGE_MODEL_CACHE = picked
+    return picked or None
+
+
 def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
     """One judge call to any OpenAI-compatible chat endpoint (Groq, Cerebras).
     Returns the message content string. Raises on transport failure so the
@@ -551,10 +580,11 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
     # Cerebras: free, generous, OpenAI-compatible — the backup judge when Gemini
     # is rate-limited, tried before Groq's tiny budget. Env-gated; no key = skip.
     cere_key = os.environ.get("CEREBRAS_API_KEY", "")
-    if cere_key:
+    cere_model = _cerebras_judge_model() if cere_key else None
+    if cere_key and cere_model:
         try:
             out = _openai_compat_chat("https://api.cerebras.ai/v1/chat/completions",
-                                      cere_key, "llama-3.3-70b", prompt, max_tokens, temperature)
+                                      cere_key, cere_model, prompt, max_tokens, temperature)
             if out is not None:
                 _judge_note(True)
                 return out

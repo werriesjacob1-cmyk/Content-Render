@@ -58,10 +58,41 @@ MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
 # double-outage that shipped degraded videos. Optional: env-gated, no key = skip.
 # Free key (no card): https://cloud.cerebras.ai . Add as CEREBRAS_API_KEY.
 CEREBRAS_KEY = os.environ.get("CEREBRAS_API_KEY", "")
-# llama-3.3-70b is Cerebras' current generous free model. (Do NOT add
-# llama3.1-8b — Cerebras deprecated it on 2026-05-27, so it now 404s and would
-# just waste a fallback slot, the same dead-model trap we hit with Groq/Gemini.)
-CEREBRAS_MODELS = ["llama-3.3-70b"]
+
+
+_CEREBRAS_MODELS_CACHE = None
+
+
+def cerebras_models():
+    """Which Cerebras models THIS key can actually use, discovered at runtime.
+    A hardcoded list is fragile: run 54 showed the key 404'ing llama-3.3-70b with
+    'Model does not exist or you do not have access to it' — the free account
+    simply wasn't provisioned for it, and every call wasted a fall-through. So we
+    ask Cerebras' /v1/models what this key is entitled to and use that (top pick =
+    a 70B Llama if present). Cached for the process. Empty (no key, no access, or
+    the lookup failed) → Cerebras is silently skipped in the chain, no wasted
+    404s. Self-heals the moment the account gains access — no code change."""
+    global _CEREBRAS_MODELS_CACHE
+    if _CEREBRAS_MODELS_CACHE is not None:
+        return _CEREBRAS_MODELS_CACHE
+    out = []
+    if CEREBRAS_KEY:
+        try:
+            req = urllib.request.Request(
+                "https://api.cerebras.ai/v1/models",
+                headers={"Authorization": f"Bearer {CEREBRAS_KEY}", "User-Agent": "content-render/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                data = json.loads(r.read().decode())
+            ids = [m.get("id") for m in data.get("data", []) if m.get("id")]
+            # prefer a 70B llama, then any llama, then whatever else is granted
+            ids.sort(key=lambda x: (0 if "70b" in x.lower() else 1,
+                                    0 if "llama" in x.lower() else 1, x))
+            out = ids[:2]
+            print(f"  [model] cerebras models available to this key: {out or 'NONE'}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  [model] cerebras /v1/models lookup failed ({e}); skipping Cerebras this run")
+    _CEREBRAS_MODELS_CACHE = out
+    return _CEREBRAS_MODELS_CACHE
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -97,6 +128,18 @@ QUALITY_CRITERION_FLOORS = {
     "escalation": 7,
     "payoff": 6,
 }
+# HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
+# The quality loop keeps the best attempt and, if none clear QUALITY_THRESHOLD,
+# used to ship the best regardless ("never block the daily run"). That shipped
+# the run-54 "Lasting Footprints" video at overall 6.0 with hook 4/10 and 2
+# redundant scenes — exactly the "one shit video" the channel must never post.
+# Now: if the best attempt still has a per-criterion floor violation OR sits
+# below this overall hard floor, ABORT (no render, no release). We are not
+# posting yet and the bar is consistency, so no video beats a bad one; the daily
+# cron simply tries again. A CLEAN script that merely couldn't be SCORED
+# (fail-open, best_quality is None) is still allowed through — it passed every
+# structural gate, we just couldn't grade it.
+QUALITY_HARD_FLOOR = 6.8
 QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first. Keep this SMALL:
                                  # each one re-runs the full generate+validate+punch-up
                                  # pipeline (several Groq calls) inside one daily Action run.
@@ -740,7 +783,7 @@ def call_groq(prompt):
     # Order = free-quota headroom: Gemini (2.5-flash-lite ~1000 RPD) → Cerebras
     # (very generous free tier) → Groq (tiny daily budget, last resort).
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
-            ([("cerebras", m) for m in CEREBRAS_MODELS] if CEREBRAS_KEY else []) + \
+            [("cerebras", m) for m in cerebras_models()] + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
@@ -1810,6 +1853,23 @@ def main():
         print("ERROR: could not generate a valid manifest — no clean script this run "
               "(likely LLM quota exhausted). Aborting so no degraded video is published.")
         sys.exit(1)
+
+    # HARD QUALITY FLOOR (see QUALITY_HARD_FLOOR): we have a manifest, but if the
+    # best the loop could produce is still genuinely weak — a broken core
+    # dimension (floor violation) or an overall below the hard floor — publish
+    # NOTHING instead. This is what stops the run-54 case (overall 6.0, hook
+    # 4/10, 2 redundant scenes) from ever shipping. best_quality is None only for
+    # a clean, structurally-valid script we couldn't grade (fail-open); that one
+    # is allowed through.
+    if best_quality is not None:
+        floor_viol = {k: best_quality[k] for k, fl in QUALITY_CRITERION_FLOORS.items()
+                      if best_quality.get(k, 10) < fl}
+        if floor_viol or (best_overall is not None and best_overall < QUALITY_HARD_FLOOR):
+            print(f"ERROR: best script is below the hard quality floor "
+                  f"(overall {best_overall}, floor violations {floor_viol or 'none'}). "
+                  f"Aborting so no weak video is published — consistency over cadence; "
+                  f"the daily cron retries next run.")
+            sys.exit(1)
 
     # Stable video id for the performance-memory loop: PAGE + date + a title
     # slug. Written into the manifest so main.py can carry it through to
