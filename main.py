@@ -1208,28 +1208,51 @@ def main():
                  f"fade=t=out:st={fade_out_start:.2f}:d=0.3"),
          "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", captioned])
 
-    # background music bed (optional)
+    # SOUND DESIGN — signature intro sting (subtle brand mark). Generated with
+    # ffmpeg (no external asset): two low partials a fifth apart (98/147 Hz) with
+    # a soft swell, lowpassed and quiet (~-25 dB peak, verified) so it reads as a
+    # calm, slightly eerie "we're beginning" cue matching the channel identity,
+    # not a jingle. Plays once under the opening ~1s. Profile-gated (sfx).
+    sting = None
+    if PROFILE.get("sfx", True):
+        sting = os.path.join(WORK, "sting.wav")
+        try:
+            run(["ffmpeg", "-y", "-f", "lavfi", "-i", "sine=frequency=98:duration=1.0",
+                 "-f", "lavfi", "-i", "sine=frequency=147:duration=1.0",
+                 "-filter_complex",
+                 "[0:a]volume=0.6[a0];[1:a]volume=0.35[a1];"
+                 "[a0][a1]amix=inputs=2:normalize=0,afade=t=in:d=0.08,"
+                 "afade=t=out:st=0.55:d=0.45,volume=0.5,lowpass=f=1200[s]",
+                 "-map", "[s]", sting])
+        except Exception as e:
+            print("  [sfx] sting generation failed, skipping:", e)
+            sting = None
+
+    # Unified audio mix: voice + (optional music bed) + (optional intro sting),
+    # amix normalize=0 so narration keeps its level (music_vol is pre-tuned to sit
+    # ~18-20 dB under the voice; the sting is short and quiet). Handles any subset.
     final = os.path.join(OUT, "final.mp4")
+    crf = random.choice(["19", "20", "21"])
+    ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
     if os.path.exists(MUSIC):
         print("[music] mixing bed under voice...")
-        crf = random.choice(["19", "20", "21"])
-        # normalize=0: amix's default (normalize=1) auto-attenuates ALL inputs by
-        # ~1/N to guard against clipping, which here means narration itself gets
-        # quietly cut by ~6dB (2 inputs) the moment music is present -- verified
-        # locally: mean_volume dropped from -21.1dB (narration alone) to -27.0dB
-        # with normalize left on, vs -21.0dB (matching narration alone) with it
-        # off. music_vol is already tuned per-profile to sit ~18-20dB under the
-        # voice, so amix doesn't need to do any additional balancing on top.
-        run(["ffmpeg", "-y", "-i", captioned, "-stream_loop", "-1", "-i", MUSIC,
-             "-filter_complex",
-             f"[1:a]volume={PROFILE['music_vol']}[m];"
-             f"[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]",
+        ff_inputs += ["-stream_loop", "-1", "-i", MUSIC]
+        filt.append(f"[{idx}:a]volume={PROFILE['music_vol']}[m]")
+        labels.append("[m]"); idx += 1
+    else:
+        print("[music] no music.mp3 found — skipping")
+    if sting:
+        print("[sfx] mixing signature intro sting")
+        ff_inputs += ["-i", sting]
+        labels.append(f"[{idx}:a]"); idx += 1
+    if len(labels) > 1:
+        filt.append(f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:"
+                    f"dropout_transition=0:normalize=0[a]")
+        run(["ffmpeg", "-y", *ff_inputs, "-filter_complex", ";".join(filt),
              "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, "-preset", "medium",
              "-c:a", "aac", "-shortest", final])
     else:
-        print("[music] no music.mp3 found — skipping")
-        crf = random.choice(["19", "20", "21"])
         run(["ffmpeg", "-y", "-i", captioned, "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, "-preset", "medium",
              "-c:a", "aac", "-pix_fmt", "yuv420p", final])
