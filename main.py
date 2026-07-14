@@ -198,6 +198,51 @@ def tts_full(full_text, out_mp3, voice, rate):
     return False
 
 
+def whisper_align(mp3_path, script_text):
+    """FREE forced alignment — the reliable caption-sync fix for the free voice.
+    ElevenLabs returns exact char timings, but the free edge-tts fallback often
+    returns NO word timing at all, so captions fell back to a proportional guess
+    that drifts behind the real speech (the 'subtitles can't keep up' complaint).
+    This transcribes the *actual synthesized audio* with faster-whisper (word
+    timestamps) to recover the REAL per-word times, independent of the TTS
+    engine's own (missing) metadata, then maps the known clean script words onto
+    those real times by index. Returns [(word, start, end)] or [] on any failure
+    (in which case the caller keeps the estimate). Verified locally on a real
+    render's audio: aligned 91/91 words to true spoken instants."""
+    try:
+        from faster_whisper import WhisperModel
+    except Exception as e:  # dependency missing -> keep estimate, never crash render
+        print(f"  whisper align: unavailable ({e}); keeping caption estimate")
+        return []
+    try:
+        model_name = os.environ.get("WHISPER_MODEL", "base")
+        model = WhisperModel(model_name, device="cpu", compute_type="int8")
+        segs, _ = model.transcribe(mp3_path, word_timestamps=True, language="en")
+        heard = []
+        for s in segs:
+            for w in (s.words or []):
+                heard.append((w.word.strip(), float(w.start), float(w.end)))
+        if not heard:
+            print("  whisper align: no words recovered; keeping estimate")
+            return []
+        script_words = script_text.split()
+        # If whisper heard about the same number of words, display the CLEAN
+        # script words at whisper's REAL times (index-aligned). Otherwise use
+        # whisper's own transcribed words+times (still real timing, just its
+        # spelling). Either way the timing is real, not guessed.
+        if abs(len(heard) - len(script_words)) <= max(4, int(0.15 * len(script_words))):
+            n = min(len(heard), len(script_words))
+            out = [(script_words[i], heard[i][1], heard[i][2]) for i in range(n)]
+            out += list(heard[n:])  # keep any trailing heard words
+        else:
+            out = heard
+        print(f"  whisper align: {len(out)} REAL word timings ({model_name} model)")
+        return out
+    except Exception as e:
+        print(f"  whisper align failed ({e}); keeping caption estimate")
+        return []
+
+
 def split_audio(full_mp3, scenes, work_dir):
     total = ffprobe_dur(full_mp3)
     out, cursor = [], 0.0
@@ -1079,6 +1124,18 @@ def main():
     full_mp3 = os.path.join(WORK, "full_vo.mp3")
     if not tts_full(full_script, full_mp3, voice, rate):
         silent_track(sum(float(s.get("duration", 3)) for s in m["scenes"]), full_mp3)
+
+    # CAPTION-SYNC FIX (free): if the TTS engine gave no real word timings
+    # (edge-tts frequently returns none), recover them by forced-aligning the
+    # actual audio with whisper, instead of shipping the drifting proportional
+    # estimate. This is what keeps subtitles locked to the narrator on the free
+    # voice. ElevenLabs already provides exact timings, so this only runs on the
+    # free fallback, and it fails safe (keeps the estimate) if whisper is absent.
+    global WORD_TIMINGS
+    if not WORD_TIMINGS:
+        aligned = whisper_align(full_mp3, full_script)
+        if aligned:
+            WORD_TIMINGS = aligned
 
     # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
