@@ -275,3 +275,31 @@ NEXT VALIDATION: render armed for 2026-07-15 07:45 UTC (after Gemini ~07:00 rese
 Goal: first render where Gemini/Cerebras actually CARRIES generation (log shows
 "[model] using gemini:gemini-2.5-flash-lite" or cerebras), a clean non-degraded
 video, then watch it and build the 5-topic sample.
+
+## Cycle N+3 — audit + run-54 inspection (the real state of the 3 providers)
+Audit fixes: deprecated Cerebras llama3.1-8b removed, judge → gemini-2.5-flash-lite,
+dead manifest_example.json deleted. Then inspected run 54 ("Lasting Footprints on
+the Moon") and found the honest situation: ALL THREE LLM providers are currently
+constrained, so generation fell to a degraded near-miss that SHIPPED at 6.0/10:
+  - Gemini: 429 daily-quota exhausted (from our own test renders today)
+  - Groq:  429 TPD 97768/100000 ("try again in ~1h")
+  - Cerebras: 404 "Model does not exist or you do not have access to it" — the
+    free account isn't provisioned for llama-3.3-70b
+Run 54 log: "using best near-miss (repaired)", "2 redundant scene(s) [2,5]",
+"hook 4/10 FLOOR VIOLATION", "shipping best-scoring attempt (overall 6.0)". That
+is exactly the "one shit video" to prevent.
+
+Two fixes shipped this cycle:
+  1. CEREBRAS AUTO-DISCOVERY: query /v1/models at runtime and use whatever the key
+     is actually granted (prefer 70B Llama), else skip Cerebras — no wasted 404s,
+     self-heals when the account gains access. (generate.py + main.py judge.)
+  2. HARD QUALITY FLOOR (6.8): if the best attempt has a per-criterion floor
+     violation OR overall < 6.8, ABORT (no render/release) instead of shipping.
+     A clean-but-unscorable script still ships. So quota-starved runs now publish
+     NOTHING rather than a 6.0/10 video.
+
+NET EFFECT: until a provider is healthy again (Gemini resets ~07:00 UTC; Groq TPD
+resets daily; Cerebras needs account access), runs will ABORT cleanly rather than
+ship junk. First genuinely-good video expected after the Gemini reset — the 07:45
+UTC validation trigger will catch it. Caption content-alignment confirmed live in
+run 54 ("whisper align: 101 REAL word timings, content-aligned").
