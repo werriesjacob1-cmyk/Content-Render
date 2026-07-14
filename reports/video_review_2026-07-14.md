@@ -142,3 +142,12 @@ Voice is almost certainly edge-tts (ElevenLabs still exhausted) — user can't
 judge the deep voice from this one.
 CONSISTENCY: this is ONE good video. Per the user's "not 1 good then 1 shit"
 bar, do NOT declare ready — need ≥5 different-topic videos this good. Continue.
+
+## Cycle 7 — Groq quota spent again right after run 43; wide pacing
+Run 44 FAILED at Auto-generate — Groq daily budget depleted again just 17 min
+after run 43 succeeded. Confirms the stable pattern: free Groq yields only ~1-2
+successful renders per multi-hour window. Consistency tally still 1/5 (Cosmic
+Coincidence). Reaching 5 good different-topic videos is now purely gated by
+Groq's free daily budget resetting — the code is proven. Rescheduling the loop
+wide (~3h) and staying patient; will surface to the user at the 5-good milestone
+or on a new problem, not on routine quota-aborts.
