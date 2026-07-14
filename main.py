@@ -290,7 +290,17 @@ def _nasa_candidates(query):
     return out
 
 
+_LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
+                            # the TRANSPORT level (429/5xx/network/timeout) rather
+                            # than returning a real (possibly empty) reply. Lets
+                            # _groq_judge tell "judge is unreachable" (fall back to
+                            # real footage, like no-key) from "judge answered but
+                            # unparseably" (keep vetoing, avoids the belly-button bug).
+
+
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
+    global _LAST_GROQ_FAILED
+    _LAST_GROQ_FAILED = False
     key = os.environ.get("GROQ_API_KEY", "")
     if not key:
         return None
@@ -309,6 +319,7 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
             return json.loads(r.read().decode())["choices"][0]["message"]["content"]
     except Exception as e:
         print("  Groq call failed:", e)
+        _LAST_GROQ_FAILED = True
         return None
 
 
@@ -333,8 +344,18 @@ JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call,
 #                 another requery round is tried, and if every round is
 #                 exhausted the scene renders as a stat-card instead of an
 #                 unverified clip.
+#   JUDGE_UNAVAILABLE -- a key was present but the judge call itself failed at
+#                 the transport level (Groq 429 rate-limit / 5xx / network) on
+#                 both the call and its retry, so no verdict was ever produced.
+#                 This is NOT the same as UNRESOLVED (model answered, garbled):
+#                 the judge is simply DOWN, exactly like NO_KEY, so footage is
+#                 shipped (top stock result) rather than rejected. Without this,
+#                 a Groq rate-limit made every scene fail the judge -> text card
+#                 -> the footage-starvation guard aborted the whole render, i.e.
+#                 a transient Groq 429 silently killed otherwise-good videos.
 NO_KEY = "no_key"
 UNRESOLVED = "unresolved"
+JUDGE_UNAVAILABLE = "judge_unavailable"
 
 
 def _groq_judge(intent, candidates, _allow_retry=True):
@@ -370,6 +391,14 @@ def _groq_judge(intent, candidates, _allow_retry=True):
             idx, score = int(m.group(1)), int(m.group(2))
             if 0 <= idx < len(candidates):
                 return idx, min(score, 10)
+    if _LAST_GROQ_FAILED:
+        # The call didn't just return something unparseable -- it failed at the
+        # transport level (429/5xx/network). Retrying immediately just burns
+        # another rate-limited call; the judge is DOWN. Signal that so the
+        # caller ships real footage (top result) instead of a text card.
+        print("  judge: Groq unreachable (rate-limit/network) -- treating judge "
+              "as unavailable, will ship top stock result")
+        return 0, JUDGE_UNAVAILABLE
     if _allow_retry:
         print("  judge: unparseable/empty reply, retrying once...")
         return _groq_judge(intent, candidates, _allow_retry=False)
@@ -495,7 +524,11 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
             if numeric and (best_score is None or score > best_score):
                 best_score = score
                 best_cand, best_q = chosen, q
-            if score == NO_KEY or (numeric and score >= RELEVANCE_FLOOR):
+            if score in (NO_KEY, JUDGE_UNAVAILABLE) or (numeric and score >= RELEVANCE_FLOOR):
+                # NO_KEY / JUDGE_UNAVAILABLE: judging is impossible right now, so
+                # ship the top stock result (Pexels' own ranking) rather than a
+                # text card. A real, on-query clip beats a gradient card and
+                # keeps a transient Groq 429 from aborting the whole render.
                 try:
                     _accept(chosen, dest, q, score)
                     if best_score is not None:
