@@ -1494,7 +1494,7 @@ def research_dossier(fact):
 
 
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
-                        cta_style="SAVE_WORTHY"):
+                        cta_style="SAVE_WORTHY", dossier=None):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
     once and return a finished manifest, or None if nothing usable came out
     of it. Called once per quality-ratchet attempt (see
@@ -1502,12 +1502,17 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     round of Groq attempts with its own near-miss fallback, so a
     low-quality-score regeneration gets a genuinely fresh script, not a
     retry of the exact same one. cta_style pins which of the four rotated
-    endings (CTA_ENDING_RULES) this attempt is built and punched up toward."""
+    endings (CTA_ENDING_RULES) this attempt is built and punched up toward.
+
+    dossier: the scientist-brain research facts. Passed in from main() so it's
+    computed ONCE per run and reused across every regeneration attempt — the
+    topic doesn't change between attempts, so re-researching it each time just
+    burned a free-tier LLM call per attempt (a real contributor to the quota
+    exhaustion). Falls back to computing it here if called standalone."""
     manifest = None
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
-    # SCIENTIST BRAIN — gather diverse specific material ONCE up front, so every
-    # attempt writes from a rich research base instead of rephrasing one fact.
-    dossier = research_dossier(chosen_fact)
+    if dossier is None:
+        dossier = research_dossier(chosen_fact)
     for attempt in range(5):
         try:
             if attempt > 0:
@@ -1715,10 +1720,16 @@ def main():
     # scratch, bounded to QUALITY_MAX_REGENERATIONS extra attempts. Keeps
     # the best-scoring attempt across all rounds and ships it even if none
     # cleared the bar, so this can never block the daily run.
+    # Research the topic ONCE up front and reuse it for every regeneration
+    # attempt — the topic is identical across attempts, so re-researching per
+    # attempt just burned a free-tier LLM call each time (part of why the daily
+    # quota ran out). Each attempt still writes a genuinely fresh script from
+    # this shared research base.
+    shared_dossier = research_dossier(chosen_fact)
     best_manifest, best_overall, best_quality, best_rank = None, None, None, None
     for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
         candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
-                                        cta_style=cta_style)
+                                        cta_style=cta_style, dossier=shared_dossier)
         if candidate is None:
             print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
             continue
