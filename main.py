@@ -173,70 +173,29 @@ def silent_track(secs, out_mp3):
     run(["ffmpeg", "-y", "-i", wav, out_mp3]); os.remove(wav)
 
 
-# ---------- PACING: breathing-room pauses + minimum shot hold ----------
-# Feedback on rendered videos: "choppy", "doesn't stop talking", "voice is
-# trying to match the subtitles not the other way around". split_audio above
-# cuts scene audio back-to-back on exact word timings with zero gap, so the
-# narration is a wall-to-wall stream and a short scene's B-roll can flash by
-# in ~1s. Fix: pad a small silence gap between scenes (micro-pause to breathe)
-# and enforce a minimum on-screen hold per scene (extra silence appended if
-# the scene + gap still doesn't reach the floor). The clip itself keeps
-# playing (looped raw footage / continuing Ken Burns motion) during the
-# padding, so it reads as a held shot, not a freeze-frame.
-#
-# The crossfade concat step (build_body_xfade below) later overlaps the tail
-# of each padded clip with the head of the next by CROSSFADE_S seconds; by
-# construction that overlap window sits entirely inside silence on both
-# sides (this scene's trailing pad, next scene's leading pad), so the
-# transition never blends over spoken words.
-CROSSFADE_S = 0.3    # xfade/acrossfade duration between scene clips
-BREATH_GAP_S = 0.35  # silence gap between one scene's speech and the next's
-MIN_HOLD_S = 2.3     # minimum on-screen duration for any single scene
-assert BREATH_GAP_S >= CROSSFADE_S, "breathing gap must cover the crossfade window"
+# ---------- SCENE PLAN ----------
+# Each scene is exactly as long as its OWN spoken audio segment (split_audio's
+# cut on that scene's last word). No padding, no injected inter-scene silence,
+# no minimum on-screen hold: natural pacing comes from the script's sentence
+# length, not artificial gaps. An earlier "breathing-room pauses + minimum
+# shot hold" pass bloated a ~30-40s script to ~55s ("talking too slow") and,
+# because it shifted every word off the timeline WORD_TIMINGS is anchored to,
+# desynced the captions from the narration. Removed.
+CROSSFADE_S = 0.3    # xfade duration between scene clips (visual soft cut only)
 
 
 def compute_scene_plan(segments):
-    """segments: split_audio's output, i.e. [(speech_mp3_path, speech_dur), ...]
-    cut back-to-back on the ORIGINAL full_vo.mp3 timeline (same timeline
-    WORD_TIMINGS is anchored to). Returns one dict per scene with everything
-    needed to (a) build a padded per-scene audio+video duration and (b) later
-    remap caption word times onto the padded/crossfaded final timeline:
-      speech_path, speech_dur   -- unchanged from split_audio
-      orig_start                -- this scene's speech start on the original timeline
-      lead                      -- silence to prepend (0 for the first scene)
-      trail                     -- silence to append (covers breathing gap +
-                                    any extra hold needed to reach MIN_HOLD_S;
-                                    0 for the last scene's gap portion)
-      shot_dur                  -- lead + speech_dur + trail: total on-screen
-                                    duration for this scene's clip
-    """
-    n = len(segments)
-    plan = []
-    orig_cursor = 0.0
-    for i, (path, speech_dur) in enumerate(segments):
-        lead = CROSSFADE_S if i > 0 else 0.0
-        trail = BREATH_GAP_S if i < n - 1 else 0.0
-        base = lead + speech_dur + trail
-        extra_hold = max(0.0, MIN_HOLD_S - base)
-        plan.append({
-            "speech_path": path, "speech_dur": speech_dur,
-            "orig_start": orig_cursor, "lead": lead, "trail": trail + extra_hold,
-            "shot_dur": lead + speech_dur + trail + extra_hold,
-        })
-        orig_cursor += speech_dur
+    """segments: split_audio's output [(speech_mp3_path, speech_dur), ...],
+    cut back-to-back on the full_vo.mp3 timeline WORD_TIMINGS is anchored to.
+    Returns one dict per scene; shot_dur == speech_dur (no padding at all), so
+    the on-screen duration equals exactly the spoken audio for that scene."""
+    plan, cursor = [], 0.0
+    for path, speech_dur in segments:
+        plan.append({"speech_path": path, "speech_dur": speech_dur,
+                     "orig_start": cursor, "lead": 0.0, "trail": 0.0,
+                     "shot_dur": speech_dur})
+        cursor += speech_dur
     return plan
-
-
-def build_padded_audio(item, idx, work_dir):
-    """Build this scene's actual audio track: lead-silence + speech + trail-
-    silence (matching item['shot_dur']). Raises on failure so the caller can
-    fall back to the plain unpadded speech segment for this scene."""
-    out = os.path.join(work_dir, f"s{idx}_padded.mp3")
-    lead_ms = int(round(item["lead"] * 1000))
-    af = f"adelay=delays={lead_ms}:all=1,apad=pad_dur={item['trail']:.3f}"
-    run(["ffmpeg", "-y", "-i", item["speech_path"], "-af", af,
-         "-c:a", "libmp3lame", "-q:a", "4", out])
-    return out
 
 
 def compute_new_starts(shot_durs, fade):
@@ -1006,18 +965,8 @@ def main():
     scene_files, durations = [], []
     for i, (sc, item) in enumerate(zip(m["scenes"], plan), 1):
         print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']} "
-              f"(speech {item['speech_dur']:.2f}s -> shot {item['shot_dur']:.2f}s)")
-        try:
-            audio_path = build_padded_audio(item, i, WORK)
-        except Exception as e:
-            # graceful fallback: this scene loses its breathing-gap/min-hold
-            # padding but the render keeps going with the original unpadded
-            # segment, exactly like before this feature existed.
-            print(f"  audio padding failed ({e}) — using unpadded segment for this scene")
-            audio_path = item["speech_path"]
-            item["lead"] = 0.0
-            item["shot_dur"] = item["speech_dur"]
-        scene_files.append(build_scene(sc, i, audio_path, item["shot_dur"]))
+              f"(speech {item['speech_dur']:.2f}s)")
+        scene_files.append(build_scene(sc, i, item["speech_path"], item["shot_dur"]))
         durations.append(item["shot_dur"])
 
     if JUDGE_SCORES:
