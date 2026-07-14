@@ -24,6 +24,15 @@ GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # automatic fallback. Get a free key at aistudio.google.com (no card) and add it
 # as the GEMINI_API_KEY repo secret.
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
+# A real AI Studio key starts with "AIza" and is ~39 chars. A long token
+# starting with something else (e.g. "AQ.", an OAuth access token from the Cloud
+# Console) is the wrong credential type and Gemini rejects it with HTTP 400.
+# Warn loudly rather than silently 400ing every call — the fix is a key from
+# https://aistudio.google.com/apikey , NOT console.cloud.google.com.
+if GEMINI_KEY and not GEMINI_KEY.startswith("AIza"):
+    print(f"  [model] WARNING: GEMINI_API_KEY does not look like an AI Studio key "
+          f"(starts with '{GEMINI_KEY[:3]}...', expected 'AIza...'). Gemini will likely "
+          f"return HTTP 400. Get the right key at https://aistudio.google.com/apikey")
 GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant"]
@@ -583,14 +592,32 @@ def _call_model(model, prompt):
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())["choices"][0]["message"]["content"]
 
+def _extract_json(text):
+    """Return the bare JSON object from a model reply. Gemini (without forced
+    JSON mode) may wrap the JSON in ```json fences or add a line of prose; the
+    callers json.loads() the result, so strip fences and, if needed, slice from
+    the first '{' to the last '}'."""
+    t = (text or "").strip()
+    if t.startswith("```"):
+        t = re.sub(r"^```[a-zA-Z]*\s*", "", t)
+        t = re.sub(r"\s*```$", "", t).strip()
+    if not t.startswith("{"):
+        i, j = t.find("{"), t.rfind("}")
+        if i != -1 and j != -1 and j > i:
+            t = t[i:j + 1]
+    return t
+
+
 def _call_gemini(model, prompt):
-    """Google Gemini generateContent (JSON mode). Same contract as _call_model:
-    returns the model's text (a JSON string). Raises HTTPError on failure so the
-    provider chain can fall through to Groq."""
+    """Google Gemini generateContent. Same contract as _call_model: returns the
+    model's text (a JSON string). Raises HTTPError on failure so the provider
+    chain can fall through. NOTE: no responseMimeType — an earlier version set
+    responseMimeType='application/json' and Gemini returned HTTP 400 on every
+    call; a plain generateContent works on every model, and _extract_json handles
+    any markdown fences the reply might carry."""
     body = json.dumps({
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048,
-                             "responseMimeType": "application/json"},
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096},
     }).encode()
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
@@ -600,7 +627,7 @@ def _call_gemini(model, prompt):
                  "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         data = json.loads(r.read().decode())
-    return data["candidates"][0]["content"]["parts"][0]["text"]
+    return _extract_json(data["candidates"][0]["content"]["parts"][0]["text"])
 
 
 _CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
@@ -638,7 +665,14 @@ def call_groq(prompt):
             _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
             return out
         except urllib.error.HTTPError as e:
-            if e.code in (403, 404, 429):   # unavailable/rate-limited → try next provider
+            if e.code in (400, 403, 404, 429):
+                # 400 = bad request for THIS model/provider (commonly an invalid
+                # or wrong-type API key, e.g. an OAuth token pasted where a
+                # Gemini AIza key belongs, or a param a given model rejects);
+                # 403/404 = unavailable; 429 = rate-limited. All are
+                # model/provider-specific, so fall through to the next entry
+                # instead of aborting the whole run. If EVERY provider fails the
+                # chain still ends by raising last_err below.
                 last_err = e; continue
             raise   # 5xx etc — let the outer retry loop handle it
         except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next provider
