@@ -11,9 +11,11 @@ PROFILES = {
     "science": {
         "name": "Science, Stranger Than It Sounds",
         "eleven_voice": "onwK4e9ZLuTAKqWW03F9",   # Daniel — deep, authoritative British (documentary/"intelligent" read)
-        # speed 0.9 = ~10% slower delivery (viewer feedback: "make it speak slower");
-        # higher stability = a measured, composed read rather than an excitable one.
-        "voice_settings": {"stability": 0.55, "similarity_boost": 0.80, "style": 0.20, "use_speaker_boost": True, "speed": 0.9},
+        # NATURAL speed (no 'speed' override = 1.0). An earlier speed:0.9 slow-down
+        # made the narrator sound forced and bloated length; the fix for pacing is
+        # SHORTER sentences, not a slowed voice. Keep the deep Daniel voice + a
+        # measured stability, just at a natural delivery rate.
+        "voice_settings": {"stability": 0.55, "similarity_boost": 0.80, "style": 0.20, "use_speaker_boost": True},
         "edge_voice": "en-GB-RyanNeural",   # deeper British fallback to match Daniel if ElevenLabs is unavailable
         # captions
         "cap_font": "DejaVu Sans",
