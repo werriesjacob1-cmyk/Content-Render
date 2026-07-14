@@ -1528,6 +1528,14 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         if nm_ig_err:
             print(f"  [info-gain] near-miss fallback still redundant ({nm_ig_err}) — "
                   f"shipping anyway (last-resort fallback, never blocks the run)")
+        # Mark this as a DEGRADED candidate: it reached the repair path because
+        # strict validate() rejected every real attempt (usually because the LLM
+        # was rate-limited/exhausted and never produced a clean script). main()
+        # uses this together with whether quality scoring was available to decide
+        # whether to ship or ABORT — a degraded near-miss that also can't be
+        # scored is exactly the junk video we must never publish. Stripped before
+        # the manifest is written to disk.
+        nm["_degraded"] = True
         manifest = nm
 
     if not manifest:
@@ -1646,9 +1654,20 @@ def main():
             continue
         quality = score_script(candidate, chosen_fact, cta_style=cta_style)
         if quality is None:
-            # fail OPEN: scoring itself broke, not the script. Ship this
-            # attempt immediately rather than burn remaining regen budget.
-            print(f"  [quality] attempt {regen_i+1}: scoring failed open — shipping this attempt")
+            # Scoring itself broke (usually the LLM is rate-limited/exhausted).
+            # Fail OPEN only for a CLEAN candidate — one that passed strict
+            # validate() — because that script is structurally sound and just
+            # couldn't be graded. A DEGRADED near-miss with no score is the
+            # worst case: no research, no punch-up, no grading, shipped anyway.
+            # That is precisely how quota-exhausted runs 52/53 published thin,
+            # repetitive videos. Refuse it — try another attempt, and if every
+            # attempt is degraded+unscored, main() aborts the run (no bad video
+            # published) instead of polluting the profile.
+            if candidate.get("_degraded"):
+                print(f"  [quality] attempt {regen_i+1}: degraded near-miss AND scoring "
+                      f"unavailable (LLM exhausted) — refusing to ship, trying another attempt")
+                continue
+            print(f"  [quality] attempt {regen_i+1}: scoring failed open on a clean script — shipping this attempt")
             best_manifest, best_quality, best_overall = candidate, None, None
             break
         overall = quality["overall"]
@@ -1682,7 +1701,16 @@ def main():
 
     manifest = best_manifest
     if not manifest:
-        print("ERROR: could not generate a valid manifest"); sys.exit(1)
+        # Reaching here means no attempt produced a clean, shippable script —
+        # typically every attempt was a degraded near-miss that also couldn't be
+        # quality-scored because the LLM providers were rate-limited/exhausted.
+        # Aborting (exit 1) is deliberate: the workflow's generate step turns a
+        # non-zero exit into "no render, no release", so a quota-starved run
+        # publishes NOTHING rather than a thin, repetitive fallback video. The
+        # daily cron simply tries again once the free quotas reset.
+        print("ERROR: could not generate a valid manifest — no clean script this run "
+              "(likely LLM quota exhausted). Aborting so no degraded video is published.")
+        sys.exit(1)
 
     # Stable video id for the performance-memory loop: PAGE + date + a title
     # slug. Written into the manifest so main.py can carry it through to
@@ -1697,6 +1725,9 @@ def main():
     # Carry the topic domain through to the manifest (and thus out/post.json)
     # so funnel.py can pick the topic-matched affiliate angle per video.
     manifest["domain"] = chosen_fact.get("domain") if chosen_fact else None
+    # internal-only gate flag (see generate_candidate / the quality loop) — never
+    # belongs in the manifest main.py renders from.
+    manifest.pop("_degraded", None)
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
