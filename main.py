@@ -699,7 +699,8 @@ def _coverr_candidates(query):
 def _gather_candidates(query):
     return (_pexels_candidates(query)
             or _nasa_candidates(query)
-            or _coverr_candidates(query))  # Coverr dormant unless COVERR_API_KEY set
+            or _wikimedia_candidates(query)   # no key: archival/scientific clips
+            or _coverr_candidates(query))     # Coverr dormant unless COVERR_API_KEY set
 
 
 RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling.
@@ -1031,6 +1032,84 @@ def _openverse_image(query, dest):
     return False
 
 
+# Wikimedia Commons requires a descriptive User-Agent identifying the tool (a
+# generic/absent UA gets 403'd per their API etiquette policy).
+WIKI_UA = "content-render/1.0 (https://github.com/werriesjacob1-cmyk/content-render)"
+WIKI_MAX_VIDEO_BYTES = 60 * 1024 * 1024  # skip full-length archival films; we only
+                                         # need a few loopable seconds per scene
+
+
+def _wikimedia_image(query, dest):
+    """Second archival-STILL source alongside Openverse. Wikimedia Commons is the
+    largest free/public-domain media library there is — real Hubble frames,
+    microscopy, scientific diagrams, historical photographs — exactly the kind of
+    imagery that makes a science page look like a documentary instead of the same
+    stock B-roll everyone else uses. No API key. Downloads a scaled (<=1280px)
+    thumbnail so we never pull a 40MP original. Returns True on success."""
+    try:
+        q = urllib.parse.quote(f"{query.strip()[:80]} filetype:bitmap")
+        url = ("https://commons.wikimedia.org/w/api.php?action=query&format=json"
+               f"&generator=search&gsrsearch={q}&gsrnamespace=6&gsrlimit=8"
+               "&prop=imageinfo&iiprop=url|mime&iiurlwidth=1280")
+        data = _http_json(url, {"User-Agent": WIKI_UA}, timeout=20)
+        pages = ((data.get("query") or {}).get("pages") or {})
+        for page in pages.values():
+            info = (page.get("imageinfo") or [{}])[0]
+            mime = info.get("mime", "")
+            img = info.get("thumburl") or (info.get("url") if mime in ("image/jpeg", "image/png") else None)
+            if not img:
+                continue
+            try:
+                ireq = urllib.request.Request(img, headers={"User-Agent": WIKI_UA})
+                with urllib.request.urlopen(ireq, timeout=20) as ir:
+                    blob = ir.read()
+                if len(blob) > 8000:  # skip tiny/placeholder images
+                    with open(dest, "wb") as f:
+                        f.write(blob)
+                    return True
+            except Exception:
+                continue
+    except Exception as e:
+        print(f"  wikimedia image lookup failed ({e})")
+    return False
+
+
+def _wikimedia_candidates(query):
+    """No-key VIDEO source (Wikimedia Commons). Public-domain / CC archival and
+    scientific clips (mission footage, nature, microscopy, historical film) that
+    generic stock libraries don't carry — a distinctiveness lever. Files are
+    .webm/.ogv/.mp4 (all ffmpeg-decodable); skips anything over
+    WIKI_MAX_VIDEO_BYTES so a full-length film can't stall the render or fill the
+    disk. Bounded like the NASA source."""
+    out = []
+    deadline = time.time() + 15
+    try:
+        q = urllib.parse.quote(f"{query.strip()[:80]} filetype:video")
+        url = ("https://commons.wikimedia.org/w/api.php?action=query&format=json"
+               f"&generator=search&gsrsearch={q}&gsrnamespace=6&gsrlimit=10"
+               "&prop=imageinfo&iiprop=url|mime|size")
+        data = _http_json(url, {"User-Agent": WIKI_UA}, timeout=15)
+        pages = ((data.get("query") or {}).get("pages") or {})
+        for page in pages.values():
+            if time.time() > deadline:
+                break
+            pid = page.get("pageid")
+            info = (page.get("imageinfo") or [{}])[0]
+            mime = info.get("mime", "")
+            vurl = info.get("url")
+            size = info.get("size") or 0
+            if (not vurl or pid in _used_video_ids or not mime.startswith(("video/", "application/ogg"))
+                    or (size and size > WIKI_MAX_VIDEO_BYTES)):
+                continue
+            title = (page.get("title") or "").replace("File:", "")
+            out.append({"id": pid, "url": vurl, "desc": title[:200], "source": "Wikimedia"})
+    except urllib.error.HTTPError as e:
+        print(f"  Wikimedia HTTP {e.code}: {e.read().decode()[:160]}")
+    except Exception as e:
+        print("  Wikimedia failed:", e)
+    return out
+
+
 _QUERY_STOPWORDS = {
     "the", "a", "an", "of", "to", "in", "on", "at", "is", "are", "was", "were", "be", "and",
     "but", "or", "so", "that", "this", "these", "those", "it", "its", "as", "by", "for", "with",
@@ -1119,7 +1198,12 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # footage-starvation abort.
     if PROFILE.get("archival_stills", True):
         img = os.path.join(WORK, f"s{idx}_img.jpg")
-        if _openverse_image(scene.get("voiceover", "") or scene["search_query"], img):
+        _q = scene.get("voiceover", "") or scene["search_query"]
+        # Two free/no-key still sources: Openverse (CC aggregator) then Wikimedia
+        # Commons (the largest public-domain science library — Hubble, microscopy,
+        # diagrams, historical photos). Either gives a documentary look no
+        # generic-stock page has.
+        if _openverse_image(_q, img) or _wikimedia_image(_q, img):
             try:
                 run(["ffmpeg", "-y", "-loop", "1", "-i", img, "-i", seg_mp3,
                      "-t", f"{seg_dur:.3f}", "-r", "30",
