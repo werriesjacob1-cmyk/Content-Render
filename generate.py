@@ -323,7 +323,8 @@ def save_memory(history, entry):
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
 
-def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_style="SAVE_WORTHY"):
+def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_style="SAVE_WORTHY",
+                 dossier=None):
     series_block = ""
     if SERIES:
         part = SERIES_PART or "1"
@@ -365,9 +366,11 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
                       f"\"{fact['fact']}\"\n"
                       f"Angle: {fact['angle']}.\n"
                       f"ABSOLUTE RULES FOR ACCURACY:\n"
-                      f"- Center the ENTIRE script on this one fact. Do NOT introduce other topics.\n"
-                      f"- Do NOT invent any statistic, number, or 'fact' that is not in the verified fact, "
-                      f"key terms, or wow detail above. If you are unsure of a number, do not state one.\n"
+                      f"- Stay entirely on THIS topic — but tell its FULL, rich story (draw on the RESEARCH "
+                      f"section below): don't drift to unrelated topics, don't stay shallow.\n"
+                      f"- Do NOT FABRICATE. Every number/name must come from the verified fact, key terms, "
+                      f"wow detail above, OR the RESEARCH section below. If unsure of a number, describe the "
+                      f"mechanism instead of inventing one.\n"
                       f"- Never state two different numbers for the same thing. Accuracy over drama.\n"
                       f"{key_terms_block}{whatif_block}{wow_block}"
                       f"- Include at least ONE absurd-but-precise felt comparison that turns a number "
@@ -376,13 +379,28 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
                       f"fall 80,000 times over'). Keep it precise — no vague hand-waving.\n"
                       f"- For the footage search_query fields, prefer these proven matches: "
                       f"{[q for q in fact.get('queries', []) if not UNSTOCKABLE_Q.search(q)]}.\n")
+    dossier_block = ""
+    if dossier:
+        bullets = "\n".join(f"  {i+1}. {d}" for i, d in enumerate(dossier))
+        dossier_block = (
+            f"\n\n=== RESEARCH: {len(dossier)} DISTINCT TRUE FACETS OF THIS TOPIC (this is your raw material) ===\n"
+            f"{bullets}\n"
+            f"HOW TO USE THIS RESEARCH (this is the difference between an interesting video and a boring one):\n"
+            f"- Each scene must be built on a DIFFERENT item above. Walk the viewer through the topic like a "
+            f"curious scientist revealing one new surprise at a time — never restate a point already made.\n"
+            f"- The hook, the midpoint twist, and the final payoff must each use a DIFFERENT facet. If two "
+            f"scenes would make the same point, DELETE one and pull a fresh facet from the list.\n"
+            f"- Pick the 6-8 MOST surprising, most 'wait-WHAT' facets and order them so each raises a new "
+            f"question the next one answers (curiosity chain). Skip the boring/obvious ones.\n"
+            f"- Keep the specific detail (the number, the name, the mechanism) in the spoken line — that "
+            f"specificity is what makes it feel like real knowledge, not filler.")
     opener_block = ""
     if avoid_openers:
         opener_block = (
             f"\n\nHOOK VARIETY: your last several videos' hooks all opened the same way "
             f"({avoid_openers}). Start THIS hook with a different sentence structure or "
             f"opening word — not just a synonym swap of the same structure.")
-    return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}
+    return f"""You write scripts for a faceless science TikTok channel engineered to go viral and gain followers.{fact_block}{dossier_block}
 
 THIS VIDEO'S JOB: {job_name}. {job_desc}
 
@@ -1242,6 +1260,57 @@ def overused_hook_openers(history, min_count=3):
     return [op for op, c in counts.items() if op and c >= min_count]
 
 
+def research_dossier(fact):
+    """SCIENTIST BRAIN — stage 1 (research before writing).
+
+    The repetition problem is structural: a script locked to ONE verified fact +
+    2-3 key terms has only ~4 real points but needs ~8 scenes, so it MUST pad
+    with restatements. This stage first enumerates a RICH, DIVERSE set of
+    specific, surprising, TRUE details about the same topic, so stage 2 can build
+    each scene from a DIFFERENT real point instead of rephrasing the premise.
+
+    Returns a list of concrete fact strings (or [] on failure — the caller then
+    generates the old way, so this can never break a render). Best with the
+    Gemini free tier (reliable, high quota); degrades under Groq rate limits."""
+    if not fact:
+        return []
+    topic = fact.get("fact") or fact.get("angle") or ""
+    if not topic:
+        return []
+    kt = ", ".join(fact.get("key_terms", []) or [])
+    prompt = (
+        "You are the researcher behind the most fascinating science videos on the internet "
+        "(think Veritasium, Kurzgesagt, Radiolab) — relentlessly curious, obsessed with the "
+        "specific and the counterintuitive.\n\n"
+        f'TOPIC: "{topic}"\n'
+        f"Known specifics you may build on (keep these accurate): {kt}\n\n"
+        "List 9 DISTINCT, genuinely surprising, CONCRETE facts about this topic — the kind that "
+        "make a smart adult go 'wait, WHAT?'. Deliberately span DIFFERENT KINDS of point so none "
+        "overlap: (1) a hard number or almost-unbelievable scale, (2) the hidden mechanism — HOW/WHY "
+        "it actually works, (3) an extreme case or record, (4) a counterintuitive twist that "
+        "contradicts what people assume, (5) a vivid physical comparison that makes a number "
+        "graspable, (6) a real consequence that touches the viewer's own life, (7) a little-known "
+        "discovery/historical detail, (8) an open mystery scientists still can't explain, (9) one "
+        "more genuinely weird specific.\n"
+        "HARD RULES: every item must contain a specific, checkable detail (a real number, name, or "
+        "mechanism) — never a vague adjective. Only include things you are confident are TRUE and "
+        "well-established; if unsure of a number, describe the mechanism instead of inventing one. "
+        "No two items may be the same point reworded. Prefer strange-but-true over obvious.\n"
+        'Return ONLY JSON: {"facts": ["...", "...", "...", "...", "...", "...", "...", "...", "..."]}'
+    )
+    try:
+        raw = call_groq(prompt)
+        data = json.loads(raw)
+        facts = [str(x).strip() for x in (data.get("facts") or []) if str(x).strip()]
+        facts = [f for f in facts if len(f) > 12][:10]
+        if facts:
+            print(f"  [research] scientist-brain dossier: {len(facts)} distinct angles gathered")
+        return facts
+    except Exception as e:
+        print(f"  [research] dossier unavailable ({e}); writing from the base fact only")
+        return []
+
+
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
                         cta_style="SAVE_WORTHY"):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
@@ -1254,12 +1323,16 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     endings (CTA_ENDING_RULES) this attempt is built and punched up toward."""
     manifest = None
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
+    # SCIENTIST BRAIN — gather diverse specific material ONCE up front, so every
+    # attempt writes from a rich research base instead of rephrasing one fact.
+    dossier = research_dossier(chosen_fact)
     for attempt in range(5):
         try:
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
-                                          avoid_openers=avoid_openers, cta_style=cta_style))
+                                          avoid_openers=avoid_openers, cta_style=cta_style,
+                                          dossier=dossier))
             m = json.loads(raw)
             err = validate(m, job_name, fact=chosen_fact)
             if err:
