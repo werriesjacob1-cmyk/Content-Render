@@ -35,18 +35,16 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
     print(f"  [model] WARNING: GEMINI_API_KEY starts with '{GEMINI_KEY[:3]}...', which is "
           f"neither a legacy 'AIza' key nor a new 'AQ.' auth key. If Gemini 400s, get a "
           f"fresh key at https://aistudio.google.com/apikey")
-# gemini-1.5-flash was RETIRED (v1beta returns 404 "not found ... not supported
-# for generateContent"), so it wasted a fallback slot on every call. Current
-# free-tier flash models only.
-#
-# ORDER MATTERS — 2.5-flash-lite is FIRST on purpose. On the free tier its daily
-# request cap (RPD) is ~1000/day vs only ~200 for 2.0-flash and ~250 for
-# 2.5-flash. That 4-5x headroom is the single thing that stops us blowing the
-# free daily quota after a handful of renders (which is exactly what 429'd runs
-# 52/53). It's a touch less capable than 2.0-flash, but the quality gate +
-# regeneration catches any weak script, and 2.0/2.5-flash remain as automatic
-# higher-capability fallbacks for when lite is rate-limited or refuses.
-GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"]
+# Only models a NEWLY-CREATED free key can actually call.
+# - gemini-1.5-flash: RETIRED (404 "not supported for generateContent").
+# - gemini-2.5-flash-lite: 404 "This model is no longer available to NEW users"
+#   — a fresh AQ key (like this channel's) cannot use it at all, even though it's
+#   documented. Putting it first (for its bigger RPD) backfired: every call 404'd
+#   and fell through. Removed. If Google ever re-opens it to new keys, add it back.
+# What a new key CAN use (they 429 with quota, i.e. reachable): 2.0-flash then
+# 2.5-flash. Lower daily caps (~200/250 RPD) than lite would have given, so
+# Cerebras (auto-discovered) is the real capacity backstop when these run out.
+GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
@@ -677,7 +675,13 @@ def _call_openai_compat(url, key, model, prompt):
                  "Content-Type": "application/json",
                  "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
-        return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+        msg = json.loads(r.read().decode())["choices"][0]["message"]
+    # some reasoning models (Cerebras gpt-oss-*) return content=null with the
+    # payload under "reasoning" — fall back rather than KeyError.
+    out = msg.get("content") or msg.get("reasoning") or ""
+    if not out.strip():
+        raise ValueError("empty content from model")
+    return out
 
 
 def _call_model(model, prompt):

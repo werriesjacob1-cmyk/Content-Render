@@ -461,11 +461,11 @@ _LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
                             # unparseably" (keep vetoing, avoids the belly-button bug).
 
 
-JUDGE_GEMINI_MODEL = "gemini-2.5-flash-lite"  # highest free daily quota (~1000 RPD
-                                              # vs ~200 for 2.0-flash); the judge
-                                              # fires several calls per render, so it
-                                              # should sit on the roomiest free model,
-                                              # same reasoning as generate.py.
+JUDGE_GEMINI_MODEL = "gemini-2.0-flash"  # NOTE: gemini-2.5-flash-lite 404s for
+                                         # newly-created keys ("no longer available
+                                         # to new users"), so we can't use it here
+                                         # either — 2.0-flash is what a fresh key
+                                         # can actually call.
 
 
 def _gemini_chat(prompt, max_tokens, temperature):
@@ -549,7 +549,14 @@ def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
                                           "Content-Type": "application/json",
                                           "User-Agent": "content-render/1.0"})
     with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode())["choices"][0]["message"]["content"]
+        msg = json.loads(r.read().decode())["choices"][0]["message"]
+    # Most models put the answer in "content"; some reasoning models (e.g.
+    # Cerebras gpt-oss-*) return content=null with the text under "reasoning".
+    # Fall back to that instead of KeyError-ing so the model is still usable.
+    out = msg.get("content") or msg.get("reasoning") or ""
+    if not out.strip():
+        raise ValueError("empty content from model")
+    return out
 
 
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
