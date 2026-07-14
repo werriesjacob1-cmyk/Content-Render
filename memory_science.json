@@ -1,27 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-11_dna-stretched-to-the-sun",
-      "metaphor": "Cosmic DNA",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "title": "DNA Stretched to the Sun",
-      "fact_id": "dna_length",
-      "hook": "You contain a universe within",
-      "structure": {
-        "scene_count": 12,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 7.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-12_glass-myth-busted",
       "metaphor": "old window glass",
       "viewer_job": "REFRAME",
@@ -234,6 +213,21 @@
       "fact_id": "banana_radioactive",
       "domain": "physics",
       "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_rainbow-deception",
+      "metaphor": "colorful atmospheric phenomenon",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Rainbow Deception",
+      "fact_id": "rainbow_circle",
+      "domain": "light",
+      "hook": "What if you could see a rainbow as a full circle?",
       "structure": {
         "scene_count": 6,
         "used_whatif": true
