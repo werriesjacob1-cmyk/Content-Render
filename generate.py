@@ -326,16 +326,18 @@ HOOK (first 2 seconds decide 70% of retention):
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 8-12 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
 - Total narration MUST be 110-150 words (~45-55 seconds spoken). Write the FULL script. Too short = rejected.
-- ESCALATION LADDER (critical): every scene must reveal something NO other scene has said yet.
-  State the core reveal — the specific number or comparison from the verified fact — in EXACTLY
-  ONE scene, once, as the payoff moment. Every other scene explores a DIFFERENT angle (the setup
-  question, the mechanism/why it's true, a second consequence, what it means for YOU) and must
-  NOT reference that same number or comparison again, even reworded. A script that circles back to
-  the same reveal twice reads as padded and repetitive, not escalating — each scene is a NEW fact
-  about the topic, not a rephrasing of the last one: what -> how -> why it's stranger than it
-  sounds -> what it means for YOU.
+- ESCALATION LADDER (critical, ZERO exceptions): the core reveal — the specific number or comparison
+  from the verified fact — may appear in EXACTLY ONE scene, ONE time, as the payoff moment. This is
+  a hard rule, not a suggestion: if you catch yourself writing that same number, comparison, or its
+  paraphrase in a second scene, DELETE that scene's line entirely and write a genuinely different
+  fact or angle instead. Every other scene must teach something the payoff scene did NOT — the setup
+  question, the mechanism/why it's true, a second independent consequence, what it means for YOU —
+  never a rephrasing of the reveal in new words. A script that circles back to the same reveal even
+  twice is an automatic FAIL: each scene is a NEW fact about the topic, not an echo of the last one:
+  what -> how -> why it's stranger than it sounds -> what it means for YOU.
 - MIDPOINT TWIST: around scene 5-7, plant a pattern interrupt that reopens curiosity, e.g.
-  "But that's not even the strange part." / "And here's where it stops making sense." Then pay it off.
+  "But that's not even the strange part." / "And here's where it stops making sense." Then pay it off
+  ONCE — do not return to it again later in different words.
 - MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
   (not "400 million years" alone — "before Saturn had rings", "you could watch every human
   civilization rise and fall 80,000 times"). One vivid comparison beats three adjectives.
@@ -573,6 +575,59 @@ def _key_term_present(term, text):
                 return True
     return False
 
+_NUM_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+    "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
+    "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+    "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90, "hundred": 100,
+    "thousand": 1000, "million": 1000000, "billion": 1000000000,
+}
+
+
+def _salient_number_phrases(text):
+    """Find 'number + unit' phrases (e.g. 'eight minutes', '8 minutes',
+    'eight-minute delay') and normalize them so a word-number and a digit,
+    or a hyphenated adjective form and a plain phrase, all collapse to the
+    SAME token ('8 minute'). This is what catches "the same reveal re-said
+    in different words" — the Sun video said "eight minutes ago", "an
+    eight-minute delay", and "eight minutes and twenty seconds" across four
+    different scenes; three different sentences, the same core number every
+    time. Restricted to number+unit pairs (not bare digits) so two scenes
+    that legitimately cite two DIFFERENT numbers (100 miles vs. 15 seconds)
+    never collide."""
+    def numval(tok):
+        if tok.isdigit():
+            return int(tok)
+        return _NUM_WORDS.get(tok)
+
+    tokens = re.findall(r"[a-z]+(?:-[a-z]+)*|\d[\d,\.]*", text.lower())
+    phrases = set()
+    for i, tok in enumerate(tokens):
+        if "-" in tok:
+            parts = tok.split("-")
+            v = numval(parts[0])
+            if v is not None and len(parts) > 1 and parts[1].isalpha() and len(parts[1]) > 2:
+                phrases.add(f"{v} {parts[1].rstrip('s')}")
+            continue
+        v = numval(tok)
+        if v is not None and i + 1 < len(tokens):
+            nxt = tokens[i + 1]
+            if nxt.isalpha() and len(nxt) > 2 and "-" not in nxt:
+                phrases.add(f"{v} {nxt.rstrip('s')}")
+    return phrases
+
+
+def _salient_proper_nouns(text):
+    """Multi-word capitalized phrases only ("Mariana Trench", "Turritopsis
+    Dohrnii") — deliberately excludes single capitalized words so a video's
+    own recurring subject noun ("Sun", "Earth") legitimately appearing in
+    most scenes never trips this check; only a specific multi-word proper
+    noun repeated as the crux of several scenes counts."""
+    return {m.group(0).lower()
+            for m in re.finditer(r"\b[A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)+\b", text)}
+
+
 def check_information_gain(m):
     """One extra Groq call, run only after structural validate() has already
     passed: hand the model the numbered voiceover list and ask which scenes (if
@@ -606,9 +661,29 @@ def check_information_gain(m):
         ids = data.get("no_new_info_scene_ids", [])
         if not isinstance(ids, list):
             return None
-        ids = [i for i in ids if isinstance(i, int)]
-        if len(ids) >= 2:
-            return (f"information-gain check flagged {len(ids)} redundant scenes {ids} "
+        # Robust coercion: accept ints and numeric strings ("2") alike so a
+        # model that answers under JSON mode but still writes id numbers as
+        # strings doesn't silently make this whole check inert (the exact
+        # class of bug fixed in score_script's _coerce_score — see the
+        # comment there). Bools are rejected explicitly since JSON true/false
+        # would otherwise smuggle in as 1/0 under a bare isinstance(int) check.
+        clean_ids = []
+        for i in ids:
+            if isinstance(i, bool):
+                continue
+            if isinstance(i, int):
+                clean_ids.append(i)
+            elif isinstance(i, str) and i.strip().lstrip("-").isdigit():
+                clean_ids.append(int(i.strip()))
+        ids = clean_ids
+        # HARDER GATE: was ">= 2" (two or more redundant scenes needed to
+        # reject). One redundant scene is already a scene that earns its
+        # runtime for free — reject on the first one flagged, same as any
+        # other structural validation failure.
+        if len(ids) >= 1:
+            print(f"  [info-gain] flagged {len(ids)} redundant scene(s) {ids} "
+                  f"— no new information beyond an earlier scene")
+            return (f"information-gain check flagged {len(ids)} redundant scene(s) {ids} "
                     f"(no new information beyond an earlier scene) — cut or replace them")
         return None
     except Exception as e:  # noqa: BLE001 - must fail open, never blocks a run
@@ -706,9 +781,15 @@ def validate(m, job_name, fact=None):
             return f"impossible fractional count: {num} {noun}"
 
     # anti-repetition: reject if scene voiceovers are too similar to each other.
-    # 0.70, not 0.60 — at 0.60 this fired on legitimate scripts (parallel sentence
-    # structure reads as similarity), and every false rejection pushed a run toward
-    # the much worse near-miss fallback. Catch real restatements only.
+    # Lowered 0.70 -> 0.62 after the Sun video: scenes 8 and 11 ("...you are
+    # always seeing the Sun as it was eight minutes ago, never as it is right
+    # now" vs. "...you are seeing it as it was eight minutes and twenty
+    # seconds in the past, never as it is right now") scored under 0.70 on
+    # pure sequence similarity despite being obviously the same line restated.
+    # 0.62 still leaves room for legitimate parallel sentence structure (short
+    # scenes built the same way but about different facts) — tested against
+    # both the bad Sun manifest (must reject) and a known-good non-repetitive
+    # manifest (must pass) below.
     #
     # Exception: scene 1 vs. the final scene. The LOOP CTA style (and, before
     # the CTA-style split, the general "loop back to the hook" ending rule)
@@ -725,8 +806,33 @@ def validate(m, job_name, fact=None):
             if i == 0 and j == len(vos) - 1:
                 continue
             ratio = difflib.SequenceMatcher(None, vos[i], vos[j]).ratio()
-            if ratio > 0.70:
+            if ratio > 0.62:
                 return f"scenes {i+1} and {j+1} too similar (repetition)"
+
+    # anti-repetition (salient-token variant): catches "re-says the same
+    # thing" even when each restatement uses a DIFFERENT sentence structure,
+    # which the pairwise phrasing check above can miss. The Sun video's core
+    # reveal ("eight minutes") showed up as the crux of scene 7 ("left the Sun
+    # about eight minutes ago"), scene 8 ("...eight minutes ago, never as it
+    # is right now"), scene 9 ("an eight-minute delay"), and scene 11
+    # ("...eight minutes and twenty seconds...") — four different sentences,
+    # one number, said over and over. If the same salient number-phrase (a
+    # normalized "8 minute" style token) or the same multi-word proper noun
+    # is the crux of 3+ scenes, that is the reveal being re-said instead of
+    # the script escalating to something new each time.
+    #
+    # Excludes the final scene, same rationale as the pairwise exception
+    # above: a LOOP-style ending is SUPPOSED to echo the hook/central image.
+    token_scenes = collections.defaultdict(list)
+    for i, vo in enumerate(vos[:-1] if len(vos) > 1 else vos):
+        for tok in _salient_number_phrases(vo) | _salient_proper_nouns(vo):
+            token_scenes[tok].append(i + 1)
+    repeated_core = {tok: ids for tok, ids in token_scenes.items() if len(ids) >= 3}
+    if repeated_core:
+        return (f"the same core detail is re-said as the crux of 3+ scenes {repeated_core} — "
+                f"state it once as the payoff and make every other scene a genuinely different "
+                f"fact or angle, not a reworded repeat")
+
     # mandatory key-term naming: the real production failure that motivated this
     # (the potassium-40 banana video) was that topic_bank facts used to be bare
     # one-liners, so the model never had a specific isotope name or a real dose
@@ -777,7 +883,7 @@ def validate(m, job_name, fact=None):
             return (f"the verified fact is restated in {len(restated)} scenes {restated} "
                     f"instead of being revealed once and escalated from")
     # reject if the title's key noun appears in nearly every scene (circling one idea)
-    import collections
+    # (collections is imported at module level above)
     words = collections.Counter(re.sub(r"[^a-z ]", "", " ".join(vos)).split())
     common = [w for w, c in words.items() if len(w) > 4 and c >= max(4, len(vos) - 1)]
     if common:
@@ -1054,12 +1160,35 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             if GENERIC_SAVE_CMD.search(vo):
                 s["voiceover"] = GENERIC_SAVE_CMD.sub("", vo).strip(" .") or "Now you know."
         nm["script"] = " ".join(s.get("voiceover", "") for s in nm.get("scenes", []))
+        # Log-only info-gain pass on the repaired near-miss: this is the
+        # last-resort path that exists specifically so the unattended run can
+        # never come up empty, so it is not rejected here even if flagged --
+        # but the run log should still show a redundant near-miss was shipped
+        # rather than silently hiding it.
+        nm_ig_err = check_information_gain(nm)
+        if nm_ig_err:
+            print(f"  [info-gain] near-miss fallback still redundant ({nm_ig_err}) — "
+                  f"shipping anyway (last-resort fallback, never blocks the run)")
         manifest = nm
 
     if not manifest:
         return None
 
-    return punch_up(manifest, chosen_fact, cta_style=cta_style)
+    result = punch_up(manifest, chosen_fact, cta_style=cta_style)
+    # Ensure information-gain is checked on the SCRIPT THAT ACTUALLY SHIPS,
+    # not just the pre-punch-up draft: punch_up rewrites every voiceover line,
+    # so it's the one place after validate() that could reintroduce semantic
+    # redundancy the earlier check already cleared. If punch_up's rewrite is
+    # now flagged, fall back to the pre-punch-up manifest, which already
+    # passed this same check (or was explicitly logged as the last-resort
+    # near-miss exception above).
+    if result is not manifest:
+        post_ig_err = check_information_gain(result)
+        if post_ig_err:
+            print(f"  post-punch-up info-gain check failed ({post_ig_err}), "
+                  f"reverting to pre-punch-up script")
+            return manifest
+    return result
 
 
 def main():
