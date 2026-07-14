@@ -1193,6 +1193,29 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
         nm["hashtags"] = nm.get("hashtags", ["#science"])
         nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
+        # ENFORCE PACING on the near-miss too. A script usually lands here
+        # precisely BECAUSE the stricter validate() rejected it (too many
+        # scenes / a run-on / repetition), and the old repair shipped it
+        # uncapped — that's how the 14-scene, choppy "Morning Height" video
+        # got out. Trim to <=10 scenes by dropping the most REDUNDANT middle
+        # scenes (always keeping the hook and the ending), which cuts the
+        # choppy over-cutting AND the restatement in a single pass.
+        import difflib as _dl
+        _scenes = nm.get("scenes", [])
+        MAX_NEARMISS_SCENES = 10
+        if len(_scenes) > MAX_NEARMISS_SCENES:
+            def _redundancy(i):
+                vo = _scenes[i].get("voiceover", "").lower()
+                return max((_dl.SequenceMatcher(None, vo, _scenes[j].get("voiceover", "").lower()).ratio()
+                            for j in range(len(_scenes)) if j != i), default=0.0)
+            middle = sorted(range(1, len(_scenes) - 1), key=_redundancy, reverse=True)
+            drop = set(middle[:len(_scenes) - MAX_NEARMISS_SCENES])
+            _scenes = [s for i, s in enumerate(_scenes) if i not in drop]
+            for _new_id, s in enumerate(_scenes, 1):
+                s["id"] = _new_id
+            nm["scenes"] = _scenes
+            print(f"  near-miss trimmed {len(drop)} most-redundant middle scene(s) "
+                  f"-> {len(_scenes)} scenes (pacing/repetition)")
         # fill in queries the model left out or made un-filmable. Duplicate
         # queries are deliberately NOT swapped here (they used to be, via a
         # "seen" set) -- that was the same bug fixed in validate(): main.py's
