@@ -180,3 +180,18 @@ bypassed); hook is good but generation wasn't gated. GEMINI_API_KEY still empty
 (user hasn't added it) — adding it fixes generation reliability + enables batch.
 Consistency: Cosmic Coincidence + Unseen Oceans = 2 good (Oceans is first with
 verified sync). Keep building toward 5 different-topic + confirm the sync feel.
+
+## Cycle N — big build backlog awaiting validation; Groq spent; circuit breakers added
+Runs 48-50 all failed at Auto-generate (Groq daily budget spent; scientist-brain's
+extra research call exhausts it faster). Built + LOCALLY TESTED this session but
+NOT yet validated on a full render (blocked on generation succeeding): scientist-
+brain research stage, page identity + addictive craft (persona/mystery/question-
+hook/emotional-register/page-open ending), sound-design intro sting, archival
+Openverse footage (idea 3), whisper caption sync, deeper voice, and now CIRCUIT
+BREAKERS (generate.py call_groq + main.py judge) so an exhausted render fails fast
+in seconds instead of burning ~4 min + the last quota on doomed retries. The
+binding constraint remains: GEMINI_API_KEY not set → everything falls back to
+Groq's tiny budget. Told the user (again) the exact 3-step free Gemini setup +
+that the code already prefers Gemini. Not triggering renders 30 min after the
+last Groq-spend (would just fast-fail); backing off ~2.5h for a real reset. Once
+generation succeeds, the whole backlog validates in one render.
