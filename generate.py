@@ -160,16 +160,15 @@ CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT", "SHARE"]
 
 CTA_ENDING_RULES = {
     "SAVE_WORTHY": (
-        "ENDING STYLE FOR THIS VIDEO: SAVE-WORTHY PAYOFF. The final line must land on the single "
-        "most reference-worthy detail of the script -- the exact number, rule of thumb, or "
-        "comparison a viewer would actually want to look up again later -- stated cleanly, not "
-        "vaguely. Do NOT command the viewer to save it (never write anything like 'save this so "
-        "you remember it', 'save this so you don't forget', or 'save this for later' -- that command "
-        "is banned). The payoff itself is what earns the save. ONLY if the fact genuinely calls for "
-        "it, you may add ONE short, earned, specific nudge that names what's worth keeping (e.g. "
-        "'that number's worth a screenshot' or 'you'll want that comparison again next time this "
-        "comes up') -- and only as a trailing half-sentence, never as the whole line. If the payoff "
-        "already stands on its own, skip the nudge entirely and just state the fact."
+        "ENDING STYLE FOR THIS VIDEO: RESONANT PAYOFF. End on the single most striking, "
+        "mind-expanding line the script has earned -- the fact's biggest implication, or the "
+        "detail that quietly reframes how the viewer will see this everyday thing from now on. "
+        "State it cleanly and let it land. ABSOLUTELY NO call-to-action or instruction of ANY "
+        "kind: never tell the viewer to save, screenshot, remember, look up, keep, or do anything "
+        "-- phrases like 'save this', 'worth a screenshot', 'you'll want this again' are BANNED and "
+        "read as hollow filler. The last line is a thought that stays with them, not a command. "
+        "Best of all is a final line that recasts the hook -- so the thing they thought they "
+        "understood at the start now means something bigger."
     ),
     "LOOP": (
         "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line must be the single most "
@@ -198,8 +197,9 @@ CTA_ENDING_RULES = {
 # style actually assigned to this video, not a one-size-fits-all "did it ask
 # for a save" question.
 CTA_RUBRIC_HINTS = {
-    "SAVE_WORTHY": "does the ending land on a genuinely reference-worthy detail the viewer would "
-                    "want to look up again, WITHOUT relying on a bare command to save it?",
+    "SAVE_WORTHY": "does the ending land on a striking, resonant final thought or implication "
+                    "(ideally recasting the hook), with ZERO command/instruction language "
+                    "('save', 'screenshot', 'remember', 'look up' are all disqualifying)?",
     "LOOP": "does the ending loop back cleanly to the hook/opening image so a replay feels seamless, "
             "with no bolted-on CTA language?",
     "COMMENT": "does the ending pose a real binary question or arguable claim a viewer would "
@@ -211,10 +211,9 @@ CTA_RUBRIC_HINTS = {
 # Ending rule handed to punch_up()'s rewrite pass -- same style-specific intent,
 # phrased for a line-level rewrite instruction rather than first-draft generation.
 CTA_PUNCHUP_RULES = {
-    "SAVE_WORTHY": "Final line: state the single most reference-worthy detail cleanly. Do NOT "
-                   "write a bare command to save it ('save this so you...' is banned). At most, "
-                   "end with a short earned nudge naming what's worth keeping -- only if the fact "
-                   "doesn't already stand on its own.",
+    "SAVE_WORTHY": "Final line: a striking, resonant closing thought or implication that ideally "
+                   "recasts the hook. NO command/instruction of any kind -- 'save', 'screenshot', "
+                   "'remember', 'look up', 'keep this' are all banned. A thought, never an order.",
     "LOOP": "Final line: the most quotable line of the script, looping back to the hook's opening "
             "image/phrase. No CTA language.",
     "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
@@ -224,15 +223,19 @@ CTA_PUNCHUP_RULES = {
 }
 
 # Banned generic save-command phrasing -- the exact production failure this
-# overhaul targets ("Save this so you remember it." on every video). Any close
-# paraphrase of "save this [so you ...]" fails validation regardless of which
-# CTA style was assigned; SAVE_WORTHY's own rule above still allows a short,
-# specific, earned nudge ("that number's worth a screenshot") because that
-# phrasing doesn't match this pattern.
+# overhaul targets ("Save this so you remember it." on every video). Now that
+# SAVE_WORTHY is a pure resonant payoff with NO nudge allowed, the guard is
+# broadened to reject ANY save/screenshot-style command ending (user feedback:
+# "that number's worth a screenshot" -- why? it isn't). These hollow commands
+# fail validation regardless of the assigned CTA style.
 GENERIC_SAVE_CMD = re.compile(
-    r"\bsave (this|it)\b[^.!?]{0,40}\b(so you|for later|before you|don'?t forget|remember)\b"
+    r"\bsave (this|it|that)\b"
+    r"|\bscreenshot (this|it|that|that one)\b"
+    r"|\bworth a screenshot\b"
+    r"|\b(take|grab|get) a screenshot\b"
     r"|\bmake sure (you|to) save\b"
-    r"|\bdon'?t forget to save\b",
+    r"|\bdon'?t forget to (save|screenshot)\b"
+    r"|\byou'?ll (want|need) (this|that|it) again\b",
     re.I)
 
 # A "save-worthy" moment is engineered into the CONTENT, not just the ending:
@@ -421,8 +424,13 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   twice is an automatic FAIL: each scene is a NEW fact about the topic, not an echo of the last one:
   what -> how -> why it's stranger than it sounds -> what it means for YOU.
 - MIDPOINT TWIST: around scene 5-7, plant a pattern interrupt that reopens curiosity, e.g.
-  "But that's not even the strange part." / "And here's where it stops making sense." Then pay it off
-  ONCE — do not return to it again later in different words.
+  "But that's not even the strange part." / "And here's where it stops making sense." CRITICAL:
+  the line right AFTER the interrupt must deliver a GENUINELY NEW fact the viewer has not heard
+  yet in this video — a second, escalated surprise. It must NOT restate, rephrase, or circle back
+  to the hook or anything already said (the #1 failure: "that's not even the strange part" followed
+  by a reworded version of the opening — that makes the promise land on nothing and feels
+  repetitive). If you don't have a real second surprise to reveal, do NOT use the interrupt at all.
+  Pay it off ONCE and never return to it.
 - MAKE IT FELT, not just stated: convert numbers into physical comparisons a viewer can picture
   (not "400 million years" alone — "before Saturn had rings", "you could watch every human
   civilization rise and fall 80,000 times"). One vivid comparison beats three adjectives.

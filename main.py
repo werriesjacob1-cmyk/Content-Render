@@ -1197,29 +1197,15 @@ def main():
     build_ass(m["scenes"], segments, actual_durs, ass)
     body_dur = ffprobe_dur(body)
     fade_out_start = max(0.0, body_dur - 0.3)
-    hook_filter = ""
-    hook_text = re.sub(r"[^A-Za-z0-9 ,.?!'\-]", "", m.get("hook", "")).strip()
-    if hook_text:
-        # wrap to ~3-4 words per line; textfile= avoids drawtext escaping entirely
-        words = hook_text.upper().split()
-        lines, line = [], []
-        for w in words:
-            line.append(w)
-            if len(" ".join(line)) >= 16:
-                lines.append(" ".join(line)); line = []
-        if line:
-            lines.append(" ".join(line))
-        hook_path = os.path.join(WORK, "hook.txt")
-        with open(hook_path, "w") as hf:
-            hf.write("\n".join(lines[:4]))
-        hook_filter = (f",drawtext=textfile='{hook_path}':fontfile='{FONT}':fontsize=72:"
-                       f"fontcolor=white:borderw=6:bordercolor=black:box=1:boxcolor=black@0.45:"
-                       f"boxborderw=18:line_spacing=14:x=(w-tw)/2:y=h*0.12:"
-                       f"enable='between(t,0,2.6)':alpha='if(lt(t,0.15),t/0.15,if(gt(t,2.3),(2.6-t)/0.3,1))'")
+    # NO separate hook title-card. It used to burn the hook text across the top
+    # for the first 2.6s, but now that the karaoke captions are word-synced they
+    # already show the hook one word at a time — the card on top read as TWO sets
+    # of subtitles at once (user feedback on Unseen Oceans). Just the karaoke
+    # captions now.
     captioned = os.path.join(WORK, "captioned.mp4")
     run(["ffmpeg", "-y", "-i", body,
          "-vf", (f"ass='{ass}',fade=t=in:st=0:d=0.2,"
-                 f"fade=t=out:st={fade_out_start:.2f}:d=0.3" + hook_filter),
+                 f"fade=t=out:st={fade_out_start:.2f}:d=0.3"),
          "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", captioned])
 
     # background music bed (optional)
