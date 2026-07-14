@@ -94,20 +94,29 @@ def _edge_tts_with_timings(text, voice, rate, out_mp3):
     Raises on failure so the caller can fall back to the CLI/estimate."""
     import asyncio
     import edge_tts
-    words = []
+    boundaries = []  # (text, start_s, end_s, kind)
 
     async def _run():
         comm = edge_tts.Communicate(text, voice, rate=rate)
         with open(out_mp3, "wb") as f:
             async for chunk in comm.stream():
-                if chunk["type"] == "audio":
+                ctype = chunk.get("type") if hasattr(chunk, "get") else None
+                if ctype == "audio" and chunk.get("data"):
                     f.write(chunk["data"])
-                elif chunk["type"] == "WordBoundary":
-                    st = chunk["offset"] / 1e7
-                    du = chunk["duration"] / 1e7
-                    words.append((chunk["text"], st, st + du))
+                elif ctype in ("WordBoundary", "SentenceBoundary"):
+                    off = (chunk.get("offset") or 0) / 1e7
+                    dur = (chunk.get("duration") or 0) / 1e7
+                    boundaries.append((chunk.get("text", ""), off, off + dur, ctype))
 
     asyncio.run(_run())
+    words = [(t, s, e) for (t, s, e, k) in boundaries if k == "WordBoundary"]
+    sents = [(t, s, e) for (t, s, e, k) in boundaries if k == "SentenceBoundary"]
+    # Instrumented: edge-tts's free endpoint has intermittently stopped emitting
+    # WordBoundary metadata (audio still streams fine). Log exactly what came
+    # back so we know whether real word timing is available this run or we're on
+    # the estimate. If only sentence boundaries arrive, fall back to those —
+    # anchoring each scene (one sentence) accurately still beats a pure guess.
+    print(f"  edge-tts boundaries: {len(words)} word, {len(sents)} sentence")
     return words
 
 
