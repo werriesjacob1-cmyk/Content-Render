@@ -1,12 +1,6 @@
 {
   "history": [
     {
-      "metaphor": "Tiny Animal Superpower",
-      "viewer_job": "MYTH_BUSTER",
-      "title": "Mantis Shrimp Punches Break Physics",
-      "fact_id": "mantis_shrimp"
-    },
-    {
       "metaphor": "sugar cube",
       "viewer_job": "EXISTENTIAL_CHILL",
       "title": "The Void Within",
@@ -191,6 +185,21 @@
       "hook": "You can survive underwater without surfacing",
       "structure": {
         "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
+      "metaphor": "Mountain Height Comparison",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Mauna Kea: The Tallest Mountain",
+      "fact_id": "mauna_kea",
+      "domain": "earth",
+      "hook": "You think Everest is the tallest?",
+      "structure": {
+        "scene_count": 9,
         "used_whatif": true
       },
       "quality": null

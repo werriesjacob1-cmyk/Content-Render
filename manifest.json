@@ -1,110 +1,102 @@
 {
-  "title": "Turtles Breathe Through Rear Ends",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "turtle rear end breathing",
-  "metaphor": "turtle cloaca",
-  "hook": "You can survive underwater without surfacing",
-  "script": "You can survive underwater without surfacing Some turtles do this They use their rear ends This is called cloacal respiration It supplies most of the oxygen they need They absorb oxygen through their tissues But that's not even the strange part For some turtles, it's their main oxygen source You could compare it to a human breathing through their skin It's like having a built-in scuba tank",
+  "title": "Mauna Kea: The Tallest Mountain",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "Mauna Kea vs Everest",
+  "metaphor": "Mountain Height Comparison",
+  "hook": "You think Everest is the tallest?",
+  "script": "You think Everest is the tallest? But what if you measured from the base? Mauna Kea stands over 10,000 metres tall. From base to summit Mauna Kea is more than 1,000 metres taller than Everest. You could stack two Everests on top of each other and still be shorter than Mauna Kea. That's like piling over 100 skyscrapers on top of each other. Mauna Kea is the real tallest mountain, with most of it hidden underwater. Share this with a friend who loves geography! Remember, Mauna Kea is over 10,000 metres tall, that number's worth a screenshot!",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You can survive underwater without surfacing",
-      "on_screen_text": "Turtle Survival",
-      "search_query": "turtle underwater",
+      "voiceover": "You think Everest is the tallest?",
+      "on_screen_text": "Mountain Height",
+      "search_query": "mountain peak snow",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "Some turtles do this",
-      "on_screen_text": "Rear End",
-      "search_query": "turtle close up",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "But what if you measured from the base?",
+      "on_screen_text": "Base Measurement",
+      "search_query": "hawaii volcano",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "They use their rear ends",
-      "on_screen_text": "Cloaca",
-      "search_query": "turtle cloaca",
-      "motion": "pan"
+      "voiceover": "Mauna Kea stands over 10,000 metres tall.",
+      "on_screen_text": "Mauna Kea Height",
+      "search_query": "underwater mountain",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 3,
-      "voiceover": "This is called cloacal respiration",
-      "on_screen_text": "Oxygen Absorption",
-      "search_query": "oxygen bubbles",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "From base to summit Mauna Kea is more than 1,000 metres taller than Everest.",
+      "on_screen_text": "Height Comparison",
+      "search_query": "mountain range",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "It supplies most of the oxygen they need",
-      "on_screen_text": "Turtle Oxygen",
-      "search_query": "turtle swimming",
-      "motion": "static"
+      "voiceover": "You could stack two Everests on top of each other and still be shorter than Mauna Kea.",
+      "on_screen_text": "Everest Comparison",
+      "search_query": "mountain peak comparison",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 3,
-      "voiceover": "They absorb oxygen through their tissues",
-      "on_screen_text": "Tissue Oxygen",
-      "search_query": "water plants",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "That's like piling over 100 skyscrapers on top of each other.",
+      "on_screen_text": "Skyscraper Comparison",
+      "search_query": "city skyline",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "But that's not even the strange part",
-      "on_screen_text": "Strange Fact",
-      "search_query": "turtle surprise",
-      "motion": "zoom_out"
+      "voiceover": "Mauna Kea is the real tallest mountain, with most of it hidden underwater.",
+      "on_screen_text": "Mauna Kea Facts",
+      "search_query": "hawaii ocean floor",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 3,
-      "voiceover": "For some turtles, it's their main oxygen source",
-      "on_screen_text": "Main Oxygen",
-      "search_query": "turtle pond",
-      "motion": "pan"
+      "duration": 4,
+      "voiceover": "Share this with a friend who loves geography!",
+      "on_screen_text": "Share With Friend",
+      "search_query": "friends talking",
+      "motion": "static"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "You could compare it to a human breathing through their skin",
-      "on_screen_text": "Human Skin",
-      "search_query": "human skin close up",
+      "voiceover": "Remember, Mauna Kea is over 10,000 metres tall, that number's worth a screenshot!",
+      "on_screen_text": "Mauna Kea Height",
+      "search_query": "phone screenshot",
       "motion": "zoom_out"
-    },
-    {
-      "id": 10,
-      "duration": 3,
-      "voiceover": "It's like having a built-in scuba tank",
-      "on_screen_text": "Scuba Tank",
-      "search_query": "scuba tank underwater",
-      "motion": "pan"
     }
   ],
   "captions": [
-    "Can turtles really breathe through their rear ends?",
-    "Turtle rear end breathing is a real thing",
-    "Mind blown by turtle cloaca"
+    "What's the tallest mountain, really? Mauna Kea vs Everest",
+    "Mind blown by Mauna Kea's height!",
+    "Share your thoughts on the tallest mountain!"
   ],
   "hashtags": [
-    "#turtle",
-    "#oxygen",
-    "#science",
-    "#wildlife",
-    "#nature"
+    "#MaunaKea",
+    "#Everest",
+    "#MountainFacts",
+    "#Geography",
+    "#Science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_turtles-breathe-through-rear-ends",
-  "cta_style": "COMMENT",
-  "domain": "animals"
+  "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "earth"
 }
