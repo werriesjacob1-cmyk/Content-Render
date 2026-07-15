@@ -1,69 +1,95 @@
 {
-  "title": "Rainbow Deception",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "rainbow circle",
-  "metaphor": "colorful atmospheric phenomenon",
-  "hook": "What if you could see a rainbow as a full circle?",
-  "script": "A rainbow unfurls as a full circle, its secrets hidden from view. The full circle unfurls when sunlight pierces water droplets at exactly 42 degrees. But that's not even the strange part \u2013 it forms even near the antisolar point. A rainbow isn't an object, but an angle, each person witnessing their own unique spectacle. We're witness to 80,000 fleeting civilizations as a single raindrop undergoes its eternal cycle. As sunlight refracts through water droplets at 42 degrees, the full circle's majestic beauty is revealed.",
+  "title": "The Rodent That Breaks Biology",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "naked mole rat",
+  "metaphor": "Biological Rule Breaker",
+  "hook": "Your brain would die in minutes without oxygen, but not this animal's.",
+  "script": "Your brain would die in minutes without oxygen, but not this animal's. What if a brain could just switch fuels when the air ran out? The naked mole rat can survive for 18 minutes with zero oxygen. It does this by switching its metabolism to burn fructose instead of glucose. This fuel swap happens in the heart and brain, not just the gut. They are also cold-blooded, meaning they cannot regulate their own body temperature. Most shockingly, they almost never develop cancer. They live over 30 years, which is ten times longer than a mouse their size. This is a creature that simply refuses to die, like a naked mole rat.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A rainbow unfurls as a full circle, its secrets hidden from view.",
-      "on_screen_text": "Rainbow Circle",
-      "search_query": "rainbow sky",
-      "motion": "zoom_out"
+      "voiceover": "Your brain would die in minutes without oxygen, but not this animal's.",
+      "on_screen_text": "Naked Mole Rat",
+      "search_query": "rodent close up",
+      "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The full circle unfurls when sunlight pierces water droplets at exactly 42 degrees.",
-      "on_screen_text": "42 Degrees",
-      "search_query": "sunlight water droplets",
-      "motion": "pan"
+      "voiceover": "What if a brain could just switch fuels when the air ran out?",
+      "on_screen_text": "Survival Switch",
+      "search_query": "burrow tunnel dark",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "But that's not even the strange part \u2013 it forms even near the antisolar point.",
-      "on_screen_text": "Highest Altitude",
-      "search_query": "airplane altitude",
+      "voiceover": "The naked mole rat can survive for 18 minutes with zero oxygen.",
+      "on_screen_text": "18 Minutes",
+      "search_query": "mole rat underground",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "A rainbow isn't an object, but an angle, each person witnessing their own unique spectacle.",
-      "on_screen_text": "Private Rainbow",
-      "search_query": "rainbow raindrops",
-      "motion": "zoom_in"
+      "duration": 5,
+      "voiceover": "It does this by switching its metabolism to burn fructose instead of glucose.",
+      "on_screen_text": "Fructose Fuel",
+      "search_query": "sugar crystals macro",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "We're witness to 80,000 fleeting civilizations as a single raindrop undergoes its eternal cycle.",
-      "on_screen_text": "80,000 Times",
-      "search_query": "raindrop evaporation",
-      "motion": "static"
+      "voiceover": "This fuel swap happens in the heart and brain, not just the gut.",
+      "on_screen_text": "Total Shutdown",
+      "search_query": "beating heart silhouette",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "As sunlight refracts through water droplets at 42 degrees, the full circle's majestic beauty is revealed.",
-      "on_screen_text": "Full Circle",
-      "search_query": "sunlight water droplets",
+      "voiceover": "They are also cold-blooded, meaning they cannot regulate their own body temperature.",
+      "on_screen_text": "Cold Blooded",
+      "search_query": "frost on glass",
       "motion": "static"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Most shockingly, they almost never develop cancer.",
+      "on_screen_text": "Cancer Resistant",
+      "search_query": "white lab coat",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 8,
+      "duration": 5,
+      "voiceover": "They live over 30 years, which is ten times longer than a mouse their size.",
+      "on_screen_text": "30 Year Lifespan",
+      "search_query": "hourglass sand falling",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 9,
+      "duration": 4,
+      "voiceover": "This is a creature that simply refuses to die, like a naked mole rat.",
+      "on_screen_text": "Biological Glitch",
+      "search_query": "rodent close up",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "You think you know rainbows, but do you really? #rainbowcircle #mythbuster",
-    "A rainbow is not just a colorful arc in the sky, but a full circle that's cut off by the Earth's surface.",
-    "What if you could see a rainbow as a full circle?"
+    "The naked mole rat ignores the basic rules of life. Would you trade your temperature control for a 30-year rodent lifespan? Yes or No?",
+    "18 minutes without air. This is biologically impossible for most mammals.",
+    "A metabolic switch that prevents cancer and hypoxia."
   ],
   "hashtags": [
+    "#biology",
+    "#nature",
     "#science",
-    "#space",
-    "#facts",
+    "#evolution",
+    "#animals",
     "#learnontiktok"
   ],
   "render": {
@@ -71,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-14_rainbow-deception",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "light"
+  "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
+  "cta_style": "LOOP",
+  "domain": "animals"
 }
