@@ -84,7 +84,13 @@ def _chars_to_words(chars, starts, ends):
 # the (now word-accurate) captions room to breathe. NOT a heavy slow-down —
 # an earlier big slow-down bloated a video to ~55s and felt forced; this is a
 # few percent under the previously-requested -5%, keeping a ~30s cut ~30-35s.
-EDGE_RATE = "-12%"
+EDGE_RATE = "-5%"   # was -12%. Renders 66/67/68 came out 47-53s at -12% — too
+                     # long for completion. -5% is still a calm, deliberate
+                     # documentary cadence (not rushed) but trims a ~47s cut to
+                     # ~43s while KEEPING the dense script (density of surprise is
+                     # what makes the page bingeable — better to speak a rich
+                     # script a touch faster than to gut it). Whisper re-aligns
+                     # captions to the actual audio, so sync is unaffected by rate.
 
 
 def _edge_tts_with_timings(text, voice, rate, out_mp3):

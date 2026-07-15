@@ -601,10 +601,10 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 78-98 words. At this channel's calm narration speed that renders to about
-  38-46 seconds — measured, not guessed (a 110-word script came out at 49s, too long). Write the FULL
-  script, but keep it TIGHT. Too short = rejected; padded = rejected.
-  A tight sub-45s video beats a padded 55s one: competitors win on completion, so cut every non-essential
+- Total narration MUST be 76-92 words. At this channel's narration speed that renders to about 38-43
+  seconds — measured, not guessed. Write the FULL script, but keep it TIGHT. Too short = rejected;
+  padded = rejected.
+  A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
 - PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
@@ -1258,8 +1258,8 @@ def validate(m, job_name, fact=None):
     # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
     # dense script isn't penalized for being efficient.
     wc = len(_clean(m["script"]).split())
-    if not (62 <= wc <= 112):
-        return f"script word count {wc} out of range (target 78-98, hard cap 112)"
+    if not (60 <= wc <= 100):
+        return f"script word count {wc} out of range (target 76-92, hard cap 100)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
