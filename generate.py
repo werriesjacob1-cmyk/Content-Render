@@ -661,6 +661,13 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
   "lightning storm slow motion" for nerve signals, "dominoes falling chain" for reactions.
 - Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
   setting) — a video that shows the same three shots on loop reads as spam.
+- NAME THE ACTUAL SUBJECT. If the video is about a SPECIFIC animal, object, place, or phenomenon
+  (e.g. a naked mole rat, a tardigrade, Saturn's rings, a specific volcano), the scenes that show
+  it must search for THAT EXACT thing by name ("naked mole rat", not "rodent close up"; "tardigrade
+  microscope"->no, but "tardigrade" if filmable; "Saturn rings", not "planet space"). Showing a
+  generic groundhog or white lab rat in a video about naked mole rats is a real miss viewers catch
+  instantly. At least the hook scene and the payoff scene must name the specific subject. Only fall
+  back to a generic category or visual metaphor when the specific subject genuinely can't be filmed.
 
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and the search query as specified above.
