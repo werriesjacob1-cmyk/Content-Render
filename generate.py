@@ -37,14 +37,19 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
           f"fresh key at https://aistudio.google.com/apikey")
 # Only models a NEWLY-CREATED free key can actually call.
 # - gemini-1.5-flash: RETIRED (404 "not supported for generateContent").
-# - gemini-2.5-flash-lite: 404 "This model is no longer available to NEW users"
-#   — a fresh AQ key (like this channel's) cannot use it at all, even though it's
-#   documented. Putting it first (for its bigger RPD) backfired: every call 404'd
-#   and fell through. Removed. If Google ever re-opens it to new keys, add it back.
-# What a new key CAN use (they 429 with quota, i.e. reachable): 2.0-flash then
-# 2.5-flash. Lower daily caps (~200/250 RPD) than lite would have given, so
-# Cerebras (auto-discovered) is the real capacity backstop when these run out.
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash"]
+# - gemini-2.5-flash-lite: 404 "no longer available to NEW users" — a fresh AQ
+#   key cannot use it. Removed (see history). Do NOT add it back.
+# - gemini-2.5-flash: as of 2026-07-15 this ALSO started 404ing for this key
+#   ("no longer available to new users" — run 65 log), so Google has now closed
+#   it to new keys the same way. Removed so it stops wasting a chain slot.
+# What a new key CAN reach (they 429 with quota, i.e. authenticate): 2.0-flash.
+# gemini-2.0-flash-lite is added as a SECOND model on purpose: each Gemini model
+# has its OWN free daily-quota bucket, so when 2.0-flash's daily cap is spent
+# (which is what blocks late-in-day renders), flash-lite's untouched bucket can
+# still carry generation. If this key can't reach flash-lite it simply 404s and
+# falls through harmlessly — no worse than before. Cerebras (auto-discovered)
+# remains the capacity backstop when both Gemini buckets are out.
+GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
