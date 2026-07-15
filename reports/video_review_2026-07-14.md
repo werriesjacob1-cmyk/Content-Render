@@ -398,3 +398,24 @@ recovers; back-to-back batching cannibalizes it and drops to weak models. Wideni
 
 BATCH TALLY: 2 CLEAN shipped (#1 mole rat solid B, #2 starlight C+), 1 aborted (#3, provider
 exhaustion). Slowing cadence to accumulate 2-3 more good ones by morning.
+
+## OVERNIGHT BATCH — HIT THE FREE-TIER DAILY WALL (~5:15 AM CT, 2026-07-15)
+Runs 62-63 aborted; the definitive cause (run 63 log): Gemini 2.0-flash now returns
+429 "You exceeded your current quota" — the DAILY cap, not per-minute. After ~5 renders
+today (59-63) the free daily quota is SPENT and won't return until the next reset
+(~2 AM CT / 07:00 UTC July 16). Fallbacks also down: OpenRouter llama-70b:free 429
+(upstream/Venice rate-limited), Cerebras gemma-4-31b 429 (RPM) + weak, gpt-oss-120b
+returns non-JSON ("Expecting value" every attempt). Gate held — no junk shipped.
+Fix: exclude gpt-oss-* from Cerebras generation (reasoning model, can't emit JSON).
+
+FINAL BATCH RESULT for the user's review:
+  #1 "The Rodent That Breaks Biology" (naked mole rat, animals) — SHIPPED, solid B.
+  #2 "The Time Machine in the Sky" (starlight/time, space) — SHIPPED, C+ (footage-limited).
+  #3-#4 aborted (provider exhaustion; gate working as designed).
+2 clean, watchable, different-topic videos + a stack of improvements (calibrated gate,
+footage-subject naming, emoji ban, dead-model cleanups). The engine is proven; the only
+limit is the free daily quota (~2-4 good videos/day, accumulating over days).
+
+STOPPING the aggressive loop — no strong provider available until tomorrow's Gemini reset.
+Re-armed a resumption for the next reset. Both videos are GitHub Releases (Buffer drafts,
+NOT posted) for the user's morning verdict.

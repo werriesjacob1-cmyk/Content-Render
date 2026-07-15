@@ -82,6 +82,10 @@ def cerebras_models():
             with urllib.request.urlopen(req, timeout=15) as r:
                 data = json.loads(r.read().decode())
             ids = [m.get("id") for m in data.get("data", []) if m.get("id")]
+            # Exclude reasoning models that don't return clean JSON: gpt-oss-*
+            # replies with reasoning/markdown, so every generate attempt fails with
+            # "Expecting value: line 1 column 1" (run 63) — worse than skipping it.
+            ids = [i for i in ids if "gpt-oss" not in i.lower()]
             # prefer a 70B llama, then any llama, then whatever else is granted
             ids.sort(key=lambda x: (0 if "70b" in x.lower() else 1,
                                     0 if "llama" in x.lower() else 1, x))
