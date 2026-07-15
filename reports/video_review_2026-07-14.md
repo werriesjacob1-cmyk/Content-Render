@@ -385,3 +385,16 @@ VIDEO #2 — "The Time Machine in the Sky" (space/starlight, DIFFERENT domain fr
 BATCH STATUS so far: #1 mole rat (solid B, footage-subject fixed), #2 starlight (C+, cheesy
 footage, emoji-ban fix applied). Scripts consistently good; footage is the axis still being
 tuned. Continuing toward more different-topic videos.
+
+VIDEO #3 attempt — run 62 ABORTED (gate held, no weak video). Root cause: BATCH CADENCE too
+fast. Runs 60-62 back-to-back exhausted the strong free providers — Gemini 2.0-flash 429
+(RPM/quota), OpenRouter llama-70b:free 429 (upstream), so it fell to Cerebras gemma-4-31b
+(weak) which scored escalation 4 / payoff 5 -> aborted. Also learned gemini-2.5-flash is now
+404 for new keys too (only 2.0-flash works). Bugs fixed this cycle:
+ - Removed dead OpenRouter slug deepseek-chat-v3-0324:free (404 "no longer free").
+ - Guarded "'list' object has no attribute 'get'" (models sometimes return a JSON array).
+KEY LESSON: on free tier, renders must be SPACED (~20 min apart) so Gemini's per-minute quota
+recovers; back-to-back batching cannibalizes it and drops to weak models. Widening cadence.
+
+BATCH TALLY: 2 CLEAN shipped (#1 mole rat solid B, #2 starlight C+), 1 aborted (#3, provider
+exhaustion). Slowing cadence to accumulate 2-3 more good ones by morning.

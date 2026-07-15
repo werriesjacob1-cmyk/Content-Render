@@ -100,8 +100,10 @@ def cerebras_models():
 # endpoint, so it reuses _call_openai_compat. Optional/env-gated (no key = skip).
 # Free key (no card): https://openrouter.ai/keys . Add as OPENROUTER_API_KEY.
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free",
-                     "deepseek/deepseek-chat-v3-0324:free"]
+# deepseek-chat-v3-0324:free was dropped — OpenRouter now 404s it ("no longer
+# free"). llama-3.3-70b:free is the reliable strong free model (a 429 from it is
+# a transient upstream rate-limit, not a dead slug, so it stays).
+OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -1654,6 +1656,13 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                                           avoid_openers=avoid_openers, cta_style=cta_style,
                                           dossier=dossier))
             m = json.loads(raw)
+            if not isinstance(m, dict):
+                # some models (esp. gemma) occasionally return a bare JSON array
+                # or string; validate()/m.get() would then raise
+                # "'list' object has no attribute 'get'". Treat as an invalid
+                # attempt and retry rather than erroring out.
+                print(f"  attempt {attempt+1} invalid: model returned a {type(m).__name__}, not a JSON object")
+                continue
             err = validate(m, job_name, fact=chosen_fact)
             if err:
                 print(f"  attempt {attempt+1} invalid: {err}")
