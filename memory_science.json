@@ -1,28 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-12_what-happens-in-space-without-a-suit",
-      "metaphor": "space vacuum",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "title": "What Happens in Space Without a Suit?",
-      "fact_id": "human_vacuum",
-      "hook": "You'd survive space for 15 seconds",
-      "structure": {
-        "scene_count": 12,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "overall": 7.5
-      }
-    },
-    {
       "video_id": "science_2026-07-13_you-re-always-living-in-the-past",
       "metaphor": "Sun's Time Lag",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -250,6 +228,29 @@
         "escalation": 8.0,
         "payoff": 8.0,
         "rewatch": 9.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
+      "metaphor": "World-breaking sound",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SHARE",
+      "title": "The Sound That Broke the World",
+      "fact_id": "krakatoa_loudest",
+      "domain": "physics",
+      "hook": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
         "clarity": 9.0,
         "overall": 7.83
       }

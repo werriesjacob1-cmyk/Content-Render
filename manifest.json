@@ -1,102 +1,111 @@
 {
-  "title": "The Hidden Social Life of Forests",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "wood wide web",
-  "metaphor": "Underground fungal internet",
-  "hook": "Your walk through the woods is actually a trip through a city.",
-  "script": "Your walk through the woods is actually a trip through a city. Beneath your feet, a single teaspoon of soil contains miles of fungal filaments. This mycorrhizal network allows trees to trade sugar for phosphorus and nitrogen. But what if a forest was really one connected community? A dying tree can pump its remaining sugar to its neighbors through these threads. It is a living wood wide web that sounds alarms for aphid attacks. If you stretched the mycelium from one hectare, it would wrap around Earth multiple times. Some plants even hack the network to steal nutrients without giving any back. You are walking on a massive, silent conversation.",
+  "title": "The Sound That Broke the World",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "Krakatoa eruption",
+  "metaphor": "World-breaking sound",
+  "hook": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
+  "script": "You think the loudest sounds are nearby, but one traveled 3,000 miles. In 1883, the Krakatoa eruption created a noise so extreme it broke the scale. What happens when a sound is powerful enough to travel around the world? It stops being a noise and becomes a pressure wave. This wave was so intense it circled the globe seven times over five days. Sailors 40 miles away had their eardrums ruptured instantly. The blast released energy equal to 13,000 Hiroshima bombs. This energy pushed the ocean back, triggering tsunamis 120 feet high. It even turned the sun blue for years by veiling the stratosphere in sulfur. Send this to the friend who thinks they've heard it all.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your walk through the woods is actually a trip through a city.",
-      "on_screen_text": "WOOD WIDE WEB",
-      "search_query": "forest sunlight trees",
+      "voiceover": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
+      "on_screen_text": "Krakatoa eruption sound",
+      "search_query": "volcano eruption",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Beneath your feet, a single teaspoon of soil contains miles of fungal filaments.",
-      "on_screen_text": "MILES OF FILAMENTS",
-      "search_query": "forest floor closeup",
-      "motion": "zoom_in"
+      "voiceover": "In 1883, the Krakatoa eruption created a noise so extreme it broke the scale.",
+      "on_screen_text": "1883 Catastrophe",
+      "search_query": "volcanic ash cloud",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "This mycorrhizal network allows trees to trade sugar for phosphorus and nitrogen.",
-      "on_screen_text": "MYCORRHIZAL NETWORK",
-      "search_query": "forest tree roots",
+      "duration": 4,
+      "voiceover": "What happens when a sound is powerful enough to travel around the world?",
+      "on_screen_text": "Global Sound?",
+      "search_query": "earth from space",
       "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "But what if a forest was really one connected community?",
-      "on_screen_text": "ONE COMMUNITY?",
-      "search_query": "dense forest canopy",
+      "voiceover": "It stops being a noise and becomes a pressure wave.",
+      "on_screen_text": "Pressure Wave",
+      "search_query": "ocean storm waves",
       "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "A dying tree can pump its remaining sugar to its neighbors through these threads.",
-      "on_screen_text": "SHARING SUGAR",
-      "search_query": "dead fallen tree",
+      "voiceover": "This wave was so intense it circled the globe seven times over five days.",
+      "on_screen_text": "7 Times Around",
+      "search_query": "spinning globe",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "It is a living wood wide web that sounds alarms for aphid attacks.",
-      "on_screen_text": "WARNING SIGNALS",
-      "search_query": "leaf insect eating",
-      "motion": "static"
-    },
-    {
-      "id": 7,
-      "duration": 5,
-      "voiceover": "If you stretched the mycelium from one hectare, it would wrap around Earth multiple times.",
-      "on_screen_text": "WRAPS THE EARTH",
-      "search_query": "earth from space",
+      "duration": 4,
+      "voiceover": "Sailors 40 miles away had their eardrums ruptured instantly.",
+      "on_screen_text": "Physical Damage",
+      "search_query": "old sailing ship",
       "motion": "zoom_out"
     },
     {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "Some plants even hack the network to steal nutrients without giving any back.",
-      "on_screen_text": "NETWORK HACKERS",
-      "search_query": "ghost orchid flower",
+      "id": 7,
+      "duration": 4,
+      "voiceover": "The blast released energy equal to 13,000 Hiroshima bombs.",
+      "on_screen_text": "13,000 Bombs",
+      "search_query": "massive explosion",
       "motion": "zoom_in"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "This energy pushed the ocean back, triggering tsunamis 120 feet high.",
+      "on_screen_text": "120 Foot Waves",
+      "search_query": "giant tsunami wave",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "You are walking on a massive, silent conversation.",
-      "on_screen_text": "SILENT CONVERSATION",
-      "search_query": "boots walking forest",
+      "voiceover": "It even turned the sun blue for years by veiling the stratosphere in sulfur.",
+      "on_screen_text": "Blue Sun",
+      "search_query": "blue sky sun",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 10,
+      "duration": 4,
+      "voiceover": "Send this to the friend who thinks they've heard it all.",
+      "on_screen_text": "Share the Awe",
+      "search_query": "person on phone",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The wood wide web is real. Do you think trees are conscious? Yes or No?",
-    "The ground beneath you is more alive than it looks.",
-    "Nature's original internet."
+    "The Krakatoa eruption was so loud it literally circled the Earth. Do you think you could survive a sound like that?",
+    "A sound that traveled 3,000 miles.",
+    "The day the world heard a volcano."
   ],
   "hashtags": [
-    "#nature",
     "#science",
-    "#biology",
-    "#forest",
-    "#ecology"
+    "#history",
+    "#volcano",
+    "#geology",
+    "#earth",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
-  "cta_style": "LOOP",
-  "domain": "plants"
+  "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
+  "cta_style": "SHARE",
+  "domain": "physics"
 }
