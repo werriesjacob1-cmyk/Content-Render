@@ -171,6 +171,16 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
                                  # 6, a strong first attempt usually clears the bar and
                                  # breaks early, so 2 attempts is enough and keeps the
                                  # run well under the 30-min job timeout.
+# WALL-CLOCK BUDGET on the whole generation loop — a hard backstop that
+# complements the smaller regen count above. When ALL free providers are
+# throttled, the circuit breaker (call_groq) eventually opens, but before it
+# does the stacked per-attempt backoffs (generate_candidate's 8*attempt sleeps)
+# still burn time for nothing. Once the generation loop in main() has spent this
+# many seconds with no shippable script, stop attempting and abort fast (no
+# render, no release) instead of grinding. A HEALTHY run finishes every attempt
+# well under this (each LLM call is seconds, not minutes), so it never trips
+# normal operation — it only bites a fully-throttled run. Env-overridable.
+GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
 
 # ---------------------------------------------------------------------------
@@ -1654,6 +1664,16 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         dossier = research_dossier(chosen_fact)
     for attempt in range(5):
         try:
+            # If the circuit has already opened (every provider rate-limited 3x
+            # in a row this run), the escalating backoff below cannot outlast a
+            # dead daily quota — each remaining attempt would just sleep, then
+            # fail-fast. Stop here so a fully-throttled render aborts in seconds
+            # instead of grinding through 8+16+24+32s of sleeps per regeneration.
+            # When the LLM is healthy the circuit never opens, so this is a no-op.
+            if _CIRCUIT_OPEN:
+                print(f"  attempt {attempt+1} skipped: LLM circuit open (all providers "
+                      f"rate-limited) — abandoning further attempts to fail fast")
+                break
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
@@ -1873,7 +1893,19 @@ def main():
     # this shared research base.
     shared_dossier = research_dossier(chosen_fact)
     best_manifest, best_overall, best_quality, best_rank = None, None, None, None
+    _gen_deadline = time.time() + GEN_WALL_BUDGET_S
     for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
+        # Wall-clock backstop: if the generation loop has already spent its whole
+        # budget (see GEN_WALL_BUDGET_S) — which only happens when every provider
+        # is throttled and attempts are stuck in stacked backoffs — stop trying.
+        # Whatever we have (best_manifest, possibly None) then flows into the
+        # abort/hard-floor logic below, so a fully-throttled run fails fast rather
+        # than grinding ~10 min. A healthy run clears all attempts far under budget.
+        if time.time() > _gen_deadline:
+            print(f"  [quality] generation wall-clock budget ({GEN_WALL_BUDGET_S}s) exhausted "
+                  f"after {regen_i} attempt(s) — providers throttled; stopping so the run "
+                  f"fails fast instead of grinding on doomed retries")
+            break
         candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
                                         cta_style=cta_style, dossier=shared_dossier)
         if candidate is None:
