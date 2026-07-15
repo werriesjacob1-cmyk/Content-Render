@@ -132,9 +132,16 @@ QUALITY_THRESHOLD = 7.5
 # None) below its floor forces a regeneration REGARDLESS of the overall
 # average, even if overall clears QUALITY_THRESHOLD. This alone would have
 # caught the Sun video: payoff scored 5, floor is 6.
+# escalation was 7, but real Gemini runs (run 59) kept scoring otherwise-strong
+# scripts at escalation 6 while overall was 7.5 with payoff 9 / clarity 10 —
+# genuinely good videos, aborted over a single 1-point miss. Escalation 6 ("builds
+# well, not perfectly") is not a broken video; 5 or below is. Floor set to 6 so a
+# solid script (hook>=6, payoff>=6, escalation>=6, overall>=6.8) ships instead of
+# grinding forever. Hook/payoff stay at 6 — a 4/10 hook or payoff really is a bad
+# video and must still abort.
 QUALITY_CRITERION_FLOORS = {
     "hook": 6,
-    "escalation": 7,
+    "escalation": 6,
     "payoff": 6,
 }
 # HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
@@ -149,9 +156,15 @@ QUALITY_CRITERION_FLOORS = {
 # (fail-open, best_quality is None) is still allowed through — it passed every
 # structural gate, we just couldn't grade it.
 QUALITY_HARD_FLOOR = 6.8
-QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first. Keep this SMALL:
-                                 # each one re-runs the full generate+validate+punch-up
-                                 # pipeline (several Groq calls) inside one daily Action run.
+QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
+                                 # Was 2 (3 total), but each attempt re-runs the full
+                                 # generate+validate+info-gain+punch-up+score pipeline
+                                 # (~5 LLM calls), and on the free tier the per-minute
+                                 # rate limit turns 3 attempts into a ~13-min backoff
+                                 # grind (run 59). With the escalation floor relaxed to
+                                 # 6, a strong first attempt usually clears the bar and
+                                 # breaks early, so 2 attempts is enough and keeps the
+                                 # run well under the 30-min job timeout.
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
 
 # ---------------------------------------------------------------------------
