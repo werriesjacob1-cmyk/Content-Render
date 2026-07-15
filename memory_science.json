@@ -1,28 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-13_you-re-always-living-in-the-past",
-      "metaphor": "Sun's Time Lag",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "You're Always Living in the Past",
-      "fact_id": "sun_light_time",
-      "hook": "You're seeing the Sun as it was, not as it is",
-      "structure": {
-        "scene_count": 12,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 5.0,
-        "rewatch": 9.0,
-        "clarity": 8.0,
-        "overall": 7.17
-      }
-    },
-    {
       "video_id": "science_2026-07-14_morning-height-boost",
       "metaphor": "morning height",
       "viewer_job": "REFRAME",
@@ -253,6 +231,29 @@
         "rewatch": 6.0,
         "clarity": 9.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
+      "metaphor": "volcanic conveyor belt",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "title": "The Hawaiian Conveyor Belt",
+      "fact_id": "hawaii_moving_japan",
+      "domain": "geology",
+      "hook": "Your fingernails grow at the same speed the Hawaiian Islands move.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 10.0,
+        "clarity": 9.0,
+        "overall": 8.17
       }
     }
   ]

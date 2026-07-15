@@ -1,103 +1,79 @@
 {
-  "title": "The Sound That Broke the World",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "Krakatoa eruption",
-  "metaphor": "World-breaking sound",
-  "hook": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
-  "script": "You think the loudest sounds are nearby, but one traveled 3,000 miles. In 1883, the Krakatoa eruption created a noise so extreme it broke the scale. What happens when a sound is powerful enough to travel around the world? It stops being a noise and becomes a pressure wave. This wave was so intense it circled the globe seven times over five days. Sailors 40 miles away had their eardrums ruptured instantly. The blast released energy equal to 13,000 Hiroshima bombs. This energy pushed the ocean back, triggering tsunamis 120 feet high. It even turned the sun blue for years by veiling the stratosphere in sulfur. Send this to the friend who thinks they've heard it all.",
+  "title": "The Hawaiian Conveyor Belt",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "Hawaiian Islands drifting",
+  "metaphor": "volcanic conveyor belt",
+  "hook": "Your fingernails grow at the same speed the Hawaiian Islands move.",
+  "script": "Your fingernails grow at the same speed the Hawaiian Islands move. This happens because the Pacific Plate carries the archipelago northwest about 7 centimetres a year. What if you waited on Hawaii long enough? You would eventually drift into the Japan Trench and sink into the mantle. The islands are actually a conveyor belt of volcanoes moving over a fixed hotspot. This blowtorch of magma creates a trail of seamounts extending 6,000 kilometres across the ocean floor. It is a slow, one-way trip toward the horizon, at the same speed your fingernails grow.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
-      "on_screen_text": "Krakatoa eruption sound",
-      "search_query": "volcano eruption",
+      "duration": 5,
+      "voiceover": "Your fingernails grow at the same speed the Hawaiian Islands move.",
+      "on_screen_text": "Hawaiian Islands drifting",
+      "search_query": "human fingernails close up",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "In 1883, the Krakatoa eruption created a noise so extreme it broke the scale.",
-      "on_screen_text": "1883 Catastrophe",
-      "search_query": "volcanic ash cloud",
-      "motion": "zoom_out"
+      "duration": 6,
+      "voiceover": "This happens because the Pacific Plate carries the archipelago northwest about 7 centimetres a year.",
+      "on_screen_text": "7 Centimetres Per Year",
+      "search_query": "island chain from space",
+      "motion": "static"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "What happens when a sound is powerful enough to travel around the world?",
-      "on_screen_text": "Global Sound?",
-      "search_query": "earth from space",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 4,
-      "duration": 4,
-      "voiceover": "It stops being a noise and becomes a pressure wave.",
-      "on_screen_text": "Pressure Wave",
-      "search_query": "ocean storm waves",
+      "duration": 5,
+      "voiceover": "What if you waited on Hawaii long enough?",
+      "on_screen_text": "Waiting Millions of Years",
+      "search_query": "hawaii volcano aerial",
       "motion": "zoom_out"
     },
     {
-      "id": 5,
-      "duration": 5,
-      "voiceover": "This wave was so intense it circled the globe seven times over five days.",
-      "on_screen_text": "7 Times Around",
-      "search_query": "spinning globe",
+      "id": 4,
+      "duration": 6,
+      "voiceover": "You would eventually drift into the Japan Trench and sink into the mantle.",
+      "on_screen_text": "The Japan Trench",
+      "search_query": "deep ocean waves",
       "motion": "zoom_in"
     },
     {
+      "id": 5,
+      "duration": 6,
+      "voiceover": "The islands are actually a conveyor belt of volcanoes moving over a fixed hotspot.",
+      "on_screen_text": "A Volcanic Hotspot",
+      "search_query": "lava meets ocean",
+      "motion": "pan"
+    },
+    {
       "id": 6,
-      "duration": 4,
-      "voiceover": "Sailors 40 miles away had their eardrums ruptured instantly.",
-      "on_screen_text": "Physical Damage",
-      "search_query": "old sailing ship",
+      "duration": 6,
+      "voiceover": "This blowtorch of magma creates a trail of seamounts extending 6,000 kilometres across the ocean floor.",
+      "on_screen_text": "6,000 Kilometre Trail",
+      "search_query": "underwater mountain range",
       "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "The blast released energy equal to 13,000 Hiroshima bombs.",
-      "on_screen_text": "13,000 Bombs",
-      "search_query": "massive explosion",
+      "duration": 6,
+      "voiceover": "It is a slow, one-way trip toward the horizon, at the same speed your fingernails grow.",
+      "on_screen_text": "One-Way Trip",
+      "search_query": "ocean horizon sunset",
       "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "This energy pushed the ocean back, triggering tsunamis 120 feet high.",
-      "on_screen_text": "120 Foot Waves",
-      "search_query": "giant tsunami wave",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 9,
-      "duration": 4,
-      "voiceover": "It even turned the sun blue for years by veiling the stratosphere in sulfur.",
-      "on_screen_text": "Blue Sun",
-      "search_query": "blue sky sun",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 10,
-      "duration": 4,
-      "voiceover": "Send this to the friend who thinks they've heard it all.",
-      "on_screen_text": "Share the Awe",
-      "search_query": "person on phone",
-      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The Krakatoa eruption was so loud it literally circled the Earth. Do you think you could survive a sound like that?",
-    "A sound that traveled 3,000 miles.",
-    "The day the world heard a volcano."
+    "The Hawaiian Islands drifting toward Japan is a slow-motion disaster. Do you think you could handle a 7cm per year move?",
+    "A conveyor belt of magma.",
+    "The Pacific Plate never stops moving."
   ],
   "hashtags": [
-    "#science",
-    "#history",
-    "#volcano",
     "#geology",
-    "#earth",
+    "#hawaii",
+    "#science",
+    "#ocean",
+    "#nature",
     "#learnontiktok"
   ],
   "render": {
@@ -105,7 +81,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
-  "cta_style": "SHARE",
-  "domain": "physics"
+  "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
+  "cta_style": "LOOP",
+  "domain": "geology"
 }
