@@ -367,3 +367,21 @@ VIDEO #1 — "The Rodent That Breaks Biology" (naked mole rat, animals) — run 
 
 Continuing the batch toward 4-5 clean DIFFERENT-topic videos (domain rotation avoids
 animals next). Not posting — Buffer stays draft for the user's morning review.
+
+VIDEO #2 — "The Time Machine in the Sky" (space/starlight, DIFFERENT domain from #1) — run 61, SHIPPED.
+  Generated in 22s (Gemini, one attempt) — the calibrated gate is fast + reliable now.
+  Watched it (8-frame montage). Script topic good (looking at stars = seeing the past).
+  Issues (footage is the weak link on ABSTRACT topics):
+   - A cartoon 3D MONEY-EMOJI hand ($ coin) appeared mid-video — cheesy, off-topic, "looks
+     broken". Frame for a beach/dunes also off-topic; one clip (old man reading) repeated.
+   - Good relevant shots too: starfield, Milky Way, observatory.
+  Verdict: WEAKER than #1 (~C+) — the footage undercut a good script. Root pattern: SCRIPTS are
+  now consistently good, but FOOTAGE RELEVANCE is inconsistent for abstract topics (metaphor
+  queries return cheesy CGI/emoji stock; the LLM footage judge is often unavailable during rapid
+  batch renders so the top unjudged stock ships).
+  FIX this cycle: prompt now BANS metaphor queries that return cartoons/3D-emoji/clip-art (money,
+  coins, emoji, 3d render, clock, etc.) and requires real, literal, concrete footage.
+
+BATCH STATUS so far: #1 mole rat (solid B, footage-subject fixed), #2 starlight (C+, cheesy
+footage, emoji-ban fix applied). Scripts consistently good; footage is the axis still being
+tuned. Continuing toward more different-topic videos.

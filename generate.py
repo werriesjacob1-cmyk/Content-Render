@@ -659,6 +659,13 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
 - If the concept is invisible (acid, time, gravity, DNA, speed of nerves), pick a VISUAL METAPHOR
   a library does have: "bubbling green liquid" for acid, "hourglass sand falling" for time,
   "lightning storm slow motion" for nerve signals, "dominoes falling chain" for reactions.
+- REAL FOOTAGE ONLY — never a query that returns cartoons, 3D-rendered emoji, clip-art, or
+  illustrations. BANNED metaphor queries: money, coins, dollar, cash, emoji, icon, cartoon, 3d
+  render, animation, infographic, clock (returns clip-art) — these pull cheesy CGI/emoji stock
+  that makes a science video look broken (a 3D money-emoji once landed in a video about starlight).
+  Prefer a real, literal, photographable subject tied to the topic: for a space/astronomy video
+  use "night sky stars", "telescope observatory", "galaxy nebula", "moon surface", real footage —
+  not an abstract stand-in. When in doubt, pick the most concrete real-world thing the scene names.
 - Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
   setting) — a video that shows the same three shots on loop reads as spam.
 - NAME THE ACTUAL SUBJECT. If the video is about a SPECIFIC animal, object, place, or phenomenon
