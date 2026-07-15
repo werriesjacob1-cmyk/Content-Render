@@ -1,20 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-12_the-silent-void-of-space",
-      "metaphor": "cosmic quiet",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "COMMENT",
-      "title": "The Silent Void of Space",
-      "fact_id": "space_silent",
-      "hook": "You scream in space, but does anyone hear?",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-12_what-happens-in-space-without-a-suit",
       "metaphor": "space vacuum",
       "viewer_job": "REFRAME",
@@ -243,6 +229,29 @@
         "rewatch": 9.0,
         "clarity": 9.0,
         "overall": 8.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
+      "metaphor": "Underground fungal internet",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "title": "The Hidden Social Life of Forests",
+      "fact_id": "wood_wide_web",
+      "domain": "plants",
+      "hook": "Your walk through the woods is actually a trip through a city.",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]

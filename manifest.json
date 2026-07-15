@@ -1,103 +1,102 @@
 {
-  "title": "The Diamond Rain of Ice Giants",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "diamond rain",
-  "metaphor": "alien gemstone weather",
-  "hook": "Your jewelry is actually a common weather pattern on other planets.",
-  "script": "Your jewelry is actually a common weather pattern on other planets. Deep in the atmospheres of Neptune and Uranus, the physics of weather change. What if you could stand under a sky where it literally rains gemstones? The extreme pressure squeezes carbon atoms into solid crystals. This creates a constant downpour of diamond rain. These diamonds are heavy enough to sink for thousands of kilometers. They eventually pool into a slushy ocean of liquid diamond deep inside the planet. This ocean is larger than any sea on Earth. Send this to the person who thinks diamonds are rare.",
+  "title": "The Hidden Social Life of Forests",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "wood wide web",
+  "metaphor": "Underground fungal internet",
+  "hook": "Your walk through the woods is actually a trip through a city.",
+  "script": "Your walk through the woods is actually a trip through a city. Beneath your feet, a single teaspoon of soil contains miles of fungal filaments. This mycorrhizal network allows trees to trade sugar for phosphorus and nitrogen. But what if a forest was really one connected community? A dying tree can pump its remaining sugar to its neighbors through these threads. It is a living wood wide web that sounds alarms for aphid attacks. If you stretched the mycelium from one hectare, it would wrap around Earth multiple times. Some plants even hack the network to steal nutrients without giving any back. You are walking on a massive, silent conversation.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your jewelry is actually a common weather pattern on other planets.",
-      "on_screen_text": "Alien Diamond Rain",
-      "search_query": "diamond crystal",
+      "voiceover": "Your walk through the woods is actually a trip through a city.",
+      "on_screen_text": "WOOD WIDE WEB",
+      "search_query": "forest sunlight trees",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Deep in the atmospheres of Neptune and Uranus, the physics of weather change.",
-      "on_screen_text": "Neptune and Uranus",
-      "search_query": "planet neptune",
-      "motion": "zoom_out"
+      "voiceover": "Beneath your feet, a single teaspoon of soil contains miles of fungal filaments.",
+      "on_screen_text": "MILES OF FILAMENTS",
+      "search_query": "forest floor closeup",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "What if you could stand under a sky where it literally rains gemstones?",
-      "on_screen_text": "Gemstone Rain?",
-      "search_query": "blue planet space",
+      "duration": 5,
+      "voiceover": "This mycorrhizal network allows trees to trade sugar for phosphorus and nitrogen.",
+      "on_screen_text": "MYCORRHIZAL NETWORK",
+      "search_query": "forest tree roots",
       "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The extreme pressure squeezes carbon atoms into solid crystals.",
-      "on_screen_text": "Crushing Pressure",
-      "search_query": "industrial press machine",
-      "motion": "zoom_in"
+      "voiceover": "But what if a forest was really one connected community?",
+      "on_screen_text": "ONE COMMUNITY?",
+      "search_query": "dense forest canopy",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This creates a constant downpour of diamond rain.",
-      "on_screen_text": "Diamond Rain",
-      "search_query": "falling rain slow motion",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "A dying tree can pump its remaining sugar to its neighbors through these threads.",
+      "on_screen_text": "SHARING SUGAR",
+      "search_query": "dead fallen tree",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "These diamonds are heavy enough to sink for thousands of kilometers.",
-      "on_screen_text": "Sinking Crystals",
-      "search_query": "bubbles sinking water",
-      "motion": "zoom_in"
+      "voiceover": "It is a living wood wide web that sounds alarms for aphid attacks.",
+      "on_screen_text": "WARNING SIGNALS",
+      "search_query": "leaf insect eating",
+      "motion": "static"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "They eventually pool into a slushy ocean of liquid diamond deep inside the planet.",
-      "on_screen_text": "Liquid Diamond Ocean",
-      "search_query": "molten glass flowing",
+      "voiceover": "If you stretched the mycelium from one hectare, it would wrap around Earth multiple times.",
+      "on_screen_text": "WRAPS THE EARTH",
+      "search_query": "earth from space",
       "motion": "zoom_out"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "This ocean is larger than any sea on Earth.",
-      "on_screen_text": "Cosmic Scale",
-      "search_query": "ocean waves aerial",
+      "duration": 5,
+      "voiceover": "Some plants even hack the network to steal nutrients without giving any back.",
+      "on_screen_text": "NETWORK HACKERS",
+      "search_query": "ghost orchid flower",
       "motion": "zoom_in"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Send this to the person who thinks diamonds are rare.",
-      "on_screen_text": "Actually Common",
-      "search_query": "person looking surprised",
+      "voiceover": "You are walking on a massive, silent conversation.",
+      "on_screen_text": "SILENT CONVERSATION",
+      "search_query": "boots walking forest",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Diamond rain is real on Neptune. Would you travel there if you could? \ud83d\udc8e",
-    "The weather on ice giants is terrifyingly beautiful.",
-    "The most expensive rain in the universe."
+    "The wood wide web is real. Do you think trees are conscious? Yes or No?",
+    "The ground beneath you is more alive than it looks.",
+    "Nature's original internet."
   ],
   "hashtags": [
-    "#space",
-    "#astronomy",
+    "#nature",
     "#science",
-    "#planets",
-    "#physics",
-    "#learnontiktok"
+    "#biology",
+    "#forest",
+    "#ecology"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
-  "cta_style": "SHARE",
-  "domain": "space"
+  "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
+  "cta_style": "LOOP",
+  "domain": "plants"
 }
