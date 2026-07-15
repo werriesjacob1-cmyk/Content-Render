@@ -1,95 +1,95 @@
 {
-  "title": "The Rodent That Breaks Biology",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "naked mole rat",
-  "metaphor": "Biological Rule Breaker",
-  "hook": "Your brain would die in minutes without oxygen, but not this animal's.",
-  "script": "Your brain would die in minutes without oxygen, but not this animal's. What if a brain could just switch fuels when the air ran out? The naked mole rat can survive for 18 minutes with zero oxygen. It does this by switching its metabolism to burn fructose instead of glucose. This fuel swap happens in the heart and brain, not just the gut. They are also cold-blooded, meaning they cannot regulate their own body temperature. Most shockingly, they almost never develop cancer. They live over 30 years, which is ten times longer than a mouse their size. This is a creature that simply refuses to die, like a naked mole rat.",
+  "title": "The Diamond Rain of Ice Giants",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "diamond rain",
+  "metaphor": "alien gemstone weather",
+  "hook": "Your jewelry is actually a common weather pattern on other planets.",
+  "script": "Your jewelry is actually a common weather pattern on other planets. Deep in the atmospheres of Neptune and Uranus, the physics of weather change. What if you could stand under a sky where it literally rains gemstones? The extreme pressure squeezes carbon atoms into solid crystals. This creates a constant downpour of diamond rain. These diamonds are heavy enough to sink for thousands of kilometers. They eventually pool into a slushy ocean of liquid diamond deep inside the planet. This ocean is larger than any sea on Earth. Send this to the person who thinks diamonds are rare.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your brain would die in minutes without oxygen, but not this animal's.",
-      "on_screen_text": "Naked Mole Rat",
-      "search_query": "rodent close up",
+      "voiceover": "Your jewelry is actually a common weather pattern on other planets.",
+      "on_screen_text": "Alien Diamond Rain",
+      "search_query": "diamond crystal",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if a brain could just switch fuels when the air ran out?",
-      "on_screen_text": "Survival Switch",
-      "search_query": "burrow tunnel dark",
+      "voiceover": "Deep in the atmospheres of Neptune and Uranus, the physics of weather change.",
+      "on_screen_text": "Neptune and Uranus",
+      "search_query": "planet neptune",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The naked mole rat can survive for 18 minutes with zero oxygen.",
-      "on_screen_text": "18 Minutes",
-      "search_query": "mole rat underground",
+      "voiceover": "What if you could stand under a sky where it literally rains gemstones?",
+      "on_screen_text": "Gemstone Rain?",
+      "search_query": "blue planet space",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "It does this by switching its metabolism to burn fructose instead of glucose.",
-      "on_screen_text": "Fructose Fuel",
-      "search_query": "sugar crystals macro",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "The extreme pressure squeezes carbon atoms into solid crystals.",
+      "on_screen_text": "Crushing Pressure",
+      "search_query": "industrial press machine",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "This fuel swap happens in the heart and brain, not just the gut.",
-      "on_screen_text": "Total Shutdown",
-      "search_query": "beating heart silhouette",
-      "motion": "zoom_in"
+      "voiceover": "This creates a constant downpour of diamond rain.",
+      "on_screen_text": "Diamond Rain",
+      "search_query": "falling rain slow motion",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "They are also cold-blooded, meaning they cannot regulate their own body temperature.",
-      "on_screen_text": "Cold Blooded",
-      "search_query": "frost on glass",
-      "motion": "static"
+      "duration": 5,
+      "voiceover": "These diamonds are heavy enough to sink for thousands of kilometers.",
+      "on_screen_text": "Sinking Crystals",
+      "search_query": "bubbles sinking water",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Most shockingly, they almost never develop cancer.",
-      "on_screen_text": "Cancer Resistant",
-      "search_query": "white lab coat",
+      "duration": 5,
+      "voiceover": "They eventually pool into a slushy ocean of liquid diamond deep inside the planet.",
+      "on_screen_text": "Liquid Diamond Ocean",
+      "search_query": "molten glass flowing",
       "motion": "zoom_out"
     },
     {
       "id": 8,
-      "duration": 5,
-      "voiceover": "They live over 30 years, which is ten times longer than a mouse their size.",
-      "on_screen_text": "30 Year Lifespan",
-      "search_query": "hourglass sand falling",
+      "duration": 4,
+      "voiceover": "This ocean is larger than any sea on Earth.",
+      "on_screen_text": "Cosmic Scale",
+      "search_query": "ocean waves aerial",
       "motion": "zoom_in"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "This is a creature that simply refuses to die, like a naked mole rat.",
-      "on_screen_text": "Biological Glitch",
-      "search_query": "rodent close up",
+      "voiceover": "Send this to the person who thinks diamonds are rare.",
+      "on_screen_text": "Actually Common",
+      "search_query": "person looking surprised",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The naked mole rat ignores the basic rules of life. Would you trade your temperature control for a 30-year rodent lifespan? Yes or No?",
-    "18 minutes without air. This is biologically impossible for most mammals.",
-    "A metabolic switch that prevents cancer and hypoxia."
+    "Diamond rain is real on Neptune. Would you travel there if you could? \ud83d\udc8e",
+    "The weather on ice giants is terrifyingly beautiful.",
+    "The most expensive rain in the universe."
   ],
   "hashtags": [
-    "#biology",
-    "#nature",
+    "#space",
+    "#astronomy",
     "#science",
-    "#evolution",
-    "#animals",
+    "#planets",
+    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -97,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
-  "cta_style": "LOOP",
-  "domain": "animals"
+  "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
+  "cta_style": "SHARE",
+  "domain": "space"
 }

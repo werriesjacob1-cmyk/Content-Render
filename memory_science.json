@@ -1,20 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-12_hummingbird-heart-rate",
-      "metaphor": "tiny bird",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "title": "Hummingbird Heart Rate",
-      "fact_id": "hummingbird_heart",
-      "hook": "Your heart beats like a hummingbird's?",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-12_the-silent-void-of-space",
       "metaphor": "cosmic quiet",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -234,6 +220,29 @@
         "rewatch": 5.0,
         "clarity": 9.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
+      "metaphor": "alien gemstone weather",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SHARE",
+      "title": "The Diamond Rain of Ice Giants",
+      "fact_id": "diamond_rain",
+      "domain": "space",
+      "hook": "Your jewelry is actually a common weather pattern on other planets.",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "overall": 8.33
       }
     }
   ]
