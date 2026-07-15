@@ -303,3 +303,42 @@ resets daily; Cerebras needs account access), runs will ABORT cleanly rather tha
 ship junk. First genuinely-good video expected after the Gemini reset — the 07:45
 UTC validation trigger will catch it. Caption content-alignment confirmed live in
 run 54 ("whisper align: 101 REAL word timings, content-aligned").
+
+## NEW-SESSION KICKOFF (paste this as the first message in a fresh session)
+Context for why: the GitHub MCP connector dropped mid-session and a running
+session can't hot-reload it, so render triggering/inspection must resume in a
+NEW session (which picks up the reconnected connector at startup). All code +
+state is on main; CLAUDE.md + this log carry the context.
+
+-----------------------------------------------------------------------------
+Continue the autonomous faceless science-video work on
+werriesjacob1-cmyk/content-render. First read CLAUDE.md and
+reports/video_review_2026-07-14.md for full context (goal, hard rules, the 4
+free LLM providers + reset times, the 5 footage sources, the quality gates, and
+the video review rubric). Do NOT post anything — everything stays a Buffer draft.
+
+Then run the OVERNIGHT BATCH once Gemini's free quota is back (it resets at
+2:00 AM CT / 07:00 UTC; if it's already past that, start now):
+  1) Trigger a render (GitHub actions_run_trigger run_workflow, render.yml, ref
+     main). Wait ~7 min.
+  2) Read the "Auto-generate a fresh video idea" step log. Confirm a strong
+     provider carried it ("[model] using gemini:..." or "openrouter:...") and it
+     did NOT abort / use a near-miss. Note the quality score.
+  3) If it produced a CLEAN video (cleared the 6.8 hard floor): download
+     out/final.mp4 from the run artifact, extract several frames across the
+     timeline, WATCH it, and write a REAL verdict against the review rubric in
+     CLAUDE.md (caption sync tight, no repeated facts, plain everyday language /
+     no jargon, no "not even the strangest part" crutch, footage varied AND
+     relevant, genuinely interesting, strong non-command ending). Note topic/domain.
+  4) ADJUST: fix any concrete flaw in the prompt/code, commit, push, render again.
+  5) Repeat to accumulate 4-5 CLEAN videos across DIFFERENT topics/domains, spacing
+     renders a few minutes apart so the free quotas last. If runs abort on quality
+     or all providers throttle, report honestly and back off.
+  6) Leave a concise summary for the user: how many clean videos, their topics, the
+     quality verdicts, and any adjustments made. Keep improving without being asked.
+
+Free-tier reality to keep in mind and be honest about: nightly volume is capped by
+free daily quotas, so a big queue accumulates over DAYS as quotas reset, not in one
+night. If generation still grinds 10+ min when all providers are throttled, apply
+the pending "wall-clock budget on generate.py's main() loop so it aborts fast" fix.
+-----------------------------------------------------------------------------
