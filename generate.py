@@ -1263,14 +1263,39 @@ def validate(m, job_name, fact=None):
 
     # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
     full = (m["script"] + " " + " ".join(c for c in m.get("captions", []))).lower()
-    # map each "number + following noun" and each "number + preceding noun"
-    pairs = re.findall(r"(\d[\d,\.]*)\s+([a-z]{3,})", full)
+    # map each "number + following noun". A scale/planet qualifier immediately
+    # after the number ("243 EARTH days", "4.6 BILLION years") is skipped so the
+    # pair keys on the REAL head noun ("days"/"years"), not the qualifier — else
+    # "243 Earth days" and "225 Earth days" (two legitimate, different Venus
+    # periods) would collide on the word "earth" and be wrongly flagged.
+    _NUM_QUALIFIERS = r"(?:earth|light|solar|lunar|billion|million|thousand|hundred|trillion)"
+    pairs = re.findall(rf"(\d[\d,\.]*)\s+(?:{_NUM_QUALIFIERS}\s+)?([a-z]{{3,}})", full)
+    # This guard targets contradictory COUNTS of a discrete named thing ("7
+    # colors" vs "16 colors"). Two different MEASUREMENTS that share a unit
+    # ("243 days" for a spin, "225 days" for an orbit; "5000 km" vs "9000 km"
+    # for two different depths) are normal, not contradictions — so units of
+    # measure are excluded. Without this, ordinary astronomy/geology scripts
+    # (which routinely quote several distances/durations in the same unit) got
+    # aborted before ever rendering. Discrete-count contradictions still fire.
+    _MEASURE_UNITS = {
+        "times", "ways", "kinds", "types", "of", "the", "and",
+        "days", "day", "years", "year", "hours", "hour", "minutes", "minute",
+        "seconds", "second", "weeks", "week", "months", "month", "decades",
+        "centuries", "millennia",
+        "kilometres", "kilometers", "kilometre", "kilometer", "metres",
+        "meters", "metre", "meter", "miles", "mile", "feet", "foot", "inches",
+        "inch", "centimetres", "centimeters", "millimetres", "millimeters",
+        "degrees", "degree", "celsius", "fahrenheit", "kelvin",
+        "kilograms", "kilogram", "grams", "gram", "pounds", "pound", "tonnes",
+        "tons", "ton", "litres", "liters", "millilitres", "gallons",
+        "percent", "kilometres-per-hour", "watts", "volts", "joules",
+    }
     by_noun = {}
     for num, noun in pairs:
         n = num.rstrip(".").replace(",", "")
         by_noun.setdefault(noun, set()).add(n)
     for noun, nums in by_noun.items():
-        if len(nums) > 1 and noun not in ("times", "ways", "kinds", "types", "of", "the", "and"):
+        if len(nums) > 1 and noun not in _MEASURE_UNITS:
             return f"contradictory numbers for '{noun}': {sorted(nums)}"
     # reject absurd fractional counts of discrete things (16.5 colors, 3.5 hearts)
     for num, noun in pairs:
