@@ -1260,6 +1260,186 @@
         "eyeglasses frame closeup",
         "heated metal glow"
       ]
+    },
+    {
+      "id": "lightning_hotter_sun",
+      "domain": "weather",
+      "fact": "A lightning bolt heats the air around it to roughly 30,000 kelvin, about five times hotter than the surface of the Sun.",
+      "angle": "a stunning true comparison people repeat to sound smart",
+      "key_terms": [
+        "30,000 kelvin",
+        "five times",
+        "Sun"
+      ],
+      "whatif": "What if you could take a lightning bolt's temperature? For a few millionths of a second its channel hits near 30,000 kelvin, roughly five times the Sun's surface, which sits around 5,800.",
+      "wow": "That sudden heat makes the air burst outward faster than sound, and the shockwave is exactly what you hear as thunder.",
+      "queries": [
+        "lightning strike storm",
+        "thunderstorm night clouds",
+        "electric spark closeup"
+      ]
+    },
+    {
+      "id": "spider_silk_steel",
+      "domain": "materials",
+      "fact": "Weight for weight, spider dragline silk is stronger than steel and tougher than Kevlar.",
+      "angle": "a true fact that reframes a common everyday thing",
+      "key_terms": [
+        "dragline silk",
+        "steel",
+        "Kevlar"
+      ],
+      "whatif": "What if a strand of spider silk were as thick as a pencil? By weight it beats steel for strength and Kevlar for toughness, so that rope could soak up enormous force without snapping.",
+      "wow": "A spider spins this super-material at room temperature from water and protein, something no human factory can yet copy.",
+      "queries": [
+        "spider web dew drops",
+        "spider spinning web",
+        "web macro morning"
+      ]
+    },
+    {
+      "id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "fact": "Tyrannosaurus rex lived closer in time to us than to Stegosaurus.",
+      "angle": "reframes how people picture deep time",
+      "key_terms": [
+        "Stegosaurus",
+        "Tyrannosaurus rex",
+        "150 million years"
+      ],
+      "whatif": "What if a T. rex could have met a Stegosaurus? It never could. Stegosaurus vanished about 150 million years ago and T. rex lived around 66 million years ago, a bigger gap than the one between T. rex and you.",
+      "wow": "The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs.",
+      "queries": [
+        "dinosaur skeleton museum",
+        "trex fossil display",
+        "prehistoric landscape art"
+      ]
+    },
+    {
+      "id": "cleopatra_pyramid_moon",
+      "domain": "history",
+      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid.",
+      "angle": "a true fact that rewires your sense of history",
+      "key_terms": [
+        "Great Pyramid",
+        "Moon landing",
+        "2,500 years"
+      ],
+      "whatif": "What if Cleopatra picked the closer event, the pyramids or the Moon landing? The Great Pyramid was already about 2,500 years old in her lifetime, while the Moon landing was under 2,000 years after her, so the rockets win.",
+      "wow": "The pyramids were ancient history even to the ancient Egyptians we picture as their builders.",
+      "queries": [
+        "great pyramid giza",
+        "egyptian temple carvings",
+        "moon landing archival"
+      ]
+    },
+    {
+      "id": "antarctica_largest_desert",
+      "domain": "earth",
+      "fact": "The largest desert on Earth is Antarctica. A desert is defined by how little water falls, not by heat.",
+      "angle": "reframes a word everyone thinks they understand",
+      "key_terms": [
+        "Antarctica",
+        "14 million square kilometres",
+        "polar desert"
+      ],
+      "whatif": "What if you ranked deserts by size instead of temperature? Antarctica tops the list at about 14 million square kilometres, because almost no precipitation reaches its interior. It is a frozen polar desert.",
+      "wow": "Parts of Antarctica's Dry Valleys may not have seen rain for around two million years, making them some of the driest places on the planet.",
+      "queries": [
+        "antarctica ice landscape",
+        "vast snow plain",
+        "polar ice sheet aerial"
+      ]
+    },
+    {
+      "id": "hawaii_moving_japan",
+      "domain": "geology",
+      "fact": "The Hawaiian Islands are slowly drifting toward Japan, at about the speed your fingernails grow.",
+      "angle": "a slow true motion nobody notices",
+      "key_terms": [
+        "Pacific Plate",
+        "7 centimetres",
+        "hotspot"
+      ],
+      "whatif": "What if you waited on Hawaii long enough? The Pacific Plate carries the islands northwest about 7 centimetres a year, so over millions of years today's islands sink and fresh ones rise over the same hotspot.",
+      "wow": "Hawaii is really a conveyor belt of volcanoes: the plate slides over a fixed hot spot and leaves a long trail of islands behind it.",
+      "queries": [
+        "hawaii volcano aerial",
+        "lava meets ocean",
+        "island chain from space"
+      ]
+    },
+    {
+      "id": "sun_quantum_tunneling",
+      "domain": "physics",
+      "fact": "The Sun's core is actually too cool for fusion. It only shines because of a quantum loophole.",
+      "angle": "reframes why the Sun works at all",
+      "key_terms": [
+        "quantum tunnelling",
+        "15 million degrees",
+        "Coulomb barrier"
+      ],
+      "whatif": "What if the rules were strictly classical? At about 15 million degrees the Sun's protons lack the energy to smash together over the Coulomb barrier, but quantum tunnelling lets them slip through occasionally, and that is why the Sun burns.",
+      "wow": "Without a strange effect that lets particles cheat through walls, the stars, and we, would not exist.",
+      "queries": [
+        "sun surface plasma",
+        "solar flare closeup",
+        "glowing star space"
+      ]
+    },
+    {
+      "id": "flavor_is_mostly_smell",
+      "domain": "senses",
+      "fact": "Most of what you call taste is really smell. Pinch your nose and food loses much of its flavour.",
+      "angle": "reframes a sense you use every day",
+      "key_terms": [
+        "retronasal smell",
+        "five basic tastes",
+        "80 percent"
+      ],
+      "whatif": "What if you ate with your nose pinched shut? Your tongue reports only five basic tastes, so up to about 80 percent of a food's flavour, which really comes from smell drifting up the back of your throat, simply disappears.",
+      "wow": "It is why food tastes flat with a cold, and why most people cannot name a jelly bean's flavour with their nose held.",
+      "queries": [
+        "person tasting food",
+        "colorful candy macro",
+        "chef plating dish"
+      ]
+    },
+    {
+      "id": "plastic_eating_bacteria",
+      "domain": "biology",
+      "fact": "In 2016 scientists found a bacterium that had evolved to eat plastic bottles.",
+      "angle": "a surprising true discovery",
+      "key_terms": [
+        "Ideonella sakaiensis",
+        "PET plastic",
+        "2016"
+      ],
+      "whatif": "What if a microbe learned to digest our rubbish? One found at a Japanese recycling site in 2016, Ideonella sakaiensis, makes an enzyme that breaks down PET, the plastic in drink bottles, and eats it for food.",
+      "wow": "Engineered versions of its enzyme can now break a plastic bottle apart in hours, hinting at a real future for recycling.",
+      "queries": [
+        "plastic bottles pile",
+        "bacteria under microscope",
+        "recycling plant conveyor"
+      ]
+    },
+    {
+      "id": "ocean_makes_oxygen",
+      "domain": "ocean",
+      "fact": "At least half of the oxygen you breathe comes from the ocean, not from forests.",
+      "angle": "reframes where our air really comes from",
+      "key_terms": [
+        "phytoplankton",
+        "Prochlorococcus",
+        "half"
+      ],
+      "whatif": "What if forests were not the main source of our air? Tiny drifting phytoplankton in the sea make at least half of Earth's oxygen, and one kind, Prochlorococcus, may be the most abundant photosynthetic living thing on the planet.",
+      "wow": "Roughly every second breath you take comes from microscopic sea life most people have never heard of.",
+      "queries": [
+        "ocean surface sunlight",
+        "plankton microscope",
+        "underwater light rays"
+      ]
     }
   ]
 }
