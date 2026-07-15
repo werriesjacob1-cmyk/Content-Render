@@ -1236,6 +1236,16 @@ _QUERY_STOPWORDS = {
     "than", "then", "when", "where", "why", "how", "what", "which", "can", "could", "would",
     "will", "just", "only", "about", "over", "under", "up", "down", "out", "same", "one", "two",
     "here", "there", "part", "thing", "things", "actually", "really", "very",
+    # non-visual fillers/adverbs/light-verbs that leak in and make un-searchable
+    # queries (e.g. 'underground threads almost'); keep only concrete nouns
+    "almost", "all", "also", "both", "each", "many", "much", "some", "any", "none", "every",
+    "lives", "live", "lived", "fine", "made", "make", "makes", "making", "use", "used", "using",
+    "know", "known", "knows", "never", "always", "still", "like", "such", "being", "been",
+    "have", "has", "had", "does", "did", "done", "goes", "going", "went", "come", "comes",
+    "came", "take", "takes", "took", "give", "gives", "gave", "keep", "become", "becomes",
+    "seem", "seems", "look", "looks", "feel", "think", "means", "without", "within", "around",
+    "across", "through", "because", "while", "during", "before", "after", "since", "until",
+    "again", "once", "could", "should", "might", "must", "also", "them", "who", "whom",
 }
 
 
