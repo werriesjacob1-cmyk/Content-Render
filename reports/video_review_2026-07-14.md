@@ -419,3 +419,24 @@ limit is the free daily quota (~2-4 good videos/day, accumulating over days).
 STOPPING the aggressive loop — no strong provider available until tomorrow's Gemini reset.
 Re-armed a resumption for the next reset. Both videos are GitHub Releases (Buffer drafts,
 NOT posted) for the user's morning verdict.
+
+## VIDEO #3 discovered (shipped autonomously by the daily cron ~noon CT, 2026-07-15)
+"The Diamond Rain of Ice Giants" (space — diamond rain on Neptune/Uranus). Generated while
+the interactive loop was paused; a provider had recovered enough for the scheduled cron run
+to succeed and ship it. Watched it (8-frame montage). BEST VIDEO YET — A-/B+.
+  - Script: excellent hook ("your jewelry is a weather pattern on other planets"), real
+    escalation (pressure -> diamond rain -> sinking -> liquid-diamond ocean bigger than
+    Earth's seas), accurate, strong SHARE ending ("send this to the person who thinks
+    diamonds are rare"). 98 words.
+  - Footage: consistently RELEVANT + varied — real diamonds/gems, a planet for Neptune,
+    industrial interior for pressure, molten foundry for liquid diamond, a person holding a
+    crystal for the ending. NO emoji/cartoon, NO wrong subject, NO off-topic clips. The
+    footage-subject-naming + emoji-ban fixes visibly WORKED.
+  - Clean single-word captions + tidy stat cards, good grade.
+
+BATCH TALLY (quality trending UP as footage fixes landed):
+  #1 Naked mole rat (animals) — solid B  (footage showed generic rodents; fixed after)
+  #2 Starlight/time (space)   — C+       (cheesy emoji footage; fixed after)
+  #3 Diamond rain (space)     — A-/B+    (footage fixes working; best yet)
+3 clean different-topic videos now in the review set. Note: the daily cron auto-produces
+videos when a provider has budget, so the sample accumulates even without me driving renders.
