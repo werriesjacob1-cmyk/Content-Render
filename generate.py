@@ -277,7 +277,15 @@ VIEWER_JOBS = [
 # scaffold as VIEWER_JOBS/fact selection) and threaded through build_prompt /
 # punch_up / score_script so every stage of the pipeline agrees on what
 # "sticking the landing" means for THIS video.
-CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT", "SHARE"]
+# SHARE was removed from the rotation: its ending is by design a literal command
+# ("send this to the friend who...", "tag the person who needs this"), which is
+# exactly the command ending the user's rubric bans — it undercut the otherwise
+# A-grade Krakatoa video (render 67) with a hollow "send this to a friend" close.
+# The remaining three all end on a NON-command note: a resonant payoff, a
+# seamless rewatch loop, or a genuine question. Organic shares are better earned
+# by a mind-blowing resonant payoff than by begging for a tag. SHARE's rule is
+# kept defined below in case it's ever wanted, but it is not assigned.
+CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT"]
 
 CTA_ENDING_RULES = {
     "SAVE_WORTHY": (
@@ -356,7 +364,16 @@ GENERIC_SAVE_CMD = re.compile(
     r"|\b(take|grab|get) a screenshot\b"
     r"|\bmake sure (you|to) save\b"
     r"|\bdon'?t forget to (save|screenshot)\b"
-    r"|\byou'?ll (want|need) (this|that|it) again\b",
+    r"|\byou'?ll (want|need) (this|that|it) again\b"
+    # share/tag command endings — same hollow-CTA failure as the save commands.
+    # SHARE is out of the rotation, but this belt-and-suspenders guard rejects
+    # any "send this to..."/"tag a friend"/"show this to..." close that a model
+    # might still produce, so no video ends on a command to redistribute it.
+    r"|\bsend (this|it) to\b"
+    r"|\bshare (this|it|that) with\b"
+    r"|\btag (a|the|your|someone|that)\b"
+    r"|\bshow (this|it) to (the|a|your|someone)\b"
+    r"|\bsend (this|it) to the (friend|person|one)\b",
     re.I)
 
 # A "save-worthy" moment is engineered into the CONTENT, not just the ending:
@@ -583,9 +600,12 @@ HOOK (first 2 seconds decide 70% of retention):
   (a body part, an animal, an object, a number) up front.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
-- 8-10 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 90-120 words (~30-40 seconds spoken). Write the FULL script. Too short = rejected.
-  A tight 30-40s video beats a padded 60s one: competitors win on completion, so cut every non-essential line.
+- 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
+- Total narration MUST be 78-98 words. At this channel's calm narration speed that renders to about
+  38-46 seconds — measured, not guessed (a 110-word script came out at 49s, too long). Write the FULL
+  script, but keep it TIGHT. Too short = rejected; padded = rejected.
+  A tight sub-45s video beats a padded 55s one: competitors win on completion, so cut every non-essential
+  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
 - PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1232,14 +1252,14 @@ def validate(m, job_name, fact=None):
         if s.get("motion") not in ("zoom_in", "zoom_out", "pan", "static"):
             s["motion"] = random.choice(["zoom_in", "zoom_out", "pan", "static"])
 
-    # script length sanity: target is 90-120 words (~30-40s spoken, see
-    # build_prompt); hard ceiling tightened 240 -> 150 -> 135 -- the Sun video
-    # ran 166 words and read as relentless / "does not stop talking", and a
-    # tight 30-40s video beats a padded 60s one on completion. Floor kept at
-    # 70 so a legitimately tight script isn't penalized for being efficient.
+    # script length sanity: target is 78-98 words (see build_prompt). Ceiling
+    # tightened 135 -> 112 because 110-117-word scripts (renders 66/67) rendered
+    # to 49-53s at this channel's narration speed — too long for completion.
+    # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
+    # dense script isn't penalized for being efficient.
     wc = len(_clean(m["script"]).split())
-    if not (70 <= wc <= 135):
-        return f"script word count {wc} out of range (target 90-120, hard cap 135)"
+    if not (62 <= wc <= 112):
+        return f"script word count {wc} out of range (target 78-98, hard cap 112)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework

@@ -206,6 +206,15 @@ def test_validate_rejections():
     m["hook"] = "You are seeing it as it was, not as it is."
     check(G.validate(m, "EXPLAIN") is not None, "abstract 'as it was not as it is' hook rejected")
 
+    # command ending: "send this to a friend" (the render-67 Krakatoa flaw). The
+    # rubric bans command endings; SHARE is out of the rotation and the guard now
+    # rejects the phrasing outright.
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][-1]["voiceover"] = "Send this to the friend who thinks they have heard it all."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "'send this to a friend' command ending rejected")
+    check("SHARE" not in G.CTA_STYLES, "SHARE command-ending style removed from rotation")
+
     # contradictory COUNT of a discrete named thing (7 moons vs 12 moons) is a
     # real fabrication and must still be rejected by the contradiction guard.
     m = copy.deepcopy(FIX_ASTRO)
