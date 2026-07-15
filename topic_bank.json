@@ -1440,6 +1440,204 @@
         "plankton microscope",
         "underwater light rays"
       ]
+    },
+    {
+      "id": "more_trees_than_stars",
+      "domain": "space",
+      "fact": "There are more trees on Earth than there are stars in the Milky Way.",
+      "angle": "a true number so lopsided it resets your sense of scale",
+      "key_terms": [
+        "3 trillion trees",
+        "100 billion stars",
+        "Milky Way"
+      ],
+      "whatif": "What if you tried to match every tree to a star? You would run out of stars. Earth has roughly 3 trillion trees, while the Milky Way holds somewhere around 100 to 400 billion stars.",
+      "wow": "We often say there are more stars than grains of sand, yet right here on one planet the trees already outnumber our entire galaxy's stars.",
+      "queries": [
+        "forest aerial drone",
+        "night sky stars",
+        "dense woodland canopy"
+      ]
+    },
+    {
+      "id": "sharks_older_than_trees",
+      "domain": "deep_time",
+      "fact": "Sharks are older than trees. They have existed for about 450 million years.",
+      "angle": "reframes how ancient a familiar animal really is",
+      "key_terms": [
+        "450 million years",
+        "Saturn's rings",
+        "trees"
+      ],
+      "whatif": "What if you lined up sharks and trees by age? Sharks win by a wide margin, swimming the oceans about 450 million years ago, roughly 90 million years before the first trees ever grew.",
+      "wow": "Sharks are also older than Saturn's rings and have survived all five mass extinctions that wiped out most life on Earth.",
+      "queries": [
+        "shark swimming underwater",
+        "ancient forest trees",
+        "deep ocean blue"
+      ]
+    },
+    {
+      "id": "pistol_shrimp_bubble",
+      "domain": "animals",
+      "fact": "A shrimp can snap its claw so fast it boils the water and flashes light hotter than the sun's surface.",
+      "angle": "a tiny animal doing something physically absurd",
+      "key_terms": [
+        "pistol shrimp",
+        "4,700 degrees",
+        "cavitation bubble"
+      ],
+      "whatif": "What if an animal could punch water hard enough to make it glow? The pistol shrimp does. Its claw snaps so fast it rips open a cavitation bubble that collapses at nearly 4,700 degrees, briefly close to the sun's surface, with a snap of light and sound.",
+      "wow": "The shockwave alone can stun or kill its prey, and the collective snapping of these shrimp is loud enough to interfere with submarine sonar.",
+      "queries": [
+        "pistol shrimp reef",
+        "underwater bubbles macro",
+        "coral reef shrimp"
+      ]
+    },
+    {
+      "id": "bacteria_outnumber_cells",
+      "domain": "body",
+      "fact": "Your body contains roughly as many bacterial cells as human cells, maybe more.",
+      "angle": "unsettling truth about what 'you' are made of",
+      "key_terms": [
+        "38 trillion",
+        "human cells",
+        "microbiome"
+      ],
+      "whatif": "What if you counted every cell you carry? Only about half would be yours. Your body holds around 38 trillion bacteria alongside roughly 30 trillion human cells.",
+      "wow": "Most of them live in your gut, and they help digest food, train your immune system, and even influence your mood.",
+      "queries": [
+        "bacteria microscope",
+        "human silhouette light",
+        "gut illustration microscope"
+      ]
+    },
+    {
+      "id": "day_getting_longer",
+      "domain": "earth",
+      "fact": "Earth's days are slowly getting longer because the Moon is stealing its spin.",
+      "angle": "a slow cosmic theft happening right now",
+      "key_terms": [
+        "1.7 milliseconds",
+        "the Moon",
+        "23 hours"
+      ],
+      "whatif": "What if a day wasn't always 24 hours? It wasn't. The Moon's pull drags on Earth and slows its spin by about 1.7 milliseconds per century, so dinosaurs lived days closer to 23 hours long.",
+      "wow": "Run it backward far enough and a day on the young Earth lasted only about six hours, with the Moon looming huge and close overhead.",
+      "queries": [
+        "moon over earth",
+        "earth rotation space",
+        "full moon rising"
+      ]
+    },
+    {
+      "id": "octopus_three_hearts",
+      "domain": "animals",
+      "fact": "An octopus has three hearts and blue blood, and one heart stops whenever it swims.",
+      "angle": "an alien body plan hiding in the ocean",
+      "key_terms": [
+        "three hearts",
+        "blue blood",
+        "hemocyanin"
+      ],
+      "whatif": "What if your heart stopped every time you moved? For an octopus that's normal. It has three hearts, and the main one quits beating whenever it swims, which is why they often prefer to crawl.",
+      "wow": "Its blood is blue because it carries oxygen with copper-based hemocyanin instead of the iron that makes our blood red.",
+      "queries": [
+        "octopus swimming ocean",
+        "octopus close up",
+        "deep sea octopus"
+      ]
+    },
+    {
+      "id": "sahara_feeds_amazon",
+      "domain": "earth",
+      "fact": "The Amazon rainforest is fertilized by dust blown across the Atlantic from the Sahara desert.",
+      "angle": "two opposite places secretly connected",
+      "key_terms": [
+        "27 million tonnes",
+        "Sahara",
+        "phosphorus"
+      ],
+      "whatif": "What if the greenest place on Earth was fed by the emptiest? It is. Around 27 million tonnes of Saharan dust cross the Atlantic each year, and it carries the phosphorus the Amazon needs to grow.",
+      "wow": "Much of that dust comes from a single ancient dried lake bed in Chad, once full of life, now feeding a jungle an ocean away.",
+      "queries": [
+        "sahara desert dust",
+        "amazon rainforest aerial",
+        "dust storm sky"
+      ]
+    },
+    {
+      "id": "glass_rain_exoplanet",
+      "domain": "space",
+      "fact": "On one blue planet far away, it rains molten glass sideways in 8,000 kilometre per hour winds.",
+      "angle": "a hellish world that looks Earth-like from afar",
+      "key_terms": [
+        "HD 189733b",
+        "molten glass",
+        "8,000 kilometres per hour"
+      ],
+      "whatif": "What if a deep blue planet wasn't blue from oceans? The planet HD 189733b is a rich blue, but its colour comes from clouds of silicate glass, and winds near 8,000 kilometres per hour whip that glass sideways as rain.",
+      "wow": "Those winds are about seven times the speed of sound, making its beautiful blue one of the deadliest sights in the galaxy.",
+      "queries": [
+        "blue planet space",
+        "exoplanet illustration",
+        "stormy alien world"
+      ]
+    },
+    {
+      "id": "brain_twenty_watts",
+      "domain": "body",
+      "fact": "Your brain runs on about 20 watts of power, less than a dim light bulb.",
+      "angle": "an everyday organ quietly outperforming machines",
+      "key_terms": [
+        "20 watts",
+        "light bulb",
+        "supercomputer"
+      ],
+      "whatif": "What if you knew how little energy your thoughts cost? Your brain runs on roughly 20 watts, less than a dim light bulb, yet it out-thinks supercomputers that gulp down millions of times more power.",
+      "wow": "That single dim-bulb of power runs about 86 billion neurons firing in patterns we still can't fully copy.",
+      "queries": [
+        "light bulb glowing",
+        "brain scan visualization",
+        "neurons firing animation"
+      ]
+    },
+    {
+      "id": "eiffel_grows_summer",
+      "domain": "materials",
+      "fact": "The Eiffel Tower grows about 15 centimetres taller every summer.",
+      "angle": "a landmark quietly breathing with the seasons",
+      "key_terms": [
+        "15 centimetres",
+        "thermal expansion",
+        "Eiffel Tower"
+      ],
+      "whatif": "What if a landmark changed height with the weather? The Eiffel Tower does. Its iron expands in the summer heat, making the whole tower stand about 15 centimetres taller than it does in winter.",
+      "wow": "The same heat makes it lean slightly away from the sun, its top drifting a few centimetres as the day warms one side.",
+      "queries": [
+        "eiffel tower paris",
+        "iron metal structure",
+        "summer city sky"
+      ]
+    },
+    {
+      "id": "mantis_shrimp_eyes",
+      "domain": "senses",
+      "fact": "The mantis shrimp sees colours you physically cannot imagine.",
+      "angle": "a sense far beyond human range",
+      "key_terms": [
+        "mantis shrimp",
+        "12 to 16 receptors",
+        "polarized light"
+      ],
+      "whatif": "What if an animal could see colours your brain has no name for? The mantis shrimp has 12 to 16 types of colour receptor, where you have just three, and it even sees the twist of polarized light.",
+      "wow": "It also throws one of the fastest punches in nature, fast enough to boil the water around its club into a flash of light.",
+      "queries": [
+        "mantis shrimp colorful",
+        "coral reef macro",
+        "rainbow light spectrum"
+      ]
     }
   ]
 }
