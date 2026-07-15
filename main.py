@@ -718,11 +718,12 @@ def _groq_requery(intent, failed_query):
     """When a search query returns nothing relevant, ask for replacements that
     a stock library can actually satisfy: concrete, filmable subjects."""
     txt = _groq_chat(
-        f"A stock-video search for \"{failed_query}\" found nothing that fits this narration: "
-        f"\"{intent}\".\n"
-        f"Suggest 2 alternative search queries (2-4 words each) describing CONCRETE things "
-        f"videographers actually film: real objects, people doing actions, nature, weather, "
-        f"machines, food, cities. No anatomical, microscopic, or abstract terms.\n"
+        f"A stock-video search for \"{failed_query}\" found nothing usable.\n"
+        f"Suggest 2 alternative search queries (2-4 words each) for the SAME concrete subject "
+        f"as \"{failed_query}\" — real, filmable things a videographer actually shoots (objects, "
+        f"nature, people doing actions, weather, places). STAY ON THAT SUBJECT: do NOT switch to "
+        f"a metaphor, figure of speech, or unrelated topic (e.g. keep a forest scene as forest "
+        f"footage, never a literal city). No anatomical, microscopic, or abstract terms.\n"
         f"Reply with ONLY: query one | query two", max_tokens=30, temperature=0.4)
     if not txt:
         return []
@@ -1291,13 +1292,29 @@ def _diversify_scene_queries(scenes):
             seen[key] = seen.get(key, i)
 
 
+def _footage_intent(scene):
+    """What the footage judge + rescue requery match candidates against. LEADS
+    with the scene's search_query (the literal, filmable subject the generator
+    chose) and only then adds the voiceover for nuance. This matters most on the
+    hook: a metaphorical line ("your walk through the woods is actually a trip
+    through a city") otherwise made the judge reject the correct forest clip and
+    requery on the metaphor word — shipping a literal Dubai skyline over a forest
+    video (run 66). Anchoring on the subject keeps selection on-topic while the
+    voiceover still informs which on-subject clip fits best."""
+    subject = (scene.get("search_query") or "").strip()
+    vo = (scene.get("voiceover") or "").strip()
+    if subject and vo:
+        return f"{subject}. {vo}"
+    return subject or vo
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
     # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
     # its best real clip instead of adding to a wall of text cards.
     have, score = fetch_clip(scene["search_query"], raw,
-                              intent=scene.get("voiceover", scene["search_query"]),
+                              intent=_footage_intent(scene),
                               accept_best=(STAT_CARD_SCENES >= MAX_STAT_CARDS))
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, round(seg_dur * 30))
@@ -1327,7 +1344,10 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # footage-starvation abort.
     if PROFILE.get("archival_stills", True):
         img = os.path.join(WORK, f"s{idx}_img.jpg")
-        _q = scene.get("voiceover", "") or scene["search_query"]
+        # Search the still sources on the scene's literal SUBJECT (search_query),
+        # not the raw voiceover — same reason as the footage intent above: a
+        # metaphorical line must not pull an off-topic archival image.
+        _q = scene.get("search_query", "") or scene.get("voiceover", "")
         # Two free/no-key still sources: Openverse (CC aggregator) then Wikimedia
         # Commons (the largest public-domain science library — Hubble, microscopy,
         # diagrams, historical photos). Either gives a documentary look no

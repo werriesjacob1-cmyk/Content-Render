@@ -312,6 +312,22 @@ def test_diversify_queries():
     check(sc3[3]["search_query"].strip() != "", "empty query gets populated")
 
 
+def test_footage_intent_anchors_on_subject():
+    section("main._footage_intent: footage anchors on the literal subject, not the metaphor")
+    # the run-66 hook: metaphorical voiceover, concrete forest search_query. The
+    # footage intent must LEAD with the subject so the judge/requery stay on forest.
+    sc = {"search_query": "forest sunlight trees",
+          "voiceover": "Your walk through the woods is actually a trip through a city."}
+    intent = M._footage_intent(sc)
+    check(intent.startswith("forest sunlight trees"), f"intent leads with the subject ({intent!r})")
+    check("city" in intent, "voiceover nuance still present for the judge")
+    # degenerate inputs never crash
+    check(M._footage_intent({"search_query": "coral reef", "voiceover": ""}) == "coral reef",
+          "subject-only intent when no voiceover")
+    check(M._footage_intent({"search_query": "", "voiceover": "just this"}) == "just this",
+          "voiceover-only intent when no subject")
+
+
 def test_keywords_from_text():
     section("main._keywords_from_text: salient nouns, stopwords dropped")
     kw = M._keywords_from_text("The churning liquid outer core generates a magnetic field")
@@ -426,6 +442,7 @@ def main():
     test_validate_rejections()
     test_content_alignment()
     test_diversify_queries()
+    test_footage_intent_anchors_on_subject()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
