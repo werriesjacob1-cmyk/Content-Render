@@ -1450,6 +1450,43 @@ def _event(start, end, word):
     tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
+# Short function words that look like empty filler when flashed as their own
+# one-word caption frame ("TO", "THE", "IS", "OF" — see renders 66-68). They are
+# folded into an adjacent CONTENT word so one meaningful word is always on screen.
+_CAPTION_MERGE_WORDS = {
+    "the", "a", "an", "of", "to", "in", "on", "is", "it", "as", "at", "and",
+    "or", "but", "by", "so", "its", "this", "that", "was", "are", "has", "had",
+    "then", "than", "with", "from", "into", "be", "been", "were", "for",
+}
+
+
+def _merge_stopword_events(word_times):
+    """Fold short function words into an adjacent content word so a lone
+    'THE'/'TO'/'IS' never gets its own caption frame. Keeps exactly ONE word on
+    screen at a time (no caption width/overflow change, unlike multi-word
+    phrases) — a leading function word pulls the NEXT content word back to its
+    start; a mid/trailing one extends the PREVIOUS content word's end to cover
+    it. Timing stays monotonic. Returns [(word, start, end)]. If a scene is
+    somehow all function words, it's returned unchanged rather than blanked."""
+    def norm(w):
+        return re.sub(r"[^a-z]", "", w.lower())
+    out = []
+    pending_start = None  # a leading function word's start, waiting for a content word
+    for w, st, en in word_times:
+        if norm(w) in _CAPTION_MERGE_WORDS:
+            if out:
+                pw, ps, pe = out[-1]
+                out[-1] = (pw, ps, max(pe, en))          # absorb into previous word
+            else:
+                pending_start = st if pending_start is None else min(pending_start, st)
+            continue
+        if pending_start is not None:
+            st = min(st, pending_start)
+            pending_start = None
+        out.append((w, st, en))
+    return out or list(word_times)
+
+
 def build_ass(scenes, segments, actual_durs, path):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
@@ -1481,23 +1518,32 @@ def build_ass(scenes, segments, actual_durs, path):
             return 0.0
         return final_starts[j] - orig_starts[j]
 
+    # Collect per-scene (word, start, end) tuples on the assembled-audio
+    # timeline, then fold function words (per scene, never across a scene cut)
+    # before emitting, so lone 'THE'/'TO' frames disappear.
+    def _emit(word_times):
+        for w, st, en in _merge_stopword_events(word_times):
+            events.append(_event(st, en, w))
+
     if WORD_TIMINGS:
         # exact: drive captions from ElevenLabs word timings, per-scene shift
         word_i = 0
         for i, sc in enumerate(scenes):
             n_words = len(sc["voiceover"].split())
             shift = _shift(i)
-            for w, st, en in WORD_TIMINGS[word_i:word_i + n_words]:
-                if re.sub(r"[^A-Za-z0-9]", "", w):
-                    events.append(_event(st + shift, en + shift, w))
+            wt = [(w, st + shift, en + shift)
+                  for w, st, en in WORD_TIMINGS[word_i:word_i + n_words]
+                  if re.sub(r"[^A-Za-z0-9]", "", w)]
+            _emit(wt)
             word_i += n_words
         # any leftover words beyond the scenes' combined word count (rare
         # mismatch) -- keep them, shifted by the last scene's offset
         if word_i < len(WORD_TIMINGS):
             shift = _shift(len(scenes) - 1)
-            for w, st, en in WORD_TIMINGS[word_i:]:
-                if re.sub(r"[^A-Za-z0-9]", "", w):
-                    events.append(_event(st + shift, en + shift, w))
+            wt = [(w, st + shift, en + shift)
+                  for w, st, en in WORD_TIMINGS[word_i:]
+                  if re.sub(r"[^A-Za-z0-9]", "", w)]
+            _emit(wt)
     else:
         # fallback (no ElevenLabs timings): estimate by word length within each
         # scene's actual audio span, anchored at the scene's real start on the
@@ -1511,9 +1557,11 @@ def build_ass(scenes, segments, actual_durs, path):
             clock = final_starts[i] if i < len(final_starts) else 0.0
             weights = [max(2, len(re.sub(r"[^A-Za-z0-9]", "", w))) for w in words]
             total = sum(weights) or 1
-            for w, wt in zip(words, weights):
-                wd = speech_dur * wt / total
-                events.append(_event(clock, clock + wd, w)); clock += wd
+            wt = []
+            for w, wght in zip(words, weights):
+                wd = speech_dur * wght / total
+                wt.append((w, clock, clock + wd)); clock += wd
+            _emit(wt)
     with open(path, "w") as f:
         f.write(_ass_header() + "\n".join(events) + "\n")
 
