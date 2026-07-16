@@ -16,6 +16,13 @@ on:
     # resolution anyway. Bump the schedule (or add a second cron line for a
     # different PAGE) if/when the channel is ready to post more than 1x/day.
     - cron: "0 13 * * *"
+    # Second daily run at 07:12 UTC — ~12 min after the free LLM quotas reset
+    # (midnight Pacific = 07:00 UTC). Rendering right when the buckets are full
+    # is the cheapest way to "not rely on quota": the day's first strong-provider
+    # window is guaranteed here, so even if the 13:00 run later hits a spent
+    # bucket, the channel still banked a fresh video at reset. (Off the :00 mark
+    # to avoid the cron rush.)
+    - cron: "12 7 * * *"
 
 permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
