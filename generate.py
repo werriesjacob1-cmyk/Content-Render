@@ -607,7 +607,8 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   plain words instead of just naming it — say "the point in the sky opposite the sun" rather than
   "the antisolar point"; say "spreads out" or "opens up" rather than "unfurls". BANNED: literary/purple
   verbs (unfurls, cascades, dances, whispers, beckons) and unexplained jargon (antisolar point,
-  refraction index, angular radius). One unfamiliar word is enough to make a viewer feel dumb and
+  refraction index, angular radius, rhizomorphs, mycelium, hyphae — say "underground root-like
+  threads" instead). One unfamiliar word is enough to make a viewer feel dumb and
   swipe. Clear and concrete beats clever and ornate every time.
 - STRONGEST PAYOFF WINS: prefer a concrete, surprising, everyday consequence over an abstract musing.
   For a rainbow, "this is why a rainbow has no bottom — and why you can never reach the end of one"

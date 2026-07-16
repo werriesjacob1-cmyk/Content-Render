@@ -440,3 +440,38 @@ BATCH TALLY (quality trending UP as footage fixes landed):
   #3 Diamond rain (space)     — A-/B+    (footage fixes working; best yet)
 3 clean different-topic videos now in the review set. Note: the daily cron auto-produces
 videos when a provider has budget, so the sample accumulates even without me driving renders.
+
+## OVERNIGHT BATCH — morning verdict (2026-07-16, ~3 AM–8 AM CT)
+Gemini daily quota reset (~2 AM CT) and the daily cron + a PARALLEL session on branch
+`claude/epic-edison-jybjd1` produced a burst of videos. Downloaded + watched each (8-frame
+montages). We are now WELL past the 4–5 clean-different-topic target — 7 distinct videos:
+
+  #1 "The Rodent That Breaks Biology"   (animals)          — solid B
+  #2 "The Time Machine in the Sky"      (space/time)       — C+  (footage-limited)
+  #3 "The Diamond Rain of Ice Giants"   (space/planets)    — A-/B+  (best; footage fixes working)
+  #4 "The Star Inside Earth"            (earth/core)       — B   (mixed footage: great lava/
+      foundry/sun, but off-topic moon body + scuba divers)
+  #5 "The Sound That Broke the World"   (geology/Krakatoa) — B/B+ (relevant volcano/waves/period
+      ship; one odd globe+wire scene; concrete "circled the Earth" hook)
+  #6 "The Hidden Social Life of Forests"(biology/mycorrhiza)— B-  (mostly relevant; city-skyline
+      opener is an intentional metaphor; final "WOOD" scene grabbed a STICK INSECT — a miss)
+  #7 "The Hidden Giant of Oregon"       (nature/Armillaria)— B/B+ (great scale footage — an aerial
+      soccer field for "1,600 football fields"; real honey fungus). TWO flaws: the word
+      "rhizomorphs" = exactly the too-smart-jargon complaint; its footage grabbed a BRICK WALL.
+
+Verdict: quality is CONSISTENTLY watchable and trending up (footage-subject-naming + emoji-ban
+visibly holding). No junk, no duplicates, gate never shipped a degraded script. Average now ~B/B+.
+
+Issues found + acted on:
+- JARGON LEAK: "rhizomorphs" slipped past the plain-language rule. FIXED — added rhizomorphs/
+  mycelium/hyphae to the banned-jargon list in generate.py (say "underground root-like threads").
+- DIVERSITY SLIP: #6 and #7 are both fungal-underground topics shipped the same night. Cause: the
+  PARALLEL `epic-edison` session burst-rendered THREE videos within 35 min (23:17/23:32/23:51),
+  which (a) risks re-exhausting the free daily quota and (b) doesn't space renders enough for the
+  shared dedup memory to fully settle between topics. This is the coordination concern to raise
+  with the user: two sessions driving renders in parallel is producing volume but also near-dupes
+  and quota pressure. Recommend consolidating to ONE driver (the daily cron alone is enough now).
+
+STOPPING the aggressive loop. 7 clean different-topic videos are staged as GitHub Releases =
+Buffer DRAFTS (NOT posted). Awaiting the user's go/no-go on: (1) start posting, (2) which session/
+cadence drives future renders, (3) any per-video cuts before the first post.
