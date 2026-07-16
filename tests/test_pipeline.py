@@ -423,6 +423,14 @@ def test_build_ass_fallback_monotonic():
 # --------------------------------------------------------------------------
 # 5. generate.py misc pure helpers
 # --------------------------------------------------------------------------
+def test_domain_family():
+    section("generate._domain_family: earth-science domains share one family")
+    check(G._domain_family("geology") == G._domain_family("earth") == G._domain_family("weather"),
+          "geology/earth/weather map to the same family (no back-to-back deep-earth videos)")
+    check(G._domain_family("space") != G._domain_family("earth"), "space stays distinct from earth")
+    check(G._domain_family("animals") == "animals", "unlisted domain is its own family")
+
+
 def test_generate_helpers():
     section("generate.py pure helpers")
     check(re.match(r"^[a-z0-9-]+$", G._slugify("A Day Longer Than a Year!")) is not None,
@@ -481,6 +489,7 @@ def main():
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
+    test_domain_family()
     test_generate_helpers()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")

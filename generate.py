@@ -413,6 +413,15 @@ BANNED_CONCEPTS = [
     "emergence", "emergent", "hive mind", "school of fish", "self-organiz",
 ]
 RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
+# Some domains are close enough that two back-to-back videos from them feel like
+# "the same kind of video" even though the exact domain string differs — e.g.
+# geology "Hawaii is drifting" followed by earth "the inner core is Sun-hot"
+# (renders 69 then 70) both read as deep-earth science. Group those into one
+# FAMILY so the recent-domain dedup below treats the whole family as used. Any
+# domain not listed is its own family (unchanged behaviour).
+DOMAIN_FAMILIES = {"geology": "earth", "earth": "earth", "weather": "earth"}
+def _domain_family(domain):
+    return DOMAIN_FAMILIES.get(domain, domain)
 TOPIC_SIM_THRESHOLD = 0.62  # difflib ratio between metaphors above this = dupe
 TOPIC_TOKEN_OVERLAP = 0.6   # content-word overlap fraction above this = dupe
 
@@ -1880,16 +1889,16 @@ def main():
     bank = load_bank()
     used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
     _id_to_domain = {f["id"]: f.get("domain") for f in bank}
-    recent_domains = set()
+    recent_families = set()
     for h in history[-RECENT_DOMAIN_WINDOW:]:
         d = h.get("domain") or _id_to_domain.get(h.get("fact_id"))
         if d:
-            recent_domains.add(d)
+            recent_families.add(_domain_family(d))
     fresh = [f for f in bank
-             if f["id"] not in used_ids and f.get("domain") not in recent_domains]
+             if f["id"] not in used_ids and _domain_family(f.get("domain")) not in recent_families]
     available = fresh or [f for f in bank if f["id"] not in used_ids] or bank
-    if recent_domains:
-        print(f"  [bank] avoiding recent domains {sorted(recent_domains)} "
+    if recent_families:
+        print(f"  [bank] avoiding recent domain families {sorted(recent_families)} "
               f"({len(fresh)} of {len(bank)} facts fresh)")
     if available and fact_scores:
         weights = [fact_scores.get(f["id"], 0.0) + PERF_UNSEEN_FLOOR for f in available]
