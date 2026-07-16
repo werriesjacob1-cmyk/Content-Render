@@ -1,87 +1,87 @@
 {
-  "title": "The Star Inside Earth",
-  "viewer_job": "REFRAME",
-  "keyword": "Earth's inner core",
-  "metaphor": "The subterranean star",
-  "hook": "You are walking on a thin crust above a hidden star.",
-  "script": "You are walking on a thin crust above a hidden star. Deep below, a ball of iron roughly 70% the size of the Moon is crystallizing. It grows by one millimeter every year, like a slow-motion freezing process. What if the center of the planet were cooler than we think? It isn't. Earth's inner core runs about 5,400 degrees Celsius. This matches the surface of the Sun. It only stays solid because the pressure is 3.6 million atmospheres. That means the middle of our planet is, temperature for temperature, as hot as the star we orbit.",
+  "title": "The Ocean's Hidden Air",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "ocean oxygen",
+  "metaphor": "The invisible air-maker",
+  "hook": "Your next breath doesn't come from a forest, but the ocean.",
+  "script": "Your next breath doesn't come from a forest, but the ocean. We call rainforests the lungs of the planet, but they are mostly carbon-neutral. What if every forest burned, but the plankton survived? You would still breathe, because plankton produce over 50 percent of Earth's oxygen. One microbe, Prochlorococcus, is so abundant it provides one in five breaths you take. Their population is ten to the twenty-seventh power, an army of cells larger than the number of stars in the observable universe. These tiny drifters are the real architects of your survival. Your life depends on the salt water.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "You are walking on a thin crust above a hidden star.",
-      "on_screen_text": "Earth's inner core",
-      "search_query": "earth from space rotating",
+      "voiceover": "Your next breath doesn't come from a forest, but the ocean.",
+      "on_screen_text": "OCEAN OXYGEN",
+      "search_query": "ocean surface waves",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 6,
-      "voiceover": "Deep below, a ball of iron roughly 70% the size of the Moon is crystallizing.",
-      "on_screen_text": "70% size of Moon",
-      "search_query": "moon surface",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "We call rainforests the lungs of the planet, but they are mostly carbon-neutral.",
+      "on_screen_text": "THE FOREST MYTH",
+      "search_query": "dense rainforest canopy",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 6,
-      "voiceover": "It grows by one millimeter every year, like a slow-motion freezing process.",
-      "on_screen_text": "1 millimeter per year",
-      "search_query": "molten rock glowing",
-      "motion": "zoom_in"
+      "voiceover": "What if every forest burned, but the plankton survived?",
+      "on_screen_text": "THE SURVIVAL QUESTION",
+      "search_query": "forest fire smoke",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "What if the center of the planet were cooler than we think?",
-      "on_screen_text": "Is it cooler?",
-      "search_query": "erupting volcano lava",
-      "motion": "zoom_out"
+      "duration": 6,
+      "voiceover": "You would still breathe, because plankton produce over 50 percent of Earth's oxygen.",
+      "on_screen_text": "50 PERCENT OXYGEN",
+      "search_query": "bioluminescent plankton ocean",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 6,
-      "voiceover": "It isn't. Earth's inner core runs about 5,400 degrees Celsius.",
-      "on_screen_text": "5,400 degrees Celsius",
-      "search_query": "molten iron pouring",
-      "motion": "zoom_in"
+      "voiceover": "One microbe, Prochlorococcus, is so abundant it provides one in five breaths you take.",
+      "on_screen_text": "Prochlorococcus",
+      "search_query": "sunlight underwater",
+      "motion": "static"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "This matches the surface of the Sun.",
-      "on_screen_text": "Surface of the Sun",
-      "search_query": "sun surface flares",
+      "duration": 7,
+      "voiceover": "Their population is ten to the twenty-seventh power, an army of cells larger than the number of stars in the observable universe.",
+      "on_screen_text": "10^27 CELLS",
+      "search_query": "night sky stars",
       "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "It only stays solid because the pressure is 3.6 million atmospheres.",
-      "on_screen_text": "3.6 million atmospheres",
-      "search_query": "deep ocean pressure",
+      "duration": 5,
+      "voiceover": "These tiny drifters are the real architects of your survival.",
+      "on_screen_text": "TINY ARCHITECTS",
+      "search_query": "ocean current water",
       "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 6,
-      "voiceover": "That means the middle of our planet is, temperature for temperature, as hot as the star we orbit.",
-      "on_screen_text": "A subterranean star",
-      "search_query": "sun in space",
+      "duration": 5,
+      "voiceover": "Your life depends on the salt water.",
+      "on_screen_text": "SALT WATER LIFE",
+      "search_query": "crashing ocean waves",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Earth's inner core is a star in disguise. Did you know this\u2014yes or no?",
-    "The pressure is the only thing keeping us from melting.",
-    "A solid ball of iron as hot as the Sun."
+    "Most of your ocean oxygen comes from a microbe you've never heard of. Did you know this? Yes or no?",
+    "The rainforest isn't the lungs of the world.",
+    "Your survival depends on the Pacific Ocean."
   ],
   "hashtags": [
     "#science",
-    "#geology",
-    "#space",
+    "#ocean",
+    "#biology",
+    "#nature",
     "#earth",
-    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -89,7 +89,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-star-inside-earth",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "earth"
+  "video_id": "science_2026-07-16_the-ocean-s-hidden-air",
+  "cta_style": "LOOP",
+  "domain": "ocean"
 }
