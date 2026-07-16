@@ -12,9 +12,18 @@ render before the next (never re-render without a concrete change).
 | 3 | 67 | The Sound That Broke the World (Krakatoa) | physics | 53s | A− | brutal specifics; **command ending** "send this to a friend" — fixed after |
 | 4 | 68 | The Hidden Giant of Oregon (honey fungus) | fungi | 47s | A−/B+ | vivid footage, non-command question ending; a touch long |
 | 5 | 69 | The Hawaiian Conveyor Belt | geology | **40s** | **A/A−** | fingernail-macro hook, sunset-horizon LOOP ending; pace nailed |
+| 6 | 70 | The Star Inside Earth (inner core) | earth | 41s | A−/B+ | caption polish confirmed (content-word captions, no lone THE/TO); resonant SAVE ending |
+| 7 | 71 | (aborted at generation — all free quotas spent) | body | — | — | domain-family fix worked (picked a BODY fact); gate correctly refused a degraded near-miss |
 
-**Post-worthy streak: renders 3, 4, 5 (physics, fungi, geology) — different
-domains, all A−/A.** Render 6 (caption polish) in flight.
+**Post-worthy streak: renders 3, 4, 5, 6 (physics, fungi, geology, earth) —
+four in a row across different domains, all A−/A.** Goal was 3–5.
+
+## The quota wall (render 7)
+By ~04:45 UTC the free daily buckets were fully spent: gemini-2.0-flash AND
+gemini-2.0-flash-lite both 429, OpenRouter 429, Cerebras gemma 429-RPM. Cerebras
+also now exposes `zai-glm-4.7`, which returns non-JSON (same as gpt-oss) — now
+excluded. Render 7 aborted cleanly (no junk). Gemini's daily quota resets at
+07:00 UTC / 2 AM CT; the loop should resume then to push toward a 5th video.
 
 ## Provider reality (honest)
 The daily free quotas (reset 2 AM CT) were largely spent by the day's ~13

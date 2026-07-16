@@ -88,9 +88,12 @@ def cerebras_models():
                 data = json.loads(r.read().decode())
             ids = [m.get("id") for m in data.get("data", []) if m.get("id")]
             # Exclude reasoning models that don't return clean JSON: gpt-oss-*
-            # replies with reasoning/markdown, so every generate attempt fails with
-            # "Expecting value: line 1 column 1" (run 63) — worse than skipping it.
-            ids = [i for i in ids if "gpt-oss" not in i.lower()]
+            # replies with reasoning/markdown ("Expecting value: line 1 column 1",
+            # run 63) and zai-glm-4.7 returns non-JSON too ("Extra data: line 1
+            # column 2", run 71) — every generate attempt on them fails to parse,
+            # worse than skipping them. gemma-4-31b is the reliable JSON one.
+            _JSON_HOSTILE = ("gpt-oss", "glm")
+            ids = [i for i in ids if not any(bad in i.lower() for bad in _JSON_HOSTILE)]
             # prefer a 70B llama, then any llama, then whatever else is granted
             ids.sort(key=lambda x: (0 if "70b" in x.lower() else 1,
                                     0 if "llama" in x.lower() else 1, x))
