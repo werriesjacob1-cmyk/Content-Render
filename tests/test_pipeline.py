@@ -337,6 +337,23 @@ def test_footage_intent_anchors_on_subject():
           "voiceover-only intent when no subject")
 
 
+def test_local_footage_relevance():
+    section("main._best_keyword_match: zero-LLM footage relevance short-circuit")
+    # a specific query returning an on-subject clip is accepted without the LLM
+    cands = [{"desc": "dubai skyline city night", "id": 1},
+             {"desc": "ocean waves drone aerial", "id": 2}]
+    check(M._best_keyword_match("ocean surface waves", cands) == 1,
+          "clear keyword match accepted without LLM (picks the ocean clip)")
+    # an off-topic pool (the metaphor-bug case) shares no words -> None -> LLM judge
+    cands2 = [{"desc": "dubai skyline city night", "id": 1},
+              {"desc": "busy highway traffic", "id": 2}]
+    check(M._best_keyword_match("forest sunlight trees", cands2) is None,
+          "off-topic candidates fall through to the LLM judge (metaphor bug stays caught)")
+    # too few content words to decide locally -> None
+    check(M._best_keyword_match("the it a", cands) is None, "too-short query defers to LLM")
+    check(M._relevance_words("The Ocean's Waves") == {"ocean", "waves"}, "content words extracted")
+
+
 def test_keywords_from_text():
     section("main._keywords_from_text: salient nouns, stopwords dropped")
     kw = M._keywords_from_text("The churning liquid outer core generates a magnetic field")
@@ -460,6 +477,7 @@ def main():
     test_content_alignment()
     test_diversify_queries()
     test_footage_intent_anchors_on_subject()
+    test_local_footage_relevance()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()

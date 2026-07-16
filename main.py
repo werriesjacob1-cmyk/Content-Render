@@ -828,9 +828,45 @@ def _accept(chosen, dest, query, score):
         raise RuntimeError(f"clip too dark (near-black) — skipping for '{query}'")
     _used_video_ids.add(chosen["id"])
     _used_history.append(chosen["id"])
-    tag = f"judge {score}/10" if isinstance(score, int) else "first (no judge key)"
+    tag = (f"judge {score}/10" if isinstance(score, int)
+           else "keyword match (no LLM)" if score == KEYWORD_OK
+           else "first (no judge key)")
     print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
     return True
+
+
+KEYWORD_OK = "keyword_match"   # accepted by the local keyword pre-check, no LLM call
+
+
+def _relevance_words(text):
+    """Content words (>2 chars, non-stopword) of a query or clip description,
+    used for the zero-LLM footage relevance pre-check."""
+    return {w for w in re.findall(r"[a-z]+", (text or "").lower())
+            if len(w) > 2 and w not in _QUERY_STOPWORDS}
+
+
+def _best_keyword_match(query, cands, min_overlap=0.5, min_shared=2):
+    """Index of the candidate whose OWN description clearly matches the query
+    SUBJECT by keyword overlap — or None if none clears the bar (ambiguous, so
+    fall back to the LLM judge). This lets the common case (a specific query
+    like 'ocean surface waves' returning a clip slugged 'ocean waves drone
+    aerial') skip the LLM judge entirely, keeping footage OFF the quota critical
+    path. It's conservative: it only accepts on a clear lexical match, so an
+    off-topic clip (e.g. a 'dubai skyline' for a forest query) shares no words
+    and still goes to the judge. Returns None when the query has too few content
+    words to decide locally."""
+    qw = _relevance_words(query)
+    if len(qw) < 2:
+        return None
+    best_i, best_frac, best_shared = None, 0.0, 0
+    for i, c in enumerate(cands):
+        shared = len(qw & _relevance_words(c.get("desc", "")))
+        frac = shared / len(qw)
+        if frac > best_frac or (frac == best_frac and shared > best_shared):
+            best_i, best_frac, best_shared = i, frac, shared
+    if best_i is not None and best_frac >= min_overlap and best_shared >= min_shared:
+        return best_i
+    return None
 
 
 def fetch_clip(query, dest, intent=None, accept_best=False):
@@ -866,6 +902,17 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
         q = queries[round_no]
         cands = _gather_candidates(q)
         if cands:
+            # ZERO-LLM FAST PATH: if a candidate's own description clearly matches
+            # the query subject, accept it WITHOUT an LLM judge call. This is the
+            # common case and keeps footage off the quota critical path — the LLM
+            # judge is now only spent on genuinely ambiguous scenes.
+            ki = _best_keyword_match(q, cands)
+            if ki is not None:
+                try:
+                    _accept(cands[ki], dest, q, KEYWORD_OK)
+                    return True, best_score
+                except Exception as e:  # too-dark / download failed → let the judge try
+                    print(f"  keyword-matched clip unusable ({e}) — falling to judge")
             idx, score = _groq_judge(intent, cands)
             chosen = cands[idx]
             numeric = isinstance(score, int)
