@@ -24,15 +24,22 @@ funnel) → GitHub Release → Zapier → Buffer (Draft). Driven by
 13:00 UTC / 8:00 AM CT). PAGE=science.
 
 ## LLM providers (free), tried in this order — all env-gated
-1. **Gemini** (`GEMINI_API_KEY`): models `gemini-2.0-flash`, `gemini-2.5-flash`.
-   NOTE: `gemini-2.5-flash-lite` 404s for newly-created keys ("not available to
-   new users") — do NOT add it back. Free daily cap ~450 reqs; resets **midnight
-   Pacific = 2:00 AM CT / 07:00 UTC**.
+1. **Gemini** (`GEMINI_API_KEY`): models `gemini-2.0-flash`, `gemini-2.0-flash-lite`
+   (each is a SEPARATE free daily bucket — flash-lite unblocked evening renders
+   once flash was spent). NOTE: `gemini-2.5-flash` AND `-2.5-flash-lite` now 404
+   for new keys ("no longer available to new users") — do NOT add them back.
+   Free daily cap is small (~200/model/day); each render burns ~20-50 calls
+   (generation + per-scene footage judge), so the free tier realistically yields
+   ~5-8 good videos/DAY across ALL consumers (this loop + daily cron + any other
+   session). Resets **midnight Pacific = 2:00 AM CT / 07:00 UTC**.
 2. **OpenRouter** (`OPENROUTER_API_KEY`): `meta-llama/llama-3.3-70b-instruct:free`
    — the strongest free model; separate free daily bucket (small, ~50/day).
-3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`
-   (this key only has `gemma-4-31b` + `gpt-oss-120b`, NOT llama). RPM-limited on
-   free tier; has a per-minute self-heal retry.
+3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`.
+   Only `gemma-4-31b` returns clean JSON; `gpt-oss-*` and `zai-glm-*` reply with
+   non-JSON reasoning and are excluded (`cerebras_models()` denylist). RPM-limited
+   on free tier; has a per-minute self-heal retry. gemma is weak — it produces
+   escalation-4 near-misses that the hard floor rightly aborts, so it's a
+   last-resort backstop, not a substitute for Gemini/OpenRouter.
 4. **Groq** (`GROQ_API_KEY`): `llama-3.3-70b-versatile`, `llama-3.1-8b-instant`.
    100k tokens/day free.
 Provider chain, circuit breakers, and 429/RPM backoffs live in `generate.py`
@@ -82,19 +89,51 @@ Watch the actual video (extract frames + read the script). It must have:
    user to review consistency before proposing to post.
 
 ## Topic bank
-`topic_bank.json` — 70 verified facts across 15 domains. `memory_science.json`
+`topic_bank.json` — **91 verified facts across 19 domains** (added materials/
+weather/deep_time/history/geology/senses + high-wow facts). `memory_science.json`
 tracks used facts; `used_footage_science.json` dedups clips across runs.
+Domain selection now dedups by FAMILY (`DOMAIN_FAMILIES`: geology/earth/weather
+= one family) so two deep-earth videos don't run back-to-back.
+
+## Zero-quota test suite — RUN THIS before shipping generate.py/main.py changes
+`GROQ_API_KEY=x python tests/test_pipeline.py` — 62 checks over the trickiest
+PURE logic (caption content-alignment + stopword-merge, footage `_footage_intent`
+anchoring, `_diversify_scene_queries`, timing, `validate()` across 5 topic
+fixtures + broken ones, fast-fail-when-throttled, domain families). No ffmpeg,
+no network, no LLM. It already caught a real validate() false-positive.
 
 ## Free-tier reality (be honest with the user about this)
 Nightly volume is capped by free daily quotas. A big batch/queue **accumulates
 over days** as quotas reset — it does NOT come from one night on free tier. The
 only fast unlock is a cheap paid LLM tier, which the user has declined for now.
 
+## Improvements shipped 2026-07-15/16 (branch `claude/epic-edison-jybjd1`)
+Watched every render frame-by-frame and fixed the concrete flaw before the next.
+- **Wall-clock budget + circuit-aware backoff skip** (DONE — the old pending item):
+  a fully-throttled run aborts in seconds, not ~10 min.
+- **Footage anchoring** (`main._footage_intent`): judge/requery lead with the
+  scene's `search_query` subject, not the metaphor voiceover — killed the "Dubai
+  skyline on a forest video" bug. Biggest single relevance win.
+- **No command endings**: dropped SHARE cta_style; `GENERIC_SAVE_CMD` now also
+  rejects send/tag/share phrasings. Endings = resonant payoff / loop / question.
+- **~40s pace**: `EDGE_RATE -12% → -5%` (keeps dense scripts, speaks a bit
+  faster; whisper re-aligns captions) + word target 76-92 (validate cap 100).
+- **Caption polish** (`main._merge_stopword_events`): folds function words so no
+  lone "THE"/"TO" caption frame (one-word style kept — WrapStyle 2 = no wrap).
+- **validate() contradiction-guard fix**: same-unit measurements ("243 vs 225
+  Earth days") no longer falsely flagged; count contradictions still caught.
+
+### Results
+5 renders shipped, **4 post-worthy in a row across different domains**: Krakatoa
+(physics, A−), Oregon honey fungus (fungi, A−/B+), Hawaiian conveyor belt
+(geology, A, 40s), The Star Inside Earth (earth, A−/B+). See
+`reports/video_review_2026-07-15_overnight.md`.
+
 ## Known pending improvements (not yet done)
-- **Wall-clock budget on generation**: when ALL providers are throttled, the
-  stacked backoffs grind ~10 min before aborting. Add an elapsed-time cap in
-  `main()`'s generation loop so a fully-throttled run fails fast. (Deferred —
-  only bites when everything is throttled; test before shipping.)
+- **Footage brightness filter**: a few clips came out dark (night-side Earth,
+  dark ocean). Add a min-brightness reject in footage selection or lift the grade.
+- **Multi-word phrase captions**: blocked on ASS `WrapStyle: 2` (no wrap) + wide
+  font — needs a font-size/wrap change, best verified with a real render.
 - Idea 2 (series/binge architecture: numbered series + cross-video callbacks) is
   PARTIAL — see PLATFORM.md.
 
