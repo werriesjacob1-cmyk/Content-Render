@@ -1802,29 +1802,50 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
         nm["hashtags"] = nm.get("hashtags", ["#science"])
         nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
-        # ENFORCE PACING on the near-miss too. A script usually lands here
-        # precisely BECAUSE the stricter validate() rejected it (too many
-        # scenes / a run-on / repetition), and the old repair shipped it
-        # uncapped — that's how the 14-scene, choppy "Morning Height" video
-        # got out. Trim to <=10 scenes by dropping the most REDUNDANT middle
-        # scenes (always keeping the hook and the ending), which cuts the
-        # choppy over-cutting AND the restatement in a single pass.
+        # ENFORCE PACING + LENGTH on the near-miss too. A script usually lands
+        # here precisely BECAUSE the stricter validate() rejected it (too many
+        # scenes / a run-on / repetition / too long), and the old repair shipped
+        # it uncapped — that's how the 147-word "DNA Stretched Out" stat-dump got
+        # out (run 79). Iteratively drop the single most-REDUNDANT middle scene
+        # (always keeping the hook and the ending) until BOTH the scene count and
+        # the word count are in range — this cuts choppy over-cutting AND the
+        # restatement in one pass. If it's STILL over the hard word cap once we
+        # hit the minimum scene count, this near-miss is irredeemable (a weak
+        # model dumped a long, repetitive script) — abandon it so the run aborts
+        # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
+        NEARMISS_MAX_SCENES = 9
+        NEARMISS_MAX_WORDS = 93     # keep in lockstep with validate()'s hard cap
+        NEARMISS_MIN_SCENES = 6     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
-        MAX_NEARMISS_SCENES = 10
-        if len(_scenes) > MAX_NEARMISS_SCENES:
-            def _redundancy(i):
-                vo = _scenes[i].get("voiceover", "").lower()
-                return max((_dl.SequenceMatcher(None, vo, _scenes[j].get("voiceover", "").lower()).ratio()
-                            for j in range(len(_scenes)) if j != i), default=0.0)
-            middle = sorted(range(1, len(_scenes) - 1), key=_redundancy, reverse=True)
-            drop = set(middle[:len(_scenes) - MAX_NEARMISS_SCENES])
-            _scenes = [s for i, s in enumerate(_scenes) if i not in drop]
+        def _wc(scs):
+            return sum(len(s.get("voiceover", "").split()) for s in scs)
+        def _most_redundant_middle(scs):
+            best_i, best_r = None, -1.0
+            for i in range(1, len(scs) - 1):
+                vo = scs[i].get("voiceover", "").lower()
+                r = max((_dl.SequenceMatcher(None, vo, scs[j].get("voiceover", "").lower()).ratio()
+                         for j in range(len(scs)) if j != i), default=0.0)
+                if r > best_r:
+                    best_i, best_r = i, r
+            return best_i
+        _dropped = 0
+        while len(_scenes) > NEARMISS_MIN_SCENES and (
+                len(_scenes) > NEARMISS_MAX_SCENES or _wc(_scenes) > NEARMISS_MAX_WORDS):
+            _i = _most_redundant_middle(_scenes)
+            if _i is None:
+                break
+            _scenes.pop(_i); _dropped += 1
+        if _dropped:
             for _new_id, s in enumerate(_scenes, 1):
                 s["id"] = _new_id
             nm["scenes"] = _scenes
-            print(f"  near-miss trimmed {len(drop)} most-redundant middle scene(s) "
-                  f"-> {len(_scenes)} scenes (pacing/repetition)")
+            print(f"  near-miss trimmed {_dropped} most-redundant middle scene(s) -> "
+                  f"{len(_scenes)} scenes / {_wc(_scenes)} words (pacing/length/repetition)")
+        if _wc(_scenes) > NEARMISS_MAX_WORDS:
+            print(f"  near-miss still {_wc(_scenes)} words after trimming to {len(_scenes)} scenes "
+                  f"(cap {NEARMISS_MAX_WORDS}) — abandoning this weak/long draft (consistency over cadence)")
+            return None
         # fill in queries the model left out or made un-filmable. Duplicate
         # queries are deliberately NOT swapped here (they used to be, via a
         # "seen" set) -- that was the same bug fixed in validate(): main.py's
