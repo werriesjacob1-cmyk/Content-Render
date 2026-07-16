@@ -1,102 +1,103 @@
 {
-  "title": "The Secret Scent of Rain",
-  "viewer_job": "REFRAME",
-  "keyword": "smell of rain",
-  "metaphor": "Biological scent detection",
-  "hook": "Your nose can detect the smell of rain better than a shark.",
-  "script": "Your nose can detect the smell of rain better than a shark. That fresh scent is called petrichor. It is delivered by tiny air bubbles that burst from the ground like champagne. The smell comes from a compound called geosmin, produced by soil bacteria. Could you smell this in a crowded city? Your nose detects geosmin at five parts per trillion. That is like sensing one teaspoon of a substance in twenty Olympic-sized swimming pools. This sensitivity is so high it can ruin the taste of bottled water. The smell of rain is actually the scent of bacteria.",
+  "title": "The Biological Ship of Theseus",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "body cell replacement",
+  "metaphor": "biological ship of Theseus",
+  "hook": "Most of your body is only a few years old.",
+  "script": "Most of your body is only a few years old. Every single day, you replace approximately 330 billion cells. Your taste buds regenerate every two weeks, meaning your flavor perception is physically different today than it was fourteen days ago. What if you're basically a brand-new person every few years? Almost, but not entirely. The neurons in your brain and the lenses of your eyes are as old as you are. Your skeleton renews itself every ten years, like a slow-motion river of calcium moving beneath your skin. But the enamel on your teeth can never regenerate because the cells that create it die once the tooth erupts. You are a walking archive of the only parts of you that never changed.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your nose can detect the smell of rain better than a shark.",
-      "on_screen_text": "Smell of Rain",
-      "search_query": "rain falling ground",
+      "voiceover": "Most of your body is only a few years old.",
+      "on_screen_text": "Body Cell Replacement",
+      "search_query": "time lapse city people",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "That fresh scent is called petrichor.",
-      "on_screen_text": "Petrichor",
-      "search_query": "wet soil closeup",
+      "duration": 5,
+      "voiceover": "Every single day, you replace approximately 330 billion cells.",
+      "on_screen_text": "330 Billion Daily",
+      "search_query": "hourglass sand falling",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "It is delivered by tiny air bubbles that burst from the ground like champagne.",
-      "on_screen_text": "Air Bubbles",
-      "search_query": "rain on pavement",
+      "duration": 6,
+      "voiceover": "Your taste buds regenerate every two weeks, meaning your flavor perception is physically different today than it was fourteen days ago.",
+      "on_screen_text": "Flavor Shifts",
+      "search_query": "person eating fruit",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "The smell comes from a compound called geosmin, produced by soil bacteria.",
-      "on_screen_text": "Geosmin Bacteria",
-      "search_query": "forest floor soil",
+      "duration": 5,
+      "voiceover": "What if you're basically a brand-new person every few years?",
+      "on_screen_text": "A Brand New You?",
+      "search_query": "old photographs fading",
       "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Could you smell this in a crowded city?",
-      "on_screen_text": "Can you smell it?",
-      "search_query": "city street rain",
+      "duration": 6,
+      "voiceover": "Almost, but not entirely.",
+      "on_screen_text": "The Exception",
+      "search_query": "still water lake",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "Your nose detects geosmin at five parts per trillion.",
-      "on_screen_text": "5 Parts Per Trillion",
-      "search_query": "human nose closeup",
-      "motion": "zoom_out"
+      "duration": 6,
+      "voiceover": "The neurons in your brain and the lenses of your eyes are as old as you are.",
+      "on_screen_text": "Original Parts",
+      "search_query": "human eye close up",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "That is like sensing one teaspoon of a substance in twenty Olympic-sized swimming pools.",
-      "on_screen_text": "20 Swimming Pools",
-      "search_query": "olympic swimming pool",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "This sensitivity is so high it can ruin the taste of bottled water.",
-      "on_screen_text": "Bottled Water",
-      "search_query": "pouring water glass",
+      "duration": 6,
+      "voiceover": "Your skeleton renews itself every ten years, like a slow-motion river of calcium moving beneath your skin.",
+      "on_screen_text": "10 Year Cycle",
+      "search_query": "white marble sculpture",
       "motion": "zoom_out"
     },
     {
-      "id": 9,
-      "duration": 4,
-      "voiceover": "The smell of rain is actually the scent of bacteria.",
-      "on_screen_text": "Scent of Bacteria",
-      "search_query": "rain falling ground",
+      "id": 8,
+      "duration": 6,
+      "voiceover": "But the enamel on your teeth can never regenerate because the cells that create it die once the tooth erupts.",
+      "on_screen_text": "Permanent Enamel",
+      "search_query": "person smiling teeth",
       "motion": "zoom_in"
+    },
+    {
+      "id": 9,
+      "duration": 6,
+      "voiceover": "You are a walking archive of the only parts of you that never changed.",
+      "on_screen_text": "The Biological Archive",
+      "search_query": "dust motes sunlight",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The smell of rain is more complex than you think. Do you love petrichor? Yes or No?",
-    "Your nose is a biological superpower.",
-    "The science of the rain scent."
+    "Your body cell replacement is constant, but some parts never change. Do you feel like the same person you were 10 years ago?",
+    "The science of the biological ship of Theseus.",
+    "You are a collection of different ages."
   ],
   "hashtags": [
-    "#science",
-    "#nature",
     "#biology",
-    "#rain",
-    "#facts"
+    "#science",
+    "#humanbody",
+    "#nature",
+    "#existence",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-secret-scent-of-rain",
-  "cta_style": "LOOP",
-  "domain": "weather"
+  "video_id": "science_2026-07-16_the-biological-ship-of-theseus",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "body"
 }
