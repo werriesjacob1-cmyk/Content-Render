@@ -1,95 +1,86 @@
 {
-  "title": "The Ocean's Hidden Air",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "ocean oxygen",
-  "metaphor": "The invisible air-maker",
-  "hook": "Your next breath doesn't come from a forest, but the ocean.",
-  "script": "Your next breath doesn't come from a forest, but the ocean. We call rainforests the lungs of the planet, but they are mostly carbon-neutral. What if every forest burned, but the plankton survived? You would still breathe, because plankton produce over 50 percent of Earth's oxygen. One microbe, Prochlorococcus, is so abundant it provides one in five breaths you take. Their population is ten to the twenty-seventh power, an army of cells larger than the number of stars in the observable universe. These tiny drifters are the real architects of your survival. Your life depends on the salt water.",
+  "title": "DNA Stretched Out",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "DNA length",
+  "metaphor": "Cellular Scale",
+  "hook": "Your DNA is incredibly long",
+  "script": "Your DNA is incredibly long If you uncoiled all of it, the string would stretch about 60 billion miles This is enough to travel from Earth to Pluto and back about 12 times Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells The diameter of a DNA double helix is only 2 nanometers, meaning if a DNA strand were as thick as a rope, the 2-meter length in a single cell would be equivalent to a rope stretching 20 kilometers If you unravelled the DNA from every cell in your body and laid it in one line, it would stretch to the Sun and back dozens of times over The same physics that packs this much DNA into every cell is what allows it to fit inside you",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "Your next breath doesn't come from a forest, but the ocean.",
-      "on_screen_text": "OCEAN OXYGEN",
-      "search_query": "ocean surface waves",
+      "duration": 4,
+      "voiceover": "Your DNA is incredibly long",
+      "on_screen_text": "DNA Length",
+      "search_query": "twisted rope closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "We call rainforests the lungs of the planet, but they are mostly carbon-neutral.",
-      "on_screen_text": "THE FOREST MYTH",
-      "search_query": "dense rainforest canopy",
-      "motion": "pan"
-    },
-    {
-      "id": 3,
-      "duration": 6,
-      "voiceover": "What if every forest burned, but the plankton survived?",
-      "on_screen_text": "THE SURVIVAL QUESTION",
-      "search_query": "forest fire smoke",
+      "voiceover": "If you uncoiled all of it, the string would stretch about 60 billion miles",
+      "on_screen_text": "DNA Scale",
+      "search_query": "space distance animation",
       "motion": "zoom_out"
     },
     {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "This is enough to travel from Earth to Pluto and back about 12 times",
+      "on_screen_text": "Pluto Distance",
+      "search_query": "tangled threads macro",
+      "motion": "rotate"
+    },
+    {
       "id": 4,
-      "duration": 6,
-      "voiceover": "You would still breathe, because plankton produce over 50 percent of Earth's oxygen.",
-      "on_screen_text": "50 PERCENT OXYGEN",
-      "search_query": "bioluminescent plankton ocean",
+      "duration": 5,
+      "voiceover": "Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells",
+      "on_screen_text": "Cellular DNA",
+      "search_query": "ocean waves aerial",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "One microbe, Prochlorococcus, is so abundant it provides one in five breaths you take.",
-      "on_screen_text": "Prochlorococcus",
-      "search_query": "sunlight underwater",
-      "motion": "static"
+      "duration": 5,
+      "voiceover": "The diameter of a DNA double helix is only 2 nanometers, meaning if a DNA strand were as thick as a rope, the 2-meter length in a single cell would be equivalent to a rope stretching 20 kilometers",
+      "on_screen_text": "DNA Double Helix",
+      "search_query": "spiral staircase looking up",
+      "motion": "pan"
     },
     {
       "id": 6,
-      "duration": 7,
-      "voiceover": "Their population is ten to the twenty-seventh power, an army of cells larger than the number of stars in the observable universe.",
-      "on_screen_text": "10^27 CELLS",
-      "search_query": "night sky stars",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "If you unravelled the DNA from every cell in your body and laid it in one line, it would stretch to the Sun and back dozens of times over",
+      "on_screen_text": "DNA Unraveled",
+      "search_query": "tangled threads macro",
+      "motion": "unravel"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "These tiny drifters are the real architects of your survival.",
-      "on_screen_text": "TINY ARCHITECTS",
-      "search_query": "ocean current water",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "Your life depends on the salt water.",
-      "on_screen_text": "SALT WATER LIFE",
-      "search_query": "crashing ocean waves",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "The same physics that packs this much DNA into every cell is what allows it to fit inside you",
+      "on_screen_text": "DNA Packing",
+      "search_query": "lightning storm clouds",
+      "motion": "split"
     }
   ],
   "captions": [
-    "Most of your ocean oxygen comes from a microbe you've never heard of. Did you know this? Yes or no?",
-    "The rainforest isn't the lungs of the world.",
-    "Your survival depends on the Pacific Ocean."
+    "How long is your DNA? Did you know it's long enough to reach the Sun and back?",
+    "DNA length is a mind-blowing fact",
+    "The scale of DNA is hard to wrap your head around"
   ],
   "hashtags": [
-    "#science",
-    "#ocean",
-    "#biology",
-    "#nature",
-    "#earth",
-    "#learnontiktok"
+    "#DNA",
+    "#Genetics",
+    "#Space",
+    "#Science",
+    "#Facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-ocean-s-hidden-air",
-  "cta_style": "LOOP",
-  "domain": "ocean"
+  "video_id": "science_2026-07-16_dna-stretched-out",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "body"
 }
