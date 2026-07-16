@@ -792,8 +792,34 @@ JUDGE_SCORES = []      # every scene's best judged score this render (None exclu
                         # printed as a min/avg summary at the end for quick QA of a run
 
 
+def _clip_too_dark(path, min_luma=26.0):
+    """True if a downloaded clip is so dark it reads as a near-black/broken
+    frame — the "photos are too dark" / "goes to a black screen" complaint.
+    Samples a few frames' average luma (0-255) and compares to a CONSERVATIVE
+    floor, so only genuinely near-black footage is rejected (moody-but-visible
+    night/ocean/space clips still pass). Fully fail-safe: any probe error returns
+    False (accept the clip), so brightness-checking can never block a render."""
+    try:
+        out = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-i", path, "-vf",
+             "select='eq(n\\,1)+eq(n\\,25)+eq(n\\,55)+eq(n\\,90)',"
+             "signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+             "-frames:v", "4", "-f", "null", "-"],
+            capture_output=True, text=True, timeout=20).stderr
+        vals = [float(m) for m in re.findall(r"YAVG=([0-9.]+)", out)]
+        if not vals:
+            return False
+        return (sum(vals) / len(vals)) < min_luma
+    except Exception:
+        return False
+
+
 def _accept(chosen, dest, query, score):
     _download(chosen["url"], dest)
+    if _clip_too_dark(dest):
+        # skip near-black footage; the caller requeries for a brighter clip, and
+        # if nothing brighter is found it falls back to a (now non-black) card.
+        raise RuntimeError(f"clip too dark (near-black) — skipping for '{query}'")
     _used_video_ids.add(chosen["id"])
     _used_history.append(chosen["id"])
     tag = f"judge {score}/10" if isinstance(score, int) else "first (no judge key)"
@@ -1384,7 +1410,14 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     except Exception as e:
         print(f"  stat-card render failed ({e}) — falling back to color card")
 
-    run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x0a0a0a:s={W}x{H}:d={seg_dur:.3f}:r=30",
+    # Ultimate fallback (footage + archival still + stat-card all failed). This
+    # used to be near-black (0x0a0a0a) — which is exactly the "goes to a black
+    # screen at 39s" the user caught on the Oregon video. A fallback scene must
+    # still look INTENTIONAL, never like dead air, so use a visible dark-slate
+    # background (YAVG ~45, clearly a designed colour, not a broken black frame).
+    # `color` is kept as the primitive here because this path only runs after the
+    # gradient-based stat card already failed, so it must not depend on gradients.
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x1b2b3c:s={W}x{H}:d={seg_dur:.3f}:r=30",
          "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
          "-pix_fmt", "yuv420p", "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
     return out
@@ -1450,43 +1483,6 @@ def _event(start, end, word):
     tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
-# Short function words that look like empty filler when flashed as their own
-# one-word caption frame ("TO", "THE", "IS", "OF" — see renders 66-68). They are
-# folded into an adjacent CONTENT word so one meaningful word is always on screen.
-_CAPTION_MERGE_WORDS = {
-    "the", "a", "an", "of", "to", "in", "on", "is", "it", "as", "at", "and",
-    "or", "but", "by", "so", "its", "this", "that", "was", "are", "has", "had",
-    "then", "than", "with", "from", "into", "be", "been", "were", "for",
-}
-
-
-def _merge_stopword_events(word_times):
-    """Fold short function words into an adjacent content word so a lone
-    'THE'/'TO'/'IS' never gets its own caption frame. Keeps exactly ONE word on
-    screen at a time (no caption width/overflow change, unlike multi-word
-    phrases) — a leading function word pulls the NEXT content word back to its
-    start; a mid/trailing one extends the PREVIOUS content word's end to cover
-    it. Timing stays monotonic. Returns [(word, start, end)]. If a scene is
-    somehow all function words, it's returned unchanged rather than blanked."""
-    def norm(w):
-        return re.sub(r"[^a-z]", "", w.lower())
-    out = []
-    pending_start = None  # a leading function word's start, waiting for a content word
-    for w, st, en in word_times:
-        if norm(w) in _CAPTION_MERGE_WORDS:
-            if out:
-                pw, ps, pe = out[-1]
-                out[-1] = (pw, ps, max(pe, en))          # absorb into previous word
-            else:
-                pending_start = st if pending_start is None else min(pending_start, st)
-            continue
-        if pending_start is not None:
-            st = min(st, pending_start)
-            pending_start = None
-        out.append((w, st, en))
-    return out or list(word_times)
-
-
 def build_ass(scenes, segments, actual_durs, path):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
@@ -1518,11 +1514,13 @@ def build_ass(scenes, segments, actual_durs, path):
             return 0.0
         return final_starts[j] - orig_starts[j]
 
-    # Collect per-scene (word, start, end) tuples on the assembled-audio
-    # timeline, then fold function words (per scene, never across a scene cut)
-    # before emitting, so lone 'THE'/'TO' frames disappear.
+    # Emit ONE caption per spoken word. (An earlier version folded short
+    # function words into a neighbour to avoid lone 'THE'/'TO' frames, but the
+    # user watched that build and read it as "the subtitles don't pick up every
+    # word the narrator says" — full word-for-word coverage, tightly synced, is
+    # what they want. So every word gets its own frame at its real spoken time.)
     def _emit(word_times):
-        for w, st, en in _merge_stopword_events(word_times):
+        for w, st, en in word_times:
             events.append(_event(st, en, w))
 
     if WORD_TIMINGS:

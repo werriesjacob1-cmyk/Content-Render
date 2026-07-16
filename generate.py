@@ -303,11 +303,12 @@ CTA_ENDING_RULES = {
         "understood at the start now means something bigger."
     ),
     "LOOP": (
-        "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line must be the single most "
-        "quotable line of the whole script, and it must loop back to the hook's exact opening image "
-        "or phrase so the last frame flows straight back into the first -- a viewer who lets it "
-        "replay shouldn't feel a seam. No explicit call-to-action language at all here (no 'save', "
-        "no 'share', no 'comment') -- the loop itself is the entire mechanic."
+        "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line should echo the FEELING or "
+        "central image of the hook so a replay feels seamless — but do NOT simply restate the hook's "
+        "fact or repeat its exact words/number. Repeating the opening claim verbatim reads as the "
+        "video repeating itself (e.g. a hook about fingernail-growth speed must NOT end by saying "
+        "'at the same speed your fingernails grow' again). Instead, land a NEW resonant thought that "
+        "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
     ),
     "COMMENT": (
         "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
@@ -346,8 +347,8 @@ CTA_PUNCHUP_RULES = {
     "SAVE_WORTHY": "Final line: a striking, resonant closing thought or implication that ideally "
                    "recasts the hook. NO command/instruction of any kind -- 'save', 'screenshot', "
                    "'remember', 'look up', 'keep this' are all banned. A thought, never an order.",
-    "LOOP": "Final line: the most quotable line of the script, looping back to the hook's opening "
-            "image/phrase. No CTA language.",
+    "LOOP": "Final line: a NEW resonant thought that echoes the hook's feeling/image so a replay feels "
+            "seamless — but must NOT restate the hook's fact or repeat its exact words/number. No CTA language.",
     "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
                "viewer would type a reply to.",
     "SHARE": "Final line: a specific, identity-relevant reason to send this to one particular kind "
@@ -591,8 +592,15 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   of this strangeness (this is one of many) — a resonant thought that makes them want the NEXT one.
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
   these and this page finds them.
-- SPECIFICITY IS THE BRAND: wherever a competitor would be vague, name the exact thing. The proof is
-  the point.
+- SPECIFICITY IS THE BRAND, BUT WONDER IS THE PRODUCT: name the exact thing where a competitor would be
+  vague — but a number is only worth saying if it makes the viewer FEEL something. Do NOT stat-dump.
+  A dry readout ("it grows one millimetre a year", "the core is 5,700 kelvin", "temperature for
+  temperature") is boring and reads as geeky. The SAME fact becomes gripping when the number is turned
+  into a felt, physical image ("a ball of iron the size of the Moon, as hot as the Sun, frozen solid
+  by the crushing weight above it"). RULES: at most 2-3 numbers in the whole script, and every one must
+  be immediately made visceral with a comparison you can picture or feel. Lead each scene with the
+  WONDER or the mental image, not the statistic. If a detail is merely technical and doesn't make a
+  smart adult go "wait, WHAT?", cut it. Plain, everyday words only — never a term you'd have to look up.
 
 PROVEN RULES (every one is backed by 2026 TikTok performance data — follow them all):
 
@@ -656,6 +664,10 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   verbs (unfurls, cascades, dances, whispers, beckons) and unexplained jargon (antisolar point,
   refraction index, angular radius). One unfamiliar word is enough to make a viewer feel dumb and
   swipe. Clear and concrete beats clever and ornate every time.
+- TTS-SAFE WORDING: this is read aloud by a text-to-speech voice that mis-says some homographs. Do NOT
+  use the VERB "lives" (the voice reads it like the noun "lives") — write "survives", "exists", "still
+  grows", or "is alive" instead. Also avoid other noun/verb homographs where the wrong reading would
+  confuse: "tears", "wound", "bass", "lead", "close" (as a verb). Pick an unambiguous synonym.
 - STRONGEST PAYOFF WINS: prefer a concrete, surprising, everyday consequence over an abstract musing.
   For a rainbow, "this is why a rainbow has no bottom — and why you can never reach the end of one"
   beats "everyone sees their own private rainbow". Ask: does the payoff give the viewer a crisp new
@@ -719,6 +731,13 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
   Prefer a real, literal, photographable subject tied to the topic: for a space/astronomy video
   use "night sky stars", "telescope observatory", "galaxy nebula", "moon surface", real footage —
   not an abstract stand-in. When in doubt, pick the most concrete real-world thing the scene names.
+- MATCH THE MOMENT: each scene's query must depict the exact thing THAT sentence is about, so the
+  visual tracks what the narrator is saying second-by-second — not just the general topic. If a scene
+  says "a dying tree feeds its neighbours", query "dead fallen tree forest", not a generic "forest".
+- PREFER MOVING FOOTAGE: pick subjects real stock VIDEO exists for — things in motion or with action
+  (flowing lava, a swimming animal, crashing waves, blowing dust, a hand touching something), not
+  static objects that only return still photos. Motion holds attention and keeps the clip from looking
+  like a slideshow. Concrete + moving + specific is the goal for every scene.
 - Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
   setting) — a video that shows the same three shots on loop reads as spam.
 - NAME THE ACTUAL SUBJECT. If the video is about a SPECIFIC animal, object, place, or phenomenon

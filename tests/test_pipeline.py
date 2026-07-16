@@ -337,31 +337,6 @@ def test_footage_intent_anchors_on_subject():
           "voiceover-only intent when no subject")
 
 
-def test_caption_stopword_merge():
-    section("main._merge_stopword_events: no lone function-word caption frames")
-    # "the stratosphere" -> STRATOSPHERE shown from 'the' start, no lone THE
-    wt = [("the", 0.0, 0.3), ("stratosphere", 0.3, 1.1)]
-    out = M._merge_stopword_events(wt)
-    check(len(out) == 1 and out[0][0] == "stratosphere", f"leading 'the' folded forward: {out}")
-    check(out[0][1] == 0.0, "content word pulled back to the function word's start")
-
-    # a mid function word folds into the previous content word
-    wt = [("sound", 0.0, 0.5), ("of", 0.5, 0.7), ("thunder", 0.7, 1.3)]
-    out = M._merge_stopword_events(wt)
-    words = [w for w, _, _ in out]
-    check(words == ["sound", "thunder"], f"'of' folded, no lone frame: {words}")
-    check(out[0][2] >= 0.7, "previous word extended over the folded function word")
-
-    # result stays monotonic and none of the merge-words survive as their own frame
-    wt = [("it", 0.0, 0.2), ("is", 0.2, 0.4), ("a", 0.4, 0.5), ("giant", 0.5, 1.0),
-          ("that", 1.0, 1.2), ("grows", 1.2, 1.8)]
-    out = M._merge_stopword_events(wt)
-    starts = [s for _, s, _ in out]
-    check(all(starts[i] <= starts[i+1] for i in range(len(starts)-1)), "caption starts monotonic")
-    check(all(re.sub(r"[^a-z]", "", w.lower()) not in M._CAPTION_MERGE_WORDS for w, _, _ in out),
-          f"no lone function word survives: {[w for w,_,_ in out]}")
-
-
 def test_keywords_from_text():
     section("main._keywords_from_text: salient nouns, stopwords dropped")
     kw = M._keywords_from_text("The churning liquid outer core generates a magnetic field")
@@ -485,7 +460,6 @@ def main():
     test_content_alignment()
     test_diversify_queries()
     test_footage_intent_anchors_on_subject()
-    test_caption_stopword_merge()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
