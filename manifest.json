@@ -1,95 +1,95 @@
 {
-  "title": "The Animal That Never Eats",
-  "viewer_job": "REFRAME",
-  "keyword": "giant tube worm",
-  "metaphor": "life without eating",
-  "hook": "What if an animal never had to eat a bite its whole life?",
-  "script": "Imagine a creature that never has to eat a single bite its entire life. Deep in the abyss, the giant tube worm Riftia pachyptila does exactly that. But here is the strange part: it has no mouth and no gut at all. It survives solely on bacteria that transform toxic hydrogen sulfide into pure energy. These symbiotic bacteria can make up a staggering 50 percent of its body weight. Its blood-red plume pumps hemoglobin to feed this internal army of microbes. This fueling system lets it grow 30 centimeters in a year, defying all invertebrate limits. It has completely replaced its own digestive organs with a living bacterial colony. That is the secret of the animal that never has to eat.",
+  "title": "The Metal That Remembers",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "shape memory alloy",
+  "metaphor": "Metal with memory",
+  "hook": "Your eyeglasses frames might be made of a metal that remembers.",
+  "script": "Your eyeglasses frames might be made of a metal that remembers. What if you could crumple a paperclip and have it heal itself? Ordinary steel permanently bends after a tiny zero point two percent strain. But a shape memory alloy called nitinol can be stretched eight percent and still recover. It doesn't slide atoms; it simply reorients its crystal structure like a folding piece of paper. This is why nitinol returns to shape the instant you add heat. Some versions trigger at exactly thirty-seven degrees Celsius. This allows tiny stents to stay chilled and flexible until they warm up inside your artery. It's a material that behaves less like a mineral and more like a living thing.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Imagine a creature that never has to eat a single bite its entire life.",
-      "on_screen_text": "Never Eat Again?",
-      "search_query": "deep sea vent bubbles",
+      "voiceover": "Your eyeglasses frames might be made of a metal that remembers.",
+      "on_screen_text": "Metal with memory",
+      "search_query": "eyeglasses frame closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Deep in the abyss, the giant tube worm Riftia pachyptila does exactly that.",
-      "on_screen_text": "Giant Tube Worm",
-      "search_query": "tube worms ocean floor",
+      "voiceover": "What if you could crumple a paperclip and have it heal itself?",
+      "on_screen_text": "Can metal heal?",
+      "search_query": "metal wire bending",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "But here is the strange part: it has no mouth and no gut at all.",
-      "on_screen_text": "No Digestive System",
-      "search_query": "hydrothermal vent deep sea",
-      "motion": "zoom_out"
+      "voiceover": "Ordinary steel permanently bends after a tiny zero point two percent strain.",
+      "on_screen_text": "0.2% Strain Limit",
+      "search_query": "bending steel rod",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "It survives solely on bacteria that transform toxic hydrogen sulfide into pure energy.",
-      "on_screen_text": "Toxic Energy",
-      "search_query": "bubbling green liquid",
+      "voiceover": "But a shape memory alloy called nitinol can be stretched eight percent and still recover.",
+      "on_screen_text": "Nitinol: 8% Recovery",
+      "search_query": "stretching metal wire",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "These symbiotic bacteria can make up a staggering 50 percent of its body weight.",
-      "on_screen_text": "50% Bacterial Weight",
-      "search_query": "deep sea vent bubbles",
+      "voiceover": "It doesn't slide atoms; it simply reorients its crystal structure like a folding piece of paper.",
+      "on_screen_text": "Crystal Reorientation",
+      "search_query": "folding white paper",
       "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Its blood-red plume pumps hemoglobin to feed this internal army of microbes.",
-      "on_screen_text": "Blood Red Plume",
-      "search_query": "tube worms ocean floor",
-      "motion": "static"
-    },
-    {
-      "id": 7,
-      "duration": 5,
-      "voiceover": "This fueling system lets it grow 30 centimeters in a year, defying all invertebrate limits.",
-      "on_screen_text": "Rapid Growth",
-      "search_query": "time lapse plant growing",
+      "voiceover": "This is why nitinol returns to shape the instant you add heat.",
+      "on_screen_text": "Shape Memory Alloy",
+      "search_query": "heated metal glow",
       "motion": "zoom_in"
     },
     {
-      "id": 8,
+      "id": 7,
       "duration": 4,
-      "voiceover": "It has completely replaced its own digestive organs with a living bacterial colony.",
-      "on_screen_text": "Total Metamorphosis",
-      "search_query": "hydrothermal vent deep sea",
-      "motion": "zoom_out"
+      "voiceover": "Some versions trigger at exactly thirty-seven degrees Celsius.",
+      "on_screen_text": "37\u00b0C Trigger",
+      "search_query": "digital thermometer reading",
+      "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 5,
+      "voiceover": "This allows tiny stents to stay chilled and flexible until they warm up inside your artery.",
+      "on_screen_text": "Medical Stents",
+      "search_query": "blood flowing artery",
+      "motion": "zoom_in"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "That is the secret of the animal that never has to eat.",
-      "on_screen_text": "Giant Tube Worm",
-      "search_query": "tube worms ocean floor",
-      "motion": "zoom_in"
+      "voiceover": "It's a material that behaves less like a mineral and more like a living thing.",
+      "on_screen_text": "Living Metal",
+      "search_query": "liquid metal ripple",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Could you survive without a stomach? Meet the giant tube worm. Yes or no: is this the weirdest animal you've seen?",
-    "Life independent of the sun is possible.",
-    "The ocean floor is stranger than we think."
+    "Would you trust a shape memory alloy inside your body? Yes or no?",
+    "Metal that remembers its past.",
+    "Reality is stranger than it sounds."
   ],
   "hashtags": [
-    "#biology",
-    "#ocean",
-    "#nature",
-    "#deepsea",
     "#science",
+    "#materials",
+    "#engineering",
+    "#technology",
+    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -97,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-animal-that-never-eats",
-  "cta_style": "LOOP",
-  "domain": "ocean"
+  "video_id": "science_2026-07-16_the-metal-that-remembers",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "materials"
 }
