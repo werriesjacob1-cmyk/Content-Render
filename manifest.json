@@ -1,103 +1,102 @@
 {
-  "title": "The Metal That Remembers",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "shape memory alloy",
-  "metaphor": "Metal with memory",
-  "hook": "Your eyeglasses frames might be made of a metal that remembers.",
-  "script": "Your eyeglasses frames might be made of a metal that remembers. What if you could crumple a paperclip and have it heal itself? Ordinary steel permanently bends after a tiny zero point two percent strain. But a shape memory alloy called nitinol can be stretched eight percent and still recover. It doesn't slide atoms; it simply reorients its crystal structure like a folding piece of paper. This is why nitinol returns to shape the instant you add heat. Some versions trigger at exactly thirty-seven degrees Celsius. This allows tiny stents to stay chilled and flexible until they warm up inside your artery. It's a material that behaves less like a mineral and more like a living thing.",
+  "title": "The Secret Scent of Rain",
+  "viewer_job": "REFRAME",
+  "keyword": "smell of rain",
+  "metaphor": "Biological scent detection",
+  "hook": "Your nose can detect the smell of rain better than a shark.",
+  "script": "Your nose can detect the smell of rain better than a shark. That fresh scent is called petrichor. It is delivered by tiny air bubbles that burst from the ground like champagne. The smell comes from a compound called geosmin, produced by soil bacteria. Could you smell this in a crowded city? Your nose detects geosmin at five parts per trillion. That is like sensing one teaspoon of a substance in twenty Olympic-sized swimming pools. This sensitivity is so high it can ruin the taste of bottled water. The smell of rain is actually the scent of bacteria.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your eyeglasses frames might be made of a metal that remembers.",
-      "on_screen_text": "Metal with memory",
-      "search_query": "eyeglasses frame closeup",
+      "voiceover": "Your nose can detect the smell of rain better than a shark.",
+      "on_screen_text": "Smell of Rain",
+      "search_query": "rain falling ground",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if you could crumple a paperclip and have it heal itself?",
-      "on_screen_text": "Can metal heal?",
-      "search_query": "metal wire bending",
+      "voiceover": "That fresh scent is called petrichor.",
+      "on_screen_text": "Petrichor",
+      "search_query": "wet soil closeup",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Ordinary steel permanently bends after a tiny zero point two percent strain.",
-      "on_screen_text": "0.2% Strain Limit",
-      "search_query": "bending steel rod",
+      "voiceover": "It is delivered by tiny air bubbles that burst from the ground like champagne.",
+      "on_screen_text": "Air Bubbles",
+      "search_query": "rain on pavement",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "But a shape memory alloy called nitinol can be stretched eight percent and still recover.",
-      "on_screen_text": "Nitinol: 8% Recovery",
-      "search_query": "stretching metal wire",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 5,
-      "duration": 5,
-      "voiceover": "It doesn't slide atoms; it simply reorients its crystal structure like a folding piece of paper.",
-      "on_screen_text": "Crystal Reorientation",
-      "search_query": "folding white paper",
+      "duration": 4,
+      "voiceover": "The smell comes from a compound called geosmin, produced by soil bacteria.",
+      "on_screen_text": "Geosmin Bacteria",
+      "search_query": "forest floor soil",
       "motion": "zoom_out"
     },
     {
-      "id": 6,
+      "id": 5,
       "duration": 4,
-      "voiceover": "This is why nitinol returns to shape the instant you add heat.",
-      "on_screen_text": "Shape Memory Alloy",
-      "search_query": "heated metal glow",
+      "voiceover": "Could you smell this in a crowded city?",
+      "on_screen_text": "Can you smell it?",
+      "search_query": "city street rain",
       "motion": "zoom_in"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "Your nose detects geosmin at five parts per trillion.",
+      "on_screen_text": "5 Parts Per Trillion",
+      "search_query": "human nose closeup",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Some versions trigger at exactly thirty-seven degrees Celsius.",
-      "on_screen_text": "37\u00b0C Trigger",
-      "search_query": "digital thermometer reading",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "That is like sensing one teaspoon of a substance in twenty Olympic-sized swimming pools.",
+      "on_screen_text": "20 Swimming Pools",
+      "search_query": "olympic swimming pool",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 5,
-      "voiceover": "This allows tiny stents to stay chilled and flexible until they warm up inside your artery.",
-      "on_screen_text": "Medical Stents",
-      "search_query": "blood flowing artery",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "This sensitivity is so high it can ruin the taste of bottled water.",
+      "on_screen_text": "Bottled Water",
+      "search_query": "pouring water glass",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "It's a material that behaves less like a mineral and more like a living thing.",
-      "on_screen_text": "Living Metal",
-      "search_query": "liquid metal ripple",
-      "motion": "zoom_out"
+      "voiceover": "The smell of rain is actually the scent of bacteria.",
+      "on_screen_text": "Scent of Bacteria",
+      "search_query": "rain falling ground",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Would you trust a shape memory alloy inside your body? Yes or no?",
-    "Metal that remembers its past.",
-    "Reality is stranger than it sounds."
+    "The smell of rain is more complex than you think. Do you love petrichor? Yes or No?",
+    "Your nose is a biological superpower.",
+    "The science of the rain scent."
   ],
   "hashtags": [
     "#science",
-    "#materials",
-    "#engineering",
-    "#technology",
-    "#physics",
-    "#learnontiktok"
+    "#nature",
+    "#biology",
+    "#rain",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-metal-that-remembers",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "materials"
+  "video_id": "science_2026-07-16_the-secret-scent-of-rain",
+  "cta_style": "LOOP",
+  "domain": "weather"
 }
