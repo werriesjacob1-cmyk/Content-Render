@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
-      "metaphor": "Mountain Height Comparison",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Mauna Kea: The Tallest Mountain",
-      "fact_id": "mauna_kea",
-      "domain": "earth",
-      "hook": "You think Everest is the tallest?",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_cosmic-coincidence",
       "metaphor": "cosmic coincidence",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -272,6 +257,29 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_the-glass-rain-planet",
+      "metaphor": "liquid glass storm",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "title": "The Glass Rain Planet",
+      "fact_id": "glass_rain_exoplanet",
+      "domain": "space",
+      "hook": "You are looking at a deep blue planet that is actually hell.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 4.0,
+        "clarity": 10.0,
+        "overall": 7.33
       }
     }
   ]

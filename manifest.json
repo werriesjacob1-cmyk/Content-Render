@@ -1,86 +1,86 @@
 {
-  "title": "DNA Stretched Out",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "DNA length",
-  "metaphor": "Cellular Scale",
-  "hook": "Your DNA is incredibly long",
-  "script": "Your DNA is incredibly long If you uncoiled all of it, the string would stretch about 60 billion miles This is enough to travel from Earth to Pluto and back about 12 times Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells The diameter of a DNA double helix is only 2 nanometers, meaning if a DNA strand were as thick as a rope, the 2-meter length in a single cell would be equivalent to a rope stretching 20 kilometers If you unravelled the DNA from every cell in your body and laid it in one line, it would stretch to the Sun and back dozens of times over The same physics that packs this much DNA into every cell is what allows it to fit inside you",
+  "title": "The Glass Rain Planet",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "HD 189733b",
+  "metaphor": "liquid glass storm",
+  "hook": "You are looking at a deep blue planet that is actually hell.",
+  "script": "You are looking at a deep blue planet that is actually hell. From a distance, HD 189733b looks like a peaceful water world. One side is trapped in eternal daylight, while the other is frozen in permanent night. This temperature gap creates a nightmare. The blue color comes from clouds of silicate glass. Winds reach 8,000 kilometres per hour, which is seven times the speed of sound. It is the deadliest sight in the galaxy. A world that looks like home, but feels like a furnace.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "Your DNA is incredibly long",
-      "on_screen_text": "DNA Length",
-      "search_query": "twisted rope closeup",
+      "duration": 5,
+      "voiceover": "You are looking at a deep blue planet that is actually hell.",
+      "on_screen_text": "HD 189733b",
+      "search_query": "blue planet space",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "If you uncoiled all of it, the string would stretch about 60 billion miles",
-      "on_screen_text": "DNA Scale",
-      "search_query": "space distance animation",
+      "voiceover": "From a distance, HD 189733b looks like a peaceful water world.",
+      "on_screen_text": "Deep Blue World",
+      "search_query": "exoplanet illustration",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "This is enough to travel from Earth to Pluto and back about 12 times",
-      "on_screen_text": "Pluto Distance",
-      "search_query": "tangled threads macro",
-      "motion": "rotate"
+      "duration": 6,
+      "voiceover": "One side is trapped in eternal daylight, while the other is frozen in permanent night.",
+      "on_screen_text": "Tidally Locked",
+      "search_query": "planet rotating space",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "Each microscopic cell packs about 2 metres of DNA folded into a space you could never see with the naked eye, multiplied across tens of trillions of cells",
-      "on_screen_text": "Cellular DNA",
-      "search_query": "ocean waves aerial",
+      "voiceover": "This temperature gap creates a nightmare.",
+      "on_screen_text": "Extreme Gradient",
+      "search_query": "stormy alien world",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "The diameter of a DNA double helix is only 2 nanometers, meaning if a DNA strand were as thick as a rope, the 2-meter length in a single cell would be equivalent to a rope stretching 20 kilometers",
-      "on_screen_text": "DNA Double Helix",
-      "search_query": "spiral staircase looking up",
-      "motion": "pan"
+      "duration": 6,
+      "voiceover": "The blue color comes from clouds of silicate glass.",
+      "on_screen_text": "Glass Clouds",
+      "search_query": "shattering glass slow motion",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "If you unravelled the DNA from every cell in your body and laid it in one line, it would stretch to the Sun and back dozens of times over",
-      "on_screen_text": "DNA Unraveled",
-      "search_query": "tangled threads macro",
-      "motion": "unravel"
+      "duration": 6,
+      "voiceover": "Winds reach 8,000 kilometres per hour, which is seven times the speed of sound.",
+      "on_screen_text": "8,000 KM PER HOUR",
+      "search_query": "hurricane wind trees",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "The same physics that packs this much DNA into every cell is what allows it to fit inside you",
-      "on_screen_text": "DNA Packing",
-      "search_query": "lightning storm clouds",
-      "motion": "split"
+      "duration": 6,
+      "voiceover": "It is the deadliest sight in the galaxy. A world that looks like home, but feels like a furnace.",
+      "on_screen_text": "Deadliest Blue",
+      "search_query": "blue planet space",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "How long is your DNA? Did you know it's long enough to reach the Sun and back?",
-    "DNA length is a mind-blowing fact",
-    "The scale of DNA is hard to wrap your head around"
+    "Would you visit HD 189733b if you could? Yes or no?",
+    "A blue world made of glass.",
+    "The most dangerous rain in the universe."
   ],
   "hashtags": [
-    "#DNA",
-    "#Genetics",
-    "#Space",
-    "#Science",
-    "#Facts"
+    "#space",
+    "#astronomy",
+    "#science",
+    "#exoplanets",
+    "#universe"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_dna-stretched-out",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "body"
+  "video_id": "science_2026-07-16_the-glass-rain-planet",
+  "cta_style": "LOOP",
+  "domain": "space"
 }
