@@ -126,6 +126,45 @@ def _edge_tts_with_timings(text, voice, rate, out_mp3):
     return words
 
 
+# Local neural TTS (Piper): free, offline, no quota, and markedly more natural
+# than edge-tts. The voice model is downloaded by render.yml to voices/voice.onnx
+# (override with PIPER_MODEL). PIPER_LENGTH_SCALE sets pace: 1.0 = the model's
+# natural speed (~fast); higher = slower/calmer. ~1.2 gives a deliberate
+# documentary cadence. Word timings are NOT needed from Piper — whisper_align
+# recovers them from the audio, same as for every other engine.
+PIPER_MODEL = os.environ.get("PIPER_MODEL", os.path.join(ROOT, "voices", "voice.onnx"))
+PIPER_LENGTH_SCALE = os.environ.get("PIPER_LENGTH_SCALE", "1.25")   # per-word pace (higher=slower)
+PIPER_SENTENCE_SILENCE = os.environ.get("PIPER_SENTENCE_SILENCE", "0.35")  # pause between sentences (s)
+
+
+def _piper_tts(text, out_mp3):
+    """Synthesize with Piper -> WAV -> MP3. Returns True on success. Fully
+    fail-safe: any missing model / piper error / bad output returns False so
+    tts_full falls straight through to edge-tts and a render never breaks on TTS.
+    length-scale gives a measured per-word pace; sentence-silence adds a short
+    beat between sentences for documentary gravitas (so it reads calm, not rushed)."""
+    if not os.path.exists(PIPER_MODEL):
+        return False
+    wav = out_mp3 + ".piper.wav"
+    try:
+        subprocess.run(["piper", "-m", PIPER_MODEL, "-f", wav,
+                        "--length-scale", str(PIPER_LENGTH_SCALE),
+                        "--sentence-silence", str(PIPER_SENTENCE_SILENCE)],
+                       input=text, text=True, capture_output=True, timeout=180, check=True)
+        if not (os.path.exists(wav) and os.path.getsize(wav) > 1000):
+            return False
+        run(["ffmpeg", "-y", "-i", wav, "-c:a", "libmp3lame", "-q:a", "3", out_mp3])
+        return os.path.exists(out_mp3) and os.path.getsize(out_mp3) > 1000
+    except Exception as e:  # noqa: BLE001
+        print(f"  Piper TTS unavailable/failed ({e}); falling back to edge-tts")
+        return False
+    finally:
+        try:
+            os.remove(wav)
+        except OSError:
+            pass
+
+
 def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
     el_key = os.environ.get("ELEVENLABS_API_KEY", "")
@@ -170,6 +209,14 @@ def tts_full(full_text, out_mp3, voice, rate):
             except Exception as e:
                 print(f"  ElevenLabs failed: {e}")
                 break
+    # Local neural TTS (Piper) — the preferred FREE voice: natural, offline, no
+    # quota, no rate limits. Tried before edge-tts. Clear WORD_TIMINGS so the
+    # later whisper_align pass supplies the real per-word caption times.
+    if _piper_tts(full_text, out_mp3):
+        WORD_TIMINGS = []
+        print(f"  Piper SUCCESS (local neural voice, length-scale {PIPER_LENGTH_SCALE})")
+        return True
+
     # edge-tts fallback (when ElevenLabs is unavailable / out of credits). Two
     # fixes vs the old plain CLI call, both aimed at the "narrator too fast and
     # the subtitles can't keep up" complaint:

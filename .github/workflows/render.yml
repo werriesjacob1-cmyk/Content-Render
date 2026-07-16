@@ -67,6 +67,28 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Cache Piper voice
+        # Restores the ~115 MB neural voice from cache so it isn't re-downloaded
+        # every run; saves it (post-job) the first time.
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-en_US-ryan-high-v1
+
+      - name: Fetch Piper voice (local neural TTS)
+        # Downloads the voice model main.py's _piper_tts() looks for at
+        # voices/voice.onnx, only if the cache didn't already provide it.
+        # Best-effort: if the download fails the render simply falls back to
+        # edge-tts, so this never blocks a run.
+        run: |
+          mkdir -p voices
+          BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
+          if [ ! -s voices/voice.onnx ]; then
+            curl -sSL -o voices/voice.onnx      "$BASE/en_US-ryan-high.onnx"      || echo "voice .onnx download failed"
+            curl -sSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json" || echo "voice .json download failed"
+          fi
+          ls -la voices/ || true
+
       - name: Auto-generate a fresh video idea
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
