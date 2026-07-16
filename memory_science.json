@@ -1,20 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-12_the-silent-void-of-space",
-      "metaphor": "cosmic quiet",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "COMMENT",
-      "title": "The Silent Void of Space",
-      "fact_id": "space_silent",
-      "hook": "You scream in space, but does anyone hear?",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-12_what-happens-in-space-without-a-suit",
       "metaphor": "space vacuum",
       "viewer_job": "REFRAME",
@@ -243,6 +229,29 @@
         "rewatch": 9.0,
         "clarity": 9.0,
         "overall": 8.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_the-animal-that-never-eats",
+      "metaphor": "life without eating",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "title": "The Animal That Never Eats",
+      "fact_id": "vent_tube_worms",
+      "domain": "ocean",
+      "hook": "What if an animal never had to eat a bite its whole life?",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]

@@ -1,95 +1,95 @@
 {
-  "title": "The Diamond Rain of Ice Giants",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "diamond rain",
-  "metaphor": "alien gemstone weather",
-  "hook": "Your jewelry is actually a common weather pattern on other planets.",
-  "script": "Your jewelry is actually a common weather pattern on other planets. Deep in the atmospheres of Neptune and Uranus, the physics of weather change. What if you could stand under a sky where it literally rains gemstones? The extreme pressure squeezes carbon atoms into solid crystals. This creates a constant downpour of diamond rain. These diamonds are heavy enough to sink for thousands of kilometers. They eventually pool into a slushy ocean of liquid diamond deep inside the planet. This ocean is larger than any sea on Earth. Send this to the person who thinks diamonds are rare.",
+  "title": "The Animal That Never Eats",
+  "viewer_job": "REFRAME",
+  "keyword": "giant tube worm",
+  "metaphor": "life without eating",
+  "hook": "What if an animal never had to eat a bite its whole life?",
+  "script": "Imagine a creature that never has to eat a single bite its entire life. Deep in the abyss, the giant tube worm Riftia pachyptila does exactly that. But here is the strange part: it has no mouth and no gut at all. It survives solely on bacteria that transform toxic hydrogen sulfide into pure energy. These symbiotic bacteria can make up a staggering 50 percent of its body weight. Its blood-red plume pumps hemoglobin to feed this internal army of microbes. This fueling system lets it grow 30 centimeters in a year, defying all invertebrate limits. It has completely replaced its own digestive organs with a living bacterial colony. That is the secret of the animal that never has to eat.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your jewelry is actually a common weather pattern on other planets.",
-      "on_screen_text": "Alien Diamond Rain",
-      "search_query": "diamond crystal",
+      "voiceover": "Imagine a creature that never has to eat a single bite its entire life.",
+      "on_screen_text": "Never Eat Again?",
+      "search_query": "deep sea vent bubbles",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Deep in the atmospheres of Neptune and Uranus, the physics of weather change.",
-      "on_screen_text": "Neptune and Uranus",
-      "search_query": "planet neptune",
+      "voiceover": "Deep in the abyss, the giant tube worm Riftia pachyptila does exactly that.",
+      "on_screen_text": "Giant Tube Worm",
+      "search_query": "tube worms ocean floor",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "What if you could stand under a sky where it literally rains gemstones?",
-      "on_screen_text": "Gemstone Rain?",
-      "search_query": "blue planet space",
-      "motion": "zoom_in"
+      "voiceover": "But here is the strange part: it has no mouth and no gut at all.",
+      "on_screen_text": "No Digestive System",
+      "search_query": "hydrothermal vent deep sea",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "The extreme pressure squeezes carbon atoms into solid crystals.",
-      "on_screen_text": "Crushing Pressure",
-      "search_query": "industrial press machine",
+      "duration": 5,
+      "voiceover": "It survives solely on bacteria that transform toxic hydrogen sulfide into pure energy.",
+      "on_screen_text": "Toxic Energy",
+      "search_query": "bubbling green liquid",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This creates a constant downpour of diamond rain.",
-      "on_screen_text": "Diamond Rain",
-      "search_query": "falling rain slow motion",
+      "duration": 5,
+      "voiceover": "These symbiotic bacteria can make up a staggering 50 percent of its body weight.",
+      "on_screen_text": "50% Bacterial Weight",
+      "search_query": "deep sea vent bubbles",
       "motion": "zoom_out"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "These diamonds are heavy enough to sink for thousands of kilometers.",
-      "on_screen_text": "Sinking Crystals",
-      "search_query": "bubbles sinking water",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "Its blood-red plume pumps hemoglobin to feed this internal army of microbes.",
+      "on_screen_text": "Blood Red Plume",
+      "search_query": "tube worms ocean floor",
+      "motion": "static"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "They eventually pool into a slushy ocean of liquid diamond deep inside the planet.",
-      "on_screen_text": "Liquid Diamond Ocean",
-      "search_query": "molten glass flowing",
-      "motion": "zoom_out"
+      "voiceover": "This fueling system lets it grow 30 centimeters in a year, defying all invertebrate limits.",
+      "on_screen_text": "Rapid Growth",
+      "search_query": "time lapse plant growing",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "This ocean is larger than any sea on Earth.",
-      "on_screen_text": "Cosmic Scale",
-      "search_query": "ocean waves aerial",
-      "motion": "zoom_in"
+      "voiceover": "It has completely replaced its own digestive organs with a living bacterial colony.",
+      "on_screen_text": "Total Metamorphosis",
+      "search_query": "hydrothermal vent deep sea",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Send this to the person who thinks diamonds are rare.",
-      "on_screen_text": "Actually Common",
-      "search_query": "person looking surprised",
-      "motion": "zoom_out"
+      "voiceover": "That is the secret of the animal that never has to eat.",
+      "on_screen_text": "Giant Tube Worm",
+      "search_query": "tube worms ocean floor",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Diamond rain is real on Neptune. Would you travel there if you could? \ud83d\udc8e",
-    "The weather on ice giants is terrifyingly beautiful.",
-    "The most expensive rain in the universe."
+    "Could you survive without a stomach? Meet the giant tube worm. Yes or no: is this the weirdest animal you've seen?",
+    "Life independent of the sun is possible.",
+    "The ocean floor is stranger than we think."
   ],
   "hashtags": [
-    "#space",
-    "#astronomy",
+    "#biology",
+    "#ocean",
+    "#nature",
+    "#deepsea",
     "#science",
-    "#planets",
-    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -97,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
-  "cta_style": "SHARE",
-  "domain": "space"
+  "video_id": "science_2026-07-16_the-animal-that-never-eats",
+  "cta_style": "LOOP",
+  "domain": "ocean"
 }
