@@ -925,7 +925,12 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
 # terms free stock libraries can't actually satisfy — searches for them degrade
 # into random flesh/lab/texture close-ups (see the belly-button incident)
 UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organ|cells?|microscop\w*|diagram|x-?ray|molecul\w*|"
-                           r"atoms?|quantum|abstract|concept\w*|system)\b", re.I)
+                           r"atoms?|quantum|abstract|concept\w*|system|"
+                           # jargon that returns nothing filmable (or a random
+                           # texture the judge then rates a false match — the
+                           # "rhizomorphs -> orange brick wall" miss). Say the
+                           # plain subject instead: "fungus threads underground".
+                           r"rhizomorph\w*|myceli\w*|hyphae?|antisolar)\b", re.I)
 
 # visually-rich neutral B-roll for query dedup / repair — always available on stock sites
 VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street timelapse",
