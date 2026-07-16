@@ -601,6 +601,11 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   be immediately made visceral with a comparison you can picture or feel. Lead each scene with the
   WONDER or the mental image, not the statistic. If a detail is merely technical and doesn't make a
   smart adult go "wait, WHAT?", cut it. Plain, everyday words only — never a term you'd have to look up.
+- SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD. Never scientific/math notation or "ten to the
+  twenty-seventh power", "10^27", "3.5 x 10^8" — that reads and sounds like a textbook (this is a
+  spoken video). Turn it into an everyday phrase you could picture: "more of them than there are stars
+  in the whole sky", "a billion billion", "enough to fill every ocean twice". If a huge number can't
+  be made graspable in plain speech, drop the number and just describe how staggering it is.
 
 PROVEN RULES (every one is backed by 2026 TikTok performance data — follow them all):
 
@@ -621,9 +626,9 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 76-92 words. At this channel's narration speed that renders to about 38-43
-  seconds — measured, not guessed. Write the FULL script, but keep it TIGHT. Too short = rejected;
-  padded = rejected.
+- Total narration MUST be 74-88 words. At this channel's narration speed that renders to about 38-42
+  seconds — measured, not guessed (a 99-word script came out at 46s, slightly long). Write the FULL
+  script, but keep it TIGHT. Too short = rejected; padded = rejected.
   A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
 - PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
@@ -1289,8 +1294,8 @@ def validate(m, job_name, fact=None):
     # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
     # dense script isn't penalized for being efficient.
     wc = len(_clean(m["script"]).split())
-    if not (60 <= wc <= 100):
-        return f"script word count {wc} out of range (target 76-92, hard cap 100)"
+    if not (60 <= wc <= 93):
+        return f"script word count {wc} out of range (target 74-88, hard cap 93)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
