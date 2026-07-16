@@ -116,6 +116,18 @@ OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 # free"). llama-3.3-70b:free is the reliable strong free model (a 429 from it is
 # a transient upstream rate-limit, not a dead slug, so it stays).
 OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
+# More free/separate-bucket providers, all OpenAI-compatible and ENV-GATED (no
+# key = skipped, zero behaviour change). Each is its own daily bucket, so adding
+# any one key gives a whole extra pool of strong-model generation on free tier —
+# the direct fix for "we burn through Gemini/OpenRouter too fast". Together and
+# Fireworks both host a free Llama-3.3-70B; Mistral's free tier serves a capable
+# small model as a lighter backup.
+TOGETHER_KEY  = os.environ.get("TOGETHER_API_KEY", "")
+FIREWORKS_KEY = os.environ.get("FIREWORKS_API_KEY", "")
+MISTRAL_KEY   = os.environ.get("MISTRAL_API_KEY", "")
+TOGETHER_MODELS  = ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"]
+FIREWORKS_MODELS = ["accounts/fireworks/models/llama-v3p3-70b-instruct"]
+MISTRAL_MODELS   = ["mistral-small-latest"]
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -809,6 +821,21 @@ def _call_openrouter(model, prompt):
                                OPENROUTER_KEY, model, prompt)
 
 
+def _call_together(model, prompt):
+    return _call_openai_compat("https://api.together.xyz/v1/chat/completions",
+                               TOGETHER_KEY, model, prompt)
+
+
+def _call_fireworks(model, prompt):
+    return _call_openai_compat("https://api.fireworks.ai/inference/v1/chat/completions",
+                               FIREWORKS_KEY, model, prompt)
+
+
+def _call_mistral(model, prompt):
+    return _call_openai_compat("https://api.mistral.ai/v1/chat/completions",
+                               MISTRAL_KEY, model, prompt)
+
+
 def _call_cerebras(model, prompt):
     """Cerebras call with a per-minute-limit self-heal. Cerebras' free tier caps
     requests-per-minute, and one render's burst of generation calls trips it
@@ -938,7 +965,10 @@ def call_groq(prompt):
     # 100k/day budget comfortably covers both.
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
             ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
+            ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
+            ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
+            ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) + \
             [("cerebras", m) for m in cerebras_models()]
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
@@ -952,6 +982,12 @@ def call_groq(prompt):
                 out = _call_gemini(model, prompt)
             elif prov == "openrouter":
                 out = _call_openrouter(model, prompt)
+            elif prov == "together":
+                out = _call_together(model, prompt)
+            elif prov == "fireworks":
+                out = _call_fireworks(model, prompt)
+            elif prov == "mistral":
+                out = _call_mistral(model, prompt)
             elif prov == "cerebras":
                 out = _call_cerebras(model, prompt)
             else:
@@ -1896,6 +1932,19 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
 
     if not manifest:
         return None
+
+    # CALL-BUDGET SAVER: punch_up + its follow-up info-gain check are 2 extra LLM
+    # calls that sharpen the voiceovers. A CLEAN (non-degraded) draft from a
+    # STRONG model is already written to the full addictive-craft spec and is
+    # punchy on its own, so skip punch_up for it — saving ~2 calls per render on
+    # the common path (which is where quota is spent). Weak-model drafts and
+    # repaired near-misses still get punched up, where it actually helps. Set
+    # PUNCHUP_ALWAYS=1 to force the old always-punch-up behaviour.
+    _strong_write = (_WORKING_MODEL or ("", ""))[0] in (
+        "gemini", "openrouter", "together", "fireworks", "groq")
+    if (not manifest.get("_degraded")) and _strong_write and os.getenv("PUNCHUP_ALWAYS") != "1":
+        print("  [budget] clean draft from a strong model — skipping punch-up (saves 2 LLM calls)")
+        return manifest
 
     result = punch_up(manifest, chosen_fact, cta_style=cta_style)
     # Ensure information-gain is checked on the SCRIPT THAT ACTUALLY SHIPS,
