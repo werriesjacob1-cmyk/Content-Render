@@ -566,11 +566,15 @@ def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
 
 
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
-    # Prefer Gemini (far larger free quota) for the judge too, so batch rendering
-    # keeps judging footage relevance instead of 429'ing and shipping the top
-    # Pexels result. Falls back to Groq. _LAST_GROQ_FAILED is only set when BOTH
-    # providers are unreachable, so the JUDGE_UNAVAILABLE path still means "no
-    # judge available at all" (ship top clip) rather than "one provider blipped".
+    # PROVIDER ORDER FOR THE JUDGE IS DELIBERATELY ≠ GENERATION. The footage
+    # judge fires 1-3 calls PER SCENE (~8-24 per render) — high volume, low
+    # stakes. If it used Gemini first (like generation does), it would drain
+    # Gemini's tiny ~200/day free bucket that the quality-critical SCRIPT
+    # generation needs, and that starvation is what makes whole days fail. So the
+    # judge prefers the GENEROUS / SEPARATE free buckets first — Groq (100k
+    # tokens/day, strong llama-3.3-70b) then Cerebras then OpenRouter — and only
+    # falls back to Gemini LAST. This reserves Gemini's whole bucket for
+    # generation and roughly triples sustainable videos/day on free tier.
     #
     # CIRCUIT BREAKER: after 3 back-to-back transport failures, the judge is
     # clearly down for this run (rate-limited) — stop calling it. Every further
@@ -582,30 +586,23 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
     if _JUDGE_CIRCUIT_OPEN:
         _LAST_GROQ_FAILED = True   # signal "judge unavailable" → caller ships top clip
         return None
-    if os.environ.get("GEMINI_API_KEY", ""):
-        try:
-            out = _gemini_chat(prompt, max_tokens, temperature)
-            if out is not None:
-                _judge_note(True)
-                return out
-        except Exception as e:  # noqa: BLE001 - fall through to Cerebras/Groq
-            print("  Gemini judge call failed, trying Cerebras/Groq:", e)
-    # OpenRouter: free tier includes a strong llama-3.3-70b:free — a good judge,
-    # separate free bucket. Tried after Gemini, before Cerebras. Env-gated.
-    or_key = os.environ.get("OPENROUTER_API_KEY", "")
-    if or_key:
-        try:
-            out = _openai_compat_chat("https://openrouter.ai/api/v1/chat/completions",
-                                      or_key, "meta-llama/llama-3.3-70b-instruct:free",
-                                      prompt, max_tokens, temperature)
-            if out is not None:
-                _judge_note(True)
-                return out
-        except Exception as e:  # noqa: BLE001 - fall through
-            print("  OpenRouter judge call failed, trying Cerebras/Groq:", e)
-    # Cerebras: free, generous, OpenAI-compatible — the backup judge when Gemini
-    # is rate-limited, tried before Groq's tiny budget. Env-gated; no key = skip.
+    groq_key = os.environ.get("GROQ_API_KEY", "")
     cere_key = os.environ.get("CEREBRAS_API_KEY", "")
+    or_key = os.environ.get("OPENROUTER_API_KEY", "")
+    gem_key = os.environ.get("GEMINI_API_KEY", "")
+
+    # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
+    #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
+    if groq_key:
+        try:
+            out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
+                                      groq_key, JUDGE_MODEL, prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through to Cerebras
+            print("  Groq judge call failed, trying Cerebras:", e)
+    # 2) Cerebras — free, generous, separate bucket.
     cere_model = _cerebras_judge_model() if cere_key else None
     if cere_key and cere_model:
         try:
@@ -614,26 +611,35 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
             if out is not None:
                 _judge_note(True)
                 return out
-        except Exception as e:  # noqa: BLE001 - fall through to Groq
-            print("  Cerebras judge call failed, trying Groq:", e)
-    key = os.environ.get("GROQ_API_KEY", "")
-    if not key:
-        # No Groq either. If any other provider was configured but errored, that's
-        # a real outage → signal unavailable so the caller ships the top clip.
-        if os.environ.get("GEMINI_API_KEY", "") or or_key or cere_key:
-            _LAST_GROQ_FAILED = True
-            _judge_note(False)
-        return None
-    try:
-        out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
-                                  key, model, prompt, max_tokens, temperature)
-        _judge_note(True)
-        return out
-    except Exception as e:
-        print("  Groq call failed:", e)
+        except Exception as e:  # noqa: BLE001 - fall through to OpenRouter
+            print("  Cerebras judge call failed, trying OpenRouter:", e)
+    # 3) OpenRouter — free llama-3.3-70b, separate daily bucket.
+    if or_key:
+        try:
+            out = _openai_compat_chat("https://openrouter.ai/api/v1/chat/completions",
+                                      or_key, "meta-llama/llama-3.3-70b-instruct:free",
+                                      prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through to Gemini
+            print("  OpenRouter judge call failed, trying Gemini:", e)
+    # 4) Gemini LAST — its small bucket is reserved for generation; only reached
+    #    if every generous provider above is down.
+    if gem_key:
+        try:
+            out = _gemini_chat(prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001
+            print("  Gemini judge call failed:", e)
+    # nothing worked — if any provider was configured but errored, signal a real
+    # outage so the caller ships the top clip rather than re-trying doomed calls.
+    if groq_key or cere_key or or_key or gem_key:
         _LAST_GROQ_FAILED = True
         _judge_note(False)
-        return None
+    return None
 
 
 JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call, not

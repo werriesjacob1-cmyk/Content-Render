@@ -928,10 +928,18 @@ def call_groq(prompt):
     # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
     # (llama-3.3-70b:free, strongest free model, separate daily bucket) →
     # Cerebras (gemma-4-31b, RPM-limited) → Groq (100k tokens/day, last resort).
+    # Generation quality order: Gemini → OpenRouter → GROQ → Cerebras. Groq now
+    # sits ABOVE Cerebras: Groq's llama-3.3-70b-versatile is a STRONG model with a
+    # generous 100k-tokens/day free budget, whereas Cerebras only serves the weak
+    # gemma-4-31b (which produces the escalation-4 near-misses that abort). So on a
+    # day when Gemini + OpenRouter are spent, generation still gets a strong model
+    # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
+    # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
+    # 100k/day budget comfortably covers both.
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
             ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
-            [("cerebras", m) for m in cerebras_models()] + \
-            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
+            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
+            [("cerebras", m) for m in cerebras_models()]
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
     # without ever falling back to the other provider).
