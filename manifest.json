@@ -1,79 +1,87 @@
 {
-  "title": "The Hawaiian Conveyor Belt",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "Hawaiian Islands drifting",
-  "metaphor": "volcanic conveyor belt",
-  "hook": "Your fingernails grow at the same speed the Hawaiian Islands move.",
-  "script": "Your fingernails grow at the same speed the Hawaiian Islands move. This happens because the Pacific Plate carries the archipelago northwest about 7 centimetres a year. What if you waited on Hawaii long enough? You would eventually drift into the Japan Trench and sink into the mantle. The islands are actually a conveyor belt of volcanoes moving over a fixed hotspot. This blowtorch of magma creates a trail of seamounts extending 6,000 kilometres across the ocean floor. It is a slow, one-way trip toward the horizon, at the same speed your fingernails grow.",
+  "title": "The Star Inside Earth",
+  "viewer_job": "REFRAME",
+  "keyword": "Earth's inner core",
+  "metaphor": "The subterranean star",
+  "hook": "You are walking on a thin crust above a hidden star.",
+  "script": "You are walking on a thin crust above a hidden star. Deep below, a ball of iron roughly 70% the size of the Moon is crystallizing. It grows by one millimeter every year, like a slow-motion freezing process. What if the center of the planet were cooler than we think? It isn't. Earth's inner core runs about 5,400 degrees Celsius. This matches the surface of the Sun. It only stays solid because the pressure is 3.6 million atmospheres. That means the middle of our planet is, temperature for temperature, as hot as the star we orbit.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "Your fingernails grow at the same speed the Hawaiian Islands move.",
-      "on_screen_text": "Hawaiian Islands drifting",
-      "search_query": "human fingernails close up",
+      "voiceover": "You are walking on a thin crust above a hidden star.",
+      "on_screen_text": "Earth's inner core",
+      "search_query": "earth from space rotating",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 6,
-      "voiceover": "This happens because the Pacific Plate carries the archipelago northwest about 7 centimetres a year.",
-      "on_screen_text": "7 Centimetres Per Year",
-      "search_query": "island chain from space",
-      "motion": "static"
-    },
-    {
-      "id": 3,
-      "duration": 5,
-      "voiceover": "What if you waited on Hawaii long enough?",
-      "on_screen_text": "Waiting Millions of Years",
-      "search_query": "hawaii volcano aerial",
+      "voiceover": "Deep below, a ball of iron roughly 70% the size of the Moon is crystallizing.",
+      "on_screen_text": "70% size of Moon",
+      "search_query": "moon surface",
       "motion": "zoom_out"
     },
     {
-      "id": 4,
+      "id": 3,
       "duration": 6,
-      "voiceover": "You would eventually drift into the Japan Trench and sink into the mantle.",
-      "on_screen_text": "The Japan Trench",
-      "search_query": "deep ocean waves",
+      "voiceover": "It grows by one millimeter every year, like a slow-motion freezing process.",
+      "on_screen_text": "1 millimeter per year",
+      "search_query": "molten rock glowing",
       "motion": "zoom_in"
+    },
+    {
+      "id": 4,
+      "duration": 5,
+      "voiceover": "What if the center of the planet were cooler than we think?",
+      "on_screen_text": "Is it cooler?",
+      "search_query": "erupting volcano lava",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 6,
-      "voiceover": "The islands are actually a conveyor belt of volcanoes moving over a fixed hotspot.",
-      "on_screen_text": "A Volcanic Hotspot",
-      "search_query": "lava meets ocean",
-      "motion": "pan"
+      "voiceover": "It isn't. Earth's inner core runs about 5,400 degrees Celsius.",
+      "on_screen_text": "5,400 degrees Celsius",
+      "search_query": "molten iron pouring",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 6,
-      "voiceover": "This blowtorch of magma creates a trail of seamounts extending 6,000 kilometres across the ocean floor.",
-      "on_screen_text": "6,000 Kilometre Trail",
-      "search_query": "underwater mountain range",
+      "duration": 5,
+      "voiceover": "This matches the surface of the Sun.",
+      "on_screen_text": "Surface of the Sun",
+      "search_query": "sun surface flares",
       "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 6,
-      "voiceover": "It is a slow, one-way trip toward the horizon, at the same speed your fingernails grow.",
-      "on_screen_text": "One-Way Trip",
-      "search_query": "ocean horizon sunset",
+      "voiceover": "It only stays solid because the pressure is 3.6 million atmospheres.",
+      "on_screen_text": "3.6 million atmospheres",
+      "search_query": "deep ocean pressure",
       "motion": "zoom_in"
+    },
+    {
+      "id": 8,
+      "duration": 6,
+      "voiceover": "That means the middle of our planet is, temperature for temperature, as hot as the star we orbit.",
+      "on_screen_text": "A subterranean star",
+      "search_query": "sun in space",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The Hawaiian Islands drifting toward Japan is a slow-motion disaster. Do you think you could handle a 7cm per year move?",
-    "A conveyor belt of magma.",
-    "The Pacific Plate never stops moving."
+    "Earth's inner core is a star in disguise. Did you know this\u2014yes or no?",
+    "The pressure is the only thing keeping us from melting.",
+    "A solid ball of iron as hot as the Sun."
   ],
   "hashtags": [
-    "#geology",
-    "#hawaii",
     "#science",
-    "#ocean",
-    "#nature",
+    "#geology",
+    "#space",
+    "#earth",
+    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -81,7 +89,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
-  "cta_style": "LOOP",
-  "domain": "geology"
+  "video_id": "science_2026-07-16_the-star-inside-earth",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "earth"
 }

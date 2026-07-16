@@ -1,28 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_morning-height-boost",
-      "metaphor": "morning height",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "title": "Morning Height Boost",
-      "fact_id": "taller_morning",
-      "hook": "You're taller in the morning",
-      "structure": {
-        "scene_count": 14,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-14_crushing-pressure",
       "metaphor": "Deep Sea Pressure",
       "viewer_job": "MYTH_BUSTER",
@@ -254,6 +232,29 @@
         "rewatch": 10.0,
         "clarity": 9.0,
         "overall": 8.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_the-star-inside-earth",
+      "metaphor": "The subterranean star",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "The Star Inside Earth",
+      "fact_id": "earths_core_hot_as_sun",
+      "domain": "earth",
+      "hook": "You are walking on a thin crust above a hidden star.",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 10.0,
+        "overall": 8.0
       }
     }
   ]
