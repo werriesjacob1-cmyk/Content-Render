@@ -1,86 +1,86 @@
 {
-  "title": "The Glass Rain Planet",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "HD 189733b",
-  "metaphor": "liquid glass storm",
-  "hook": "You are looking at a deep blue planet that is actually hell.",
-  "script": "You are looking at a deep blue planet that is actually hell. From a distance, HD 189733b looks like a peaceful water world. One side is trapped in eternal daylight, while the other is frozen in permanent night. This temperature gap creates a nightmare. The blue color comes from clouds of silicate glass. Winds reach 8,000 kilometres per hour, which is seven times the speed of sound. It is the deadliest sight in the galaxy. A world that looks like home, but feels like a furnace.",
+  "title": "Deep Time",
+  "viewer_job": "REFRAME",
+  "keyword": "Tyrannosaurus rex",
+  "metaphor": "Dinosaur Timeline",
+  "hook": "Tyrannosaurus rex lived closer to you",
+  "script": "Tyrannosaurus rex lived closer to you They were separated by 89 million years Stegosaurus vanished about 150 million years ago The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs If the 4.5 billion year history of the Earth were condensed into a single 24-hour day Stegosaurus would have roamed the Earth around 10:30 PM, while humans wouldn't appear until 11:59:59 PM You are closer in time to a T. rex than a Stegosaurus is",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "You are looking at a deep blue planet that is actually hell.",
-      "on_screen_text": "HD 189733b",
-      "search_query": "blue planet space",
+      "duration": 4,
+      "voiceover": "Tyrannosaurus rex lived closer to you",
+      "on_screen_text": "Dino Timeline",
+      "search_query": "Trex fossil display",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "From a distance, HD 189733b looks like a peaceful water world.",
-      "on_screen_text": "Deep Blue World",
-      "search_query": "exoplanet illustration",
+      "duration": 4,
+      "voiceover": "They were separated by 89 million years",
+      "on_screen_text": "89 Million",
+      "search_query": "clock ticking",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "One side is trapped in eternal daylight, while the other is frozen in permanent night.",
-      "on_screen_text": "Tidally Locked",
-      "search_query": "planet rotating space",
+      "duration": 4,
+      "voiceover": "Stegosaurus vanished about 150 million years ago",
+      "on_screen_text": "Stegosaurus",
+      "search_query": "stegosaurus fossil",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "This temperature gap creates a nightmare.",
-      "on_screen_text": "Extreme Gradient",
-      "search_query": "stormy alien world",
+      "duration": 4,
+      "voiceover": "The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs",
+      "on_screen_text": "Dino Battles",
+      "search_query": "dinosaur skeleton museum",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "The blue color comes from clouds of silicate glass.",
-      "on_screen_text": "Glass Clouds",
-      "search_query": "shattering glass slow motion",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "If the 4.5 billion year history of the Earth were condensed into a single 24-hour day",
+      "on_screen_text": "Earth Timeline",
+      "search_query": "hourglass sand falling",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
-      "duration": 6,
-      "voiceover": "Winds reach 8,000 kilometres per hour, which is seven times the speed of sound.",
-      "on_screen_text": "8,000 KM PER HOUR",
-      "search_query": "hurricane wind trees",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "Stegosaurus would have roamed the Earth around 10:30 PM, while humans wouldn't appear until 11:59:59 PM",
+      "on_screen_text": "Human Timeline",
+      "search_query": "city night lights",
+      "motion": "static"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "It is the deadliest sight in the galaxy. A world that looks like home, but feels like a furnace.",
-      "on_screen_text": "Deadliest Blue",
-      "search_query": "blue planet space",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "You are closer in time to a T. rex than a Stegosaurus is",
+      "on_screen_text": "Trex Timeline",
+      "search_query": "trex fossil closeup",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Would you visit HD 189733b if you could? Yes or no?",
-    "A blue world made of glass.",
-    "The most dangerous rain in the universe."
+    "What's the most mind-blowing dinosaur fact? Did you know this?",
+    "Dinosaurs are not just ancient, they're deeply separated in time",
+    "The Earth's history is almost too vast to comprehend"
   ],
   "hashtags": [
-    "#space",
-    "#astronomy",
-    "#science",
-    "#exoplanets",
-    "#universe"
+    "#dinosaurs",
+    "#deep-time",
+    "#Trex",
+    "#Stegosaurus",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-glass-rain-planet",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-16_deep-time",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "deep_time"
 }

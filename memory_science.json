@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_cosmic-coincidence",
-      "metaphor": "cosmic coincidence",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "title": "Cosmic Coincidence",
-      "fact_id": "eclipse_coincidence",
-      "domain": "space",
-      "hook": "You see the Sun and Moon as the same size",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_you-re-made-of-dust",
       "metaphor": "Skin Cells",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -280,6 +265,29 @@
         "rewatch": 4.0,
         "clarity": 10.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_deep-time",
+      "metaphor": "Dinosaur Timeline",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Deep Time",
+      "fact_id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "hook": "Tyrannosaurus rex lived closer to you",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]
