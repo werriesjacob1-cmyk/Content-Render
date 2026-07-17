@@ -16,7 +16,7 @@ on:
       count:
         description: "How many manifests to try to buffer (stops early if a bucket is exhausted)"
         required: true
-        default: "5"
+        default: "6"
   schedule:
     # 07:20 UTC — a few minutes after the free buckets reset (07:00 UTC) and just
     # after render.yml's 07:12 reset-render. Banks a few fresh scripts each
@@ -60,7 +60,7 @@ jobs:
           FIREWORKS_API_KEY:  ${{ secrets.FIREWORKS_API_KEY }}
           MISTRAL_API_KEY:    ${{ secrets.MISTRAL_API_KEY }}
         run: |
-          COUNT="${{ github.event.inputs.count || '3' }}"
+          COUNT="${{ github.event.inputs.count || '6' }}"
           echo "buffering up to $COUNT manifest(s)"
           made=0
           for i in $(seq 1 "$COUNT"); do

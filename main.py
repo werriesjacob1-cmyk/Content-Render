@@ -642,13 +642,14 @@ def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
     # PROVIDER ORDER FOR THE JUDGE IS DELIBERATELY ≠ GENERATION. The footage
     # judge fires 1-3 calls PER SCENE (~8-24 per render) — high volume, low
-    # stakes. If it used Gemini first (like generation does), it would drain
-    # Gemini's tiny ~200/day free bucket that the quality-critical SCRIPT
-    # generation needs, and that starvation is what makes whole days fail. So the
-    # judge prefers the GENEROUS / SEPARATE free buckets first — Groq (100k
-    # tokens/day, strong llama-3.3-70b) then Cerebras then OpenRouter — and only
-    # falls back to Gemini LAST. This reserves Gemini's whole bucket for
-    # generation and roughly triples sustainable videos/day on free tier.
+    # stakes. Gemini's tiny ~200/day bucket AND OpenRouter's small ~50/day bucket
+    # are the two the quality-critical SCRIPT generation depends on, so the judge
+    # NEVER touches either of them — that starvation is what made whole days fail
+    # (run 95: judge fallbacks ate the generation buckets). The judge uses only
+    # the GENEROUS / SEPARATE buckets: Groq (100k tokens/day) → Cerebras → then
+    # the added Together/Fireworks/Mistral free buckets. If all of those are down
+    # it just ships the top stock clip (footage judging fails open). This reserves
+    # BOTH generation buckets fully and lifts sustainable videos/day on free tier.
     #
     # CIRCUIT BREAKER: after 3 back-to-back transport failures, the judge is
     # clearly down for this run (rate-limited) — stop calling it. Every further
@@ -662,8 +663,8 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
         return None
     groq_key = os.environ.get("GROQ_API_KEY", "")
     cere_key = os.environ.get("CEREBRAS_API_KEY", "")
-    or_key = os.environ.get("OPENROUTER_API_KEY", "")
-    gem_key = os.environ.get("GEMINI_API_KEY", "")
+    # NB: OPENROUTER_API_KEY and GEMINI_API_KEY are intentionally NOT read here —
+    # the judge must never spend either bucket (both are reserved for generation).
 
     # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
     #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
@@ -687,30 +688,31 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to OpenRouter
             print("  Cerebras judge call failed, trying OpenRouter:", e)
-    # 3) OpenRouter — free llama-3.3-70b, separate daily bucket.
-    if or_key:
+    # 3) The ADDED free buckets — Together → Fireworks → Mistral. These extend the
+    #    judge's capacity WITHOUT ever touching Gemini or OpenRouter (reserved
+    #    wholly for generation). Absent/invalid keys are skipped; a bad key just
+    #    falls through to the next bucket.
+    added = [
+        ("Together",  "https://api.together.xyz/v1/chat/completions",
+         os.environ.get("TOGETHER_API_KEY", ""),  "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"),
+        ("Fireworks", "https://api.fireworks.ai/inference/v1/chat/completions",
+         os.environ.get("FIREWORKS_API_KEY", ""), "accounts/fireworks/models/llama-v3p3-70b-instruct"),
+        ("Mistral",   "https://api.mistral.ai/v1/chat/completions",
+         os.environ.get("MISTRAL_API_KEY", ""),   "mistral-small-latest"),
+    ]
+    for label, url, key, jmodel in added:
+        if not key:
+            continue
         try:
-            out = _openai_compat_chat("https://openrouter.ai/api/v1/chat/completions",
-                                      or_key, "meta-llama/llama-3.3-70b-instruct:free",
-                                      prompt, max_tokens, temperature)
+            out = _openai_compat_chat(url, key, jmodel, prompt, max_tokens, temperature)
             if out is not None:
                 _judge_note(True)
                 return out
-        except Exception as e:  # noqa: BLE001 - fall through to Gemini
-            print("  OpenRouter judge call failed, trying Gemini:", e)
-    # 4) Gemini LAST — its small bucket is reserved for generation; only reached
-    #    if every generous provider above is down.
-    if gem_key:
-        try:
-            out = _gemini_chat(prompt, max_tokens, temperature)
-            if out is not None:
-                _judge_note(True)
-                return out
-        except Exception as e:  # noqa: BLE001
-            print("  Gemini judge call failed:", e)
-    # nothing worked — if any provider was configured but errored, signal a real
-    # outage so the caller ships the top clip rather than re-trying doomed calls.
-    if groq_key or cere_key or or_key or gem_key:
+        except Exception as e:  # noqa: BLE001 - fall through to the next added bucket
+            print(f"  {label} judge call failed:", e)
+    # nothing worked — Gemini + OpenRouter are DELIBERATELY not used by the judge
+    # (reserved for generation), so a judge outage simply ships the top stock clip.
+    if groq_key or cere_key or any(k for _, _, k, _ in added):
         _LAST_GROQ_FAILED = True
         _judge_note(False)
     return None
