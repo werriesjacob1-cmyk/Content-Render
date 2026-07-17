@@ -1008,7 +1008,7 @@ def _gemini_retry_delay(err):
         return None
 
 
-def _call_gemini(model, prompt):
+def _call_gemini(model, prompt, ground=False):
     """Google Gemini generateContent. Same contract as _call_model: returns the
     model's text (a JSON string). Raises HTTPError on failure so the provider
     chain can fall through. NOTE: no responseMimeType — an earlier version set
@@ -1016,16 +1016,26 @@ def _call_gemini(model, prompt):
     call; a plain generateContent works on every model, and _extract_json handles
     any markdown fences the reply might carry.
 
+    ground=True attaches the google_search tool so the model answers from REAL,
+    current web results instead of only its training memory — used for the
+    research dossier so scripts are built on sourced, accurate specifics. The
+    text part is still parsed as JSON (grounding metadata rides separately in the
+    response and is ignored here). Caller falls back to an ungrounded call on any
+    failure, so grounding can never brick generation.
+
     RPM SELF-HEAL: one render fires ~25-40 LLM calls in a burst, which trips the
     free tier's per-minute cap (~15 RPM) even with a full daily quota. On a 429
     whose retryDelay is short, sleep it out and retry the SAME model ONCE — that
     turns a fall-through-to-Groq into a Gemini success and keeps generation on the
     high-quota provider. A long retryDelay (daily quota gone) is re-raised so the
     chain falls through immediately instead of stalling."""
-    body = json.dumps({
+    _payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096},
-    }).encode()
+    }
+    if ground:
+        _payload["tools"] = [{"google_search": {}}]
+    body = json.dumps(_payload).encode()
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
         data=body,
@@ -2017,7 +2027,19 @@ def research_dossier(fact):
         'Return ONLY JSON: {"facts": ["...", "...", "...", "...", "...", "...", "...", "...", "..."]}'
     )
     try:
-        raw = call_groq(prompt)
+        # GROUNDED RESEARCH: pull the facts from REAL Google Search results via
+        # Gemini's grounding tool so the dossier is sourced and accurate, not just
+        # the model's memory. Falls back to the ordinary (ungrounded) provider
+        # chain on any failure, so this never blocks a run.
+        raw = None
+        if GEMINI_KEY:
+            try:
+                raw = _call_gemini(GEMINI_MODELS[0], prompt, ground=True)
+                print("  [research] grounded on live Google Search")
+            except Exception as e:  # noqa: BLE001
+                print(f"  [research] grounded search unavailable ({e}); using model knowledge")
+        if raw is None:
+            raw = call_groq(prompt)
         data = json.loads(raw)
         facts = [str(x).strip() for x in (data.get("facts") or []) if str(x).strip()]
         facts = [f for f in facts if len(f) > 12][:10]
