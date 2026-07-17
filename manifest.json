@@ -1,95 +1,103 @@
 {
-  "title": "The Hidden Giant",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "tallest mountain on Earth",
-  "metaphor": "Hidden ocean giant",
-  "hook": "You've been told the wrong mountain is the tallest on Earth.",
-  "script": "You've been told the wrong mountain is the tallest on Earth. We usually measure peaks from sea level, which gives Everest the crown. But what if you measured from the true base? Mauna Kea in Hawaii starts six thousand metres below the Pacific surface. This makes its total height over 10,000 metres. If you placed it on the same plateau as Everest, it would tower over the Himalayas by more than a kilometer. The mountain is so heavy it actually pushes the ocean floor downward. Its summit is so high that clouds stay below it, making the air transparent for telescopes. Send this to the friend who still thinks Everest is the tallest.",
+  "title": "The Literal First Bug",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "first computer bug",
+  "metaphor": "literal glitch origin",
+  "hook": "Your smartphone's glitches are named after a dead insect from 1947.",
+  "script": "Your smartphone's glitches are named after a dead insect from 1947. In the late forties, engineers worked on the Mark II computer. This machine was a monolith of three thousand vacuum tubes and five thousand relays. Why did a room-sized calculator suddenly stop working? Technician William Morton found a real moth trapped in Relay 70, Panel F. The insect was the size of a matchbox, but it caused a total electrical short. He taped the moth into the logbook as the first actual case of bug being found. Every single line of modern code now traces its name back to that one moth. The original insect is still preserved today at the Smithsonian. Do you think we'd call them bugs if the insect was never found?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You've been told the wrong mountain is the tallest on Earth.",
-      "on_screen_text": "Tallest Mountain on Earth",
-      "search_query": "mountain peak snow",
+      "voiceover": "Your smartphone's glitches are named after a dead insect from 1947.",
+      "on_screen_text": "First Computer Bug",
+      "search_query": "moth insect closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "We usually measure peaks from sea level, which gives Everest the crown.",
-      "on_screen_text": "Everest's Crown",
-      "search_query": "Everest mountain",
-      "motion": "static"
+      "voiceover": "In the late forties, engineers worked on the Mark II computer.",
+      "on_screen_text": "The Mark II",
+      "search_query": "vintage computer machine",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "But what if you measured from the true base?",
-      "on_screen_text": "The True Base",
-      "search_query": "deep ocean water",
+      "duration": 5,
+      "voiceover": "This machine was a monolith of three thousand vacuum tubes and five thousand relays.",
+      "on_screen_text": "5,000 Relays",
+      "search_query": "old circuit board",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Mauna Kea in Hawaii starts six thousand metres below the Pacific surface.",
-      "on_screen_text": "Mauna Kea",
-      "search_query": "underwater mountain",
+      "voiceover": "Why did a room-sized calculator suddenly stop working?",
+      "on_screen_text": "The System Failed",
+      "search_query": "retro computer room",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This makes its total height over 10,000 metres.",
-      "on_screen_text": "10,000 Metres Tall",
-      "search_query": "hawaii volcano",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "Technician William Morton found a real moth trapped in Relay 70, Panel F.",
+      "on_screen_text": "The Real Moth",
+      "search_query": "moth near light",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "If you placed it on the same plateau as Everest, it would tower over the Himalayas by more than a kilometer.",
-      "on_screen_text": "Taller than Everest",
-      "search_query": "mountain range aerial",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "The insect was the size of a matchbox, but it caused a total electrical short.",
+      "on_screen_text": "Physical Short",
+      "search_query": "electrical spark closeup",
+      "motion": "pan"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "The mountain is so heavy it actually pushes the ocean floor downward.",
-      "on_screen_text": "Crushing Weight",
-      "search_query": "ocean floor sediment",
+      "duration": 5,
+      "voiceover": "He taped the moth into the logbook as the first actual case of bug being found.",
+      "on_screen_text": "Taped in Logbook",
+      "search_query": "vintage notebook page",
       "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "Its summit is so high that clouds stay below it, making the air transparent for telescopes.",
-      "on_screen_text": "Above the Clouds",
-      "search_query": "telescope observatory",
-      "motion": "zoom_in"
+      "duration": 5,
+      "voiceover": "Every single line of modern code now traces its name back to that one moth.",
+      "on_screen_text": "Modern Software Bugs",
+      "search_query": "smartphone screen glitch",
+      "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Send this to the friend who still thinks Everest is the tallest.",
-      "on_screen_text": "Who is right?",
-      "search_query": "person looking at phone",
+      "voiceover": "The original insect is still preserved today at the Smithsonian.",
+      "on_screen_text": "Still Preserved",
+      "search_query": "museum display case",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 10,
+      "duration": 5,
+      "voiceover": "Do you think we'd call them bugs if the insect was never found?",
+      "on_screen_text": "What would we call",
+      "search_query": "person thinking face",
       "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Who is the tallest mountain on Earth? Everest or Mauna Kea?",
-    "The answer depends on where you start measuring.",
-    "Reality is deeper than you think."
+    "The first computer bug was a literal moth. Would you have called it a bug? \ud83e\udd8b",
+    "A dead insect changed how we talk about technology forever.",
+    "The Smithsonian still has the original 1947 bug."
   ],
   "hashtags": [
-    "#geology",
     "#science",
-    "#nature",
-    "#mountains",
-    "#ocean",
+    "#technology",
+    "#history",
+    "#computers",
+    "#facts",
     "#learnontiktok"
   ],
   "render": {
@@ -97,7 +105,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-hidden-giant",
-  "cta_style": "SHARE",
-  "domain": "earth"
+  "video_id": "science_2026-07-17_the-literal-first-bug",
+  "cta_style": "COMMENT",
+  "domain": "technology"
 }

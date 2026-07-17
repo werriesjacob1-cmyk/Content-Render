@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
-      "metaphor": "hidden dangers in food",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "Bananas are Slightly Radioactive",
-      "fact_id": "banana_radioactive",
-      "domain": "physics",
-      "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_rainbow-deception",
       "metaphor": "colorful atmospheric phenomenon",
       "viewer_job": "MYTH_BUSTER",
@@ -304,6 +289,29 @@
         "rewatch": 8.0,
         "clarity": 10.0,
         "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-literal-first-bug",
+      "metaphor": "literal glitch origin",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "The Literal First Bug",
+      "fact_id": "first_computer_bug",
+      "domain": "technology",
+      "hook": "Your smartphone's glitches are named after a dead insect from 1947.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 5.0,
+        "clarity": 10.0,
+        "overall": 7.5
       }
     }
   ]
