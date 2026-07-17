@@ -111,7 +111,7 @@ BIO_CTA_LINES = [
 PINNED_COMMENT_LINES = [
     "Wildest part to me: {hook_frag}. If you want one of these a week, it's at {link} 👀",
     "Tell me you knew this already (I didn't). More strange-but-true weekly: {link}",
-    "{hook_frag} — and that's not even the strangest one I've got. Full list: {link}",
+    "{hook_frag} — and that's the part most people never hear. Full list: {link}",
     "Save this for the next time someone says science is boring. Weekly drop: {link}",
 ]
 
