@@ -1260,6 +1260,321 @@
         "eyeglasses frame closeup",
         "heated metal glow"
       ]
+    },
+    {
+      "id": "cleopatra_pyramid_time",
+      "domain": "history",
+      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid of Giza.",
+      "angle": "collapses your sense of how deep history really is",
+      "key_terms": [
+        "Great Pyramid",
+        "Cleopatra",
+        "Moon landing",
+        "2,500 years"
+      ],
+      "whatif": "The Pyramid was already about 2,500 years old and ancient when Cleopatra was born; she is only about 2,000 years from us. The monument we treat as her backdrop was more distant to her than she is to us.",
+      "wow": "The Great Pyramid was a wonder of the distant past even to the ancient Egyptians we think of as living beside it.",
+      "queries": [
+        "great pyramid giza",
+        "egyptian pyramids desert",
+        "ancient egypt ruins",
+        "hourglass sand falling",
+        "desert pyramids sunset"
+      ]
+    },
+    {
+      "id": "quietest_room",
+      "domain": "sound",
+      "fact": "The world's quietest room absorbs so much sound that you can hear your own heartbeat, blood flow, and the creak of your bones; nobody has lasted long inside.",
+      "angle": "reveals that true silence is unbearable, not peaceful",
+      "key_terms": [
+        "anechoic chamber",
+        "negative decibels",
+        "hear your body",
+        "disorienting"
+      ],
+      "whatif": "With no sound bouncing back, your brain loses its anchor to the room. People report the roar of their own body, lose their balance, and ask to leave within minutes.",
+      "wow": "Perfect silence doesn't feel calm; it feels like your body has suddenly gotten loud.",
+      "queries": [
+        "empty dark room",
+        "sound studio foam",
+        "person covering ears",
+        "silent empty hallway",
+        "recording studio interior"
+      ]
+    },
+    {
+      "id": "green_sahara",
+      "domain": "earth",
+      "fact": "The Sahara desert was a green land of lakes, rivers, and grazing animals just a few thousand years ago, and it swings back and forth on a slow cycle.",
+      "angle": "turns a symbol of permanence into something temporary",
+      "key_terms": [
+        "African Humid Period",
+        "green Sahara",
+        "20,000 year cycle",
+        "wobble"
+      ],
+      "whatif": "A slow wobble in Earth's tilt shifts the rains. Roughly every 20,000 years the Sahara greens over, then dries out again; the desert is just its current phase.",
+      "wow": "The largest hot desert on Earth is not permanent, it is halfway through a cycle that will make it green again.",
+      "queries": [
+        "sahara desert dunes",
+        "green savanna grassland",
+        "desert oasis water",
+        "african savanna wildlife",
+        "dry cracked earth"
+      ]
+    },
+    {
+      "id": "gallium_melts",
+      "domain": "materials",
+      "fact": "Gallium is a solid metal that melts in the palm of your hand, turning into a silvery puddle at just below body temperature.",
+      "angle": "breaks the rule that metal is always cold and hard",
+      "key_terms": [
+        "gallium",
+        "melts at 30C",
+        "melts in your hand",
+        "liquid metal"
+      ],
+      "whatif": "Hold a shiny gallium spoon and it slowly slumps and pools in your hand. Stir it into hot tea and the spoon simply vanishes.",
+      "wow": "A metal you could hold in your hand and watch turn to liquid from your own warmth.",
+      "queries": [
+        "liquid metal drop",
+        "molten metal pouring",
+        "silver metal spoon",
+        "shiny metal closeup",
+        "metal melting closeup"
+      ]
+    },
+    {
+      "id": "gut_second_brain",
+      "domain": "biology",
+      "fact": "Your gut has its own brain of around 500 million neurons and makes most of your body's serotonin, so your stomach really does think and feel.",
+      "angle": "relocates part of 'you' to an unexpected place",
+      "key_terms": [
+        "enteric nervous system",
+        "second brain",
+        "500 million neurons",
+        "serotonin"
+      ],
+      "whatif": "This gut brain runs your digestion on its own and constantly messages your head brain, which is why fear lives in your stomach and stress ties it in knots.",
+      "wow": "A gut feeling is not a metaphor; it is a second brain talking to your first one.",
+      "queries": [
+        "person eating meal",
+        "yogurt probiotics closeup",
+        "person holding belly",
+        "healthy food bowl",
+        "glowing light strands"
+      ]
+    },
+    {
+      "id": "superfluid_helium",
+      "domain": "physics",
+      "fact": "Chilled close to absolute zero, liquid helium becomes a superfluid that flows with zero friction and creeps up and over the walls of any cup holding it.",
+      "angle": "shows matter behaving like it ignores the rules",
+      "key_terms": [
+        "superfluid",
+        "absolute zero",
+        "zero friction",
+        "climbs the walls"
+      ],
+      "whatif": "Pour it into a cup and it climbs the inside, crawls over the rim, and drips off the bottom, escaping on its own until the cup is empty.",
+      "wow": "A liquid so frictionless it climbs out of its own container to escape.",
+      "queries": [
+        "liquid nitrogen vapor",
+        "science lab experiment",
+        "frost cold smoke",
+        "blue liquid beaker",
+        "cold vapor pouring"
+      ]
+    },
+    {
+      "id": "wood_frog_freeze",
+      "domain": "animals",
+      "fact": "The wood frog survives winter by freezing almost solid: its heart stops, it stops breathing, and two thirds of its body turns to ice, then it thaws back to life in spring.",
+      "angle": "an animal that returns from what looks like death",
+      "key_terms": [
+        "wood frog",
+        "frozen solid",
+        "heart stops",
+        "thaws to life"
+      ],
+      "whatif": "It floods its cells with a natural antifreeze of sugar so ice forms only in the safe spaces. For weeks it is a frog-shaped block of ice, then the sun restarts it.",
+      "wow": "An animal that stops its own heart, freezes, and simply switches back on months later.",
+      "queries": [
+        "frog on ice",
+        "frozen forest floor",
+        "frog closeup",
+        "ice crystals forming",
+        "frog by pond"
+      ]
+    },
+    {
+      "id": "bristlecone_oldest_tree",
+      "domain": "plants",
+      "fact": "A gnarled bristlecone pine high in California has been alive for nearly 5,000 years, meaning it was already a mature tree when the Great Pyramid was being built.",
+      "angle": "a single living thing that spans all of recorded history",
+      "key_terms": [
+        "bristlecone pine",
+        "4,800 years",
+        "older than the pyramids",
+        "still alive"
+      ],
+      "whatif": "This one tree has been quietly growing through the rise and fall of every empire in human history, and it is still adding rings today.",
+      "wow": "A living thing you could stand next to that was already ancient when writing was invented.",
+      "queries": [
+        "ancient twisted tree",
+        "bristlecone pine mountain",
+        "old gnarled tree",
+        "tree rings closeup",
+        "windswept mountain tree"
+      ]
+    },
+    {
+      "id": "first_computer_bug",
+      "domain": "technology",
+      "fact": "The first computer 'bug' was a real insect: a moth trapped in a 1947 computer, taped into the logbook as the 'first actual case of bug being found.'",
+      "angle": "the literal origin of a word everyone uses",
+      "key_terms": [
+        "1947",
+        "real moth",
+        "logbook",
+        "first computer bug"
+      ],
+      "whatif": "Engineers hunting a fault in a room-sized machine found a moth stuck in a relay, removed it, and taped it into their notes; the glitch and the word stuck.",
+      "wow": "Every software bug traces its name back to one actual moth taped in a notebook.",
+      "queries": [
+        "moth insect closeup",
+        "vintage computer machine",
+        "old circuit board",
+        "retro computer room",
+        "moth near light"
+      ]
+    },
+    {
+      "id": "lightning_antimatter",
+      "domain": "weather",
+      "fact": "Ordinary thunderstorms are tiny antimatter factories: they fire off bursts of gamma rays and hurl antimatter particles up into space.",
+      "angle": "puts exotic physics inside an everyday storm",
+      "key_terms": [
+        "thunderstorm",
+        "gamma-ray flash",
+        "antimatter",
+        "positrons"
+      ],
+      "whatif": "The intense fields in a storm accelerate particles so hard they make antimatter, which shoots upward and has been detected by satellites above the clouds.",
+      "wow": "The same storm rattling your window is quietly flinging antimatter into space.",
+      "queries": [
+        "lightning storm night",
+        "thunderstorm clouds",
+        "lightning strike slow motion",
+        "storm clouds dark",
+        "night sky lightning"
+      ]
+    },
+    {
+      "id": "olympus_mons",
+      "domain": "space",
+      "fact": "Mars has a volcano so wide that if you stood on top, the ground would curve away below the horizon in every direction; you could never see its base.",
+      "angle": "a mountain too big to look like a mountain",
+      "key_terms": [
+        "Olympus Mons",
+        "tallest volcano",
+        "below the horizon",
+        "size of a country"
+      ],
+      "whatif": "Olympus Mons is about three times the height of Everest but so broad, roughly the size of a whole country, that its slopes vanish over the curve of Mars.",
+      "wow": "A mountain so vast that from its peak you couldn't tell you were on a mountain at all.",
+      "queries": [
+        "mars planet surface",
+        "red planet mars",
+        "volcano from space",
+        "mars landscape rover",
+        "giant volcano aerial"
+      ]
+    },
+    {
+      "id": "shuffled_deck",
+      "domain": "math",
+      "fact": "Shuffle a deck of cards well and you almost certainly create an order that has never existed in the history of the universe.",
+      "angle": "finds the astronomical hiding in your hands",
+      "key_terms": [
+        "52 factorial",
+        "never existed before",
+        "more than atoms",
+        "unique order"
+      ],
+      "whatif": "The number of possible orderings is so vast, far more than the atoms on Earth, that every proper shuffle in history has been a brand-new arrangement.",
+      "wow": "An ordinary deck in your hands is holding an order that has never been seen and never will be again.",
+      "queries": [
+        "shuffling playing cards",
+        "deck of cards",
+        "hands shuffling cards",
+        "cards falling table",
+        "casino card shuffle"
+      ]
+    },
+    {
+      "id": "brinicle",
+      "domain": "ocean",
+      "fact": "Under sea ice, a finger of freezing brine can sink to the seafloor and freeze everything it touches, an 'icicle of death' that traps starfish where they crawl.",
+      "angle": "a real horror hidden under the polar ice",
+      "key_terms": [
+        "brinicle",
+        "icicle of death",
+        "sinking brine",
+        "freezes the seafloor"
+      ],
+      "whatif": "Super-salty, super-cold water leaks from the ice and sinks in a growing frozen tube; when it reaches the bottom it spreads out and freezes slow-moving animals solid.",
+      "wow": "A slow-motion tentacle of ice that reaches the seabed and freezes creatures in place.",
+      "queries": [
+        "underwater ice",
+        "frozen ocean underwater",
+        "icicle underwater",
+        "arctic sea ice",
+        "starfish on seafloor"
+      ]
+    },
+    {
+      "id": "bombardier_beetle",
+      "domain": "animals",
+      "fact": "The bombardier beetle defends itself by mixing chemicals in its body and firing a boiling-hot, machine-gun spray out of its rear at attackers.",
+      "angle": "a living chemical weapon the size of a fingernail",
+      "key_terms": [
+        "bombardier beetle",
+        "boiling spray",
+        "chemical reaction",
+        "100 degrees"
+      ],
+      "whatif": "It combines two chemicals in a reinforced chamber that explodes to near boiling, then aims and pulses the scalding jet with surprising accuracy at whatever grabbed it.",
+      "wow": "A beetle that carries a two-part explosive and sprays boiling liquid on command.",
+      "queries": [
+        "beetle closeup macro",
+        "beetle on leaf",
+        "black beetle ground",
+        "insect macro shot",
+        "beetle walking closeup"
+      ]
+    },
+    {
+      "id": "capsaicin_birds",
+      "domain": "biology",
+      "fact": "Chili peppers invented their burning heat to punish mammals, but birds feel nothing, so the fire in a pepper is a message that was never meant for you.",
+      "angle": "reframes a familiar sensation as a targeted weapon",
+      "key_terms": [
+        "capsaicin",
+        "deters mammals",
+        "birds immune",
+        "seed dispersal"
+      ],
+      "whatif": "Mammal teeth destroy pepper seeds, so the plant evolved a chemical that triggers our pain receptors, while birds, which spread seeds intact, can't taste the heat at all.",
+      "wow": "The burn of a chili is a plant's way of saying 'not you' to mammals while inviting the birds.",
+      "queries": [
+        "red chili peppers",
+        "hot pepper closeup",
+        "colorful peppers market",
+        "bird eating berries",
+        "cardinal bird branch"
+      ]
     }
   ]
 }
