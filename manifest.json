@@ -1,103 +1,110 @@
 {
-  "title": "The Biological Ship of Theseus",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "body cell replacement",
-  "metaphor": "biological ship of Theseus",
-  "hook": "Most of your body is only a few years old.",
-  "script": "Most of your body is only a few years old. Every single day, you replace approximately 330 billion cells. Your taste buds regenerate every two weeks, meaning your flavor perception is physically different today than it was fourteen days ago. What if you're basically a brand-new person every few years? Almost, but not entirely. The neurons in your brain and the lenses of your eyes are as old as you are. Your skeleton renews itself every ten years, like a slow-motion river of calcium moving beneath your skin. But the enamel on your teeth can never regenerate because the cells that create it die once the tooth erupts. You are a walking archive of the only parts of you that never changed.",
+  "title": "The Great Nothing",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "Bootes void",
+  "metaphor": "Cosmic hole",
+  "hook": "Your night sky is a lie because of the Bootes void.",
+  "script": "Your night sky is a lie because of the Bootes void. It is a region of space 330 million light-years across that is almost completely empty. If you replaced every star in the universe with a grain of sand, this gap would be larger than a football stadium. What if our galaxy floated in the middle of this hole? The night sky would look starless, because the nearest galaxies would be hundreds of millions of light-years away. We would not have known other galaxies existed until the 1960s. This void formed through galactic cannibalism, where dense regions pulled matter away from the empty ones. It contains only a few dozen galaxies where thousands should be. Most people think space is evenly filled, but this proves the universe is fundamentally lumpy. Would you prefer a crowded sky or total cosmic silence?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Most of your body is only a few years old.",
-      "on_screen_text": "Body Cell Replacement",
-      "search_query": "time lapse city people",
+      "voiceover": "Your night sky is a lie because of the Bootes void.",
+      "on_screen_text": "The Bootes void",
+      "search_query": "deep space darkness",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "Every single day, you replace approximately 330 billion cells.",
-      "on_screen_text": "330 Billion Daily",
-      "search_query": "hourglass sand falling",
+      "duration": 4,
+      "voiceover": "It is a region of space 330 million light-years across that is almost completely empty.",
+      "on_screen_text": "330 Million Light-Years",
+      "search_query": "empty starfield space",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "Your taste buds regenerate every two weeks, meaning your flavor perception is physically different today than it was fourteen days ago.",
-      "on_screen_text": "Flavor Shifts",
-      "search_query": "person eating fruit",
+      "duration": 5,
+      "voiceover": "If you replaced every star in the universe with a grain of sand, this gap would be larger than a football stadium.",
+      "on_screen_text": "A Cosmic Gap",
+      "search_query": "sand falling hand",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "What if you're basically a brand-new person every few years?",
-      "on_screen_text": "A Brand New You?",
-      "search_query": "old photographs fading",
+      "duration": 4,
+      "voiceover": "What if our galaxy floated in the middle of this hole?",
+      "on_screen_text": "Floating in Nothing",
+      "search_query": "milky way galaxy",
       "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "Almost, but not entirely.",
-      "on_screen_text": "The Exception",
-      "search_query": "still water lake",
+      "duration": 5,
+      "voiceover": "The night sky would look starless, because the nearest galaxies would be hundreds of millions of light-years away.",
+      "on_screen_text": "A Starless Sky",
+      "search_query": "distant galaxies black",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 6,
-      "voiceover": "The neurons in your brain and the lenses of your eyes are as old as you are.",
-      "on_screen_text": "Original Parts",
-      "search_query": "human eye close up",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 7,
-      "duration": 6,
-      "voiceover": "Your skeleton renews itself every ten years, like a slow-motion river of calcium moving beneath your skin.",
-      "on_screen_text": "10 Year Cycle",
-      "search_query": "white marble sculpture",
+      "duration": 4,
+      "voiceover": "We would not have known other galaxies existed until the 1960s.",
+      "on_screen_text": "Hidden Universe",
+      "search_query": "vintage telescope",
       "motion": "zoom_out"
     },
     {
-      "id": 8,
-      "duration": 6,
-      "voiceover": "But the enamel on your teeth can never regenerate because the cells that create it die once the tooth erupts.",
-      "on_screen_text": "Permanent Enamel",
-      "search_query": "person smiling teeth",
+      "id": 7,
+      "duration": 5,
+      "voiceover": "This void formed through galactic cannibalism, where dense regions pulled matter away from the empty ones.",
+      "on_screen_text": "Galactic Cannibalism",
+      "search_query": "galaxy nebula",
       "motion": "zoom_in"
     },
     {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "It contains only a few dozen galaxies where thousands should be.",
+      "on_screen_text": "Almost Empty",
+      "search_query": "distant galaxies black",
+      "motion": "zoom_out"
+    },
+    {
       "id": 9,
-      "duration": 6,
-      "voiceover": "You are a walking archive of the only parts of you that never changed.",
-      "on_screen_text": "The Biological Archive",
-      "search_query": "dust motes sunlight",
+      "duration": 4,
+      "voiceover": "Most people think space is evenly filled, but this proves the universe is fundamentally lumpy.",
+      "on_screen_text": "Cosmic Web",
+      "search_query": "dark matter web",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 10,
+      "duration": 4,
+      "voiceover": "Would you prefer a crowded sky or total cosmic silence?",
+      "on_screen_text": "Crowded or Silent?",
+      "search_query": "night sky stars",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Your body cell replacement is constant, but some parts never change. Do you feel like the same person you were 10 years ago?",
-    "The science of the biological ship of Theseus.",
-    "You are a collection of different ages."
+    "The Bootes void proves the universe isn't what we were taught. Would you survive the cosmic silence?",
+    "A hole in the universe 330 million light-years wide.",
+    "The most unsettling place in space."
   ],
   "hashtags": [
-    "#biology",
+    "#space",
+    "#astronomy",
+    "#universe",
     "#science",
-    "#humanbody",
-    "#nature",
-    "#existence",
-    "#learnontiktok"
+    "#cosmos"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-16_the-biological-ship-of-theseus",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "body"
+  "video_id": "science_2026-07-17_the-great-nothing",
+  "cta_style": "COMMENT",
+  "domain": "space"
 }

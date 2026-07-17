@@ -1,20 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_crushing-pressure",
-      "metaphor": "Deep Sea Pressure",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Crushing Pressure",
-      "fact_id": "mariana_pressure",
-      "hook": "You'd be crushed instantly",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_turtles-breathe-through-rear-ends",
       "metaphor": "turtle cloaca",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -255,6 +241,29 @@
         "rewatch": 9.0,
         "clarity": 10.0,
         "overall": 8.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-great-nothing",
+      "metaphor": "Cosmic hole",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "title": "The Great Nothing",
+      "fact_id": "bootes_void",
+      "domain": "space",
+      "hook": "Your night sky is a lie because of the Bootes void.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 9.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 7.67
       }
     }
   ]
