@@ -605,19 +605,16 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
   these and this page finds them.
 - SPECIFICITY IS THE BRAND, BUT WONDER IS THE PRODUCT: name the exact thing where a competitor would be
-  vague — but a number is only worth saying if it makes the viewer FEEL something. Do NOT stat-dump.
-  A dry readout ("it grows one millimetre a year", "the core is 5,700 kelvin", "temperature for
-  temperature") is boring and reads as geeky. The SAME fact becomes gripping when the number is turned
-  into a felt, physical image ("a ball of iron the size of the Moon, as hot as the Sun, frozen solid
-  by the crushing weight above it"). RULES: at most 2-3 numbers in the whole script, and every one must
-  be immediately made visceral with a comparison you can picture or feel. Lead each scene with the
-  WONDER or the mental image, not the statistic. If a detail is merely technical and doesn't make a
-  smart adult go "wait, WHAT?", cut it. Plain, everyday words only — never a term you'd have to look up.
-- SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD. Never scientific/math notation or "ten to the
-  twenty-seventh power", "10^27", "3.5 x 10^8" — that reads and sounds like a textbook (this is a
-  spoken video). Turn it into an everyday phrase you could picture: "more of them than there are stars
-  in the whole sky", "a billion billion", "enough to fill every ocean twice". If a huge number can't
-  be made graspable in plain speech, drop the number and just describe how staggering it is.
+  vague — but a number is only worth saying if it makes the viewer FEEL something. Do NOT stat-dump. A
+  dry readout ("the core is 5,700 kelvin") reads as geeky; the SAME fact grips when the number becomes a
+  felt image ("a ball of iron the size of the Moon, as hot as the Sun, frozen solid by the weight
+  above"). RULES: at most 2-3 numbers total, each made visceral with a picture-able comparison; lead
+  each scene with the wonder, not the statistic; cut any detail that doesn't make a smart adult go
+  "wait, WHAT?"; plain everyday words only — never a term you'd have to look up.
+- SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD — never scientific/math notation ("10^27", "ten to the
+  twenty-seventh power", "3.5 x 10^8"); say "more of them than stars in the whole sky", "a billion
+  billion". If a huge number can't be made graspable in plain speech, drop it and describe how
+  staggering it is instead.
 
 PROVEN RULES (every one is backed by 2026 TikTok performance data — follow them all):
 
@@ -668,12 +665,10 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   ("The same physics is why a rainbow has no bottom." lands harder than "and that's not even the
   strangest part"). The turn must NOT restate, rephrase, or circle back to the hook or anything
   already said. If you don't have a real second surprise, don't force a turn — keep teaching new facts.
-- MAKE IT FELT, not just stated: convert a number into ONE physical comparison a viewer can picture
-  — e.g. "older than Saturn's rings", or "as tall as a 20-storey building". Use such comparisons as
-  a WRITING TECHNIQUE, never copy these exact examples, and every comparison must be literally TRUE
-  and mean something concrete. Do NOT manufacture grand-sounding but meaningless phrases (e.g.
-  "we are witness to 80,000 fleeting civilizations" says nothing a viewer can picture or verify).
-  If a comparison isn't both accurate and instantly graspable, just state the plain fact instead.
+- EVERY FELT COMPARISON MUST BE LITERALLY TRUE, not just grand-sounding: a technique, never a copied
+  example, and each must mean something concrete. Do NOT manufacture meaningless phrases ("we are
+  witness to 80,000 fleeting civilizations" pictures/verifies nothing). If a comparison isn't both
+  accurate and instantly graspable, state the plain fact instead.
 - PLAIN SPOKEN ENGLISH (a smart 15-year-old must get every line on first listen): this is narration,
   not an essay. Use everyday words. If a precise scientific term is the actual subject, EXPLAIN it in
   plain words instead of just naming it — say "the point in the sky opposite the sun" rather than
@@ -732,38 +727,25 @@ CONTENT (CRITICAL):
 AVOID these recent topics entirely: {avoid}{series_block}{opener_block}
 
 FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
-- Each scene needs a 2-5 word stock-footage search query describing something a videographer
-  ACTUALLY FILMS: a concrete subject + action or setting (animals, nature, weather, oceans, space,
-  cities, machines, food, hands doing things, people reacting).
-- BANNED query words: anatomy, anatomical, organ, cell/cells, microscope, microscopic, diagram,
-  xray, x-ray, molecular, atom, quantum, abstract, concept, system. Free stock libraries have
-  almost nothing real for these — searches degrade into random flesh/lab/texture close-ups.
-- If the concept is invisible (acid, time, gravity, DNA, speed of nerves), pick a VISUAL METAPHOR
-  a library does have: "bubbling green liquid" for acid, "hourglass sand falling" for time,
-  "lightning storm slow motion" for nerve signals, "dominoes falling chain" for reactions.
-- REAL FOOTAGE ONLY — never a query that returns cartoons, 3D-rendered emoji, clip-art, or
-  illustrations. BANNED metaphor queries: money, coins, dollar, cash, emoji, icon, cartoon, 3d
-  render, animation, infographic, clock (returns clip-art) — these pull cheesy CGI/emoji stock
-  that makes a science video look broken (a 3D money-emoji once landed in a video about starlight).
-  Prefer a real, literal, photographable subject tied to the topic: for a space/astronomy video
-  use "night sky stars", "telescope observatory", "galaxy nebula", "moon surface", real footage —
-  not an abstract stand-in. When in doubt, pick the most concrete real-world thing the scene names.
-- MATCH THE MOMENT: each scene's query must depict the exact thing THAT sentence is about, so the
-  visual tracks what the narrator is saying second-by-second — not just the general topic. If a scene
-  says "a dying tree feeds its neighbours", query "dead fallen tree forest", not a generic "forest".
-- PREFER MOVING FOOTAGE: pick subjects real stock VIDEO exists for — things in motion or with action
-  (flowing lava, a swimming animal, crashing waves, blowing dust, a hand touching something), not
-  static objects that only return still photos. Motion holds attention and keeps the clip from looking
-  like a slideshow. Concrete + moving + specific is the goal for every scene.
-- Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
-  setting) — a video that shows the same three shots on loop reads as spam.
-- NAME THE ACTUAL SUBJECT. If the video is about a SPECIFIC animal, object, place, or phenomenon
-  (e.g. a naked mole rat, a tardigrade, Saturn's rings, a specific volcano), the scenes that show
-  it must search for THAT EXACT thing by name ("naked mole rat", not "rodent close up"; "tardigrade
-  microscope"->no, but "tardigrade" if filmable; "Saturn rings", not "planet space"). Showing a
-  generic groundhog or white lab rat in a video about naked mole rats is a real miss viewers catch
-  instantly. At least the hook scene and the payoff scene must name the specific subject. Only fall
-  back to a generic category or visual metaphor when the specific subject genuinely can't be filmed.
+- Each scene needs a 2-5 word query for something a videographer ACTUALLY FILMS: a concrete subject +
+  action/setting (animals, nature, weather, oceans, space, cities, machines, food, hands, reactions).
+- BANNED query words (free libraries have nothing real — they degrade to random flesh/lab/texture):
+  anatomy, organ, cell/cells, microscope, diagram, xray, molecular, atom, quantum, abstract, concept, system.
+- If the concept is invisible (acid, time, gravity, DNA, nerve speed), use a VISUAL METAPHOR libraries
+  DO have: "bubbling green liquid" (acid), "hourglass sand falling" (time), "dominoes falling" (reactions).
+- REAL FOOTAGE ONLY, never cartoons/3D-emoji/clip-art. BANNED metaphor queries (pull cheesy CGI that
+  makes the video look broken — a 3D money-emoji once landed in a starlight video): money, coins, dollar,
+  cash, emoji, icon, cartoon, 3d render, animation, infographic, clock. Pick a real photographable subject
+  (for space: "night sky stars", "telescope observatory", "galaxy nebula") — never an abstract stand-in.
+- MATCH THE MOMENT: the query depicts the exact thing THAT sentence is about, tracking the narration
+  second-by-second — "a dying tree feeds its neighbours" -> "dead fallen tree forest", not a bare "forest".
+- PREFER MOVING FOOTAGE: subjects real stock VIDEO exists for (flowing lava, a swimming animal, crashing
+  waves, a hand touching something), not static objects that only return stills. Motion beats slideshow.
+- Every scene's query must be VISUALLY DISTINCT from the others — the same three shots on loop reads as spam.
+- NAME THE ACTUAL SUBJECT by name when the video is about a specific thing ("naked mole rat", not "rodent
+  close up"; "Saturn rings", not "planet space") — a generic groundhog in a naked-mole-rat video is a miss
+  viewers catch instantly. The hook scene and payoff scene MUST name the specific subject; only fall back to
+  a generic category/metaphor when it genuinely can't be filmed.
 
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and the search query as specified above.
