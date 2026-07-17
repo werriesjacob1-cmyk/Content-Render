@@ -59,6 +59,9 @@ jobs:
           TOGETHER_API_KEY:   ${{ secrets.TOGETHER_API_KEY }}
           FIREWORKS_API_KEY:  ${{ secrets.FIREWORKS_API_KEY }}
           MISTRAL_API_KEY:    ${{ secrets.MISTRAL_API_KEY }}
+          TOGETHER_MODEL:     ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL:    ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL:      ${{ vars.MISTRAL_MODEL }}
         run: |
           COUNT="${{ github.event.inputs.count || '6' }}"
           echo "buffering up to $COUNT manifest(s)"

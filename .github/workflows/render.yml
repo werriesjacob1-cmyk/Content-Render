@@ -121,6 +121,11 @@ jobs:
           TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
           FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
           MISTRAL_API_KEY:   ${{ secrets.MISTRAL_API_KEY }}
+          # Optional model-ID overrides (repo Variables, not secrets). Set e.g.
+          # FIREWORKS_MODEL to a model the account actually has if the default 404s.
+          TOGETHER_MODEL:    ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL:   ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL:     ${{ vars.MISTRAL_MODEL }}
         run: |
           # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
           # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets

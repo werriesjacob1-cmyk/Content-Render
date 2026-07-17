@@ -146,9 +146,16 @@ OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
 TOGETHER_KEY  = os.environ.get("TOGETHER_API_KEY", "")
 FIREWORKS_KEY = os.environ.get("FIREWORKS_API_KEY", "")
 MISTRAL_KEY   = os.environ.get("MISTRAL_API_KEY", "")
-TOGETHER_MODELS  = ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"]
-FIREWORKS_MODELS = ["accounts/fireworks/models/llama-v3p3-70b-instruct"]
-MISTRAL_MODELS   = ["mistral-small-latest"]
+# Model IDs are env-overridable (comma-separated for >1) so a wrong/inaccessible
+# model can be fixed WITHOUT a code change — e.g. Fireworks 404'd on
+# llama-v3p3-70b-instruct for an account that hadn't deployed it; set
+# FIREWORKS_MODEL to one the account actually has. Empty env keeps the default.
+def _models_env(var, default):
+    raw = os.environ.get(var, "").strip()
+    return [m.strip() for m in raw.split(",") if m.strip()] or default
+TOGETHER_MODELS  = _models_env("TOGETHER_MODEL",  ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"])
+FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct"])
+MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
