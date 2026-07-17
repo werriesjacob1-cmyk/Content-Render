@@ -1,110 +1,111 @@
 {
-  "title": "The Rain of Muons",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "time dilation",
-  "metaphor": "cosmic clock glitch",
-  "hook": "You are being rained on by particles that shouldn't exist.",
-  "script": "You are being rained on by particles that shouldn't exist. High in the atmosphere, cosmic rays create unstable particles called muons. These particles only live for 2.2 microseconds. That is less time than it takes for a camera flash to pop. Even at near light speed, they should decay long before hitting the ground. But if a clock ticks near light speed, it actually runs slower. This stretches their lifespan just enough to survive the 15 kilometer fall. About one muon passes through every square centimeter of your skin every minute. Einstein's relativity is physically passing through you right now. Do you trust the math, or does this sound like a lie?",
+  "title": "The Invisible Survivor",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "tardigrade",
+  "metaphor": "the toughest animal",
+  "hook": "The toughest animal on Earth is one you cannot even see.",
+  "script": "The toughest animal on Earth is one you cannot even see. This eight-legged tardigrade lives in your backyard, but it hides a terrifying power. What if you left one in the open vacuum of space? It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you. They can even withstand pressures six times deeper than the bottom of the Mariana Trench. To do this, they replace their internal water with a glass-like sugar called trehalose. They pull in their legs and dry into a shriveled husk called a tun. In this state, they can survive temperatures just one degree above absolute zero. But when they are hydrated, a simple mite can eat them in seconds. It is a strange trade for the toughest animal on Earth.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You are being rained on by particles that shouldn't exist.",
-      "on_screen_text": "Invisible Rain",
-      "search_query": "night sky stars timelapse",
+      "voiceover": "The toughest animal on Earth is one you cannot even see.",
+      "on_screen_text": "The Toughest Tardigrade",
+      "search_query": "tardigrade",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "High in the atmosphere, cosmic rays create unstable particles called muons.",
-      "on_screen_text": "The Muons",
-      "search_query": "mountain peak sunrise",
+      "voiceover": "This eight-legged tardigrade lives in your backyard, but it hides a terrifying power.",
+      "on_screen_text": "Hidden Power",
+      "search_query": "moss macro dew",
       "motion": "static"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "These particles only live for 2.2 microseconds.",
-      "on_screen_text": "2.2 Microseconds",
-      "search_query": "scientist laboratory equipment",
+      "duration": 5,
+      "voiceover": "What if you left one in the open vacuum of space?",
+      "on_screen_text": "Vacuum of Space",
+      "search_query": "deep space stars",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "That is less time than it takes for a camera flash to pop.",
-      "on_screen_text": "Faster than a flash",
-      "search_query": "camera flash light",
+      "duration": 6,
+      "voiceover": "It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you.",
+      "on_screen_text": "1,000x Radiation",
+      "search_query": "sun solar flares",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Even at near light speed, they should decay long before hitting the ground.",
-      "on_screen_text": "Impossible Journey",
-      "search_query": "falling rain slow motion",
+      "duration": 5,
+      "voiceover": "They can even withstand pressures six times deeper than the bottom of the Mariana Trench.",
+      "on_screen_text": "6x Deepest Ocean",
+      "search_query": "dark ocean depths",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "But if a clock ticks near light speed, it actually runs slower.",
-      "on_screen_text": "Time Dilation",
-      "search_query": "hourglass sand falling",
+      "voiceover": "To do this, they replace their internal water with a glass-like sugar called trehalose.",
+      "on_screen_text": "Glass-like Sugar",
+      "search_query": "water droplet macro",
       "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "This stretches their lifespan just enough to survive the 15 kilometer fall.",
-      "on_screen_text": "15 Kilometers",
-      "search_query": "airplane window clouds",
+      "voiceover": "They pull in their legs and dry into a shriveled husk called a tun.",
+      "on_screen_text": "The Tun State",
+      "search_query": "dried raisin",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 5,
-      "voiceover": "About one muon passes through every square centimeter of your skin every minute.",
-      "on_screen_text": "Passing Through You",
-      "search_query": "person walking city",
-      "motion": "pan"
+      "voiceover": "In this state, they can survive temperatures just one degree above absolute zero.",
+      "on_screen_text": "-272 Degrees",
+      "search_query": "frozen ice crystals",
+      "motion": "zoom_in"
     },
     {
       "id": 9,
-      "duration": 4,
-      "voiceover": "Einstein's relativity is physically passing through you right now.",
-      "on_screen_text": "Real Time Dilation",
-      "search_query": "galaxy nebula",
+      "duration": 5,
+      "voiceover": "But when they are hydrated, a simple mite can eat them in seconds.",
+      "on_screen_text": "Easy Prey",
+      "search_query": "small spider hunting",
       "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "Do you trust the math, or does this sound like a lie?",
-      "on_screen_text": "Truth or Lie?",
-      "search_query": "person looking thoughtful",
+      "voiceover": "It is a strange trade for the toughest animal on Earth.",
+      "on_screen_text": "Toughest Animal",
+      "search_query": "tardigrade",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Time dilation is happening to your body every second. Do you believe the physics?",
-    "The proof of relativity is raining down on you.",
-    "2.2 microseconds is all they have. Then time bends."
+    "Would you survive the vacuum of space if you were a tardigrade? Yes or no?",
+    "The science of cryptobiosis is unsettling.",
+    "Nature's most extreme survivor."
   ],
   "hashtags": [
-    "#physics",
     "#science",
+    "#biology",
     "#space",
-    "#einstein",
-    "#cosmos"
+    "#nature",
+    "#animals",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-rain-of-muons",
-  "cta_style": "COMMENT",
-  "domain": "physics"
+  "video_id": "science_2026-07-17_the-invisible-survivor",
+  "cta_style": "LOOP",
+  "domain": "animals"
 }

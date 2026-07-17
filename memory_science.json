@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_cosmic-coincidence",
-      "metaphor": "cosmic coincidence",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "title": "Cosmic Coincidence",
-      "fact_id": "eclipse_coincidence",
-      "domain": "space",
-      "hook": "You see the Sun and Moon as the same size",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_you-re-made-of-dust",
       "metaphor": "Skin Cells",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -280,6 +265,29 @@
         "rewatch": 6.0,
         "clarity": 9.0,
         "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-invisible-survivor",
+      "metaphor": "the toughest animal",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "title": "The Invisible Survivor",
+      "fact_id": "tardigrade",
+      "domain": "animals",
+      "hook": "The toughest animal on Earth is one you cannot even see.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 5.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "overall": 7.67
       }
     }
   ]
