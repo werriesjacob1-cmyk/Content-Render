@@ -1620,7 +1620,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 def _event(start, end, word):
     clean = re.sub(r"[{}\\]", "", word).upper()
-    tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
+    # Kinetic pop: fade in (40ms) AND scale from 88% -> 100% over 90ms so each
+    # word snaps onto screen with a little life instead of hard-cutting. Alignment
+    # 5 + \pos means it scales from the word's own centre, so it stays put. Purely
+    # a visual-energy touch — the word still appears exactly at its spoken time.
+    tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(40,0)"
+           f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100)}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
 # Short function words that read as a weak caption frame when shown alone
