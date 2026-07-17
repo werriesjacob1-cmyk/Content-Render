@@ -31,6 +31,8 @@ permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
                      # back to the repo; without this the GITHUB_TOKEN defaults
                      # to read-only and every `git push` below silently no-ops.
+  models: read       # lets generate.py use the free GitHub Models API with the
+                     # built-in token (or set a GITHUB_MODELS_TOKEN PAT secret).
 
 concurrency:
   # Now that render.yml self-triggers on a schedule, it can overlap with a
@@ -126,6 +128,11 @@ jobs:
           TOGETHER_MODEL:    ${{ vars.TOGETHER_MODEL }}
           FIREWORKS_MODEL:   ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL:     ${{ vars.MISTRAL_MODEL }}
+          # GitHub Models (free): a PAT with models:read is preferred; falls back
+          # to the built-in token via the `models: read` permission above.
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          GITHUB_TOKEN:        ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
         run: |
           # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
           # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets

@@ -25,6 +25,7 @@ on:
 
 permissions:
   contents: write   # commits the queued manifests + memory back to the repo
+  models: read       # free GitHub Models API (or a GITHUB_MODELS_TOKEN PAT)
 
 concurrency:
   # share render-video's concurrency group so a buffer fill never races the
@@ -62,6 +63,9 @@ jobs:
           TOGETHER_MODEL:     ${{ vars.TOGETHER_MODEL }}
           FIREWORKS_MODEL:    ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL:      ${{ vars.MISTRAL_MODEL }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          GITHUB_TOKEN:        ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
         run: |
           COUNT="${{ github.event.inputs.count || '6' }}"
           echo "buffering up to $COUNT manifest(s)"

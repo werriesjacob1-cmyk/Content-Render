@@ -156,6 +156,13 @@ def _models_env(var, default):
 TOGETHER_MODELS  = _models_env("TOGETHER_MODEL",  ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"])
 FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct"])
 MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
+# GitHub Models (free, OpenAI-compatible): gpt-4o-mini is a genuinely strong
+# writer, separate free bucket, and we already run inside GitHub Actions. Prefer a
+# PAT with the models:read scope (GITHUB_MODELS_TOKEN); fall back to the built-in
+# GITHUB_TOKEN when the workflow grants `permissions: models: read`.
+GHM_KEY    = os.environ.get("GITHUB_MODELS_TOKEN", "") or os.environ.get("GITHUB_TOKEN", "")
+GHM_URL    = os.environ.get("GITHUB_MODELS_URL", "https://models.inference.ai.azure.com/chat/completions")
+GHM_MODELS = _models_env("GITHUB_MODELS_MODEL", ["gpt-4o-mini"])
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -904,6 +911,10 @@ def _call_mistral(model, prompt):
                                MISTRAL_KEY, model, prompt)
 
 
+def _call_github_models(model, prompt):
+    return _call_openai_compat(GHM_URL, GHM_KEY, model, prompt)
+
+
 def _call_cerebras(model, prompt):
     """Cerebras call with a per-minute-limit self-heal. Cerebras' free tier caps
     requests-per-minute, and one render's burst of generation calls trips it
@@ -1033,6 +1044,7 @@ def call_groq(prompt):
     # 100k/day budget comfortably covers both.
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
             ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
+            ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) + \
             ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
             ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) + \
             ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
@@ -1050,6 +1062,8 @@ def call_groq(prompt):
                 out = _call_gemini(model, prompt)
             elif prov == "openrouter":
                 out = _call_openrouter(model, prompt)
+            elif prov == "github":
+                out = _call_github_models(model, prompt)
             elif prov == "together":
                 out = _call_together(model, prompt)
             elif prov == "fireworks":
