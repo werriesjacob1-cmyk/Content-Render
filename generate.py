@@ -154,7 +154,8 @@ def _models_env(var, default):
     raw = os.environ.get(var, "").strip()
     return [m.strip() for m in raw.split(",") if m.strip()] or default
 TOGETHER_MODELS  = _models_env("TOGETHER_MODEL",  ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"])
-FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct"])
+FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct",
+                                                   "accounts/fireworks/models/llama-v3p1-8b-instruct"])
 MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
 # GitHub Models (free, OpenAI-compatible): gpt-4o-mini is a genuinely strong
 # writer, separate free bucket, and we already run inside GitHub Actions. Prefer a
