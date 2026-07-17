@@ -1,103 +1,95 @@
 {
-  "title": "The Invisible Survivor",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "tardigrade",
-  "metaphor": "the toughest animal",
-  "hook": "The toughest animal on Earth is one you cannot even see.",
-  "script": "The toughest animal on Earth is one you cannot even see. This eight-legged tardigrade lives in your backyard, but it hides a terrifying power. What if you left one in the open vacuum of space? It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you. They can even withstand pressures six times deeper than the bottom of the Mariana Trench. To do this, they replace their internal water with a glass-like sugar called trehalose. They pull in their legs and dry into a shriveled husk called a tun. In this state, they can survive temperatures just one degree above absolute zero. But when they are hydrated, a simple mite can eat them in seconds. It is a strange trade for the toughest animal on Earth.",
+  "title": "The Organ That Regrows",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "liver regeneration",
+  "metaphor": "Biological self-repair",
+  "hook": "Your body has one organ that can grow itself back from nothing.",
+  "script": "Your body hides a secret organ capable of regenerating itself from nearly nothing. What happens when you carve away a massive piece of your liver? The result is a biological miracle that defies everything we know about healing. Even after donating 65 percent, both pieces regrow to nearly full size in 8 to 10 weeks. It is like a house doubling its entire square footage without adding a foundation. This isn't just stem cells; mature cells simply wake up and start replicating. One liver can be split between two people and grow independently to support both. It is the only solid organ that regrows working tissue instead of just scarring over. We still cannot explain the invisible sensor that tells the growth exactly when to stop.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "The toughest animal on Earth is one you cannot even see.",
-      "on_screen_text": "The Toughest Tardigrade",
-      "search_query": "tardigrade",
+      "voiceover": "Your body hides a secret organ capable of regenerating itself from nearly nothing.",
+      "on_screen_text": "Liver Regeneration",
+      "search_query": "medical team surgery",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "This eight-legged tardigrade lives in your backyard, but it hides a terrifying power.",
-      "on_screen_text": "Hidden Power",
-      "search_query": "moss macro dew",
-      "motion": "static"
+      "duration": 5,
+      "voiceover": "What happens when you carve away a massive piece of your liver?",
+      "on_screen_text": "The Big Question",
+      "search_query": "hospital corridor walking",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "What if you left one in the open vacuum of space?",
-      "on_screen_text": "Vacuum of Space",
-      "search_query": "deep space stars",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "The result is a biological miracle that defies everything we know about healing.",
+      "on_screen_text": "Biological Miracle",
+      "search_query": "surgeons operating room",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 6,
-      "voiceover": "It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you.",
-      "on_screen_text": "1,000x Radiation",
-      "search_query": "sun solar flares",
+      "voiceover": "Even after donating 65 percent, both pieces regrow to nearly full size in 8 to 10 weeks.",
+      "on_screen_text": "65 Percent Regrowth",
+      "search_query": "medical monitor heartrate",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "They can even withstand pressures six times deeper than the bottom of the Mariana Trench.",
-      "on_screen_text": "6x Deepest Ocean",
-      "search_query": "dark ocean depths",
-      "motion": "zoom_in"
+      "voiceover": "It is like a house doubling its entire square footage without adding a foundation.",
+      "on_screen_text": "Rapid Expansion",
+      "search_query": "modern house exterior",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "To do this, they replace their internal water with a glass-like sugar called trehalose.",
-      "on_screen_text": "Glass-like Sugar",
-      "search_query": "water droplet macro",
+      "voiceover": "This isn't just stem cells; mature cells simply wake up and start replicating.",
+      "on_screen_text": "Cell Replication",
+      "search_query": "time lapse plant growth",
       "motion": "zoom_in"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "They pull in their legs and dry into a shriveled husk called a tun.",
-      "on_screen_text": "The Tun State",
-      "search_query": "dried raisin",
+      "duration": 6,
+      "voiceover": "One liver can be split between two people and grow independently to support both.",
+      "on_screen_text": "Split Liver Transplant",
+      "search_query": "two people shaking hands",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 5,
-      "voiceover": "In this state, they can survive temperatures just one degree above absolute zero.",
-      "on_screen_text": "-272 Degrees",
-      "search_query": "frozen ice crystals",
+      "voiceover": "It is the only solid organ that regrows working tissue instead of just scarring over.",
+      "on_screen_text": "No Scarring",
+      "search_query": "smooth river stone",
       "motion": "zoom_in"
     },
     {
       "id": 9,
-      "duration": 5,
-      "voiceover": "But when they are hydrated, a simple mite can eat them in seconds.",
-      "on_screen_text": "Easy Prey",
-      "search_query": "small spider hunting",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 10,
-      "duration": 4,
-      "voiceover": "It is a strange trade for the toughest animal on Earth.",
-      "on_screen_text": "Toughest Animal",
-      "search_query": "tardigrade",
+      "duration": 6,
+      "voiceover": "We still cannot explain the invisible sensor that tells the growth exactly when to stop.",
+      "on_screen_text": "The Mystery Sensor",
+      "search_query": "night sky stars",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Would you survive the vacuum of space if you were a tardigrade? Yes or no?",
-    "The science of cryptobiosis is unsettling.",
-    "Nature's most extreme survivor."
+    "Would you donate a part of your liver if you knew it would grow back? #liverregeneration",
+    "The only organ that can do this.",
+    "Nature's most unsettlingly beautiful repair system."
   ],
   "hashtags": [
-    "#science",
     "#biology",
-    "#space",
-    "#nature",
-    "#animals",
+    "#medicine",
+    "#health",
+    "#science",
+    "#body",
     "#learnontiktok"
   ],
   "render": {
@@ -105,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-invisible-survivor",
-  "cta_style": "LOOP",
-  "domain": "animals"
+  "video_id": "science_2026-07-17_the-organ-that-regrows",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "body"
 }

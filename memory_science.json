@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_you-re-made-of-dust",
-      "metaphor": "Skin Cells",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "You're Made of Dust",
-      "fact_id": "skin_cells",
-      "domain": "body",
-      "hook": "You shed skin every minute",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_unseen-oceans",
       "metaphor": "ocean floor mystery",
       "viewer_job": "REFRAME",
@@ -288,6 +273,29 @@
         "rewatch": 9.0,
         "clarity": 9.0,
         "overall": 7.67
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-organ-that-regrows",
+      "metaphor": "Biological self-repair",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "title": "The Organ That Regrows",
+      "fact_id": "liver_regrows",
+      "domain": "body",
+      "hook": "Your body has one organ that can grow itself back from nothing.",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 10.0,
+        "overall": 8.0
       }
     }
   ]
