@@ -1,111 +1,94 @@
 {
-  "title": "The Raindrop Lie",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "raindrop shape",
-  "metaphor": "liquid parachutes",
-  "hook": "You have spent your entire life drawing the raindrop shape wrong.",
-  "script": "You have spent your entire life drawing the raindrop shape wrong. We imagine a pointed tear, but nature doesn't work that way. What if you drew a raindrop the way it really falls? Tiny drops are actually near-perfect spheres. As they grow, air resistance pushes against the bottom. This dynamic pressure flattens the water into the shape of a hamburger bun. At 9 meters per second, they become liquid parachutes. Once they hit 6 millimeters, the air becomes so violent the drop simply disintegrates. The classic teardrop doesn't exist; it's flattened by the very air it falls through. Send this to the artist who still draws them as tears.",
+  "title": "The Weight of a Teaspoon",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "neutron star",
+  "metaphor": "Cosmic density",
+  "hook": "A single teaspoon of a neutron star would weigh a billion tons.",
+  "script": "A single teaspoon of a neutron star would weigh a billion tons. This happens because gravity crushes matter until the atoms themselves collapse. Most people think stars are just giant balls of gas. But these dead cores are the densest objects in the known universe. If you held a teaspoon of this material, it would punch through your floor and fall straight to the Earth's core. The star packs more mass than our Sun into a ball the size of a city. Some of these stars spin over 700 times every single second. It is a level of density that makes a mountain feel like a cloud.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You have spent your entire life drawing the raindrop shape wrong.",
-      "on_screen_text": "Raindrop Shape Lie",
-      "search_query": "rain window closeup",
+      "voiceover": "A single teaspoon of a neutron star would weigh a billion tons.",
+      "on_screen_text": "A Billion Tons",
+      "search_query": "neutron star space",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "We imagine a pointed tear, but nature doesn't work that way.",
-      "on_screen_text": "The Common Myth",
-      "search_query": "water droplet splash",
+      "voiceover": "This happens because gravity crushes matter until the atoms themselves collapse.",
+      "on_screen_text": "Extreme Gravity",
+      "search_query": "deep space nebula",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "What if you drew a raindrop the way it really falls?",
-      "on_screen_text": "The Real Geometry",
-      "search_query": "raindrop slow motion",
+      "voiceover": "Most people think stars are just giant balls of gas.",
+      "on_screen_text": "Common Misconception",
+      "search_query": "galaxy stars",
       "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Tiny drops are actually near-perfect spheres.",
-      "on_screen_text": "Perfect Spheres",
-      "search_query": "water beads surface",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 5,
-      "duration": 4,
-      "voiceover": "As they grow, air resistance pushes against the bottom.",
-      "on_screen_text": "Air Resistance",
-      "search_query": "wind blowing trees",
+      "voiceover": "But these dead cores are the densest objects in the known universe.",
+      "on_screen_text": "Densest Object",
+      "search_query": "neutron star space",
       "motion": "zoom_in"
     },
     {
-      "id": 6,
+      "id": 5,
       "duration": 5,
-      "voiceover": "This dynamic pressure flattens the water into the shape of a hamburger bun.",
-      "on_screen_text": "Hamburger Bun Shape",
-      "search_query": "raindrop slow motion",
+      "voiceover": "If you held a teaspoon of this material, it would punch through your floor and fall straight to the Earth's core.",
+      "on_screen_text": "Neutron Star Weight",
+      "search_query": "city street aerial",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "The star packs more mass than our Sun into a ball the size of a city.",
+      "on_screen_text": "Sun Mass, City Size",
+      "search_query": "night sky stars",
       "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "At 9 meters per second, they become liquid parachutes.",
-      "on_screen_text": "9 Meters Per Second",
-      "search_query": "parachute falling slow motion",
+      "voiceover": "Some of these stars spin over 700 times every single second.",
+      "on_screen_text": "700 Rotations Per Second",
+      "search_query": "spinning galaxy",
       "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 5,
-      "voiceover": "Once they hit 6 millimeters, the air becomes so violent the drop simply disintegrates.",
-      "on_screen_text": "The Breakup Point",
-      "search_query": "water spray mist",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 9,
-      "duration": 4,
-      "voiceover": "The classic teardrop doesn't exist; it's flattened by the very air it falls through.",
-      "on_screen_text": "Nature's Truth",
-      "search_query": "rain falling forest",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 10,
-      "duration": 4,
-      "voiceover": "Send this to the artist who still draws them as tears.",
-      "on_screen_text": "Correct Your Friends",
-      "search_query": "person sketching paper",
+      "voiceover": "It is a level of density that makes a mountain feel like a cloud.",
+      "on_screen_text": "Absolute Density",
+      "search_query": "snowy mountain peak",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The raindrop shape you've always drawn is a lie. Did you know this \u2014 yes or no?",
-    "Everything you know about rain is slightly wrong.",
-    "The physics of a falling drop is more unsettling than you think."
+    "Could you handle the weight of a neutron star? Yes or no?",
+    "The most dense object in the universe.",
+    "Reality is stranger than fiction."
   ],
   "hashtags": [
     "#science",
+    "#space",
+    "#astronomy",
     "#physics",
-    "#nature",
-    "#weather",
-    "#facts",
-    "#learnontiktok"
+    "#universe"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-raindrop-lie",
-  "cta_style": "SHARE",
-  "domain": "weather"
+  "video_id": "science_2026-07-17_the-weight-of-a-teaspoon",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "space"
 }

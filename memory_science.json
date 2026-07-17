@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
-      "metaphor": "Biological Rule Breaker",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "title": "The Rodent That Breaks Biology",
-      "fact_id": "naked_mole_rat",
-      "domain": "animals",
-      "hook": "Your brain would die in minutes without oxygen, but not this animal's.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 9.0,
-        "rewatch": 5.0,
-        "clarity": 9.0,
-        "overall": 7.33
-      }
-    },
-    {
       "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
       "metaphor": "alien gemstone weather",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -320,6 +297,29 @@
         "rewatch": 8.0,
         "clarity": 10.0,
         "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-weight-of-a-teaspoon",
+      "metaphor": "Cosmic density",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "title": "The Weight of a Teaspoon",
+      "fact_id": "neutron_star_spoon",
+      "domain": "space",
+      "hook": "A single teaspoon of a neutron star would weigh a billion tons.",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.33
       }
     }
   ]
