@@ -470,6 +470,21 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_xfade_offsets_monotonic():
+    section("main._xfade_offsets: chained-dissolve offsets are positive + increasing")
+    durs = [3.0, 2.0, 4.0, 2.5]
+    xf = 0.2
+    offs = M._xfade_offsets(durs, xf)
+    check(len(offs) == len(durs) - 1, f"one offset per cut ({offs})")
+    check(all(o > 0 for o in offs), f"all offsets positive ({offs})")
+    check(all(b > a for a, b in zip(offs, offs[1:])), f"offsets strictly increasing ({offs})")
+    # first cut blends starting at (first clip - xf)
+    check(abs(offs[0] - (durs[0] - xf)) < 1e-6, f"first offset = dur0 - xf ({offs[0]})")
+    # fewer than two clips -> nothing to blend
+    check(M._xfade_offsets([4.0], xf) == [], "single clip -> no offsets")
+    check(M._xfade_offsets([], xf) == [], "empty -> no offsets")
+
+
 def test_critique_script_merges_gain_and_score():
     section("generate.critique_script: one call returns BOTH redundancy + rubric score")
     import json as _json
@@ -529,6 +544,7 @@ def main():
     test_build_ass_fallback_monotonic()
     test_domain_family()
     test_generate_helpers()
+    test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
