@@ -8,13 +8,18 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections
+import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
 SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
+# Research dossiers are keyed by the verified fact text and cached across runs:
+# the same fact costs one Gemini/Groq call to research the FIRST time, then zero
+# on every retry (aborted-run reruns, pre-generated buffer, a fact that recurs
+# after the 14-entry memory window forgets it). See research_dossier().
+DOSSIER_CACHE = os.path.join(ROOT, f"dossier_cache_{PAGE}.json")
 OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # Google Gemini free tier has a FAR higher daily quota than Groq's free tier
@@ -1703,6 +1708,35 @@ def overused_hook_openers(history, min_count=3):
     return [op for op, c in counts.items() if op and c >= min_count]
 
 
+def _dossier_key(fact):
+    """Stable cache key for a fact's dossier: a hash of the verified fact text
+    (falling back to angle). Independent of dict ordering or the mutable
+    memory window, so the same fact maps to the same key every run."""
+    basis = (fact.get("fact") or fact.get("angle") or "").strip().lower()
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16] if basis else ""
+
+
+def _load_dossier_cache():
+    try:
+        with open(DOSSIER_CACHE) as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _save_dossier_cache(cache):
+    """Best-effort persist; a cache write must never break a run. Keep only the
+    most recent ~200 entries so the file can't grow unbounded across months."""
+    try:
+        if len(cache) > 200:
+            cache = dict(list(cache.items())[-200:])
+        with open(DOSSIER_CACHE, "w") as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:  # noqa: BLE001
+        print(f"  [research] dossier cache write skipped ({e})")
+
+
 def research_dossier(fact):
     """SCIENTIST BRAIN — stage 1 (research before writing).
 
@@ -1720,6 +1754,15 @@ def research_dossier(fact):
     topic = fact.get("fact") or fact.get("angle") or ""
     if not topic:
         return []
+    # Cache hit: this fact was already researched on a prior run — reuse those
+    # angles and spend zero LLM quota. The dossier is a set of TRUE facts about
+    # a fixed topic, so it doesn't go stale between runs.
+    key = _dossier_key(fact)
+    cache = _load_dossier_cache() if key else {}
+    cached = cache.get(key)
+    if isinstance(cached, list) and len([f for f in cached if str(f).strip()]) >= 5:
+        print(f"  [research] dossier cache HIT ({len(cached)} angles) — no LLM call")
+        return [str(f).strip() for f in cached if str(f).strip()][:10]
     kt = ", ".join(fact.get("key_terms", []) or [])
     prompt = (
         "You are the researcher behind the most fascinating science videos on the internet "
@@ -1748,6 +1791,9 @@ def research_dossier(fact):
         facts = [f for f in facts if len(f) > 12][:10]
         if facts:
             print(f"  [research] scientist-brain dossier: {len(facts)} distinct angles gathered")
+            if key and len(facts) >= 5:  # only cache a genuinely full dossier
+                cache[key] = facts
+                _save_dossier_cache(cache)
         return facts
     except Exception as e:
         print(f"  [research] dossier unavailable ({e}); writing from the base fact only")
