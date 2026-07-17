@@ -1079,6 +1079,13 @@ def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     W2, H2 = W * 2, H * 2
     up = f"scale=-2:{H2}:flags=lanczos,crop={W2}:{H2},"
     down = f"scale={W}:{H}:flags=lanczos,"
+    if idx == 0:
+        # HOOK PUNCH-IN: the first ~0.8s pushes in faster (1.03 -> 1.14) to stop a
+        # scrolling viewer, then eases into a slow creep to 1.20. Any non-static
+        # hook gets this energy regardless of the LLM's assigned motion. Same
+        # supersampled path, so the faster move still renders smooth.
+        hz = "if(lte(on,24),1.03+0.11*on/24,min(1.14+(on-24)*0.0006,1.20))"
+        return up + f"zoompan=z='{hz}':x='{ax}':y='{ay}':d={frames}:s={W2}x{H2}:fps=30," + down
     if kind == "zoom_out":
         z = f"if(lte(on,3),1.12,max(zoom-{zspeed},1.06))"
         return up + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W2}x{H2}:fps=30," + down
