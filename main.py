@@ -472,7 +472,8 @@ def _pexels_candidates(query):
                 slug = (v.get("url", "") or "").rstrip("/").split("/")[-1]
                 slug = re.sub(r"-\d+$", "", slug)
                 out.append({"id": v.get("id"), "url": best["link"],
-                            "desc": slug.replace("-", " "), "source": "Pexels"})
+                            "desc": slug.replace("-", " "), "source": "Pexels",
+                            "image": v.get("image")})   # preview thumbnail for the vision judge
     except urllib.error.HTTPError as e:
         print(f"  Pexels HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
@@ -753,6 +754,61 @@ UNRESOLVED = "unresolved"
 JUDGE_UNAVAILABLE = "judge_unavailable"
 
 
+# ---------- VISION FOOTAGE JUDGE (paid Gemini) ----------
+# The text judge reads a candidate's URL slug ("desc") — it never SEES the clip,
+# so a slug that says "spider web" over a clip that's actually a dewy leaf still
+# scores well. This judge sends the actual candidate THUMBNAILS to Gemini vision
+# and picks the one that visually matches the scene. Best-effort + cost-capped:
+# any failure returns None and the caller falls back to the text judge, so it can
+# never break a render. Only Pexels candidates carry a thumbnail today.
+VISION_JUDGE = os.environ.get("VISION_JUDGE", "1") != "0"
+VISION_MAX_CANDS = int(os.environ.get("VISION_MAX_CANDS", "5"))
+
+
+def _gemini_vision_pick(intent, candidates):
+    """Return (index_into_candidates, score 0-10) for the thumbnail that best
+    matches `intent`, judged by Gemini vision — or None on any failure."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not (VISION_JUDGE and key):
+        return None
+    idxs = [i for i, c in enumerate(candidates) if c.get("image")][:VISION_MAX_CANDS]
+    if len(idxs) < 2:
+        return None   # nothing to compare visually — let the text judge handle it
+    import base64
+    parts = [{"text": (f"Choosing stock footage for a science-video scene about: \"{intent}\". "
+                       f"Below are {len(idxs)} candidate clip thumbnails, numbered from 0. Pick the "
+                       f"ONE that most LITERALLY shows that subject (not just vaguely related). "
+                       f"Return ONLY JSON: {{\"best\": <0-{len(idxs)-1}>, \"score\": <0-10 match>}}.")}]
+    for n, i in enumerate(idxs):
+        try:
+            rq = urllib.request.Request(candidates[i]["image"], headers={"User-Agent": BROWSER_UA})
+            with urllib.request.urlopen(rq, timeout=20) as r:
+                raw = r.read()
+        except Exception:
+            return None   # a thumbnail wouldn't load — bail to the text judge
+        parts.append({"text": f"Image {n}:"})
+        parts.append({"inline_data": {"mime_type": "image/jpeg",
+                                      "data": base64.b64encode(raw).decode()}})
+    body = json.dumps({"contents": [{"parts": parts}],
+                       "generationConfig": {"temperature": 0, "maxOutputTokens": 60}}).encode()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
+    try:
+        rq = urllib.request.Request(url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(rq, timeout=45) as r:
+            data = json.loads(r.read().decode())
+        txt = data["candidates"][0]["content"]["parts"][0]["text"]
+        m = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+        best, score = int(m.get("best")), int(m.get("score"))
+        if 0 <= best < len(idxs):
+            print(f"  [vision] Gemini picked clip index {idxs[best]} (match {score}/10) by thumbnail")
+            return idxs[best], max(0, min(10, score))
+    except Exception as e:  # noqa: BLE001 - fall back to the text judge
+        print(f"  [vision] judge unavailable ({e}); using text judge")
+    return None
+
+
 def _groq_judge(intent, candidates, _allow_retry=True):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
@@ -992,7 +1048,10 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
                     return True, best_score
                 except Exception as e:  # too-dark / download failed → let the judge try
                     print(f"  keyword-matched clip unusable ({e}) — falling to judge")
-            idx, score = _groq_judge(intent, cands)
+            # VISION FIRST: let Gemini actually look at the thumbnails and pick the
+            # visual match; fall back to the text (slug) judge if vision is off/fails.
+            _vj = _gemini_vision_pick(intent, cands)
+            idx, score = _vj if _vj is not None else _groq_judge(intent, cands)
             chosen = cands[idx]
             numeric = isinstance(score, int)
             if numeric and (best_score is None or score > best_score):
