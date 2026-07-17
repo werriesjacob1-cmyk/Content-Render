@@ -112,6 +112,14 @@ jobs:
           # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
+          # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
+          # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets
+          # are fresh). A dequeue costs ZERO LLM calls, so the channel keeps
+          # banking videos on days the buckets are already spent. `--dequeue`
+          # exits 3 when the buffer is empty — the normal case today — and we
+          # fall straight through to LIVE generation, byte-for-byte the previous
+          # behaviour.
+          #
           # CRITICAL: never fall back to a hardcoded example on failure. Doing
           # that (the old `|| cp manifest_example.json`) published the IDENTICAL
           # "murmuration" example video on every generation failure — 4+ times —
@@ -119,9 +127,14 @@ jobs:
           # generation (usually transient Groq rate-limit/quota) must instead
           # retry once, then ABORT the whole run: no render, no release, no
           # duplicate. The daily cron simply tries again next time.
-          python generate.py manifest.json \
-            || { echo "generate failed (likely a transient Groq rate-limit); waiting 90s and retrying once"; sleep 90; python generate.py manifest.json; } \
-            || { echo "::error::script generation failed twice — aborting this run so no duplicate/example video is ever published"; exit 1; }
+          if python generate.py --dequeue manifest.json; then
+            echo "rendering a pre-generated manifest from the buffer (no LLM used)"
+          else
+            echo "buffer empty — generating live"
+            python generate.py manifest.json \
+              || { echo "generate failed (likely a transient Groq rate-limit); waiting 90s and retrying once"; sleep 90; python generate.py manifest.json; } \
+              || { echo "::error::script generation failed twice — aborting this run so no duplicate/example video is ever published"; exit 1; }
+          fi
           echo "--- generated manifest ---"
           head -c 400 manifest.json; echo
 
@@ -138,7 +151,10 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add memory_*.json manifest.json dossier_cache_*.json 2>/dev/null || true
+          # -A on the queue path stages the DELETION of a just-dequeued manifest
+          # too; without it the fresh checkout on the next run would still carry
+          # that file and render the same video again.
+          git add -A memory_*.json manifest.json dossier_cache_*.json queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
           git push 2>/dev/null || echo "push skipped"
 

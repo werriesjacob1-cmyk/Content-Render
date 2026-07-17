@@ -1,0 +1,85 @@
+name: fill-script-buffer
+
+# Pre-generate a BATCH of video manifests into the queue (queue_<page>/) while
+# the free LLM buckets are fresh, WITHOUT rendering them. render.yml then drains
+# one per run with zero LLM calls (`generate.py --dequeue`), so the channel keeps
+# banking videos even on days the buckets are already spent. This is the "batch
+# when fresh, spend over days" answer to the free-tier quota ceiling.
+#
+# Run it manually (Actions -> fill-script-buffer -> Run workflow, set `count`),
+# ideally right after the 07:00 UTC quota reset. It never renders and never
+# publishes — it only writes scripts to the queue and commits them.
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "How many manifests to try to buffer (stops early if a bucket is exhausted)"
+        required: true
+        default: "5"
+  schedule:
+    # 07:20 UTC — a few minutes after the free buckets reset (07:00 UTC) and just
+    # after render.yml's 07:12 reset-render. Banks a few fresh scripts each
+    # morning so the buffer refills faster than the daily render drains it.
+    - cron: "20 7 * * *"
+
+permissions:
+  contents: write   # commits the queued manifests + memory back to the repo
+
+concurrency:
+  # share render-video's concurrency group so a buffer fill never races the
+  # renderer on the memory_*/queue_* commits (both push those paths).
+  group: render-video
+  cancel-in-progress: false
+
+jobs:
+  buffer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PAGE: science
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/epic-edison-jybjd1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Fill the buffer
+        env:
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY:   ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          COUNT="${{ github.event.inputs.count || '3' }}"
+          echo "buffering up to $COUNT manifest(s)"
+          made=0
+          for i in $(seq 1 "$COUNT"); do
+            echo "=== buffering manifest $i/$COUNT ==="
+            # Each --enqueue updates memory_<page>.json, so the batch is topic
+            # diverse. A failure is almost always a spent bucket / hard-floor
+            # abort (consistency over cadence) — stop the batch rather than spin.
+            if python generate.py --enqueue; then
+              made=$((made+1))
+            else
+              echo "enqueue $i aborted (bucket exhausted or below quality floor) — stopping batch"
+              break
+            fi
+          done
+          echo "buffered $made new manifest(s) this run"
+
+      - name: Commit the buffered scripts
+        run: |
+          git config user.name "render-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A memory_*.json dossier_cache_*.json queue_* 2>/dev/null || true
+          git commit -m "auto: fill $PAGE script buffer" 2>/dev/null || echo "nothing to commit"
+          for a in 1 2 3 4; do
+            git push && break || { echo "push retry $a"; sleep $((2**a)); git pull --rebase origin claude/epic-edison-jybjd1 || true; }
+          done

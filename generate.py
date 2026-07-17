@@ -20,7 +20,23 @@ MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 # on every retry (aborted-run reruns, pre-generated buffer, a fact that recurs
 # after the 14-entry memory window forgets it). See research_dossier().
 DOSSIER_CACHE = os.path.join(ROOT, f"dossier_cache_{PAGE}.json")
-OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
+# SPLIT WRITE FROM RENDER (script buffer): generate.py normally writes one
+# manifest and the workflow renders it immediately. But generation is what's
+# quota-bound, not rendering — so when the free buckets are fresh we can
+# pre-generate a BATCH of manifests into a queue and render them later (even on
+# days the buckets are spent). Modes:
+#   --enqueue : generate ONE manifest into queue_<page>/ instead of manifest.json
+#   --dequeue : pop the oldest queued manifest to manifest.json (no LLM at all);
+#               exit 3 if the queue is empty so the caller falls back to live gen
+# Default (no flag) is unchanged: generate one manifest to OUT_MANIFEST.
+_ARGV = list(sys.argv[1:])
+GEN_MODE = "normal"
+if "--dequeue" in _ARGV:
+    GEN_MODE = "dequeue"; _ARGV.remove("--dequeue")
+elif "--enqueue" in _ARGV:
+    GEN_MODE = "enqueue"; _ARGV.remove("--enqueue")
+OUT_MANIFEST = _ARGV[0] if _ARGV else os.path.join(ROOT, "manifest.json")
+QUEUE_DIR = os.path.join(ROOT, f"queue_{PAGE}")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # Google Gemini free tier has a FAR higher daily quota than Groq's free tier
 # (~1500 requests/day vs a handful of renders), so when GEMINI_API_KEY is set we
@@ -490,6 +506,59 @@ def save_memory(history, entry):
     history = history[-14:]
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
+
+
+def _queue_files():
+    """Queued manifest filenames, oldest first (FIFO by ms-timestamp prefix)."""
+    try:
+        return sorted(f for f in os.listdir(QUEUE_DIR) if f.endswith(".json"))
+    except FileNotFoundError:
+        return []
+
+
+def enqueue_manifest(manifest, video_id):
+    """Persist a finished manifest into the buffer instead of rendering it now.
+    Filenames are ms-timestamp-prefixed so the queue drains in the order it was
+    filled. The batch still updates memory_<page>.json between generations (see
+    main()), so a buffer filled in one run is topic-diverse, not five of the
+    same fact."""
+    os.makedirs(QUEUE_DIR, exist_ok=True)
+    fname = f"{int(time.time() * 1000):013d}_{_slugify(video_id) or 'video'}.json"
+    path = os.path.join(QUEUE_DIR, fname)
+    with open(path, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"[queue] enqueued {manifest.get('title','?')!r} -> {os.path.basename(path)} "
+          f"(queue depth {len(_queue_files())})")
+
+
+def dequeue_to(dest):
+    """Pop the oldest queued manifest to `dest` with ZERO LLM calls. Returns 0 on
+    success, 3 if the queue is empty (the caller then falls back to live
+    generation). A malformed queued file is discarded and the next one tried, so
+    one bad entry can't wedge the buffer."""
+    for fname in _queue_files():
+        src = os.path.join(QUEUE_DIR, fname)
+        try:
+            with open(src) as f:
+                manifest = json.load(f)
+            if not isinstance(manifest, dict) or "scenes" not in manifest:
+                raise ValueError("queued file is not a manifest")
+        except Exception as e:  # noqa: BLE001
+            print(f"[queue] discarding unreadable queued file {fname} ({e})")
+            try:
+                os.remove(src)
+            except OSError:
+                pass
+            continue
+        with open(dest, "w") as f:
+            json.dump(manifest, f, indent=2)
+        os.remove(src)
+        print(f"[queue] dequeued {manifest.get('title','?')!r} -> {dest} "
+              f"({len(_queue_files())} left in buffer)")
+        return 0
+    print("[queue] buffer empty — no pre-generated manifest to render; "
+          "caller should fall back to live generation")
+    return 3
 
 # ---------------------------------------------------------------------------
 # PAGE IDENTITY — the thing that turns "a page that posts science facts" (a
@@ -2314,8 +2383,15 @@ def main():
     manifest.pop("_degraded", None)
     manifest.pop("_quality", None)  # internal score stash — never ships to render
 
-    with open(OUT_MANIFEST, "w") as f:
-        json.dump(manifest, f, indent=2)
+    # SPLIT WRITE FROM RENDER: in --enqueue mode the finished manifest goes into
+    # the buffer for a later render instead of manifest.json; memory is still
+    # updated below either way, so the next generation in a batch avoids this
+    # topic (keeping a buffered batch diverse).
+    if GEN_MODE == "enqueue":
+        enqueue_manifest(manifest, video_id)
+    else:
+        with open(OUT_MANIFEST, "w") as f:
+            json.dump(manifest, f, indent=2)
     save_memory(history, {
         "video_id": video_id,
         "metaphor": manifest.get("metaphor", manifest["title"]),
@@ -2331,8 +2407,13 @@ def main():
         },
         "quality": best_quality,
     })
+    _dest = f"buffer ({QUEUE_DIR})" if GEN_MODE == "enqueue" else OUT_MANIFEST
     print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
-          f"{OUT_MANIFEST} [video_id={video_id}]")
+          f"{_dest} [video_id={video_id}]")
 
 if __name__ == "__main__":
+    # --dequeue renders from the pre-generated buffer with no LLM call; exit 3
+    # (empty buffer) tells the workflow to fall back to live generation.
+    if GEN_MODE == "dequeue":
+        sys.exit(dequeue_to(OUT_MANIFEST))
     main()

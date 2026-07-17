@@ -470,6 +470,39 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_script_buffer_queue():
+    section("generate.py buffer: enqueue/dequeue is FIFO, empty=3, malformed-safe")
+    import json as _json
+    q_prev, dest = G.QUEUE_DIR, tempfile.mktemp(suffix=".json")
+    G.QUEUE_DIR = tempfile.mkdtemp()
+    try:
+        check(G.dequeue_to(dest) == 3, "empty buffer -> exit 3 (fall back to live gen)")
+        G.enqueue_manifest({"title": "First", "scenes": [{"id": 1}]}, "science_2026-07-17_first")
+        time.sleep(0.01)
+        G.enqueue_manifest({"title": "Second", "scenes": [{"id": 1}]}, "science_2026-07-17_second")
+        check(len(G._queue_files()) == 2, "two manifests buffered")
+        check(G.dequeue_to(dest) == 0 and _json.load(open(dest))["title"] == "First",
+              "dequeue pops oldest first (FIFO)")
+        check(G.dequeue_to(dest) == 0 and _json.load(open(dest))["title"] == "Second",
+              "second dequeue pops the next one")
+        check(G.dequeue_to(dest) == 3, "drained buffer -> exit 3 again")
+        # a corrupt queued file must be skipped, not wedge the buffer
+        open(os.path.join(G.QUEUE_DIR, "0000000000001_bad.json"), "w").write("{ not json")
+        open(os.path.join(G.QUEUE_DIR, "0000000000002_ok.json"), "w").write(
+            _json.dumps({"title": "Good", "scenes": [{"id": 1}]}))
+        check(G.dequeue_to(dest) == 0 and _json.load(open(dest))["title"] == "Good",
+              "malformed queued file skipped; next valid one served")
+        check(len(G._queue_files()) == 0, "malformed file is also removed (buffer not wedged)")
+    finally:
+        import shutil as _sh
+        _sh.rmtree(G.QUEUE_DIR, ignore_errors=True)
+        try:
+            os.remove(dest)
+        except OSError:
+            pass
+        G.QUEUE_DIR = q_prev
+
+
 def test_xfade_offsets_monotonic():
     section("main._xfade_offsets: chained-dissolve offsets are positive + increasing")
     durs = [3.0, 2.0, 4.0, 2.5]
@@ -544,6 +577,7 @@ def main():
     test_build_ass_fallback_monotonic()
     test_domain_family()
     test_generate_helpers()
+    test_script_buffer_queue()
     test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
     test_fast_fail_when_throttled()
