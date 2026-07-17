@@ -820,6 +820,11 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
   close up"; "Saturn rings", not "planet space") — a generic groundhog in a naked-mole-rat video is a miss
   viewers catch instantly. The hook scene and payoff scene MUST name the specific subject; only fall back to
   a generic category/metaphor when it genuinely can't be filmed.
+- ONE EXCEPTION — a MANUFACTURED MODEL used only as a COMPARISON PROP (a specific plane, car, ship, phone
+  that is NOT the video's real subject): stock can't match an exact model, so a "Boeing 747" line playing
+  over a generic Airbus clip breaks trust. For such incidental props, say the GENERIC type in BOTH the
+  voiceover AND the query — "a jumbo jet", "a passenger plane", "a cargo ship" — so the words always match
+  whatever clip appears. (Still name the video's actual subject; this is only for throwaway comparison props.)
 
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and the search query as specified above.
@@ -1054,17 +1059,19 @@ def call_groq(prompt):
             _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
             return out
         except urllib.error.HTTPError as e:
-            if e.code in (400, 403, 404, 429):
-                # 400 = bad request for THIS model/provider (commonly an invalid
-                # or wrong-type API key, e.g. an OAuth token pasted where a
-                # Gemini AIza key belongs, or a param a given model rejects);
-                # 403/404 = unavailable; 429 = rate-limited. All are
-                # model/provider-specific, so fall through to the next entry
-                # instead of aborting the whole run. If EVERY provider fails the
-                # chain still ends by raising last_err below. Log the server's
-                # error body (truncated) — without it a silently-failing Gemini
-                # looks identical to a healthy one that just chose Groq, which is
-                # exactly how a bad key hid for a whole run.
+            if e.code in (400, 401, 402, 403, 404, 429):
+                # All of these are THIS-provider-specific, so fall through to the
+                # next entry instead of aborting the whole run:
+                #   400 = bad request (often a wrong-type key or a rejected param)
+                #   401 = unauthorized (invalid/rotated key — e.g. a bad Together/
+                #         Fireworks/Mistral key must NOT abort the chain and starve
+                #         Groq/Cerebras, the exact failure seen on run 95)
+                #   402 = payment required (a provider's free credit ran out)
+                #   403/404 = unavailable;  429 = rate-limited.
+                # If EVERY provider fails, the chain still ends by raising last_err
+                # below. Log the server's error body (truncated) — without it a
+                # silently-failing provider looks identical to a healthy one that
+                # just chose Groq, which is exactly how a bad key hid for a run.
                 try:
                     detail = e.read().decode("utf-8", "replace")[:300]
                 except Exception:  # noqa: BLE001
