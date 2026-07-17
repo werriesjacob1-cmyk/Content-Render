@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
-      "metaphor": "Mountain Height Comparison",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Mauna Kea: The Tallest Mountain",
-      "fact_id": "mauna_kea",
-      "domain": "earth",
-      "hook": "You think Everest is the tallest?",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_cosmic-coincidence",
       "metaphor": "cosmic coincidence",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -272,6 +257,29 @@
         "rewatch": 7.0,
         "clarity": 10.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-rain-of-muons",
+      "metaphor": "cosmic clock glitch",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "The Rain of Muons",
+      "fact_id": "muon_time_dilation",
+      "domain": "physics",
+      "hook": "You are being rained on by particles that shouldn't exist.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 9.0,
+        "payoff": 9.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 8.0
       }
     }
   ]

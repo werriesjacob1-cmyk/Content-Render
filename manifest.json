@@ -1,111 +1,110 @@
 {
-  "title": "The Crushing Weight of the Abyss",
-  "viewer_job": "REFRAME",
-  "keyword": "Mariana Trench",
-  "metaphor": "The crushing deep",
-  "hook": "Your body would collapse instantly if you entered the Mariana Trench.",
-  "script": "Your body would be obliterated the second you entered the Mariana Trench. Down here, the weight of the ocean actually compresses the crystal structure of water. This creates a crushing abyss five percent denser than the surface. But what happens to your body without a submarine? The pressure hits 8 tons per square inch, instantly flattening your lungs. That is over 1,000 times the surface pressure, like balancing an elephant on your thumbnail. Yet, the Mariana snailfish thrives in this nightmare. They survive because their internal pressure perfectly matches the surrounding ocean. Even single-celled Xenophyophores grow twenty centimeters wide in this lethal dark. Send this to the friend who thinks the ocean is just water.",
+  "title": "The Rain of Muons",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "time dilation",
+  "metaphor": "cosmic clock glitch",
+  "hook": "You are being rained on by particles that shouldn't exist.",
+  "script": "You are being rained on by particles that shouldn't exist. High in the atmosphere, cosmic rays create unstable particles called muons. These particles only live for 2.2 microseconds. That is less time than it takes for a camera flash to pop. Even at near light speed, they should decay long before hitting the ground. But if a clock ticks near light speed, it actually runs slower. This stretches their lifespan just enough to survive the 15 kilometer fall. About one muon passes through every square centimeter of your skin every minute. Einstein's relativity is physically passing through you right now. Do you trust the math, or does this sound like a lie?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your body would be obliterated the second you entered the Mariana Trench.",
-      "on_screen_text": "The Mariana Trench",
-      "search_query": "deep sea trench dark",
+      "voiceover": "You are being rained on by particles that shouldn't exist.",
+      "on_screen_text": "Invisible Rain",
+      "search_query": "night sky stars timelapse",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Down here, the weight of the ocean actually compresses the crystal structure of water.",
-      "on_screen_text": "Compressed Water",
-      "search_query": "underwater abyss glowing fish",
-      "motion": "zoom_out"
+      "voiceover": "High in the atmosphere, cosmic rays create unstable particles called muons.",
+      "on_screen_text": "The Muons",
+      "search_query": "mountain peak sunrise",
+      "motion": "static"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This creates a crushing abyss five percent denser than the surface.",
-      "on_screen_text": "5% Denser",
-      "search_query": "deep ocean bubbles",
-      "motion": "zoom_in"
+      "voiceover": "These particles only live for 2.2 microseconds.",
+      "on_screen_text": "2.2 Microseconds",
+      "search_query": "scientist laboratory equipment",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "But what happens to your body without a submarine?",
-      "on_screen_text": "No Protection",
-      "search_query": "submersible deep ocean",
-      "motion": "zoom_out"
+      "voiceover": "That is less time than it takes for a camera flash to pop.",
+      "on_screen_text": "Faster than a flash",
+      "search_query": "camera flash light",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The pressure hits 8 tons per square inch, instantly flattening your lungs.",
-      "on_screen_text": "8 Tons Per Inch",
-      "search_query": "deep sea trench dark",
+      "voiceover": "Even at near light speed, they should decay long before hitting the ground.",
+      "on_screen_text": "Impossible Journey",
+      "search_query": "falling rain slow motion",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "That is over 1,000 times the surface pressure, like balancing an elephant on your thumbnail.",
-      "on_screen_text": "Elephant on Thumbnail",
-      "search_query": "african elephant close up",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "Yet, the Mariana snailfish thrives in this nightmare.",
-      "on_screen_text": "The Snailfish",
-      "search_query": "underwater abyss glowing fish",
+      "duration": 5,
+      "voiceover": "But if a clock ticks near light speed, it actually runs slower.",
+      "on_screen_text": "Time Dilation",
+      "search_query": "hourglass sand falling",
       "motion": "zoom_in"
     },
     {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "They survive because their internal pressure perfectly matches the surrounding ocean.",
-      "on_screen_text": "Internal Pressure",
-      "search_query": "deep sea fish swimming",
+      "id": 7,
+      "duration": 5,
+      "voiceover": "This stretches their lifespan just enough to survive the 15 kilometer fall.",
+      "on_screen_text": "15 Kilometers",
+      "search_query": "airplane window clouds",
       "motion": "zoom_out"
+    },
+    {
+      "id": 8,
+      "duration": 5,
+      "voiceover": "About one muon passes through every square centimeter of your skin every minute.",
+      "on_screen_text": "Passing Through You",
+      "search_query": "person walking city",
+      "motion": "pan"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Even single-celled Xenophyophores grow twenty centimeters wide in this lethal dark.",
-      "on_screen_text": "Giant Single Cells",
-      "search_query": "deep sea floor sediment",
+      "voiceover": "Einstein's relativity is physically passing through you right now.",
+      "on_screen_text": "Real Time Dilation",
+      "search_query": "galaxy nebula",
       "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "Send this to the friend who thinks the ocean is just water.",
-      "on_screen_text": "Not Just Water",
-      "search_query": "dark ocean surface waves",
+      "voiceover": "Do you trust the math, or does this sound like a lie?",
+      "on_screen_text": "Truth or Lie?",
+      "search_query": "person looking thoughtful",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The Mariana Trench is more terrifying than you think. Would you dive here for a billion dollars?",
-    "8 tons per square inch is a different kind of physics.",
-    "Reality is stranger than it sounds."
+    "Time dilation is happening to your body every second. Do you believe the physics?",
+    "The proof of relativity is raining down on you.",
+    "2.2 microseconds is all they have. Then time bends."
   ],
   "hashtags": [
-    "#ocean",
-    "#science",
-    "#deepsea",
-    "#nature",
     "#physics",
-    "#learnontiktok"
+    "#science",
+    "#space",
+    "#einstein",
+    "#cosmos"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-crushing-weight-of-the-abyss",
-  "cta_style": "SHARE",
-  "domain": "ocean"
+  "video_id": "science_2026-07-17_the-rain-of-muons",
+  "cta_style": "COMMENT",
+  "domain": "physics"
 }
