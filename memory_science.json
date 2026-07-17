@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_rainbow-deception",
-      "metaphor": "colorful atmospheric phenomenon",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Rainbow Deception",
-      "fact_id": "rainbow_circle",
-      "domain": "light",
-      "hook": "What if you could see a rainbow as a full circle?",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
       "metaphor": "Biological Rule Breaker",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -312,6 +297,29 @@
         "rewatch": 5.0,
         "clarity": 10.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-raindrop-lie",
+      "metaphor": "liquid parachutes",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SHARE",
+      "title": "The Raindrop Lie",
+      "fact_id": "raindrop_shape",
+      "domain": "weather",
+      "hook": "You have spent your entire life drawing the raindrop shape wrong.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 6.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 10.0,
+        "overall": 8.0
       }
     }
   ]

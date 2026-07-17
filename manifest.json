@@ -1,102 +1,102 @@
 {
-  "title": "The Literal First Bug",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "first computer bug",
-  "metaphor": "literal glitch origin",
-  "hook": "Your smartphone's glitches are named after a dead insect from 1947.",
-  "script": "Your smartphone's glitches are named after a dead insect from 1947. In the late forties, engineers worked on the Mark II computer. This machine was a monolith of three thousand vacuum tubes and five thousand relays. Why did a room-sized calculator suddenly stop working? Technician William Morton found a real moth trapped in Relay 70, Panel F. The insect was the size of a matchbox, but it caused a total electrical short. He taped the moth into the logbook as the first actual case of bug being found. Every single line of modern code now traces its name back to that one moth. The original insect is still preserved today at the Smithsonian. Do you think we'd call them bugs if the insect was never found?",
+  "title": "The Raindrop Lie",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "raindrop shape",
+  "metaphor": "liquid parachutes",
+  "hook": "You have spent your entire life drawing the raindrop shape wrong.",
+  "script": "You have spent your entire life drawing the raindrop shape wrong. We imagine a pointed tear, but nature doesn't work that way. What if you drew a raindrop the way it really falls? Tiny drops are actually near-perfect spheres. As they grow, air resistance pushes against the bottom. This dynamic pressure flattens the water into the shape of a hamburger bun. At 9 meters per second, they become liquid parachutes. Once they hit 6 millimeters, the air becomes so violent the drop simply disintegrates. The classic teardrop doesn't exist; it's flattened by the very air it falls through. Send this to the artist who still draws them as tears.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your smartphone's glitches are named after a dead insect from 1947.",
-      "on_screen_text": "First Computer Bug",
-      "search_query": "moth insect closeup",
+      "voiceover": "You have spent your entire life drawing the raindrop shape wrong.",
+      "on_screen_text": "Raindrop Shape Lie",
+      "search_query": "rain window closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "In the late forties, engineers worked on the Mark II computer.",
-      "on_screen_text": "The Mark II",
-      "search_query": "vintage computer machine",
+      "voiceover": "We imagine a pointed tear, but nature doesn't work that way.",
+      "on_screen_text": "The Common Myth",
+      "search_query": "water droplet splash",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "This machine was a monolith of three thousand vacuum tubes and five thousand relays.",
-      "on_screen_text": "5,000 Relays",
-      "search_query": "old circuit board",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "What if you drew a raindrop the way it really falls?",
+      "on_screen_text": "The Real Geometry",
+      "search_query": "raindrop slow motion",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Why did a room-sized calculator suddenly stop working?",
-      "on_screen_text": "The System Failed",
-      "search_query": "retro computer room",
-      "motion": "zoom_in"
+      "voiceover": "Tiny drops are actually near-perfect spheres.",
+      "on_screen_text": "Perfect Spheres",
+      "search_query": "water beads surface",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "Technician William Morton found a real moth trapped in Relay 70, Panel F.",
-      "on_screen_text": "The Real Moth",
-      "search_query": "moth near light",
+      "duration": 4,
+      "voiceover": "As they grow, air resistance pushes against the bottom.",
+      "on_screen_text": "Air Resistance",
+      "search_query": "wind blowing trees",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "The insect was the size of a matchbox, but it caused a total electrical short.",
-      "on_screen_text": "Physical Short",
-      "search_query": "electrical spark closeup",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "This dynamic pressure flattens the water into the shape of a hamburger bun.",
+      "on_screen_text": "Hamburger Bun Shape",
+      "search_query": "raindrop slow motion",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "He taped the moth into the logbook as the first actual case of bug being found.",
-      "on_screen_text": "Taped in Logbook",
-      "search_query": "vintage notebook page",
+      "duration": 4,
+      "voiceover": "At 9 meters per second, they become liquid parachutes.",
+      "on_screen_text": "9 Meters Per Second",
+      "search_query": "parachute falling slow motion",
       "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 5,
-      "voiceover": "Every single line of modern code now traces its name back to that one moth.",
-      "on_screen_text": "Modern Software Bugs",
-      "search_query": "smartphone screen glitch",
+      "voiceover": "Once they hit 6 millimeters, the air becomes so violent the drop simply disintegrates.",
+      "on_screen_text": "The Breakup Point",
+      "search_query": "water spray mist",
       "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "The original insect is still preserved today at the Smithsonian.",
-      "on_screen_text": "Still Preserved",
-      "search_query": "museum display case",
-      "motion": "zoom_out"
+      "voiceover": "The classic teardrop doesn't exist; it's flattened by the very air it falls through.",
+      "on_screen_text": "Nature's Truth",
+      "search_query": "rain falling forest",
+      "motion": "zoom_in"
     },
     {
       "id": 10,
-      "duration": 5,
-      "voiceover": "Do you think we'd call them bugs if the insect was never found?",
-      "on_screen_text": "What would we call",
-      "search_query": "person thinking face",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "Send this to the artist who still draws them as tears.",
+      "on_screen_text": "Correct Your Friends",
+      "search_query": "person sketching paper",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The first computer bug was a literal moth. Would you have called it a bug? \ud83e\udd8b",
-    "A dead insect changed how we talk about technology forever.",
-    "The Smithsonian still has the original 1947 bug."
+    "The raindrop shape you've always drawn is a lie. Did you know this \u2014 yes or no?",
+    "Everything you know about rain is slightly wrong.",
+    "The physics of a falling drop is more unsettling than you think."
   ],
   "hashtags": [
     "#science",
-    "#technology",
-    "#history",
-    "#computers",
+    "#physics",
+    "#nature",
+    "#weather",
     "#facts",
     "#learnontiktok"
   ],
@@ -105,7 +105,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-literal-first-bug",
-  "cta_style": "COMMENT",
-  "domain": "technology"
+  "video_id": "science_2026-07-17_the-raindrop-lie",
+  "cta_style": "SHARE",
+  "domain": "weather"
 }
