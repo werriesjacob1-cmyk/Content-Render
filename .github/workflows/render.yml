@@ -15,12 +15,24 @@ on:
     # tuned for a daily cadence, and GitHub Actions cron has no sub-hourly
     # resolution anyway. Bump the schedule (or add a second cron line for a
     # different PAGE) if/when the channel is ready to post more than 1x/day.
-    - cron: "0 13 * * *"
+    # FOUR renders/day. Each first tries the pre-generated buffer
+    # (generate.py --dequeue, ZERO LLM calls — buffer.yml fills it at 07:20 when
+    # the free buckets are fresh), and only live-generates if the buffer is
+    # empty. So more render slots = more videos/day WITHOUT more generation-quota
+    # pressure, as long as the morning buffer-fill keeps up. They serialize via
+    # the render-video concurrency group, so they never clobber each other's
+    # memory/queue commits.
+    - cron: "12 7 * * *"    # ~12 min after the 07:00 UTC quota reset (freshest buckets)
+    - cron: "0 13 * * *"    # mid-afternoon EU/US
+    - cron: "0 17 * * *"    # noon US-Central
+    - cron: "0 21 * * *"    # late-afternoon US-Central, before evening posting
 
 permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
                      # back to the repo; without this the GITHUB_TOKEN defaults
                      # to read-only and every `git push` below silently no-ops.
+  models: read       # lets generate.py use the free GitHub Models API with the
+                     # built-in token (or set a GITHUB_MODELS_TOKEN PAT secret).
 
 concurrency:
   # Now that render.yml self-triggers on a schedule, it can overlap with a
@@ -67,6 +79,28 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Cache Piper voice
+        # Restores the ~115 MB neural voice from cache so it isn't re-downloaded
+        # every run; saves it (post-job) the first time.
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-en_US-ryan-high-v1
+
+      - name: Fetch Piper voice (local neural TTS)
+        # Downloads the voice model main.py's _piper_tts() looks for at
+        # voices/voice.onnx, only if the cache didn't already provide it.
+        # Best-effort: if the download fails the render simply falls back to
+        # edge-tts, so this never blocks a run.
+        run: |
+          mkdir -p voices
+          BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
+          if [ ! -s voices/voice.onnx ]; then
+            curl -sSL -o voices/voice.onnx      "$BASE/en_US-ryan-high.onnx"      || echo "voice .onnx download failed"
+            curl -sSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json" || echo "voice .json download failed"
+          fi
+          ls -la voices/ || true
+
       - name: Auto-generate a fresh video idea
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
@@ -82,7 +116,32 @@ jobs:
           # (stronger than Cerebras' free model) on a separate daily bucket.
           # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
+          # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
+          # mistral-small on their free tiers). Optional — absent keys are simply
+          # skipped in the provider chain.
+          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          MISTRAL_API_KEY:   ${{ secrets.MISTRAL_API_KEY }}
+          # Optional model-ID overrides (repo Variables, not secrets). Set e.g.
+          # FIREWORKS_MODEL to a model the account actually has if the default 404s.
+          TOGETHER_MODEL:    ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL:   ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL:     ${{ vars.MISTRAL_MODEL }}
+          # GitHub Models (free): a PAT with models:read is preferred; falls back
+          # to the built-in token via the `models: read` permission above.
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          GITHUB_TOKEN:        ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
         run: |
+          # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
+          # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets
+          # are fresh). A dequeue costs ZERO LLM calls, so the channel keeps
+          # banking videos on days the buckets are already spent. `--dequeue`
+          # exits 3 when the buffer is empty — the normal case today — and we
+          # fall straight through to LIVE generation, byte-for-byte the previous
+          # behaviour.
+          #
           # CRITICAL: never fall back to a hardcoded example on failure. Doing
           # that (the old `|| cp manifest_example.json`) published the IDENTICAL
           # "murmuration" example video on every generation failure — 4+ times —
@@ -90,9 +149,14 @@ jobs:
           # generation (usually transient Groq rate-limit/quota) must instead
           # retry once, then ABORT the whole run: no render, no release, no
           # duplicate. The daily cron simply tries again next time.
-          python generate.py manifest.json \
-            || { echo "generate failed (likely a transient Groq rate-limit); waiting 90s and retrying once"; sleep 90; python generate.py manifest.json; } \
-            || { echo "::error::script generation failed twice — aborting this run so no duplicate/example video is ever published"; exit 1; }
+          if python generate.py --dequeue manifest.json; then
+            echo "rendering a pre-generated manifest from the buffer (no LLM used)"
+          else
+            echo "buffer empty — generating live"
+            python generate.py manifest.json \
+              || { echo "generate failed (likely a transient Groq rate-limit); waiting 90s and retrying once"; sleep 90; python generate.py manifest.json; } \
+              || { echo "::error::script generation failed twice — aborting this run so no duplicate/example video is ever published"; exit 1; }
+          fi
           echo "--- generated manifest ---"
           head -c 400 manifest.json; echo
 
@@ -109,7 +173,10 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add memory_*.json manifest.json 2>/dev/null || true
+          # -A on the queue path stages the DELETION of a just-dequeued manifest
+          # too; without it the fresh checkout on the next run would still carry
+          # that file and render the same video again.
+          git add -A memory_*.json manifest.json dossier_cache_*.json queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
           git push 2>/dev/null || echo "push skipped"
 

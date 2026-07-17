@@ -84,7 +84,40 @@ def _chars_to_words(chars, starts, ends):
 # the (now word-accurate) captions room to breathe. NOT a heavy slow-down —
 # an earlier big slow-down bloated a video to ~55s and felt forced; this is a
 # few percent under the previously-requested -5%, keeping a ~30s cut ~30-35s.
-EDGE_RATE = "-12%"
+EDGE_RATE = "-5%"   # was -12%. Renders 66/67/68 came out 47-53s at -12% — too
+                     # long for completion. -5% is still a calm, deliberate
+                     # documentary cadence (not rushed) but trims a ~47s cut to
+                     # ~43s while KEEPING the dense script (density of surprise is
+                     # what makes the page bingeable — better to speak a rich
+                     # script a touch faster than to gut it). Whisper re-aligns
+                     # captions to the actual audio, so sync is unaffected by rate.
+
+# ---------- SCENE TRANSITIONS (opt-in, OFF by default) ----------
+# A short cross-dissolve between scenes reads smoother than a hard cut, BUT the
+# caption timeline is anchored to the hard-cut audio boundaries (see build_ass /
+# actual_durs), and an earlier audio-crossfade clipped the narrator at every cut
+# — so this stays OFF by default and the proven hard-cut path (build_body_concat)
+# remains the nightly default. When SCENE_XFADE>0, build_body_xfade cross-
+# dissolves the VIDEO only (audio is still a clean hard-cut concat, never
+# clipped) and, on any ffmpeg error, falls back to the hard-cut path so a render
+# can never fail because of this. Flip the default on only after verifying a real
+# render (needs LLM quota) looks right and stays caption-synced.
+SCENE_XFADE = max(0.0, float(os.getenv("SCENE_XFADE", "0") or 0))
+SCENE_XFADE_STYLE = os.getenv("SCENE_XFADE_STYLE", "fade")  # any ffmpeg xfade transition
+
+
+def _xfade_offsets(durs, xf):
+    """Offsets for a chained ffmpeg xfade over clips of the given durations.
+    xfade i blends the accumulated video with clip i+1 starting at
+    offset_i = (accumulated duration so far) - xf, and the accumulated duration
+    after the blend grows by (dur_{i+1} - xf). Returns the list of N-1 offsets
+    (empty for <2 clips). Pure arithmetic so the timeline math is unit-tested
+    without ffmpeg."""
+    offs, acc = [], (durs[0] if durs else 0.0)
+    for k in range(1, len(durs)):
+        offs.append(round(acc - xf, 3))
+        acc += durs[k] - xf
+    return offs
 
 
 def _edge_tts_with_timings(text, voice, rate, out_mp3):
@@ -118,6 +151,45 @@ def _edge_tts_with_timings(text, voice, rate, out_mp3):
     # anchoring each scene (one sentence) accurately still beats a pure guess.
     print(f"  edge-tts boundaries: {len(words)} word, {len(sents)} sentence")
     return words
+
+
+# Local neural TTS (Piper): free, offline, no quota, and markedly more natural
+# than edge-tts. The voice model is downloaded by render.yml to voices/voice.onnx
+# (override with PIPER_MODEL). PIPER_LENGTH_SCALE sets pace: 1.0 = the model's
+# natural speed (~fast); higher = slower/calmer. ~1.2 gives a deliberate
+# documentary cadence. Word timings are NOT needed from Piper — whisper_align
+# recovers them from the audio, same as for every other engine.
+PIPER_MODEL = os.environ.get("PIPER_MODEL", os.path.join(ROOT, "voices", "voice.onnx"))
+PIPER_LENGTH_SCALE = os.environ.get("PIPER_LENGTH_SCALE", "1.25")   # per-word pace (higher=slower)
+PIPER_SENTENCE_SILENCE = os.environ.get("PIPER_SENTENCE_SILENCE", "0.35")  # pause between sentences (s)
+
+
+def _piper_tts(text, out_mp3):
+    """Synthesize with Piper -> WAV -> MP3. Returns True on success. Fully
+    fail-safe: any missing model / piper error / bad output returns False so
+    tts_full falls straight through to edge-tts and a render never breaks on TTS.
+    length-scale gives a measured per-word pace; sentence-silence adds a short
+    beat between sentences for documentary gravitas (so it reads calm, not rushed)."""
+    if not os.path.exists(PIPER_MODEL):
+        return False
+    wav = out_mp3 + ".piper.wav"
+    try:
+        subprocess.run(["piper", "-m", PIPER_MODEL, "-f", wav,
+                        "--length-scale", str(PIPER_LENGTH_SCALE),
+                        "--sentence-silence", str(PIPER_SENTENCE_SILENCE)],
+                       input=text, text=True, capture_output=True, timeout=180, check=True)
+        if not (os.path.exists(wav) and os.path.getsize(wav) > 1000):
+            return False
+        run(["ffmpeg", "-y", "-i", wav, "-c:a", "libmp3lame", "-q:a", "3", out_mp3])
+        return os.path.exists(out_mp3) and os.path.getsize(out_mp3) > 1000
+    except Exception as e:  # noqa: BLE001
+        print(f"  Piper TTS unavailable/failed ({e}); falling back to edge-tts")
+        return False
+    finally:
+        try:
+            os.remove(wav)
+        except OSError:
+            pass
 
 
 def tts_full(full_text, out_mp3, voice, rate):
@@ -164,6 +236,14 @@ def tts_full(full_text, out_mp3, voice, rate):
             except Exception as e:
                 print(f"  ElevenLabs failed: {e}")
                 break
+    # Local neural TTS (Piper) — the preferred FREE voice: natural, offline, no
+    # quota, no rate limits. Tried before edge-tts. Clear WORD_TIMINGS so the
+    # later whisper_align pass supplies the real per-word caption times.
+    if _piper_tts(full_text, out_mp3):
+        WORD_TIMINGS = []
+        print(f"  Piper SUCCESS (local neural voice, length-scale {PIPER_LENGTH_SCALE})")
+        return True
+
     # edge-tts fallback (when ElevenLabs is unavailable / out of credits). Two
     # fixes vs the old plain CLI call, both aimed at the "narrator too fast and
     # the subtitles can't keep up" complaint:
@@ -560,11 +640,16 @@ def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
 
 
 def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant"):
-    # Prefer Gemini (far larger free quota) for the judge too, so batch rendering
-    # keeps judging footage relevance instead of 429'ing and shipping the top
-    # Pexels result. Falls back to Groq. _LAST_GROQ_FAILED is only set when BOTH
-    # providers are unreachable, so the JUDGE_UNAVAILABLE path still means "no
-    # judge available at all" (ship top clip) rather than "one provider blipped".
+    # PROVIDER ORDER FOR THE JUDGE IS DELIBERATELY ≠ GENERATION. The footage
+    # judge fires 1-3 calls PER SCENE (~8-24 per render) — high volume, low
+    # stakes. Gemini's tiny ~200/day bucket AND OpenRouter's small ~50/day bucket
+    # are the two the quality-critical SCRIPT generation depends on, so the judge
+    # NEVER touches either of them — that starvation is what made whole days fail
+    # (run 95: judge fallbacks ate the generation buckets). The judge uses only
+    # the GENEROUS / SEPARATE buckets: Groq (100k tokens/day) → Cerebras → then
+    # the added Together/Fireworks/Mistral free buckets. If all of those are down
+    # it just ships the top stock clip (footage judging fails open). This reserves
+    # BOTH generation buckets fully and lifts sustainable videos/day on free tier.
     #
     # CIRCUIT BREAKER: after 3 back-to-back transport failures, the judge is
     # clearly down for this run (rate-limited) — stop calling it. Every further
@@ -576,30 +661,23 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
     if _JUDGE_CIRCUIT_OPEN:
         _LAST_GROQ_FAILED = True   # signal "judge unavailable" → caller ships top clip
         return None
-    if os.environ.get("GEMINI_API_KEY", ""):
-        try:
-            out = _gemini_chat(prompt, max_tokens, temperature)
-            if out is not None:
-                _judge_note(True)
-                return out
-        except Exception as e:  # noqa: BLE001 - fall through to Cerebras/Groq
-            print("  Gemini judge call failed, trying Cerebras/Groq:", e)
-    # OpenRouter: free tier includes a strong llama-3.3-70b:free — a good judge,
-    # separate free bucket. Tried after Gemini, before Cerebras. Env-gated.
-    or_key = os.environ.get("OPENROUTER_API_KEY", "")
-    if or_key:
-        try:
-            out = _openai_compat_chat("https://openrouter.ai/api/v1/chat/completions",
-                                      or_key, "meta-llama/llama-3.3-70b-instruct:free",
-                                      prompt, max_tokens, temperature)
-            if out is not None:
-                _judge_note(True)
-                return out
-        except Exception as e:  # noqa: BLE001 - fall through
-            print("  OpenRouter judge call failed, trying Cerebras/Groq:", e)
-    # Cerebras: free, generous, OpenAI-compatible — the backup judge when Gemini
-    # is rate-limited, tried before Groq's tiny budget. Env-gated; no key = skip.
+    groq_key = os.environ.get("GROQ_API_KEY", "")
     cere_key = os.environ.get("CEREBRAS_API_KEY", "")
+    # NB: OPENROUTER_API_KEY and GEMINI_API_KEY are intentionally NOT read here —
+    # the judge must never spend either bucket (both are reserved for generation).
+
+    # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
+    #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
+    if groq_key:
+        try:
+            out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
+                                      groq_key, JUDGE_MODEL, prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through to Cerebras
+            print("  Groq judge call failed, trying Cerebras:", e)
+    # 2) Cerebras — free, generous, separate bucket.
     cere_model = _cerebras_judge_model() if cere_key else None
     if cere_key and cere_model:
         try:
@@ -608,26 +686,36 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
             if out is not None:
                 _judge_note(True)
                 return out
-        except Exception as e:  # noqa: BLE001 - fall through to Groq
-            print("  Cerebras judge call failed, trying Groq:", e)
-    key = os.environ.get("GROQ_API_KEY", "")
-    if not key:
-        # No Groq either. If any other provider was configured but errored, that's
-        # a real outage → signal unavailable so the caller ships the top clip.
-        if os.environ.get("GEMINI_API_KEY", "") or or_key or cere_key:
-            _LAST_GROQ_FAILED = True
-            _judge_note(False)
-        return None
-    try:
-        out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
-                                  key, model, prompt, max_tokens, temperature)
-        _judge_note(True)
-        return out
-    except Exception as e:
-        print("  Groq call failed:", e)
+        except Exception as e:  # noqa: BLE001 - fall through to OpenRouter
+            print("  Cerebras judge call failed, trying OpenRouter:", e)
+    # 3) The ADDED free buckets — Together → Fireworks → Mistral. These extend the
+    #    judge's capacity WITHOUT ever touching Gemini or OpenRouter (reserved
+    #    wholly for generation). Absent/invalid keys are skipped; a bad key just
+    #    falls through to the next bucket.
+    added = [
+        ("Together",  "https://api.together.xyz/v1/chat/completions",
+         os.environ.get("TOGETHER_API_KEY", ""),  "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"),
+        ("Fireworks", "https://api.fireworks.ai/inference/v1/chat/completions",
+         os.environ.get("FIREWORKS_API_KEY", ""), "accounts/fireworks/models/llama-v3p3-70b-instruct"),
+        ("Mistral",   "https://api.mistral.ai/v1/chat/completions",
+         os.environ.get("MISTRAL_API_KEY", ""),   "mistral-small-latest"),
+    ]
+    for label, url, key, jmodel in added:
+        if not key:
+            continue
+        try:
+            out = _openai_compat_chat(url, key, jmodel, prompt, max_tokens, temperature)
+            if out is not None:
+                _judge_note(True)
+                return out
+        except Exception as e:  # noqa: BLE001 - fall through to the next added bucket
+            print(f"  {label} judge call failed:", e)
+    # nothing worked — Gemini + OpenRouter are DELIBERATELY not used by the judge
+    # (reserved for generation), so a judge outage simply ships the top stock clip.
+    if groq_key or cere_key or any(k for _, _, k, _ in added):
         _LAST_GROQ_FAILED = True
         _judge_note(False)
-        return None
+    return None
 
 
 JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call, not
@@ -721,11 +809,12 @@ def _groq_requery(intent, failed_query):
     """When a search query returns nothing relevant, ask for replacements that
     a stock library can actually satisfy: concrete, filmable subjects."""
     txt = _groq_chat(
-        f"A stock-video search for \"{failed_query}\" found nothing that fits this narration: "
-        f"\"{intent}\".\n"
-        f"Suggest 2 alternative search queries (2-4 words each) describing CONCRETE things "
-        f"videographers actually film: real objects, people doing actions, nature, weather, "
-        f"machines, food, cities. No anatomical, microscopic, or abstract terms.\n"
+        f"A stock-video search for \"{failed_query}\" found nothing usable.\n"
+        f"Suggest 2 alternative search queries (2-4 words each) for the SAME concrete subject "
+        f"as \"{failed_query}\" — real, filmable things a videographer actually shoots (objects, "
+        f"nature, people doing actions, weather, places). STAY ON THAT SUBJECT: do NOT switch to "
+        f"a metaphor, figure of speech, or unrelated topic (e.g. keep a forest scene as forest "
+        f"footage, never a literal city). No anatomical, microscopic, or abstract terms.\n"
         f"Reply with ONLY: query one | query two", max_tokens=30, temperature=0.4)
     if not txt:
         return []
@@ -788,13 +877,75 @@ JUDGE_SCORES = []      # every scene's best judged score this render (None exclu
                         # printed as a min/avg summary at the end for quick QA of a run
 
 
+def _clip_too_dark(path, min_luma=26.0):
+    """True if a downloaded clip is so dark it reads as a near-black/broken
+    frame — the "photos are too dark" / "goes to a black screen" complaint.
+    Samples a few frames' average luma (0-255) and compares to a CONSERVATIVE
+    floor, so only genuinely near-black footage is rejected (moody-but-visible
+    night/ocean/space clips still pass). Fully fail-safe: any probe error returns
+    False (accept the clip), so brightness-checking can never block a render."""
+    try:
+        out = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-i", path, "-vf",
+             "select='eq(n\\,1)+eq(n\\,25)+eq(n\\,55)+eq(n\\,90)',"
+             "signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+             "-frames:v", "4", "-f", "null", "-"],
+            capture_output=True, text=True, timeout=20).stderr
+        vals = [float(m) for m in re.findall(r"YAVG=([0-9.]+)", out)]
+        if not vals:
+            return False
+        return (sum(vals) / len(vals)) < min_luma
+    except Exception:
+        return False
+
+
 def _accept(chosen, dest, query, score):
     _download(chosen["url"], dest)
+    if _clip_too_dark(dest):
+        # skip near-black footage; the caller requeries for a brighter clip, and
+        # if nothing brighter is found it falls back to a (now non-black) card.
+        raise RuntimeError(f"clip too dark (near-black) — skipping for '{query}'")
     _used_video_ids.add(chosen["id"])
     _used_history.append(chosen["id"])
-    tag = f"judge {score}/10" if isinstance(score, int) else "first (no judge key)"
+    tag = (f"judge {score}/10" if isinstance(score, int)
+           else "keyword match (no LLM)" if score == KEYWORD_OK
+           else "first (no judge key)")
     print(f"  {chosen['source']} SUCCESS ({tag}, id {chosen['id']}): {query}")
     return True
+
+
+KEYWORD_OK = "keyword_match"   # accepted by the local keyword pre-check, no LLM call
+
+
+def _relevance_words(text):
+    """Content words (>2 chars, non-stopword) of a query or clip description,
+    used for the zero-LLM footage relevance pre-check."""
+    return {w for w in re.findall(r"[a-z]+", (text or "").lower())
+            if len(w) > 2 and w not in _QUERY_STOPWORDS}
+
+
+def _best_keyword_match(query, cands, min_overlap=0.5, min_shared=2):
+    """Index of the candidate whose OWN description clearly matches the query
+    SUBJECT by keyword overlap — or None if none clears the bar (ambiguous, so
+    fall back to the LLM judge). This lets the common case (a specific query
+    like 'ocean surface waves' returning a clip slugged 'ocean waves drone
+    aerial') skip the LLM judge entirely, keeping footage OFF the quota critical
+    path. It's conservative: it only accepts on a clear lexical match, so an
+    off-topic clip (e.g. a 'dubai skyline' for a forest query) shares no words
+    and still goes to the judge. Returns None when the query has too few content
+    words to decide locally."""
+    qw = _relevance_words(query)
+    if len(qw) < 2:
+        return None
+    best_i, best_frac, best_shared = None, 0.0, 0
+    for i, c in enumerate(cands):
+        shared = len(qw & _relevance_words(c.get("desc", "")))
+        frac = shared / len(qw)
+        if frac > best_frac or (frac == best_frac and shared > best_shared):
+            best_i, best_frac, best_shared = i, frac, shared
+    if best_i is not None and best_frac >= min_overlap and best_shared >= min_shared:
+        return best_i
+    return None
 
 
 def fetch_clip(query, dest, intent=None, accept_best=False):
@@ -830,6 +981,17 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
         q = queries[round_no]
         cands = _gather_candidates(q)
         if cands:
+            # ZERO-LLM FAST PATH: if a candidate's own description clearly matches
+            # the query subject, accept it WITHOUT an LLM judge call. This is the
+            # common case and keeps footage off the quota critical path — the LLM
+            # judge is now only spent on genuinely ambiguous scenes.
+            ki = _best_keyword_match(q, cands)
+            if ki is not None:
+                try:
+                    _accept(cands[ki], dest, q, KEYWORD_OK)
+                    return True, best_score
+                except Exception as e:  # too-dark / download failed → let the judge try
+                    print(f"  keyword-matched clip unusable ({e}) — falling to judge")
             idx, score = _groq_judge(intent, cands)
             chosen = cands[idx]
             numeric = isinstance(score, int)
@@ -1294,13 +1456,29 @@ def _diversify_scene_queries(scenes):
             seen[key] = seen.get(key, i)
 
 
+def _footage_intent(scene):
+    """What the footage judge + rescue requery match candidates against. LEADS
+    with the scene's search_query (the literal, filmable subject the generator
+    chose) and only then adds the voiceover for nuance. This matters most on the
+    hook: a metaphorical line ("your walk through the woods is actually a trip
+    through a city") otherwise made the judge reject the correct forest clip and
+    requery on the metaphor word — shipping a literal Dubai skyline over a forest
+    video (run 66). Anchoring on the subject keeps selection on-topic while the
+    voiceover still informs which on-subject clip fits best."""
+    subject = (scene.get("search_query") or "").strip()
+    vo = (scene.get("voiceover") or "").strip()
+    if subject and vo:
+        return f"{subject}. {vo}"
+    return subject or vo
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
     # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
     # its best real clip instead of adding to a wall of text cards.
     have, score = fetch_clip(scene["search_query"], raw,
-                              intent=scene.get("voiceover", scene["search_query"]),
+                              intent=_footage_intent(scene),
                               accept_best=(STAT_CARD_SCENES >= MAX_STAT_CARDS))
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, round(seg_dur * 30))
@@ -1330,7 +1508,10 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # footage-starvation abort.
     if PROFILE.get("archival_stills", True):
         img = os.path.join(WORK, f"s{idx}_img.jpg")
-        _q = scene.get("voiceover", "") or scene["search_query"]
+        # Search the still sources on the scene's literal SUBJECT (search_query),
+        # not the raw voiceover — same reason as the footage intent above: a
+        # metaphorical line must not pull an off-topic archival image.
+        _q = scene.get("search_query", "") or scene.get("voiceover", "")
         # Two free/no-key still sources: Openverse (CC aggregator) then Wikimedia
         # Commons (the largest public-domain science library — Hubble, microscopy,
         # diagrams, historical photos). Either gives a documentary look no
@@ -1361,7 +1542,14 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     except Exception as e:
         print(f"  stat-card render failed ({e}) — falling back to color card")
 
-    run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x0a0a0a:s={W}x{H}:d={seg_dur:.3f}:r=30",
+    # Ultimate fallback (footage + archival still + stat-card all failed). This
+    # used to be near-black (0x0a0a0a) — which is exactly the "goes to a black
+    # screen at 39s" the user caught on the Oregon video. A fallback scene must
+    # still look INTENTIONAL, never like dead air, so use a visible dark-slate
+    # background (YAVG ~45, clearly a designed colour, not a broken black frame).
+    # `color` is kept as the primitive here because this path only runs after the
+    # gradient-based stat card already failed, so it must not depend on gradients.
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=0x1b2b3c:s={W}x{H}:d={seg_dur:.3f}:r=30",
          "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
          "-pix_fmt", "yuv420p", "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
     return out
@@ -1427,6 +1615,50 @@ def _event(start, end, word):
     tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
+# Short function words that read as a weak caption frame when shown alone
+# ("OF", "THE", "A"). They ride along with an adjacent word instead — see
+# _group_function_words. NOT dropped: the word still appears, just grouped.
+_CAPTION_FUNCTION_WORDS = {
+    "a", "an", "the", "of", "to", "in", "on", "at", "is", "it", "as", "or",
+    "and", "by", "for", "its", "so", "up", "no", "if", "we", "be",
+}
+
+
+def _group_function_words(word_times, max_chars=15):
+    """Merge a lone short function word into an adjacent caption frame so no
+    frame is just 'OF'/'THE'/'A' — WITHOUT dropping any word. Both words show in
+    the merged frame and it spans both their spoken windows, so coverage stays
+    word-for-word (the thing the user asked for) while killing the weak
+    single-function-word frames. A function word attaches FORWARD to the word it
+    leads into (articles/prepositions -> their noun); a trailing one attaches
+    backward. Skipped when the merged text would be too wide for the no-wrap
+    one-word style (max_chars), so a caption never overflows the frame."""
+    n = len(word_times)
+    if n < 2:
+        return list(word_times)
+    out = []
+    i = 0
+    while i < n:
+        w, st, en = word_times[i]
+        bare = re.sub(r"[^A-Za-z0-9]", "", w).lower()
+        is_fn = bare in _CAPTION_FUNCTION_WORDS
+        if is_fn and i + 1 < n:
+            w2, st2, en2 = word_times[i + 1]
+            if len(w) + 1 + len(w2) <= max_chars:
+                out.append((f"{w} {w2}", min(st, st2), max(en, en2)))
+                i += 2
+                continue
+        if is_fn and out and i + 1 >= n:          # trailing function word
+            pw, pst, pen = out[-1]
+            if len(pw) + 1 + len(w) <= max_chars:
+                out[-1] = (f"{pw} {w}", min(pst, st), max(pen, en))
+                i += 1
+                continue
+        out.append((w, st, en))
+        i += 1
+    return out
+
+
 def build_ass(scenes, segments, actual_durs, path):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
@@ -1458,23 +1690,35 @@ def build_ass(scenes, segments, actual_durs, path):
             return 0.0
         return final_starts[j] - orig_starts[j]
 
+    # One caption per spoken word, EXCEPT a lone short function word rides along
+    # with its neighbour (_group_function_words) so there's no weak 'OF'/'THE'
+    # frame. An earlier version was read as "the subtitles don't pick up every
+    # word" because it DROPPED the function word; this one keeps every word (both
+    # show in the merged frame), so coverage stays word-for-word and tightly
+    # synced while the lone-function-word frames are gone.
+    def _emit(word_times):
+        for w, st, en in _group_function_words(word_times):
+            events.append(_event(st, en, w))
+
     if WORD_TIMINGS:
         # exact: drive captions from ElevenLabs word timings, per-scene shift
         word_i = 0
         for i, sc in enumerate(scenes):
             n_words = len(sc["voiceover"].split())
             shift = _shift(i)
-            for w, st, en in WORD_TIMINGS[word_i:word_i + n_words]:
-                if re.sub(r"[^A-Za-z0-9]", "", w):
-                    events.append(_event(st + shift, en + shift, w))
+            wt = [(w, st + shift, en + shift)
+                  for w, st, en in WORD_TIMINGS[word_i:word_i + n_words]
+                  if re.sub(r"[^A-Za-z0-9]", "", w)]
+            _emit(wt)
             word_i += n_words
         # any leftover words beyond the scenes' combined word count (rare
         # mismatch) -- keep them, shifted by the last scene's offset
         if word_i < len(WORD_TIMINGS):
             shift = _shift(len(scenes) - 1)
-            for w, st, en in WORD_TIMINGS[word_i:]:
-                if re.sub(r"[^A-Za-z0-9]", "", w):
-                    events.append(_event(st + shift, en + shift, w))
+            wt = [(w, st + shift, en + shift)
+                  for w, st, en in WORD_TIMINGS[word_i:]
+                  if re.sub(r"[^A-Za-z0-9]", "", w)]
+            _emit(wt)
     else:
         # fallback (no ElevenLabs timings): estimate by word length within each
         # scene's actual audio span, anchored at the scene's real start on the
@@ -1488,9 +1732,11 @@ def build_ass(scenes, segments, actual_durs, path):
             clock = final_starts[i] if i < len(final_starts) else 0.0
             weights = [max(2, len(re.sub(r"[^A-Za-z0-9]", "", w))) for w in words]
             total = sum(weights) or 1
-            for w, wt in zip(words, weights):
-                wd = speech_dur * wt / total
-                events.append(_event(clock, clock + wd, w)); clock += wd
+            wt = []
+            for w, wght in zip(words, weights):
+                wd = speech_dur * wght / total
+                wt.append((w, clock, clock + wd)); clock += wd
+            _emit(wt)
     with open(path, "w") as f:
         f.write(_ass_header() + "\n".join(events) + "\n")
 
@@ -1510,6 +1756,45 @@ def build_body_concat(scene_files, out_path):
         for f in scene_files:
             lf.write(f"file '{os.path.abspath(f)}'\n")
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listfile,
+         "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", out_path])
+
+
+def build_body_xfade(scene_files, out_path, xf=None, style=None):
+    """OPT-IN smoother join (SCENE_XFADE>0): cross-dissolve the VIDEO between
+    scenes while the AUDIO is a plain hard-cut concat (never overlapped, so no
+    spoken word is ever clipped — the failure that retired the old acrossfade).
+
+    The xfade chain shortens the video by (N-1)*xf vs the audio, so the held
+    final frame is padded back out (tpad) to keep the video at least as long as
+    the audio; ffmpeg's -shortest then trims to the audio. On ANY failure this
+    raises, and main() falls back to build_body_concat — this can never break a
+    render. Returns nothing; writes out_path."""
+    xf = SCENE_XFADE if xf is None else xf
+    style = SCENE_XFADE_STYLE if style is None else style
+    n = len(scene_files)
+    if n < 2 or xf <= 0:
+        return build_body_concat(scene_files, out_path)
+    durs = [ffprobe_dur(f) for f in scene_files]
+    # every clip must be longer than the dissolve or the offsets go negative
+    if any(d <= xf + 0.05 for d in durs):
+        raise RuntimeError(f"a scene is too short for a {xf}s dissolve ({durs})")
+    offs = _xfade_offsets(durs, xf)
+    inputs = []
+    for f in scene_files:
+        inputs += ["-i", f]
+    # video: chained xfade;  audio: hard-cut concat of every scene's own segment
+    vfilters, prev = [], "[0:v]"
+    for k in range(1, n):
+        label = f"[vx{k}]"
+        vfilters.append(f"{prev}[{k}:v]xfade=transition={style}:duration={xf}:"
+                        f"offset={offs[k-1]}{label}")
+        prev = label
+    pad = round((n - 1) * xf + 0.1, 3)  # restore length lost to the overlaps
+    vfilters.append(f"{prev}tpad=stop_mode=clone:stop_duration={pad}[vout]")
+    aconcat = "".join(f"[{i}:a]" for i in range(n)) + f"concat=n={n}:v=0:a=1[aout]"
+    filtergraph = ";".join(vfilters + [aconcat])
+    run(["ffmpeg", "-y", *inputs, "-filter_complex", filtergraph,
+         "-map", "[vout]", "-map", "[aout]", "-shortest",
          "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", out_path])
 
 
@@ -1615,8 +1900,18 @@ def main():
     # crossfaded/clipped at a scene change (the old acrossfade overlapped and
     # cut off the end of each sentence).
     body = os.path.join(WORK, "body.mp4")
-    build_body_concat(scene_files, body)
-    print(f"[concat] hard-cut concat OK ({len(scene_files)} scenes, no audio crossfade)")
+    if SCENE_XFADE > 0:
+        try:
+            build_body_xfade(scene_files, body)
+            print(f"[concat] xfade join OK ({len(scene_files)} scenes, "
+                  f"{SCENE_XFADE}s video dissolve, audio hard-cut)")
+        except Exception as e:  # noqa: BLE001 - never let a transition break a render
+            print(f"[concat] xfade failed ({e}); falling back to hard-cut concat")
+            build_body_concat(scene_files, body)
+            print(f"[concat] hard-cut concat OK ({len(scene_files)} scenes, no audio crossfade)")
+    else:
+        build_body_concat(scene_files, body)
+        print(f"[concat] hard-cut concat OK ({len(scene_files)} scenes, no audio crossfade)")
 
     # captions (karaoke) + hook title card (first 2.6s, top) — the docstring
     # always promised a hook overlay but none was ever rendered; the written

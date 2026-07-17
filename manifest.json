@@ -1,94 +1,86 @@
 {
-  "title": "The Weight of a Teaspoon",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "neutron star",
-  "metaphor": "Cosmic density",
-  "hook": "A single teaspoon of a neutron star would weigh a billion tons.",
-  "script": "A single teaspoon of a neutron star would weigh a billion tons. This happens because gravity crushes matter until the atoms themselves collapse. Most people think stars are just giant balls of gas. But these dead cores are the densest objects in the known universe. If you held a teaspoon of this material, it would punch through your floor and fall straight to the Earth's core. The star packs more mass than our Sun into a ball the size of a city. Some of these stars spin over 700 times every single second. It is a level of density that makes a mountain feel like a cloud.",
+  "title": "Deep Time",
+  "viewer_job": "REFRAME",
+  "keyword": "Tyrannosaurus rex",
+  "metaphor": "Dinosaur Timeline",
+  "hook": "Tyrannosaurus rex lived closer to you",
+  "script": "Tyrannosaurus rex lived closer to you They were separated by 89 million years Stegosaurus vanished about 150 million years ago The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs If the 4.5 billion year history of the Earth were condensed into a single 24-hour day Stegosaurus would have roamed the Earth around 10:30 PM, while humans wouldn't appear until 11:59:59 PM You are closer in time to a T. rex than a Stegosaurus is",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A single teaspoon of a neutron star would weigh a billion tons.",
-      "on_screen_text": "A Billion Tons",
-      "search_query": "neutron star space",
+      "voiceover": "Tyrannosaurus rex lived closer to you",
+      "on_screen_text": "Dino Timeline",
+      "search_query": "Trex fossil display",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "This happens because gravity crushes matter until the atoms themselves collapse.",
-      "on_screen_text": "Extreme Gravity",
-      "search_query": "deep space nebula",
+      "voiceover": "They were separated by 89 million years",
+      "on_screen_text": "89 Million",
+      "search_query": "clock ticking",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Most people think stars are just giant balls of gas.",
-      "on_screen_text": "Common Misconception",
-      "search_query": "galaxy stars",
-      "motion": "zoom_in"
+      "voiceover": "Stegosaurus vanished about 150 million years ago",
+      "on_screen_text": "Stegosaurus",
+      "search_query": "stegosaurus fossil",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "But these dead cores are the densest objects in the known universe.",
-      "on_screen_text": "Densest Object",
-      "search_query": "neutron star space",
+      "voiceover": "The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs",
+      "on_screen_text": "Dino Battles",
+      "search_query": "dinosaur skeleton museum",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "If you held a teaspoon of this material, it would punch through your floor and fall straight to the Earth's core.",
-      "on_screen_text": "Neutron Star Weight",
-      "search_query": "city street aerial",
+      "duration": 4,
+      "voiceover": "If the 4.5 billion year history of the Earth were condensed into a single 24-hour day",
+      "on_screen_text": "Earth Timeline",
+      "search_query": "hourglass sand falling",
       "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "The star packs more mass than our Sun into a ball the size of a city.",
-      "on_screen_text": "Sun Mass, City Size",
-      "search_query": "night sky stars",
-      "motion": "zoom_out"
+      "voiceover": "Stegosaurus would have roamed the Earth around 10:30 PM, while humans wouldn't appear until 11:59:59 PM",
+      "on_screen_text": "Human Timeline",
+      "search_query": "city night lights",
+      "motion": "static"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Some of these stars spin over 700 times every single second.",
-      "on_screen_text": "700 Rotations Per Second",
-      "search_query": "spinning galaxy",
+      "voiceover": "You are closer in time to a T. rex than a Stegosaurus is",
+      "on_screen_text": "Trex Timeline",
+      "search_query": "trex fossil closeup",
       "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "It is a level of density that makes a mountain feel like a cloud.",
-      "on_screen_text": "Absolute Density",
-      "search_query": "snowy mountain peak",
-      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Could you handle the weight of a neutron star? Yes or no?",
-    "The most dense object in the universe.",
-    "Reality is stranger than fiction."
+    "What's the most mind-blowing dinosaur fact? Did you know this?",
+    "Dinosaurs are not just ancient, they're deeply separated in time",
+    "The Earth's history is almost too vast to comprehend"
   ],
   "hashtags": [
-    "#science",
-    "#space",
-    "#astronomy",
-    "#physics",
-    "#universe"
+    "#dinosaurs",
+    "#deep-time",
+    "#Trex",
+    "#Stegosaurus",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-weight-of-a-teaspoon",
+  "video_id": "science_2026-07-16_deep-time",
   "cta_style": "SAVE_WORTHY",
-  "domain": "space"
+  "domain": "deep_time"
 }

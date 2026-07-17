@@ -8,14 +8,35 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections
+import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
 SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
-OUT_MANIFEST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "manifest.json")
+# Research dossiers are keyed by the verified fact text and cached across runs:
+# the same fact costs one Gemini/Groq call to research the FIRST time, then zero
+# on every retry (aborted-run reruns, pre-generated buffer, a fact that recurs
+# after the 14-entry memory window forgets it). See research_dossier().
+DOSSIER_CACHE = os.path.join(ROOT, f"dossier_cache_{PAGE}.json")
+# SPLIT WRITE FROM RENDER (script buffer): generate.py normally writes one
+# manifest and the workflow renders it immediately. But generation is what's
+# quota-bound, not rendering — so when the free buckets are fresh we can
+# pre-generate a BATCH of manifests into a queue and render them later (even on
+# days the buckets are spent). Modes:
+#   --enqueue : generate ONE manifest into queue_<page>/ instead of manifest.json
+#   --dequeue : pop the oldest queued manifest to manifest.json (no LLM at all);
+#               exit 3 if the queue is empty so the caller falls back to live gen
+# Default (no flag) is unchanged: generate one manifest to OUT_MANIFEST.
+_ARGV = list(sys.argv[1:])
+GEN_MODE = "normal"
+if "--dequeue" in _ARGV:
+    GEN_MODE = "dequeue"; _ARGV.remove("--dequeue")
+elif "--enqueue" in _ARGV:
+    GEN_MODE = "enqueue"; _ARGV.remove("--enqueue")
+OUT_MANIFEST = _ARGV[0] if _ARGV else os.path.join(ROOT, "manifest.json")
+QUEUE_DIR = os.path.join(ROOT, f"queue_{PAGE}")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 # Google Gemini free tier has a FAR higher daily quota than Groq's free tier
 # (~1500 requests/day vs a handful of renders), so when GEMINI_API_KEY is set we
@@ -37,14 +58,19 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
           f"fresh key at https://aistudio.google.com/apikey")
 # Only models a NEWLY-CREATED free key can actually call.
 # - gemini-1.5-flash: RETIRED (404 "not supported for generateContent").
-# - gemini-2.5-flash-lite: 404 "This model is no longer available to NEW users"
-#   — a fresh AQ key (like this channel's) cannot use it at all, even though it's
-#   documented. Putting it first (for its bigger RPD) backfired: every call 404'd
-#   and fell through. Removed. If Google ever re-opens it to new keys, add it back.
-# What a new key CAN use (they 429 with quota, i.e. reachable): 2.0-flash then
-# 2.5-flash. Lower daily caps (~200/250 RPD) than lite would have given, so
-# Cerebras (auto-discovered) is the real capacity backstop when these run out.
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.5-flash"]
+# - gemini-2.5-flash-lite: 404 "no longer available to NEW users" — a fresh AQ
+#   key cannot use it. Removed (see history). Do NOT add it back.
+# - gemini-2.5-flash: as of 2026-07-15 this ALSO started 404ing for this key
+#   ("no longer available to new users" — run 65 log), so Google has now closed
+#   it to new keys the same way. Removed so it stops wasting a chain slot.
+# What a new key CAN reach (they 429 with quota, i.e. authenticate): 2.0-flash.
+# gemini-2.0-flash-lite is added as a SECOND model on purpose: each Gemini model
+# has its OWN free daily-quota bucket, so when 2.0-flash's daily cap is spent
+# (which is what blocks late-in-day renders), flash-lite's untouched bucket can
+# still carry generation. If this key can't reach flash-lite it simply 404s and
+# falls through harmlessly — no worse than before. Cerebras (auto-discovered)
+# remains the capacity backstop when both Gemini buckets are out.
+GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
@@ -83,9 +109,12 @@ def cerebras_models():
                 data = json.loads(r.read().decode())
             ids = [m.get("id") for m in data.get("data", []) if m.get("id")]
             # Exclude reasoning models that don't return clean JSON: gpt-oss-*
-            # replies with reasoning/markdown, so every generate attempt fails with
-            # "Expecting value: line 1 column 1" (run 63) — worse than skipping it.
-            ids = [i for i in ids if "gpt-oss" not in i.lower()]
+            # replies with reasoning/markdown ("Expecting value: line 1 column 1",
+            # run 63) and zai-glm-4.7 returns non-JSON too ("Extra data: line 1
+            # column 2", run 71) — every generate attempt on them fails to parse,
+            # worse than skipping them. gemma-4-31b is the reliable JSON one.
+            _JSON_HOSTILE = ("gpt-oss", "glm")
+            ids = [i for i in ids if not any(bad in i.lower() for bad in _JSON_HOSTILE)]
             # prefer a 70B llama, then any llama, then whatever else is granted
             ids.sort(key=lambda x: (0 if "70b" in x.lower() else 1,
                                     0 if "llama" in x.lower() else 1, x))
@@ -108,6 +137,33 @@ OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 # free"). llama-3.3-70b:free is the reliable strong free model (a 429 from it is
 # a transient upstream rate-limit, not a dead slug, so it stays).
 OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
+# More free/separate-bucket providers, all OpenAI-compatible and ENV-GATED (no
+# key = skipped, zero behaviour change). Each is its own daily bucket, so adding
+# any one key gives a whole extra pool of strong-model generation on free tier —
+# the direct fix for "we burn through Gemini/OpenRouter too fast". Together and
+# Fireworks both host a free Llama-3.3-70B; Mistral's free tier serves a capable
+# small model as a lighter backup.
+TOGETHER_KEY  = os.environ.get("TOGETHER_API_KEY", "")
+FIREWORKS_KEY = os.environ.get("FIREWORKS_API_KEY", "")
+MISTRAL_KEY   = os.environ.get("MISTRAL_API_KEY", "")
+# Model IDs are env-overridable (comma-separated for >1) so a wrong/inaccessible
+# model can be fixed WITHOUT a code change — e.g. Fireworks 404'd on
+# llama-v3p3-70b-instruct for an account that hadn't deployed it; set
+# FIREWORKS_MODEL to one the account actually has. Empty env keeps the default.
+def _models_env(var, default):
+    raw = os.environ.get(var, "").strip()
+    return [m.strip() for m in raw.split(",") if m.strip()] or default
+TOGETHER_MODELS  = _models_env("TOGETHER_MODEL",  ["meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"])
+FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct",
+                                                   "accounts/fireworks/models/llama-v3p1-8b-instruct"])
+MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
+# GitHub Models (free, OpenAI-compatible): gpt-4o-mini is a genuinely strong
+# writer, separate free bucket, and we already run inside GitHub Actions. Prefer a
+# PAT with the models:read scope (GITHUB_MODELS_TOKEN); fall back to the built-in
+# GITHUB_TOKEN when the workflow grants `permissions: models: read`.
+GHM_KEY    = os.environ.get("GITHUB_MODELS_TOKEN", "") or os.environ.get("GITHUB_TOKEN", "")
+GHM_URL    = os.environ.get("GITHUB_MODELS_URL", "https://models.inference.ai.azure.com/chat/completions")
+GHM_MODELS = _models_env("GITHUB_MODELS_MODEL", ["gpt-4o-mini"])
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -171,6 +227,16 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
                                  # 6, a strong first attempt usually clears the bar and
                                  # breaks early, so 2 attempts is enough and keeps the
                                  # run well under the 30-min job timeout.
+# WALL-CLOCK BUDGET on the whole generation loop — a hard backstop that
+# complements the smaller regen count above. When ALL free providers are
+# throttled, the circuit breaker (call_groq) eventually opens, but before it
+# does the stacked per-attempt backoffs (generate_candidate's 8*attempt sleeps)
+# still burn time for nothing. Once the generation loop in main() has spent this
+# many seconds with no shippable script, stop attempting and abort fast (no
+# render, no release) instead of grinding. A HEALTHY run finishes every attempt
+# well under this (each LLM call is seconds, not minutes), so it never trips
+# normal operation — it only bites a fully-throttled run. Env-overridable.
+GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
 
 # ---------------------------------------------------------------------------
@@ -262,7 +328,15 @@ VIEWER_JOBS = [
 # scaffold as VIEWER_JOBS/fact selection) and threaded through build_prompt /
 # punch_up / score_script so every stage of the pipeline agrees on what
 # "sticking the landing" means for THIS video.
-CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT", "SHARE"]
+# SHARE was removed from the rotation: its ending is by design a literal command
+# ("send this to the friend who...", "tag the person who needs this"), which is
+# exactly the command ending the user's rubric bans — it undercut the otherwise
+# A-grade Krakatoa video (render 67) with a hollow "send this to a friend" close.
+# The remaining three all end on a NON-command note: a resonant payoff, a
+# seamless rewatch loop, or a genuine question. Organic shares are better earned
+# by a mind-blowing resonant payoff than by begging for a tag. SHARE's rule is
+# kept defined below in case it's ever wanted, but it is not assigned.
+CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT"]
 
 CTA_ENDING_RULES = {
     "SAVE_WORTHY": (
@@ -277,11 +351,12 @@ CTA_ENDING_RULES = {
         "understood at the start now means something bigger."
     ),
     "LOOP": (
-        "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line must be the single most "
-        "quotable line of the whole script, and it must loop back to the hook's exact opening image "
-        "or phrase so the last frame flows straight back into the first -- a viewer who lets it "
-        "replay shouldn't feel a seam. No explicit call-to-action language at all here (no 'save', "
-        "no 'share', no 'comment') -- the loop itself is the entire mechanic."
+        "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line should echo the FEELING or "
+        "central image of the hook so a replay feels seamless — but do NOT simply restate the hook's "
+        "fact or repeat its exact words/number. Repeating the opening claim verbatim reads as the "
+        "video repeating itself (e.g. a hook about fingernail-growth speed must NOT end by saying "
+        "'at the same speed your fingernails grow' again). Instead, land a NEW resonant thought that "
+        "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
     ),
     "COMMENT": (
         "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
@@ -320,8 +395,8 @@ CTA_PUNCHUP_RULES = {
     "SAVE_WORTHY": "Final line: a striking, resonant closing thought or implication that ideally "
                    "recasts the hook. NO command/instruction of any kind -- 'save', 'screenshot', "
                    "'remember', 'look up', 'keep this' are all banned. A thought, never an order.",
-    "LOOP": "Final line: the most quotable line of the script, looping back to the hook's opening "
-            "image/phrase. No CTA language.",
+    "LOOP": "Final line: a NEW resonant thought that echoes the hook's feeling/image so a replay feels "
+            "seamless — but must NOT restate the hook's fact or repeat its exact words/number. No CTA language.",
     "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
                "viewer would type a reply to.",
     "SHARE": "Final line: a specific, identity-relevant reason to send this to one particular kind "
@@ -341,7 +416,16 @@ GENERIC_SAVE_CMD = re.compile(
     r"|\b(take|grab|get) a screenshot\b"
     r"|\bmake sure (you|to) save\b"
     r"|\bdon'?t forget to (save|screenshot)\b"
-    r"|\byou'?ll (want|need) (this|that|it) again\b",
+    r"|\byou'?ll (want|need) (this|that|it) again\b"
+    # share/tag command endings — same hollow-CTA failure as the save commands.
+    # SHARE is out of the rotation, but this belt-and-suspenders guard rejects
+    # any "send this to..."/"tag a friend"/"show this to..." close that a model
+    # might still produce, so no video ends on a command to redistribute it.
+    r"|\bsend (this|it) to\b"
+    r"|\bshare (this|it|that) with\b"
+    r"|\btag (a|the|your|someone|that)\b"
+    r"|\bshow (this|it) to (the|a|your|someone)\b"
+    r"|\bsend (this|it) to the (friend|person|one)\b",
     re.I)
 
 # A "save-worthy" moment is engineered into the CONTENT, not just the ending:
@@ -381,6 +465,15 @@ BANNED_CONCEPTS = [
     "emergence", "emergent", "hive mind", "school of fish", "self-organiz",
 ]
 RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
+# Some domains are close enough that two back-to-back videos from them feel like
+# "the same kind of video" even though the exact domain string differs — e.g.
+# geology "Hawaii is drifting" followed by earth "the inner core is Sun-hot"
+# (renders 69 then 70) both read as deep-earth science. Group those into one
+# FAMILY so the recent-domain dedup below treats the whole family as used. Any
+# domain not listed is its own family (unchanged behaviour).
+DOMAIN_FAMILIES = {"geology": "earth", "earth": "earth", "weather": "earth"}
+def _domain_family(domain):
+    return DOMAIN_FAMILIES.get(domain, domain)
 TOPIC_SIM_THRESHOLD = 0.62  # difflib ratio between metaphors above this = dupe
 TOPIC_TOKEN_OVERLAP = 0.6   # content-word overlap fraction above this = dupe
 
@@ -428,6 +521,59 @@ def save_memory(history, entry):
     history = history[-14:]
     with open(MEMORY, "w") as f:
         json.dump({"history": history}, f, indent=2)
+
+
+def _queue_files():
+    """Queued manifest filenames, oldest first (FIFO by ms-timestamp prefix)."""
+    try:
+        return sorted(f for f in os.listdir(QUEUE_DIR) if f.endswith(".json"))
+    except FileNotFoundError:
+        return []
+
+
+def enqueue_manifest(manifest, video_id):
+    """Persist a finished manifest into the buffer instead of rendering it now.
+    Filenames are ms-timestamp-prefixed so the queue drains in the order it was
+    filled. The batch still updates memory_<page>.json between generations (see
+    main()), so a buffer filled in one run is topic-diverse, not five of the
+    same fact."""
+    os.makedirs(QUEUE_DIR, exist_ok=True)
+    fname = f"{int(time.time() * 1000):013d}_{_slugify(video_id) or 'video'}.json"
+    path = os.path.join(QUEUE_DIR, fname)
+    with open(path, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"[queue] enqueued {manifest.get('title','?')!r} -> {os.path.basename(path)} "
+          f"(queue depth {len(_queue_files())})")
+
+
+def dequeue_to(dest):
+    """Pop the oldest queued manifest to `dest` with ZERO LLM calls. Returns 0 on
+    success, 3 if the queue is empty (the caller then falls back to live
+    generation). A malformed queued file is discarded and the next one tried, so
+    one bad entry can't wedge the buffer."""
+    for fname in _queue_files():
+        src = os.path.join(QUEUE_DIR, fname)
+        try:
+            with open(src) as f:
+                manifest = json.load(f)
+            if not isinstance(manifest, dict) or "scenes" not in manifest:
+                raise ValueError("queued file is not a manifest")
+        except Exception as e:  # noqa: BLE001
+            print(f"[queue] discarding unreadable queued file {fname} ({e})")
+            try:
+                os.remove(src)
+            except OSError:
+                pass
+            continue
+        with open(dest, "w") as f:
+            json.dump(manifest, f, indent=2)
+        os.remove(src)
+        print(f"[queue] dequeued {manifest.get('title','?')!r} -> {dest} "
+              f"({len(_queue_files())} left in buffer)")
+        return 0
+    print("[queue] buffer empty — no pre-generated manifest to render; "
+          "caller should fall back to live generation")
+    return 3
 
 # ---------------------------------------------------------------------------
 # PAGE IDENTITY — the thing that turns "a page that posts science facts" (a
@@ -547,8 +693,17 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   of this strangeness (this is one of many) — a resonant thought that makes them want the NEXT one.
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
   these and this page finds them.
-- SPECIFICITY IS THE BRAND: wherever a competitor would be vague, name the exact thing. The proof is
-  the point.
+- SPECIFICITY IS THE BRAND, BUT WONDER IS THE PRODUCT: name the exact thing where a competitor would be
+  vague — but a number is only worth saying if it makes the viewer FEEL something. Do NOT stat-dump. A
+  dry readout ("the core is 5,700 kelvin") reads as geeky; the SAME fact grips when the number becomes a
+  felt image ("a ball of iron the size of the Moon, as hot as the Sun, frozen solid by the weight
+  above"). RULES: at most 2-3 numbers total, each made visceral with a picture-able comparison; lead
+  each scene with the wonder, not the statistic; cut any detail that doesn't make a smart adult go
+  "wait, WHAT?"; plain everyday words only — never a term you'd have to look up.
+- SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD — never scientific/math notation ("10^27", "ten to the
+  twenty-seventh power", "3.5 x 10^8"); say "more of them than stars in the whole sky", "a billion
+  billion". If a huge number can't be made graspable in plain speech, drop it and describe how
+  staggering it is instead.
 
 PROVEN RULES (every one is backed by 2026 TikTok performance data — follow them all):
 
@@ -568,9 +723,12 @@ HOOK (first 2 seconds decide 70% of retention):
   (a body part, an animal, an object, a number) up front.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
-- 8-10 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 90-120 words (~30-40 seconds spoken). Write the FULL script. Too short = rejected.
-  A tight 30-40s video beats a padded 60s one: competitors win on completion, so cut every non-essential line.
+- 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
+- Total narration MUST be 74-88 words. At this channel's narration speed that renders to about 38-42
+  seconds — measured, not guessed (a 99-word script came out at 46s, slightly long). Write the FULL
+  script, but keep it TIGHT. Too short = rejected; padded = rejected.
+  A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
+  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
 - PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -596,12 +754,10 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   ("The same physics is why a rainbow has no bottom." lands harder than "and that's not even the
   strangest part"). The turn must NOT restate, rephrase, or circle back to the hook or anything
   already said. If you don't have a real second surprise, don't force a turn — keep teaching new facts.
-- MAKE IT FELT, not just stated: convert a number into ONE physical comparison a viewer can picture
-  — e.g. "older than Saturn's rings", or "as tall as a 20-storey building". Use such comparisons as
-  a WRITING TECHNIQUE, never copy these exact examples, and every comparison must be literally TRUE
-  and mean something concrete. Do NOT manufacture grand-sounding but meaningless phrases (e.g.
-  "we are witness to 80,000 fleeting civilizations" says nothing a viewer can picture or verify).
-  If a comparison isn't both accurate and instantly graspable, just state the plain fact instead.
+- EVERY FELT COMPARISON MUST BE LITERALLY TRUE, not just grand-sounding: a technique, never a copied
+  example, and each must mean something concrete. Do NOT manufacture meaningless phrases ("we are
+  witness to 80,000 fleeting civilizations" pictures/verifies nothing). If a comparison isn't both
+  accurate and instantly graspable, state the plain fact instead.
 - PLAIN SPOKEN ENGLISH (a smart 15-year-old must get every line on first listen): this is narration,
   not an essay. Use everyday words. If a precise scientific term is the actual subject, EXPLAIN it in
   plain words instead of just naming it — say "the point in the sky opposite the sun" rather than
@@ -610,6 +766,10 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   refraction index, angular radius, rhizomorphs, mycelium, hyphae — say "underground root-like
   threads" instead). One unfamiliar word is enough to make a viewer feel dumb and
   swipe. Clear and concrete beats clever and ornate every time.
+- TTS-SAFE WORDING: this is read aloud by a text-to-speech voice that mis-says some homographs. Do NOT
+  use the VERB "lives" (the voice reads it like the noun "lives") — write "survives", "exists", "still
+  grows", or "is alive" instead. Also avoid other noun/verb homographs where the wrong reading would
+  confuse: "tears", "wound", "bass", "lead", "close" (as a verb). Pick an unambiguous synonym.
 - STRONGEST PAYOFF WINS: prefer a concrete, surprising, everyday consequence over an abstract musing.
   For a rainbow, "this is why a rainbow has no bottom — and why you can never reach the end of one"
   beats "everyone sees their own private rainbow". Ask: does the payoff give the viewer a crisp new
@@ -657,31 +817,30 @@ CONTENT (CRITICAL):
 AVOID these recent topics entirely: {avoid}{series_block}{opener_block}
 
 FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
-- Each scene needs a 2-5 word stock-footage search query describing something a videographer
-  ACTUALLY FILMS: a concrete subject + action or setting (animals, nature, weather, oceans, space,
-  cities, machines, food, hands doing things, people reacting).
-- BANNED query words: anatomy, anatomical, organ, cell/cells, microscope, microscopic, diagram,
-  xray, x-ray, molecular, atom, quantum, abstract, concept, system. Free stock libraries have
-  almost nothing real for these — searches degrade into random flesh/lab/texture close-ups.
-- If the concept is invisible (acid, time, gravity, DNA, speed of nerves), pick a VISUAL METAPHOR
-  a library does have: "bubbling green liquid" for acid, "hourglass sand falling" for time,
-  "lightning storm slow motion" for nerve signals, "dominoes falling chain" for reactions.
-- REAL FOOTAGE ONLY — never a query that returns cartoons, 3D-rendered emoji, clip-art, or
-  illustrations. BANNED metaphor queries: money, coins, dollar, cash, emoji, icon, cartoon, 3d
-  render, animation, infographic, clock (returns clip-art) — these pull cheesy CGI/emoji stock
-  that makes a science video look broken (a 3D money-emoji once landed in a video about starlight).
-  Prefer a real, literal, photographable subject tied to the topic: for a space/astronomy video
-  use "night sky stars", "telescope observatory", "galaxy nebula", "moon surface", real footage —
-  not an abstract stand-in. When in doubt, pick the most concrete real-world thing the scene names.
-- Every scene's query must be VISUALLY DISTINCT from every other scene's (different subject or
-  setting) — a video that shows the same three shots on loop reads as spam.
-- NAME THE ACTUAL SUBJECT. If the video is about a SPECIFIC animal, object, place, or phenomenon
-  (e.g. a naked mole rat, a tardigrade, Saturn's rings, a specific volcano), the scenes that show
-  it must search for THAT EXACT thing by name ("naked mole rat", not "rodent close up"; "tardigrade
-  microscope"->no, but "tardigrade" if filmable; "Saturn rings", not "planet space"). Showing a
-  generic groundhog or white lab rat in a video about naked mole rats is a real miss viewers catch
-  instantly. At least the hook scene and the payoff scene must name the specific subject. Only fall
-  back to a generic category or visual metaphor when the specific subject genuinely can't be filmed.
+- Each scene needs a 2-5 word query for something a videographer ACTUALLY FILMS: a concrete subject +
+  action/setting (animals, nature, weather, oceans, space, cities, machines, food, hands, reactions).
+- BANNED query words (free libraries have nothing real — they degrade to random flesh/lab/texture):
+  anatomy, organ, cell/cells, microscope, diagram, xray, molecular, atom, quantum, abstract, concept, system.
+- If the concept is invisible (acid, time, gravity, DNA, nerve speed), use a VISUAL METAPHOR libraries
+  DO have: "bubbling green liquid" (acid), "hourglass sand falling" (time), "dominoes falling" (reactions).
+- REAL FOOTAGE ONLY, never cartoons/3D-emoji/clip-art. BANNED metaphor queries (pull cheesy CGI that
+  makes the video look broken — a 3D money-emoji once landed in a starlight video): money, coins, dollar,
+  cash, emoji, icon, cartoon, 3d render, animation, infographic, clock. Pick a real photographable subject
+  (for space: "night sky stars", "telescope observatory", "galaxy nebula") — never an abstract stand-in.
+- MATCH THE MOMENT: the query depicts the exact thing THAT sentence is about, tracking the narration
+  second-by-second — "a dying tree feeds its neighbours" -> "dead fallen tree forest", not a bare "forest".
+- PREFER MOVING FOOTAGE: subjects real stock VIDEO exists for (flowing lava, a swimming animal, crashing
+  waves, a hand touching something), not static objects that only return stills. Motion beats slideshow.
+- Every scene's query must be VISUALLY DISTINCT from the others — the same three shots on loop reads as spam.
+- NAME THE ACTUAL SUBJECT by name when the video is about a specific thing ("naked mole rat", not "rodent
+  close up"; "Saturn rings", not "planet space") — a generic groundhog in a naked-mole-rat video is a miss
+  viewers catch instantly. The hook scene and payoff scene MUST name the specific subject; only fall back to
+  a generic category/metaphor when it genuinely can't be filmed.
+- ONE EXCEPTION — a MANUFACTURED MODEL used only as a COMPARISON PROP (a specific plane, car, ship, phone
+  that is NOT the video's real subject): stock can't match an exact model, so a "Boeing 747" line playing
+  over a generic Airbus clip breaks trust. For such incidental props, say the GENERIC type in BOTH the
+  voiceover AND the query — "a jumbo jet", "a passenger plane", "a cargo ship" — so the words always match
+  whatever clip appears. (Still name the video's actual subject; this is only for throwaway comparison props.)
 
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and the search query as specified above.
@@ -737,6 +896,25 @@ def _call_model(model, prompt):
 def _call_openrouter(model, prompt):
     return _call_openai_compat("https://openrouter.ai/api/v1/chat/completions",
                                OPENROUTER_KEY, model, prompt)
+
+
+def _call_together(model, prompt):
+    return _call_openai_compat("https://api.together.xyz/v1/chat/completions",
+                               TOGETHER_KEY, model, prompt)
+
+
+def _call_fireworks(model, prompt):
+    return _call_openai_compat("https://api.fireworks.ai/inference/v1/chat/completions",
+                               FIREWORKS_KEY, model, prompt)
+
+
+def _call_mistral(model, prompt):
+    return _call_openai_compat("https://api.mistral.ai/v1/chat/completions",
+                               MISTRAL_KEY, model, prompt)
+
+
+def _call_github_models(model, prompt):
+    return _call_openai_compat(GHM_URL, GHM_KEY, model, prompt)
 
 
 def _call_cerebras(model, prompt):
@@ -858,10 +1036,22 @@ def call_groq(prompt):
     # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
     # (llama-3.3-70b:free, strongest free model, separate daily bucket) →
     # Cerebras (gemma-4-31b, RPM-limited) → Groq (100k tokens/day, last resort).
+    # Generation quality order: Gemini → OpenRouter → GROQ → Cerebras. Groq now
+    # sits ABOVE Cerebras: Groq's llama-3.3-70b-versatile is a STRONG model with a
+    # generous 100k-tokens/day free budget, whereas Cerebras only serves the weak
+    # gemma-4-31b (which produces the escalation-4 near-misses that abort). So on a
+    # day when Gemini + OpenRouter are spent, generation still gets a strong model
+    # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
+    # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
+    # 100k/day budget comfortably covers both.
     chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
             ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
-            [("cerebras", m) for m in cerebras_models()] + \
-            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else [])
+            ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) + \
+            ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
+            ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) + \
+            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
+            ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) + \
+            [("cerebras", m) for m in cerebras_models()]
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
     # without ever falling back to the other provider).
@@ -874,6 +1064,14 @@ def call_groq(prompt):
                 out = _call_gemini(model, prompt)
             elif prov == "openrouter":
                 out = _call_openrouter(model, prompt)
+            elif prov == "github":
+                out = _call_github_models(model, prompt)
+            elif prov == "together":
+                out = _call_together(model, prompt)
+            elif prov == "fireworks":
+                out = _call_fireworks(model, prompt)
+            elif prov == "mistral":
+                out = _call_mistral(model, prompt)
             elif prov == "cerebras":
                 out = _call_cerebras(model, prompt)
             else:
@@ -884,17 +1082,19 @@ def call_groq(prompt):
             _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
             return out
         except urllib.error.HTTPError as e:
-            if e.code in (400, 403, 404, 429):
-                # 400 = bad request for THIS model/provider (commonly an invalid
-                # or wrong-type API key, e.g. an OAuth token pasted where a
-                # Gemini AIza key belongs, or a param a given model rejects);
-                # 403/404 = unavailable; 429 = rate-limited. All are
-                # model/provider-specific, so fall through to the next entry
-                # instead of aborting the whole run. If EVERY provider fails the
-                # chain still ends by raising last_err below. Log the server's
-                # error body (truncated) — without it a silently-failing Gemini
-                # looks identical to a healthy one that just chose Groq, which is
-                # exactly how a bad key hid for a whole run.
+            if e.code in (400, 401, 402, 403, 404, 429):
+                # All of these are THIS-provider-specific, so fall through to the
+                # next entry instead of aborting the whole run:
+                #   400 = bad request (often a wrong-type key or a rejected param)
+                #   401 = unauthorized (invalid/rotated key — e.g. a bad Together/
+                #         Fireworks/Mistral key must NOT abort the chain and starve
+                #         Groq/Cerebras, the exact failure seen on run 95)
+                #   402 = payment required (a provider's free credit ran out)
+                #   403/404 = unavailable;  429 = rate-limited.
+                # If EVERY provider fails, the chain still ends by raising last_err
+                # below. Log the server's error body (truncated) — without it a
+                # silently-failing provider looks identical to a healthy one that
+                # just chose Groq, which is exactly how a bad key hid for a run.
                 try:
                     detail = e.read().decode("utf-8", "replace")[:300]
                 except Exception:  # noqa: BLE001
@@ -1223,14 +1423,14 @@ def validate(m, job_name, fact=None):
         if s.get("motion") not in ("zoom_in", "zoom_out", "pan", "static"):
             s["motion"] = random.choice(["zoom_in", "zoom_out", "pan", "static"])
 
-    # script length sanity: target is 90-120 words (~30-40s spoken, see
-    # build_prompt); hard ceiling tightened 240 -> 150 -> 135 -- the Sun video
-    # ran 166 words and read as relentless / "does not stop talking", and a
-    # tight 30-40s video beats a padded 60s one on completion. Floor kept at
-    # 70 so a legitimately tight script isn't penalized for being efficient.
+    # script length sanity: target is 78-98 words (see build_prompt). Ceiling
+    # tightened 135 -> 112 because 110-117-word scripts (renders 66/67) rendered
+    # to 49-53s at this channel's narration speed — too long for completion.
+    # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
+    # dense script isn't penalized for being efficient.
     wc = len(_clean(m["script"]).split())
-    if not (70 <= wc <= 135):
-        return f"script word count {wc} out of range (target 90-120, hard cap 135)"
+    if not (60 <= wc <= 93):
+        return f"script word count {wc} out of range (target 74-88, hard cap 93)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -1259,14 +1459,39 @@ def validate(m, job_name, fact=None):
 
     # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
     full = (m["script"] + " " + " ".join(c for c in m.get("captions", []))).lower()
-    # map each "number + following noun" and each "number + preceding noun"
-    pairs = re.findall(r"(\d[\d,\.]*)\s+([a-z]{3,})", full)
+    # map each "number + following noun". A scale/planet qualifier immediately
+    # after the number ("243 EARTH days", "4.6 BILLION years") is skipped so the
+    # pair keys on the REAL head noun ("days"/"years"), not the qualifier — else
+    # "243 Earth days" and "225 Earth days" (two legitimate, different Venus
+    # periods) would collide on the word "earth" and be wrongly flagged.
+    _NUM_QUALIFIERS = r"(?:earth|light|solar|lunar|billion|million|thousand|hundred|trillion)"
+    pairs = re.findall(rf"(\d[\d,\.]*)\s+(?:{_NUM_QUALIFIERS}\s+)?([a-z]{{3,}})", full)
+    # This guard targets contradictory COUNTS of a discrete named thing ("7
+    # colors" vs "16 colors"). Two different MEASUREMENTS that share a unit
+    # ("243 days" for a spin, "225 days" for an orbit; "5000 km" vs "9000 km"
+    # for two different depths) are normal, not contradictions — so units of
+    # measure are excluded. Without this, ordinary astronomy/geology scripts
+    # (which routinely quote several distances/durations in the same unit) got
+    # aborted before ever rendering. Discrete-count contradictions still fire.
+    _MEASURE_UNITS = {
+        "times", "ways", "kinds", "types", "of", "the", "and",
+        "days", "day", "years", "year", "hours", "hour", "minutes", "minute",
+        "seconds", "second", "weeks", "week", "months", "month", "decades",
+        "centuries", "millennia",
+        "kilometres", "kilometers", "kilometre", "kilometer", "metres",
+        "meters", "metre", "meter", "miles", "mile", "feet", "foot", "inches",
+        "inch", "centimetres", "centimeters", "millimetres", "millimeters",
+        "degrees", "degree", "celsius", "fahrenheit", "kelvin",
+        "kilograms", "kilogram", "grams", "gram", "pounds", "pound", "tonnes",
+        "tons", "ton", "litres", "liters", "millilitres", "gallons",
+        "percent", "kilometres-per-hour", "watts", "volts", "joules",
+    }
     by_noun = {}
     for num, noun in pairs:
         n = num.rstrip(".").replace(",", "")
         by_noun.setdefault(noun, set()).add(n)
     for noun, nums in by_noun.items():
-        if len(nums) > 1 and noun not in ("times", "ways", "kinds", "types", "of", "the", "and"):
+        if len(nums) > 1 and noun not in _MEASURE_UNITS:
             return f"contradictory numbers for '{noun}': {sorted(nums)}"
     # reject absurd fractional counts of discrete things (16.5 colors, 3.5 hearts)
     for num, noun in pairs:
@@ -1501,6 +1726,102 @@ Return ONLY valid JSON, exactly:
         return None
 
 
+def critique_script(m, fact=None, cta_style="SAVE_WORTHY"):
+    """ONE Groq call that does BOTH quality jobs which used to cost two calls:
+    (a) flags scenes that add no new information (the semantic-redundancy gate
+    that was check_information_gain), and (b) scores the script against the
+    rubric (what score_script did). They analysed the identical numbered
+    voiceover list, so merging them removes one LLM call per render on the
+    common path (a strong clean draft skips punch-up, so the script the gate
+    sees is exactly the one that ships — see generate_candidate).
+
+    Returns (redundant_err, scores):
+      redundant_err -- human string if >=1 scene is redundant, else None
+      scores        -- rubric dict with 'overall', or None if unscorable
+    Each half fails OPEN independently: a broken/blank half returns None for
+    that half and never bricks a run. A caller that only needs one half
+    ignores the other."""
+    scenes = m.get("scenes", [])
+    if len(scenes) < 2:
+        return None, None
+    try:
+        numbered = "\n".join(f"{s['id']}. {s['voiceover']}" for s in scenes)
+        fact_line = fact["fact"] if fact else "(no verified fact; general topic)"
+        whatif = fact.get("whatif", "") if fact else ""
+        rewatch_hint = CTA_RUBRIC_HINTS.get(cta_style, CTA_RUBRIC_HINTS["SAVE_WORTHY"])
+        prompt = f"""You are a brutally honest short-form video editor reviewing a finished script BEFORE it is rendered and posted. Be strict — most scripts should NOT score 9 or 10.
+
+TITLE: {m.get('title', '')}
+HOOK (first spoken line): {m.get('hook', '')}
+VERIFIED FACT THIS VIDEO IS BUILT ON: {fact_line}
+CENTRAL QUESTION (if any): {whatif or '(none)'}
+THIS VIDEO'S ASSIGNED ENDING STYLE: {cta_style}
+
+NUMBERED SCENE-BY-SCENE VOICEOVER (in scene order):
+{numbered}
+
+Do TWO things:
+1) REDUNDANCY: list the ids of any scenes that add NO new information — everything the scene says was already conveyed, even in different words, by an EARLIER scene. Scene 1 never counts (there is no earlier scene). A scene revealing a new number, mechanism, consequence, or comparison is NOT redundant even if it's on the same topic.
+2) SCORE each criterion 0-10 (integers, be strict):
+- hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
+- surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
+- escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
+- payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
+- rewatch: {rewatch_hint}
+- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+
+Return ONLY valid JSON, exactly:
+{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+        raw = call_groq(prompt)
+        data = json.loads(raw)
+    except Exception as e:  # noqa: BLE001 - both halves fail open together
+        print(f"  [critique] failed open ({e}) — no redundancy gate this attempt, unscored")
+        return None, None
+
+    # --- redundancy half (same coercion as the old check_information_gain) ---
+    redundant_err = None
+    try:
+        ids = data.get("no_new_info_scene_ids", [])
+        clean_ids = []
+        if isinstance(ids, list):
+            for i in ids:
+                if isinstance(i, bool):
+                    continue
+                if isinstance(i, int):
+                    clean_ids.append(i)
+                elif isinstance(i, str) and i.strip().lstrip("-").isdigit():
+                    clean_ids.append(int(i.strip()))
+        if len(clean_ids) >= 1:
+            print(f"  [info-gain] flagged {len(clean_ids)} redundant scene(s) {clean_ids} "
+                  f"— no new information beyond an earlier scene")
+            redundant_err = (f"information-gain check flagged {len(clean_ids)} redundant scene(s) "
+                             f"{clean_ids} (no new information beyond an earlier scene) — cut or replace them")
+    except Exception:  # noqa: BLE001
+        redundant_err = None
+
+    # --- score half (same coercion as the old score_script) ---
+    scores = None
+    try:
+        s, missing = {}, 0
+        for k in QUALITY_RUBRIC_CRITERIA:
+            sv = _coerce_score(data.get(k))
+            if sv is None:
+                missing += 1
+            else:
+                s[k] = sv
+        if len(s) >= 4:  # readable majority of the 6 criteria
+            if missing:
+                mean = sum(s.values()) / len(s)
+                for k in QUALITY_RUBRIC_CRITERIA:
+                    s.setdefault(k, round(mean, 2))
+            s["overall"] = round(sum(s[k] for k in QUALITY_RUBRIC_CRITERIA) / len(QUALITY_RUBRIC_CRITERIA), 2)
+            scores = s
+    except Exception:  # noqa: BLE001
+        scores = None
+
+    return redundant_err, scores
+
+
 def _slugify(text, maxlen=40):
     s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
     return s[:maxlen] or "video"
@@ -1587,6 +1908,35 @@ def overused_hook_openers(history, min_count=3):
     return [op for op, c in counts.items() if op and c >= min_count]
 
 
+def _dossier_key(fact):
+    """Stable cache key for a fact's dossier: a hash of the verified fact text
+    (falling back to angle). Independent of dict ordering or the mutable
+    memory window, so the same fact maps to the same key every run."""
+    basis = (fact.get("fact") or fact.get("angle") or "").strip().lower()
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16] if basis else ""
+
+
+def _load_dossier_cache():
+    try:
+        with open(DOSSIER_CACHE) as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _save_dossier_cache(cache):
+    """Best-effort persist; a cache write must never break a run. Keep only the
+    most recent ~200 entries so the file can't grow unbounded across months."""
+    try:
+        if len(cache) > 200:
+            cache = dict(list(cache.items())[-200:])
+        with open(DOSSIER_CACHE, "w") as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:  # noqa: BLE001
+        print(f"  [research] dossier cache write skipped ({e})")
+
+
 def research_dossier(fact):
     """SCIENTIST BRAIN — stage 1 (research before writing).
 
@@ -1604,6 +1954,15 @@ def research_dossier(fact):
     topic = fact.get("fact") or fact.get("angle") or ""
     if not topic:
         return []
+    # Cache hit: this fact was already researched on a prior run — reuse those
+    # angles and spend zero LLM quota. The dossier is a set of TRUE facts about
+    # a fixed topic, so it doesn't go stale between runs.
+    key = _dossier_key(fact)
+    cache = _load_dossier_cache() if key else {}
+    cached = cache.get(key)
+    if isinstance(cached, list) and len([f for f in cached if str(f).strip()]) >= 5:
+        print(f"  [research] dossier cache HIT ({len(cached)} angles) — no LLM call")
+        return [str(f).strip() for f in cached if str(f).strip()][:10]
     kt = ", ".join(fact.get("key_terms", []) or [])
     prompt = (
         "You are the researcher behind the most fascinating science videos on the internet "
@@ -1632,6 +1991,9 @@ def research_dossier(fact):
         facts = [f for f in facts if len(f) > 12][:10]
         if facts:
             print(f"  [research] scientist-brain dossier: {len(facts)} distinct angles gathered")
+            if key and len(facts) >= 5:  # only cache a genuinely full dossier
+                cache[key] = facts
+                _save_dossier_cache(cache)
         return facts
     except Exception as e:
         print(f"  [research] dossier unavailable ({e}); writing from the base fact only")
@@ -1658,8 +2020,25 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
     if dossier is None:
         dossier = research_dossier(chosen_fact)
-    for attempt in range(5):
+    # 3 attempts, not 5. Each attempt is a full ~5k-token generation call, and
+    # main() already wraps this in QUALITY_MAX_REGENERATIONS regenerations AND the
+    # workflow retries the whole step once — so 5 here meant up to ~20 generation
+    # calls per render, ~100k tokens, i.e. Groq's ENTIRE 100k/day budget burned by
+    # a single render (the "two videos and the quota's gone" report). 3 attempts +
+    # the near-miss repair path keeps the yield while cutting worst-case burn ~40%,
+    # which is what lets the morning buffer bank several scripts instead of ~2.
+    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "3"))):
         try:
+            # If the circuit has already opened (every provider rate-limited 3x
+            # in a row this run), the escalating backoff below cannot outlast a
+            # dead daily quota — each remaining attempt would just sleep, then
+            # fail-fast. Stop here so a fully-throttled render aborts in seconds
+            # instead of grinding through 8+16+24+32s of sleeps per regeneration.
+            # When the LLM is healthy the circuit never opens, so this is a no-op.
+            if _CIRCUIT_OPEN:
+                print(f"  attempt {attempt+1} skipped: LLM circuit open (all providers "
+                      f"rate-limited) — abandoning further attempts to fail fast")
+                break
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
@@ -1685,12 +2064,21 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                       f"(flocking/emergence/etc), retrying"); continue
             if _metaphor_too_similar(m.get("metaphor", ""), history):
                 print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
-            ig_err = check_information_gain(m)
+            # ONE call does the redundancy gate AND the rubric score (was two
+            # separate Groq calls over the same voiceover list). The score is
+            # stashed on the manifest so main()'s quality ratchet can reuse it
+            # without a second call — valid because a strong clean draft skips
+            # punch-up below, so this is the script that ships. Any path that
+            # rewrites the script (punch-up, near-miss repair) clears/omits the
+            # stash and main() re-scores.
+            ig_err, _stashed_quality = critique_script(m, fact=chosen_fact, cta_style=cta_style)
             if ig_err:
                 print(f"  attempt {attempt+1} invalid: {ig_err}")
                 if near_miss is None:
                     near_miss = m
                 continue
+            if _stashed_quality:
+                m["_quality"] = _stashed_quality
             manifest = m; break
         except Exception as e:
             print(f"  attempt {attempt+1} error: {e}")
@@ -1702,29 +2090,50 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         nm.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
         nm["hashtags"] = nm.get("hashtags", ["#science"])
         nm["captions"] = nm.get("captions") or [nm.get("title", "Watch this")]
-        # ENFORCE PACING on the near-miss too. A script usually lands here
-        # precisely BECAUSE the stricter validate() rejected it (too many
-        # scenes / a run-on / repetition), and the old repair shipped it
-        # uncapped — that's how the 14-scene, choppy "Morning Height" video
-        # got out. Trim to <=10 scenes by dropping the most REDUNDANT middle
-        # scenes (always keeping the hook and the ending), which cuts the
-        # choppy over-cutting AND the restatement in a single pass.
+        # ENFORCE PACING + LENGTH on the near-miss too. A script usually lands
+        # here precisely BECAUSE the stricter validate() rejected it (too many
+        # scenes / a run-on / repetition / too long), and the old repair shipped
+        # it uncapped — that's how the 147-word "DNA Stretched Out" stat-dump got
+        # out (run 79). Iteratively drop the single most-REDUNDANT middle scene
+        # (always keeping the hook and the ending) until BOTH the scene count and
+        # the word count are in range — this cuts choppy over-cutting AND the
+        # restatement in one pass. If it's STILL over the hard word cap once we
+        # hit the minimum scene count, this near-miss is irredeemable (a weak
+        # model dumped a long, repetitive script) — abandon it so the run aborts
+        # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
+        NEARMISS_MAX_SCENES = 9
+        NEARMISS_MAX_WORDS = 93     # keep in lockstep with validate()'s hard cap
+        NEARMISS_MIN_SCENES = 6     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
-        MAX_NEARMISS_SCENES = 10
-        if len(_scenes) > MAX_NEARMISS_SCENES:
-            def _redundancy(i):
-                vo = _scenes[i].get("voiceover", "").lower()
-                return max((_dl.SequenceMatcher(None, vo, _scenes[j].get("voiceover", "").lower()).ratio()
-                            for j in range(len(_scenes)) if j != i), default=0.0)
-            middle = sorted(range(1, len(_scenes) - 1), key=_redundancy, reverse=True)
-            drop = set(middle[:len(_scenes) - MAX_NEARMISS_SCENES])
-            _scenes = [s for i, s in enumerate(_scenes) if i not in drop]
+        def _wc(scs):
+            return sum(len(s.get("voiceover", "").split()) for s in scs)
+        def _most_redundant_middle(scs):
+            best_i, best_r = None, -1.0
+            for i in range(1, len(scs) - 1):
+                vo = scs[i].get("voiceover", "").lower()
+                r = max((_dl.SequenceMatcher(None, vo, scs[j].get("voiceover", "").lower()).ratio()
+                         for j in range(len(scs)) if j != i), default=0.0)
+                if r > best_r:
+                    best_i, best_r = i, r
+            return best_i
+        _dropped = 0
+        while len(_scenes) > NEARMISS_MIN_SCENES and (
+                len(_scenes) > NEARMISS_MAX_SCENES or _wc(_scenes) > NEARMISS_MAX_WORDS):
+            _i = _most_redundant_middle(_scenes)
+            if _i is None:
+                break
+            _scenes.pop(_i); _dropped += 1
+        if _dropped:
             for _new_id, s in enumerate(_scenes, 1):
                 s["id"] = _new_id
             nm["scenes"] = _scenes
-            print(f"  near-miss trimmed {len(drop)} most-redundant middle scene(s) "
-                  f"-> {len(_scenes)} scenes (pacing/repetition)")
+            print(f"  near-miss trimmed {_dropped} most-redundant middle scene(s) -> "
+                  f"{len(_scenes)} scenes / {_wc(_scenes)} words (pacing/length/repetition)")
+        if _wc(_scenes) > NEARMISS_MAX_WORDS:
+            print(f"  near-miss still {_wc(_scenes)} words after trimming to {len(_scenes)} scenes "
+                  f"(cap {NEARMISS_MAX_WORDS}) — abandoning this weak/long draft (consistency over cadence)")
+            return None
         # fill in queries the model left out or made un-filmable. Duplicate
         # queries are deliberately NOT swapped here (they used to be, via a
         # "seen" set) -- that was the same bug fixed in validate(): main.py's
@@ -1768,6 +2177,24 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     if not manifest:
         return None
 
+    # CALL-BUDGET SAVER: punch_up + its follow-up info-gain check are 2 extra LLM
+    # calls that sharpen the voiceovers. A CLEAN (non-degraded) draft from a
+    # STRONG model is already written to the full addictive-craft spec and is
+    # punchy on its own, so skip punch_up for it — saving ~2 calls per render on
+    # the common path (which is where quota is spent). Weak-model drafts and
+    # repaired near-misses still get punched up, where it actually helps. Set
+    # PUNCHUP_ALWAYS=1 to force the old always-punch-up behaviour.
+    _strong_write = (_WORKING_MODEL or ("", ""))[0] in (
+        "gemini", "openrouter", "together", "fireworks", "groq")
+    if (not manifest.get("_degraded")) and _strong_write and os.getenv("PUNCHUP_ALWAYS") != "1":
+        print("  [budget] clean draft from a strong model — skipping punch-up (saves 2 LLM calls)")
+        return manifest
+
+    # Past this point the script gets rewritten (punch-up) or was a repaired
+    # near-miss, so the score stashed at the gate no longer describes what will
+    # ship. Drop it (punch_up deepcopies the manifest, so it would otherwise
+    # ride a stale score onto the rewrite) — main() re-scores this path fresh.
+    manifest.pop("_quality", None)
     result = punch_up(manifest, chosen_fact, cta_style=cta_style)
     # Ensure information-gain is checked on the SCRIPT THAT ACTUALLY SHIPS,
     # not just the pre-punch-up draft: punch_up rewrites every voiceover line,
@@ -1816,16 +2243,16 @@ def main():
     bank = load_bank()
     used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
     _id_to_domain = {f["id"]: f.get("domain") for f in bank}
-    recent_domains = set()
+    recent_families = set()
     for h in history[-RECENT_DOMAIN_WINDOW:]:
         d = h.get("domain") or _id_to_domain.get(h.get("fact_id"))
         if d:
-            recent_domains.add(d)
+            recent_families.add(_domain_family(d))
     fresh = [f for f in bank
-             if f["id"] not in used_ids and f.get("domain") not in recent_domains]
+             if f["id"] not in used_ids and _domain_family(f.get("domain")) not in recent_families]
     available = fresh or [f for f in bank if f["id"] not in used_ids] or bank
-    if recent_domains:
-        print(f"  [bank] avoiding recent domains {sorted(recent_domains)} "
+    if recent_families:
+        print(f"  [bank] avoiding recent domain families {sorted(recent_families)} "
               f"({len(fresh)} of {len(bank)} facts fresh)")
     if available and fact_scores:
         weights = [fact_scores.get(f["id"], 0.0) + PERF_UNSEEN_FLOOR for f in available]
@@ -1879,13 +2306,31 @@ def main():
     # this shared research base.
     shared_dossier = research_dossier(chosen_fact)
     best_manifest, best_overall, best_quality, best_rank = None, None, None, None
+    _gen_deadline = time.time() + GEN_WALL_BUDGET_S
     for regen_i in range(QUALITY_MAX_REGENERATIONS + 1):
+        # Wall-clock backstop: if the generation loop has already spent its whole
+        # budget (see GEN_WALL_BUDGET_S) — which only happens when every provider
+        # is throttled and attempts are stuck in stacked backoffs — stop trying.
+        # Whatever we have (best_manifest, possibly None) then flows into the
+        # abort/hard-floor logic below, so a fully-throttled run fails fast rather
+        # than grinding ~10 min. A healthy run clears all attempts far under budget.
+        if time.time() > _gen_deadline:
+            print(f"  [quality] generation wall-clock budget ({GEN_WALL_BUDGET_S}s) exhausted "
+                  f"after {regen_i} attempt(s) — providers throttled; stopping so the run "
+                  f"fails fast instead of grinding on doomed retries")
+            break
         candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
                                         cta_style=cta_style, dossier=shared_dossier)
         if candidate is None:
             print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
             continue
-        quality = score_script(candidate, chosen_fact, cta_style=cta_style)
+        # Reuse the score computed alongside the redundancy gate (critique_script)
+        # when the candidate carried it through unchanged — the common strong-clean
+        # path — so we don't spend a second LLM call re-scoring the identical
+        # script. Any rewritten/near-miss path has no stash and is scored here.
+        quality = candidate.pop("_quality", None)
+        if quality is None:
+            quality = score_script(candidate, chosen_fact, cta_style=cta_style)
         if quality is None:
             # Scoring itself broke (usually the LLM is rate-limited/exhausted).
             # Fail OPEN only for a CLEAN candidate — one that passed strict
@@ -1978,9 +2423,17 @@ def main():
     # internal-only gate flag (see generate_candidate / the quality loop) — never
     # belongs in the manifest main.py renders from.
     manifest.pop("_degraded", None)
+    manifest.pop("_quality", None)  # internal score stash — never ships to render
 
-    with open(OUT_MANIFEST, "w") as f:
-        json.dump(manifest, f, indent=2)
+    # SPLIT WRITE FROM RENDER: in --enqueue mode the finished manifest goes into
+    # the buffer for a later render instead of manifest.json; memory is still
+    # updated below either way, so the next generation in a batch avoids this
+    # topic (keeping a buffered batch diverse).
+    if GEN_MODE == "enqueue":
+        enqueue_manifest(manifest, video_id)
+    else:
+        with open(OUT_MANIFEST, "w") as f:
+            json.dump(manifest, f, indent=2)
     save_memory(history, {
         "video_id": video_id,
         "metaphor": manifest.get("metaphor", manifest["title"]),
@@ -1996,8 +2449,13 @@ def main():
         },
         "quality": best_quality,
     })
+    _dest = f"buffer ({QUEUE_DIR})" if GEN_MODE == "enqueue" else OUT_MANIFEST
     print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
-          f"{OUT_MANIFEST} [video_id={video_id}]")
+          f"{_dest} [video_id={video_id}]")
 
 if __name__ == "__main__":
+    # --dequeue renders from the pre-generated buffer with no LLM call; exit 3
+    # (empty buffer) tells the workflow to fall back to live generation.
+    if GEN_MODE == "dequeue":
+        sys.exit(dequeue_to(OUT_MANIFEST))
     main()

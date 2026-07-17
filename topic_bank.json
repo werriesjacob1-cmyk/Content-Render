@@ -1262,318 +1262,381 @@
       ]
     },
     {
-      "id": "cleopatra_pyramid_time",
+      "id": "lightning_hotter_sun",
+      "domain": "weather",
+      "fact": "A lightning bolt heats the air around it to roughly 30,000 kelvin, about five times hotter than the surface of the Sun.",
+      "angle": "a stunning true comparison people repeat to sound smart",
+      "key_terms": [
+        "30,000 kelvin",
+        "five times",
+        "Sun"
+      ],
+      "whatif": "What if you could take a lightning bolt's temperature? For a few millionths of a second its channel hits near 30,000 kelvin, roughly five times the Sun's surface, which sits around 5,800.",
+      "wow": "That sudden heat makes the air burst outward faster than sound, and the shockwave is exactly what you hear as thunder.",
+      "queries": [
+        "lightning strike storm",
+        "thunderstorm night clouds",
+        "electric spark closeup"
+      ]
+    },
+    {
+      "id": "spider_silk_steel",
+      "domain": "materials",
+      "fact": "Weight for weight, spider dragline silk is stronger than steel and tougher than Kevlar.",
+      "angle": "a true fact that reframes a common everyday thing",
+      "key_terms": [
+        "dragline silk",
+        "steel",
+        "Kevlar"
+      ],
+      "whatif": "What if a strand of spider silk were as thick as a pencil? By weight it beats steel for strength and Kevlar for toughness, so that rope could soak up enormous force without snapping.",
+      "wow": "A spider spins this super-material at room temperature from water and protein, something no human factory can yet copy.",
+      "queries": [
+        "spider web dew drops",
+        "spider spinning web",
+        "web macro morning"
+      ]
+    },
+    {
+      "id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "fact": "Tyrannosaurus rex lived closer in time to us than to Stegosaurus.",
+      "angle": "reframes how people picture deep time",
+      "key_terms": [
+        "Stegosaurus",
+        "Tyrannosaurus rex",
+        "150 million years"
+      ],
+      "whatif": "What if a T. rex could have met a Stegosaurus? It never could. Stegosaurus vanished about 150 million years ago and T. rex lived around 66 million years ago, a bigger gap than the one between T. rex and you.",
+      "wow": "The dinosaurs we imagine fighting side by side were often separated by more time than separates us from the last dinosaurs.",
+      "queries": [
+        "dinosaur skeleton museum",
+        "trex fossil display",
+        "prehistoric landscape art"
+      ]
+    },
+    {
+      "id": "cleopatra_pyramid_moon",
       "domain": "history",
-      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid of Giza.",
-      "angle": "collapses your sense of how deep history really is",
+      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid.",
+      "angle": "a true fact that rewires your sense of history",
       "key_terms": [
         "Great Pyramid",
-        "Cleopatra",
         "Moon landing",
         "2,500 years"
       ],
-      "whatif": "The Pyramid was already about 2,500 years old and ancient when Cleopatra was born; she is only about 2,000 years from us. The monument we treat as her backdrop was more distant to her than she is to us.",
-      "wow": "The Great Pyramid was a wonder of the distant past even to the ancient Egyptians we think of as living beside it.",
+      "whatif": "What if Cleopatra picked the closer event, the pyramids or the Moon landing? The Great Pyramid was already about 2,500 years old in her lifetime, while the Moon landing was under 2,000 years after her, so the rockets win.",
+      "wow": "The pyramids were ancient history even to the ancient Egyptians we picture as their builders.",
       "queries": [
         "great pyramid giza",
-        "egyptian pyramids desert",
-        "ancient egypt ruins",
-        "hourglass sand falling",
-        "desert pyramids sunset"
+        "egyptian temple carvings",
+        "moon landing archival"
       ]
     },
     {
-      "id": "quietest_room",
-      "domain": "sound",
-      "fact": "The world's quietest room absorbs so much sound that you can hear your own heartbeat, blood flow, and the creak of your bones; nobody has lasted long inside.",
-      "angle": "reveals that true silence is unbearable, not peaceful",
-      "key_terms": [
-        "anechoic chamber",
-        "negative decibels",
-        "hear your body",
-        "disorienting"
-      ],
-      "whatif": "With no sound bouncing back, your brain loses its anchor to the room. People report the roar of their own body, lose their balance, and ask to leave within minutes.",
-      "wow": "Perfect silence doesn't feel calm; it feels like your body has suddenly gotten loud.",
-      "queries": [
-        "empty dark room",
-        "sound studio foam",
-        "person covering ears",
-        "silent empty hallway",
-        "recording studio interior"
-      ]
-    },
-    {
-      "id": "green_sahara",
+      "id": "antarctica_largest_desert",
       "domain": "earth",
-      "fact": "The Sahara desert was a green land of lakes, rivers, and grazing animals just a few thousand years ago, and it swings back and forth on a slow cycle.",
-      "angle": "turns a symbol of permanence into something temporary",
+      "fact": "The largest desert on Earth is Antarctica. A desert is defined by how little water falls, not by heat.",
+      "angle": "reframes a word everyone thinks they understand",
       "key_terms": [
-        "African Humid Period",
-        "green Sahara",
-        "20,000 year cycle",
-        "wobble"
+        "Antarctica",
+        "14 million square kilometres",
+        "polar desert"
       ],
-      "whatif": "A slow wobble in Earth's tilt shifts the rains. Roughly every 20,000 years the Sahara greens over, then dries out again; the desert is just its current phase.",
-      "wow": "The largest hot desert on Earth is not permanent, it is halfway through a cycle that will make it green again.",
+      "whatif": "What if you ranked deserts by size instead of temperature? Antarctica tops the list at about 14 million square kilometres, because almost no precipitation reaches its interior. It is a frozen polar desert.",
+      "wow": "Parts of Antarctica's Dry Valleys may not have seen rain for around two million years, making them some of the driest places on the planet.",
       "queries": [
-        "sahara desert dunes",
-        "green savanna grassland",
-        "desert oasis water",
-        "african savanna wildlife",
-        "dry cracked earth"
+        "antarctica ice landscape",
+        "vast snow plain",
+        "polar ice sheet aerial"
       ]
     },
     {
-      "id": "gallium_melts",
-      "domain": "materials",
-      "fact": "Gallium is a solid metal that melts in the palm of your hand, turning into a silvery puddle at just below body temperature.",
-      "angle": "breaks the rule that metal is always cold and hard",
+      "id": "hawaii_moving_japan",
+      "domain": "geology",
+      "fact": "The Hawaiian Islands are slowly drifting toward Japan, at about the speed your fingernails grow.",
+      "angle": "a slow true motion nobody notices",
       "key_terms": [
-        "gallium",
-        "melts at 30C",
-        "melts in your hand",
-        "liquid metal"
+        "Pacific Plate",
+        "7 centimetres",
+        "hotspot"
       ],
-      "whatif": "Hold a shiny gallium spoon and it slowly slumps and pools in your hand. Stir it into hot tea and the spoon simply vanishes.",
-      "wow": "A metal you could hold in your hand and watch turn to liquid from your own warmth.",
+      "whatif": "What if you waited on Hawaii long enough? The Pacific Plate carries the islands northwest about 7 centimetres a year, so over millions of years today's islands sink and fresh ones rise over the same hotspot.",
+      "wow": "Hawaii is really a conveyor belt of volcanoes: the plate slides over a fixed hot spot and leaves a long trail of islands behind it.",
       "queries": [
-        "liquid metal drop",
-        "molten metal pouring",
-        "silver metal spoon",
-        "shiny metal closeup",
-        "metal melting closeup"
+        "hawaii volcano aerial",
+        "lava meets ocean",
+        "island chain from space"
       ]
     },
     {
-      "id": "gut_second_brain",
-      "domain": "biology",
-      "fact": "Your gut has its own brain of around 500 million neurons and makes most of your body's serotonin, so your stomach really does think and feel.",
-      "angle": "relocates part of 'you' to an unexpected place",
-      "key_terms": [
-        "enteric nervous system",
-        "second brain",
-        "500 million neurons",
-        "serotonin"
-      ],
-      "whatif": "This gut brain runs your digestion on its own and constantly messages your head brain, which is why fear lives in your stomach and stress ties it in knots.",
-      "wow": "A gut feeling is not a metaphor; it is a second brain talking to your first one.",
-      "queries": [
-        "person eating meal",
-        "yogurt probiotics closeup",
-        "person holding belly",
-        "healthy food bowl",
-        "glowing light strands"
-      ]
-    },
-    {
-      "id": "superfluid_helium",
+      "id": "sun_quantum_tunneling",
       "domain": "physics",
-      "fact": "Chilled close to absolute zero, liquid helium becomes a superfluid that flows with zero friction and creeps up and over the walls of any cup holding it.",
-      "angle": "shows matter behaving like it ignores the rules",
+      "fact": "The Sun's core is actually too cool for fusion. It only shines because of a quantum loophole.",
+      "angle": "reframes why the Sun works at all",
       "key_terms": [
-        "superfluid",
-        "absolute zero",
-        "zero friction",
-        "climbs the walls"
+        "quantum tunnelling",
+        "15 million degrees",
+        "Coulomb barrier"
       ],
-      "whatif": "Pour it into a cup and it climbs the inside, crawls over the rim, and drips off the bottom, escaping on its own until the cup is empty.",
-      "wow": "A liquid so frictionless it climbs out of its own container to escape.",
+      "whatif": "What if the rules were strictly classical? At about 15 million degrees the Sun's protons lack the energy to smash together over the Coulomb barrier, but quantum tunnelling lets them slip through occasionally, and that is why the Sun burns.",
+      "wow": "Without a strange effect that lets particles cheat through walls, the stars, and we, would not exist.",
       "queries": [
-        "liquid nitrogen vapor",
-        "science lab experiment",
-        "frost cold smoke",
-        "blue liquid beaker",
-        "cold vapor pouring"
+        "sun surface plasma",
+        "solar flare closeup",
+        "glowing star space"
       ]
     },
     {
-      "id": "wood_frog_freeze",
-      "domain": "animals",
-      "fact": "The wood frog survives winter by freezing almost solid: its heart stops, it stops breathing, and two thirds of its body turns to ice, then it thaws back to life in spring.",
-      "angle": "an animal that returns from what looks like death",
+      "id": "flavor_is_mostly_smell",
+      "domain": "senses",
+      "fact": "Most of what you call taste is really smell. Pinch your nose and food loses much of its flavour.",
+      "angle": "reframes a sense you use every day",
       "key_terms": [
-        "wood frog",
-        "frozen solid",
-        "heart stops",
-        "thaws to life"
+        "retronasal smell",
+        "five basic tastes",
+        "80 percent"
       ],
-      "whatif": "It floods its cells with a natural antifreeze of sugar so ice forms only in the safe spaces. For weeks it is a frog-shaped block of ice, then the sun restarts it.",
-      "wow": "An animal that stops its own heart, freezes, and simply switches back on months later.",
+      "whatif": "What if you ate with your nose pinched shut? Your tongue reports only five basic tastes, so up to about 80 percent of a food's flavour, which really comes from smell drifting up the back of your throat, simply disappears.",
+      "wow": "It is why food tastes flat with a cold, and why most people cannot name a jelly bean's flavour with their nose held.",
       "queries": [
-        "frog on ice",
-        "frozen forest floor",
-        "frog closeup",
-        "ice crystals forming",
-        "frog by pond"
+        "person tasting food",
+        "colorful candy macro",
+        "chef plating dish"
       ]
     },
     {
-      "id": "bristlecone_oldest_tree",
-      "domain": "plants",
-      "fact": "A gnarled bristlecone pine high in California has been alive for nearly 5,000 years, meaning it was already a mature tree when the Great Pyramid was being built.",
-      "angle": "a single living thing that spans all of recorded history",
-      "key_terms": [
-        "bristlecone pine",
-        "4,800 years",
-        "older than the pyramids",
-        "still alive"
-      ],
-      "whatif": "This one tree has been quietly growing through the rise and fall of every empire in human history, and it is still adding rings today.",
-      "wow": "A living thing you could stand next to that was already ancient when writing was invented.",
-      "queries": [
-        "ancient twisted tree",
-        "bristlecone pine mountain",
-        "old gnarled tree",
-        "tree rings closeup",
-        "windswept mountain tree"
-      ]
-    },
-    {
-      "id": "first_computer_bug",
-      "domain": "technology",
-      "fact": "The first computer 'bug' was a real insect: a moth trapped in a 1947 computer, taped into the logbook as the 'first actual case of bug being found.'",
-      "angle": "the literal origin of a word everyone uses",
-      "key_terms": [
-        "1947",
-        "real moth",
-        "logbook",
-        "first computer bug"
-      ],
-      "whatif": "Engineers hunting a fault in a room-sized machine found a moth stuck in a relay, removed it, and taped it into their notes; the glitch and the word stuck.",
-      "wow": "Every software bug traces its name back to one actual moth taped in a notebook.",
-      "queries": [
-        "moth insect closeup",
-        "vintage computer machine",
-        "old circuit board",
-        "retro computer room",
-        "moth near light"
-      ]
-    },
-    {
-      "id": "lightning_antimatter",
-      "domain": "weather",
-      "fact": "Ordinary thunderstorms are tiny antimatter factories: they fire off bursts of gamma rays and hurl antimatter particles up into space.",
-      "angle": "puts exotic physics inside an everyday storm",
-      "key_terms": [
-        "thunderstorm",
-        "gamma-ray flash",
-        "antimatter",
-        "positrons"
-      ],
-      "whatif": "The intense fields in a storm accelerate particles so hard they make antimatter, which shoots upward and has been detected by satellites above the clouds.",
-      "wow": "The same storm rattling your window is quietly flinging antimatter into space.",
-      "queries": [
-        "lightning storm night",
-        "thunderstorm clouds",
-        "lightning strike slow motion",
-        "storm clouds dark",
-        "night sky lightning"
-      ]
-    },
-    {
-      "id": "olympus_mons",
-      "domain": "space",
-      "fact": "Mars has a volcano so wide that if you stood on top, the ground would curve away below the horizon in every direction; you could never see its base.",
-      "angle": "a mountain too big to look like a mountain",
-      "key_terms": [
-        "Olympus Mons",
-        "tallest volcano",
-        "below the horizon",
-        "size of a country"
-      ],
-      "whatif": "Olympus Mons is about three times the height of Everest but so broad, roughly the size of a whole country, that its slopes vanish over the curve of Mars.",
-      "wow": "A mountain so vast that from its peak you couldn't tell you were on a mountain at all.",
-      "queries": [
-        "mars planet surface",
-        "red planet mars",
-        "volcano from space",
-        "mars landscape rover",
-        "giant volcano aerial"
-      ]
-    },
-    {
-      "id": "shuffled_deck",
-      "domain": "math",
-      "fact": "Shuffle a deck of cards well and you almost certainly create an order that has never existed in the history of the universe.",
-      "angle": "finds the astronomical hiding in your hands",
-      "key_terms": [
-        "52 factorial",
-        "never existed before",
-        "more than atoms",
-        "unique order"
-      ],
-      "whatif": "The number of possible orderings is so vast, far more than the atoms on Earth, that every proper shuffle in history has been a brand-new arrangement.",
-      "wow": "An ordinary deck in your hands is holding an order that has never been seen and never will be again.",
-      "queries": [
-        "shuffling playing cards",
-        "deck of cards",
-        "hands shuffling cards",
-        "cards falling table",
-        "casino card shuffle"
-      ]
-    },
-    {
-      "id": "brinicle",
-      "domain": "ocean",
-      "fact": "Under sea ice, a finger of freezing brine can sink to the seafloor and freeze everything it touches, an 'icicle of death' that traps starfish where they crawl.",
-      "angle": "a real horror hidden under the polar ice",
-      "key_terms": [
-        "brinicle",
-        "icicle of death",
-        "sinking brine",
-        "freezes the seafloor"
-      ],
-      "whatif": "Super-salty, super-cold water leaks from the ice and sinks in a growing frozen tube; when it reaches the bottom it spreads out and freezes slow-moving animals solid.",
-      "wow": "A slow-motion tentacle of ice that reaches the seabed and freezes creatures in place.",
-      "queries": [
-        "underwater ice",
-        "frozen ocean underwater",
-        "icicle underwater",
-        "arctic sea ice",
-        "starfish on seafloor"
-      ]
-    },
-    {
-      "id": "bombardier_beetle",
-      "domain": "animals",
-      "fact": "The bombardier beetle defends itself by mixing chemicals in its body and firing a boiling-hot, machine-gun spray out of its rear at attackers.",
-      "angle": "a living chemical weapon the size of a fingernail",
-      "key_terms": [
-        "bombardier beetle",
-        "boiling spray",
-        "chemical reaction",
-        "100 degrees"
-      ],
-      "whatif": "It combines two chemicals in a reinforced chamber that explodes to near boiling, then aims and pulses the scalding jet with surprising accuracy at whatever grabbed it.",
-      "wow": "A beetle that carries a two-part explosive and sprays boiling liquid on command.",
-      "queries": [
-        "beetle closeup macro",
-        "beetle on leaf",
-        "black beetle ground",
-        "insect macro shot",
-        "beetle walking closeup"
-      ]
-    },
-    {
-      "id": "capsaicin_birds",
+      "id": "plastic_eating_bacteria",
       "domain": "biology",
-      "fact": "Chili peppers invented their burning heat to punish mammals, but birds feel nothing, so the fire in a pepper is a message that was never meant for you.",
-      "angle": "reframes a familiar sensation as a targeted weapon",
+      "fact": "In 2016 scientists found a bacterium that had evolved to eat plastic bottles.",
+      "angle": "a surprising true discovery",
       "key_terms": [
-        "capsaicin",
-        "deters mammals",
-        "birds immune",
-        "seed dispersal"
+        "Ideonella sakaiensis",
+        "PET plastic",
+        "2016"
       ],
-      "whatif": "Mammal teeth destroy pepper seeds, so the plant evolved a chemical that triggers our pain receptors, while birds, which spread seeds intact, can't taste the heat at all.",
-      "wow": "The burn of a chili is a plant's way of saying 'not you' to mammals while inviting the birds.",
+      "whatif": "What if a microbe learned to digest our rubbish? One found at a Japanese recycling site in 2016, Ideonella sakaiensis, makes an enzyme that breaks down PET, the plastic in drink bottles, and eats it for food.",
+      "wow": "Engineered versions of its enzyme can now break a plastic bottle apart in hours, hinting at a real future for recycling.",
       "queries": [
-        "red chili peppers",
-        "hot pepper closeup",
-        "colorful peppers market",
-        "bird eating berries",
-        "cardinal bird branch"
+        "plastic bottles pile",
+        "bacteria under microscope",
+        "recycling plant conveyor"
+      ]
+    },
+    {
+      "id": "ocean_makes_oxygen",
+      "domain": "ocean",
+      "fact": "At least half of the oxygen you breathe comes from the ocean, not from forests.",
+      "angle": "reframes where our air really comes from",
+      "key_terms": [
+        "phytoplankton",
+        "Prochlorococcus",
+        "half"
+      ],
+      "whatif": "What if forests were not the main source of our air? Tiny drifting phytoplankton in the sea make at least half of Earth's oxygen, and one kind, Prochlorococcus, may be the most abundant photosynthetic living thing on the planet.",
+      "wow": "Roughly every second breath you take comes from microscopic sea life most people have never heard of.",
+      "queries": [
+        "ocean surface sunlight",
+        "plankton microscope",
+        "underwater light rays"
+      ]
+    },
+    {
+      "id": "more_trees_than_stars",
+      "domain": "space",
+      "fact": "There are more trees on Earth than there are stars in the Milky Way.",
+      "angle": "a true number so lopsided it resets your sense of scale",
+      "key_terms": [
+        "3 trillion trees",
+        "100 billion stars",
+        "Milky Way"
+      ],
+      "whatif": "What if you tried to match every tree to a star? You would run out of stars. Earth has roughly 3 trillion trees, while the Milky Way holds somewhere around 100 to 400 billion stars.",
+      "wow": "We often say there are more stars than grains of sand, yet right here on one planet the trees already outnumber our entire galaxy's stars.",
+      "queries": [
+        "forest aerial drone",
+        "night sky stars",
+        "dense woodland canopy"
+      ]
+    },
+    {
+      "id": "sharks_older_than_trees",
+      "domain": "deep_time",
+      "fact": "Sharks are older than trees. They have existed for about 450 million years.",
+      "angle": "reframes how ancient a familiar animal really is",
+      "key_terms": [
+        "450 million years",
+        "Saturn's rings",
+        "trees"
+      ],
+      "whatif": "What if you lined up sharks and trees by age? Sharks win by a wide margin, swimming the oceans about 450 million years ago, roughly 90 million years before the first trees ever grew.",
+      "wow": "Sharks are also older than Saturn's rings and have survived all five mass extinctions that wiped out most life on Earth.",
+      "queries": [
+        "shark swimming underwater",
+        "ancient forest trees",
+        "deep ocean blue"
+      ]
+    },
+    {
+      "id": "pistol_shrimp_bubble",
+      "domain": "animals",
+      "fact": "A shrimp can snap its claw so fast it boils the water and flashes light hotter than the sun's surface.",
+      "angle": "a tiny animal doing something physically absurd",
+      "key_terms": [
+        "pistol shrimp",
+        "4,700 degrees",
+        "cavitation bubble"
+      ],
+      "whatif": "What if an animal could punch water hard enough to make it glow? The pistol shrimp does. Its claw snaps so fast it rips open a cavitation bubble that collapses at nearly 4,700 degrees, briefly close to the sun's surface, with a snap of light and sound.",
+      "wow": "The shockwave alone can stun or kill its prey, and the collective snapping of these shrimp is loud enough to interfere with submarine sonar.",
+      "queries": [
+        "pistol shrimp reef",
+        "underwater bubbles macro",
+        "coral reef shrimp"
+      ]
+    },
+    {
+      "id": "bacteria_outnumber_cells",
+      "domain": "body",
+      "fact": "Your body contains roughly as many bacterial cells as human cells, maybe more.",
+      "angle": "unsettling truth about what 'you' are made of",
+      "key_terms": [
+        "38 trillion",
+        "human cells",
+        "microbiome"
+      ],
+      "whatif": "What if you counted every cell you carry? Only about half would be yours. Your body holds around 38 trillion bacteria alongside roughly 30 trillion human cells.",
+      "wow": "Most of them live in your gut, and they help digest food, train your immune system, and even influence your mood.",
+      "queries": [
+        "bacteria microscope",
+        "human silhouette light",
+        "gut illustration microscope"
+      ]
+    },
+    {
+      "id": "day_getting_longer",
+      "domain": "earth",
+      "fact": "Earth's days are slowly getting longer because the Moon is stealing its spin.",
+      "angle": "a slow cosmic theft happening right now",
+      "key_terms": [
+        "1.7 milliseconds",
+        "the Moon",
+        "23 hours"
+      ],
+      "whatif": "What if a day wasn't always 24 hours? It wasn't. The Moon's pull drags on Earth and slows its spin by about 1.7 milliseconds per century, so dinosaurs lived days closer to 23 hours long.",
+      "wow": "Run it backward far enough and a day on the young Earth lasted only about six hours, with the Moon looming huge and close overhead.",
+      "queries": [
+        "moon over earth",
+        "earth rotation space",
+        "full moon rising"
+      ]
+    },
+    {
+      "id": "octopus_three_hearts",
+      "domain": "animals",
+      "fact": "An octopus has three hearts and blue blood, and one heart stops whenever it swims.",
+      "angle": "an alien body plan hiding in the ocean",
+      "key_terms": [
+        "three hearts",
+        "blue blood",
+        "hemocyanin"
+      ],
+      "whatif": "What if your heart stopped every time you moved? For an octopus that's normal. It has three hearts, and the main one quits beating whenever it swims, which is why they often prefer to crawl.",
+      "wow": "Its blood is blue because it carries oxygen with copper-based hemocyanin instead of the iron that makes our blood red.",
+      "queries": [
+        "octopus swimming ocean",
+        "octopus close up",
+        "deep sea octopus"
+      ]
+    },
+    {
+      "id": "sahara_feeds_amazon",
+      "domain": "earth",
+      "fact": "The Amazon rainforest is fertilized by dust blown across the Atlantic from the Sahara desert.",
+      "angle": "two opposite places secretly connected",
+      "key_terms": [
+        "27 million tonnes",
+        "Sahara",
+        "phosphorus"
+      ],
+      "whatif": "What if the greenest place on Earth was fed by the emptiest? It is. Around 27 million tonnes of Saharan dust cross the Atlantic each year, and it carries the phosphorus the Amazon needs to grow.",
+      "wow": "Much of that dust comes from a single ancient dried lake bed in Chad, once full of life, now feeding a jungle an ocean away.",
+      "queries": [
+        "sahara desert dust",
+        "amazon rainforest aerial",
+        "dust storm sky"
+      ]
+    },
+    {
+      "id": "glass_rain_exoplanet",
+      "domain": "space",
+      "fact": "On one blue planet far away, it rains molten glass sideways in 8,000 kilometre per hour winds.",
+      "angle": "a hellish world that looks Earth-like from afar",
+      "key_terms": [
+        "HD 189733b",
+        "molten glass",
+        "8,000 kilometres per hour"
+      ],
+      "whatif": "What if a deep blue planet wasn't blue from oceans? The planet HD 189733b is a rich blue, but its colour comes from clouds of silicate glass, and winds near 8,000 kilometres per hour whip that glass sideways as rain.",
+      "wow": "Those winds are about seven times the speed of sound, making its beautiful blue one of the deadliest sights in the galaxy.",
+      "queries": [
+        "blue planet space",
+        "exoplanet illustration",
+        "stormy alien world"
+      ]
+    },
+    {
+      "id": "brain_twenty_watts",
+      "domain": "body",
+      "fact": "Your brain runs on about 20 watts of power, less than a dim light bulb.",
+      "angle": "an everyday organ quietly outperforming machines",
+      "key_terms": [
+        "20 watts",
+        "light bulb",
+        "supercomputer"
+      ],
+      "whatif": "What if you knew how little energy your thoughts cost? Your brain runs on roughly 20 watts, less than a dim light bulb, yet it out-thinks supercomputers that gulp down millions of times more power.",
+      "wow": "That single dim-bulb of power runs about 86 billion neurons firing in patterns we still can't fully copy.",
+      "queries": [
+        "light bulb glowing",
+        "brain scan visualization",
+        "neurons firing animation"
+      ]
+    },
+    {
+      "id": "eiffel_grows_summer",
+      "domain": "materials",
+      "fact": "The Eiffel Tower grows about 15 centimetres taller every summer.",
+      "angle": "a landmark quietly breathing with the seasons",
+      "key_terms": [
+        "15 centimetres",
+        "thermal expansion",
+        "Eiffel Tower"
+      ],
+      "whatif": "What if a landmark changed height with the weather? The Eiffel Tower does. Its iron expands in the summer heat, making the whole tower stand about 15 centimetres taller than it does in winter.",
+      "wow": "The same heat makes it lean slightly away from the sun, its top drifting a few centimetres as the day warms one side.",
+      "queries": [
+        "eiffel tower paris",
+        "iron metal structure",
+        "summer city sky"
+      ]
+    },
+    {
+      "id": "mantis_shrimp_eyes",
+      "domain": "senses",
+      "fact": "The mantis shrimp sees colours you physically cannot imagine.",
+      "angle": "a sense far beyond human range",
+      "key_terms": [
+        "mantis shrimp",
+        "12 to 16 receptors",
+        "polarized light"
+      ],
+      "whatif": "What if an animal could see colours your brain has no name for? The mantis shrimp has 12 to 16 types of colour receptor, where you have just three, and it even sees the twist of polarized light.",
+      "wow": "It also throws one of the fastest punches in nature, fast enough to boil the water around its club into a flash of light.",
+      "queries": [
+        "mantis shrimp colorful",
+        "coral reef macro",
+        "rainbow light spectrum"
       ]
     }
   ]

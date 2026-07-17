@@ -1,6 +1,89 @@
 {
   "history": [
     {
+      "video_id": "science_2026-07-14_you-re-made-of-dust",
+      "metaphor": "Skin Cells",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "You're Made of Dust",
+      "fact_id": "skin_cells",
+      "domain": "body",
+      "hook": "You shed skin every minute",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_unseen-oceans",
+      "metaphor": "ocean floor mystery",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Unseen Oceans",
+      "fact_id": "ocean_unmapped",
+      "domain": "ocean",
+      "hook": "You've seen more of Mars than the ocean floor",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
+      "metaphor": "hidden dangers in food",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "title": "Bananas are Slightly Radioactive",
+      "fact_id": "banana_radioactive",
+      "domain": "physics",
+      "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-14_rainbow-deception",
+      "metaphor": "colorful atmospheric phenomenon",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Rainbow Deception",
+      "fact_id": "rainbow_circle",
+      "domain": "light",
+      "hook": "What if you could see a rainbow as a full circle?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": null
+    },
+    {
+      "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
+      "metaphor": "Biological Rule Breaker",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "title": "The Rodent That Breaks Biology",
+      "fact_id": "naked_mole_rat",
+      "domain": "animals",
+      "hook": "Your brain would die in minutes without oxygen, but not this animal's.",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 9.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.33
+      }
+    },
+    {
       "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
       "metaphor": "alien gemstone weather",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -24,274 +107,90 @@
       }
     },
     {
-      "video_id": "science_2026-07-16_the-animal-that-never-eats",
-      "metaphor": "life without eating",
-      "viewer_job": "REFRAME",
+      "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
+      "metaphor": "Underground fungal internet",
+      "viewer_job": "EXISTENTIAL_CHILL",
       "cta_style": "LOOP",
-      "title": "The Animal That Never Eats",
-      "fact_id": "vent_tube_worms",
-      "domain": "ocean",
-      "hook": "What if an animal never had to eat a bite its whole life?",
+      "title": "The Hidden Social Life of Forests",
+      "fact_id": "wood_wide_web",
+      "domain": "plants",
+      "hook": "Your walk through the woods is actually a trip through a city.",
       "structure": {
         "scene_count": 9,
         "used_whatif": true
       },
       "quality": {
         "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 7.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
-      "video_id": "science_2026-07-16_the-metal-that-remembers",
-      "metaphor": "Metal with memory",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "title": "The Metal That Remembers",
-      "fact_id": "shape_memory_metal",
-      "domain": "materials",
-      "hook": "Your eyeglasses frames might be made of a metal that remembers.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 9.0,
-        "rewatch": 9.0,
-        "clarity": 8.0,
-        "overall": 8.0
-      }
-    },
-    {
-      "video_id": "science_2026-07-16_the-secret-scent-of-rain",
-      "metaphor": "Biological scent detection",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "title": "The Secret Scent of Rain",
-      "fact_id": "petrichor_rain_smell",
-      "domain": "weather",
-      "hook": "Your nose can detect the smell of rain better than a shark.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
+        "surprise": 7.0,
         "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 4.0,
-        "clarity": 10.0,
-        "overall": 7.33
-      }
-    },
-    {
-      "video_id": "science_2026-07-16_the-biological-ship-of-theseus",
-      "metaphor": "biological ship of Theseus",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "title": "The Biological Ship of Theseus",
-      "fact_id": "cell_replacement",
-      "domain": "body",
-      "hook": "Most of your body is only a few years old.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 9.0,
         "payoff": 8.0,
         "rewatch": 9.0,
-        "clarity": 10.0,
-        "overall": 8.5
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-great-nothing",
-      "metaphor": "Cosmic hole",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "COMMENT",
-      "title": "The Great Nothing",
-      "fact_id": "bootes_void",
-      "domain": "space",
-      "hook": "Your night sky is a lie because of the Bootes void.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 9.0,
-        "rewatch": 7.0,
         "clarity": 9.0,
-        "overall": 7.67
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-crushing-weight-of-the-abyss",
-      "metaphor": "The crushing deep",
-      "viewer_job": "REFRAME",
-      "cta_style": "SHARE",
-      "title": "The Crushing Weight of the Abyss",
-      "fact_id": "mariana_pressure",
-      "domain": "ocean",
-      "hook": "Your body would collapse instantly if you entered the Mariana Trench.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 7.0,
-        "clarity": 10.0,
         "overall": 7.83
       }
     },
     {
-      "video_id": "science_2026-07-17_the-rain-of-muons",
-      "metaphor": "cosmic clock glitch",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "The Rain of Muons",
-      "fact_id": "muon_time_dilation",
-      "domain": "physics",
-      "hook": "You are being rained on by particles that shouldn't exist.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 9.0,
-        "payoff": 9.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 8.0
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-invisible-survivor",
-      "metaphor": "the toughest animal",
+      "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
+      "metaphor": "World-breaking sound",
       "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "title": "The Invisible Survivor",
-      "fact_id": "tardigrade",
-      "domain": "animals",
-      "hook": "The toughest animal on Earth is one you cannot even see.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 5.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 9.0,
-        "clarity": 9.0,
-        "overall": 7.67
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-organ-that-regrows",
-      "metaphor": "Biological self-repair",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "title": "The Organ That Regrows",
-      "fact_id": "liver_regrows",
-      "domain": "body",
-      "hook": "Your body has one organ that can grow itself back from nothing.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 10.0,
-        "overall": 8.0
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-hidden-giant",
-      "metaphor": "Hidden ocean giant",
-      "viewer_job": "EXISTENTIAL_CHILL",
       "cta_style": "SHARE",
-      "title": "The Hidden Giant",
-      "fact_id": "mauna_kea",
-      "domain": "earth",
-      "hook": "You've been told the wrong mountain is the tallest on Earth.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 10.0,
-        "overall": 8.0
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-literal-first-bug",
-      "metaphor": "literal glitch origin",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "The Literal First Bug",
-      "fact_id": "first_computer_bug",
-      "domain": "technology",
-      "hook": "Your smartphone's glitches are named after a dead insect from 1947.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 5.0,
-        "clarity": 10.0,
-        "overall": 7.5
-      }
-    },
-    {
-      "video_id": "science_2026-07-17_the-raindrop-lie",
-      "metaphor": "liquid parachutes",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SHARE",
-      "title": "The Raindrop Lie",
-      "fact_id": "raindrop_shape",
-      "domain": "weather",
-      "hook": "You have spent your entire life drawing the raindrop shape wrong.",
+      "title": "The Sound That Broke the World",
+      "fact_id": "krakatoa_loudest",
+      "domain": "physics",
+      "hook": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
       "structure": {
         "scene_count": 10,
         "used_whatif": true
       },
       "quality": {
         "hook": 8.0,
-        "surprise": 7.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
+      "metaphor": "volcanic conveyor belt",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "title": "The Hawaiian Conveyor Belt",
+      "fact_id": "hawaii_moving_japan",
+      "domain": "geology",
+      "hook": "Your fingernails grow at the same speed the Hawaiian Islands move.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 10.0,
+        "clarity": 9.0,
+        "overall": 8.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_the-star-inside-earth",
+      "metaphor": "The subterranean star",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "The Star Inside Earth",
+      "fact_id": "earths_core_hot_as_sun",
+      "domain": "earth",
+      "hook": "You are walking on a thin crust above a hidden star.",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
         "escalation": 6.0,
         "payoff": 9.0,
         "rewatch": 8.0,
@@ -300,14 +199,14 @@
       }
     },
     {
-      "video_id": "science_2026-07-17_the-weight-of-a-teaspoon",
-      "metaphor": "Cosmic density",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "title": "The Weight of a Teaspoon",
-      "fact_id": "neutron_star_spoon",
-      "domain": "space",
-      "hook": "A single teaspoon of a neutron star would weigh a billion tons.",
+      "video_id": "science_2026-07-16_the-ocean-s-hidden-air",
+      "metaphor": "The invisible air-maker",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "title": "The Ocean's Hidden Air",
+      "fact_id": "ocean_oxygen",
+      "domain": "ocean",
+      "hook": "Your next breath doesn't come from a forest, but the ocean.",
       "structure": {
         "scene_count": 8,
         "used_whatif": true
@@ -315,11 +214,80 @@
       "quality": {
         "hook": 8.0,
         "surprise": 9.0,
-        "escalation": 6.0,
-        "payoff": 7.0,
-        "rewatch": 5.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
         "clarity": 9.0,
+        "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_dna-stretched-out",
+      "metaphor": "Cellular Scale",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "title": "DNA Stretched Out",
+      "fact_id": "dna_length",
+      "domain": "body",
+      "hook": "Your DNA is incredibly long",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 9.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_the-glass-rain-planet",
+      "metaphor": "liquid glass storm",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "title": "The Glass Rain Planet",
+      "fact_id": "glass_rain_exoplanet",
+      "domain": "space",
+      "hook": "You are looking at a deep blue planet that is actually hell.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 4.0,
+        "clarity": 10.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-16_deep-time",
+      "metaphor": "Dinosaur Timeline",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "title": "Deep Time",
+      "fact_id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "hook": "Tyrannosaurus rex lived closer to you",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]
