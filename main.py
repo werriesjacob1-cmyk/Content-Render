@@ -1625,14 +1625,27 @@ Style: Pop,{PROFILE["cap_font"]},{PROFILE["cap_size"]},{PROFILE["cap_primary"]},
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
+# The core keyword's words (uppercased, alnum-only, >2 chars), set per render in
+# main() so captions can pop them in the accent colour. Empty = no keyword pop.
+_KEYWORD_TOKENS = set()
+
+
 def _event(start, end, word):
     clean = re.sub(r"[{}\\]", "", word).upper()
+    # KEYWORD POP: if this word is one of the video's core keyword words, render it
+    # in the profile's accent colour (a warm gold) instead of white — brands the
+    # page and pulls the eye to the word that matters. Matches on the bare alnum so
+    # trailing punctuation ("SMELL." vs "SMELL") still hits.
+    accent = ""
+    bare = re.sub(r"[^A-Z0-9]", "", clean)
+    if bare and bare in _KEYWORD_TOKENS and PROFILE.get("cap_accent"):
+        accent = f"\\c{PROFILE['cap_accent']}"
     # Kinetic pop: fade in (40ms) AND scale from 88% -> 100% over 90ms so each
     # word snaps onto screen with a little life instead of hard-cutting. Alignment
     # 5 + \pos means it scales from the word's own centre, so it stays put. Purely
     # a visual-energy touch — the word still appears exactly at its spoken time.
     tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(40,0)"
-           f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100)}}")
+           f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100){accent}}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
 # Short function words that read as a weak caption frame when shown alone
@@ -1942,6 +1955,12 @@ def main():
     # per-scene only for the few-ms cut rounding between the requested segment
     # length and the actually-rendered scene audio (ffprobed below).
     actual_durs = [ffprobe_dur(f) for f in scene_files]
+    # keyword-pop: tokenize the video's core keyword so _event can render those
+    # words in the accent colour (>2 chars only, so "of"/"in" don't pop everywhere)
+    global _KEYWORD_TOKENS
+    _KEYWORD_TOKENS = {re.sub(r"[^A-Z0-9]", "", w.upper())
+                       for w in re.findall(r"[A-Za-z0-9']+", m.get("keyword", ""))
+                       if len(w) > 2}
     ass = os.path.join(WORK, "captions.ass")
     build_ass(m["scenes"], segments, actual_durs, ass)
     body_dur = ffprobe_dur(body)
