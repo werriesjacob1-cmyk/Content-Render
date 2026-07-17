@@ -1471,6 +1471,61 @@ def _diversify_scene_queries(scenes):
             seen[key] = seen.get(key, i)
 
 
+# ---------- AI-GENERATED ILLUSTRATIONS (paid Gemini / Imagen) ----------
+# When real footage AND archival stills both fail for a scene, generate an EXACT,
+# on-topic vertical image instead of dropping to a plain text card — the single
+# biggest fix for "the footage doesn't match what's being said". Gated + cost-
+# capped (Imagen bills per image), and best-effort: any failure (no billing,
+# safety block, wrong model, network) falls back to the stat card, so it can
+# never break a render. Whole pipeline is already AI-disclosed per platform.
+AI_IMAGE = os.environ.get("AI_IMAGE", "1") != "0"
+AI_IMAGE_MODEL = os.environ.get("AI_IMAGE_MODEL", "imagen-3.0-generate-002")
+MAX_AI_IMAGES = int(os.environ.get("MAX_AI_IMAGES", "4"))   # per-video cost cap
+AI_IMAGE_SCENES = 0
+
+
+def _gemini_image(scene, dest):
+    """Generate a relevant 9:16 image for a scene via Imagen on the paid Gemini
+    tier. Returns True on success (bytes written to dest), False on any failure so
+    the caller falls through to the stat card. Cost-capped at MAX_AI_IMAGES/video."""
+    global AI_IMAGE_SCENES
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not (AI_IMAGE and key) or AI_IMAGE_SCENES >= MAX_AI_IMAGES:
+        return False
+    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
+    if not subject:
+        return False
+    prompt = (f"Photorealistic cinematic vertical photograph, documentary science style: "
+              f"{subject}. Dramatic natural lighting, shallow depth of field, ultra-detailed, "
+              f"realistic, no text, no words, no captions, no watermark, no logo.")
+    body = json.dumps({
+        "instances": [{"prompt": prompt}],
+        "parameters": {"sampleCount": 1, "aspectRatio": "9:16"},
+    }).encode()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{AI_IMAGE_MODEL}:predict"
+    try:
+        req = urllib.request.Request(
+            url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            data = json.loads(r.read().decode())
+        preds = data.get("predictions") or []
+        b64 = preds[0].get("bytesBase64Encoded") if preds else None
+        if not b64:
+            return False
+        import base64
+        with open(dest, "wb") as f:
+            f.write(base64.b64decode(b64))
+        ok = os.path.exists(dest) and os.path.getsize(dest) > 5000
+        if ok:
+            AI_IMAGE_SCENES += 1
+        return ok
+    except Exception as e:  # noqa: BLE001 - best-effort; fall back to stat card
+        print(f"  AI image gen unavailable ({e})")
+        return False
+
+
 def _footage_intent(scene):
     """What the footage judge + rescue requery match candidates against. LEADS
     with the scene's search_query (the literal, filmable subject the generator
@@ -1543,6 +1598,26 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                 return out
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
+
+    # AI ILLUSTRATION (paid Gemini/Imagen): before dropping to a plain text card,
+    # generate an EXACT, on-topic vertical image for this scene and Ken-Burns it —
+    # turns the least-relevant scenes (no real footage) from a boring card into a
+    # matching visual. Counts as real imagery (not a stat card), so it also relaxes
+    # the footage-starvation abort. Any failure falls through to the stat card.
+    if AI_IMAGE:
+        ai_img = os.path.join(WORK, f"s{idx}_ai.png")
+        if _gemini_image(scene, ai_img):
+            try:
+                run(["ffmpeg", "-y", "-loop", "1", "-i", ai_img, "-i", seg_mp3,
+                     "-t", f"{seg_dur:.3f}", "-r", "30",
+                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
+                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                ARCHIVAL_SCENES += 1
+                print("  AI-generated illustration scene (Imagen + Ken Burns)")
+                return out
+            except Exception as e:  # noqa: BLE001
+                print(f"  AI image render failed ({e}) — falling back to card")
 
     # No clip cleared RELEVANCE_FLOOR (or there were zero results). Render a
     # designed typographic stat-card scene instead of shipping the least-bad
