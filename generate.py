@@ -1622,6 +1622,102 @@ Return ONLY valid JSON, exactly:
         return None
 
 
+def critique_script(m, fact=None, cta_style="SAVE_WORTHY"):
+    """ONE Groq call that does BOTH quality jobs which used to cost two calls:
+    (a) flags scenes that add no new information (the semantic-redundancy gate
+    that was check_information_gain), and (b) scores the script against the
+    rubric (what score_script did). They analysed the identical numbered
+    voiceover list, so merging them removes one LLM call per render on the
+    common path (a strong clean draft skips punch-up, so the script the gate
+    sees is exactly the one that ships — see generate_candidate).
+
+    Returns (redundant_err, scores):
+      redundant_err -- human string if >=1 scene is redundant, else None
+      scores        -- rubric dict with 'overall', or None if unscorable
+    Each half fails OPEN independently: a broken/blank half returns None for
+    that half and never bricks a run. A caller that only needs one half
+    ignores the other."""
+    scenes = m.get("scenes", [])
+    if len(scenes) < 2:
+        return None, None
+    try:
+        numbered = "\n".join(f"{s['id']}. {s['voiceover']}" for s in scenes)
+        fact_line = fact["fact"] if fact else "(no verified fact; general topic)"
+        whatif = fact.get("whatif", "") if fact else ""
+        rewatch_hint = CTA_RUBRIC_HINTS.get(cta_style, CTA_RUBRIC_HINTS["SAVE_WORTHY"])
+        prompt = f"""You are a brutally honest short-form video editor reviewing a finished script BEFORE it is rendered and posted. Be strict — most scripts should NOT score 9 or 10.
+
+TITLE: {m.get('title', '')}
+HOOK (first spoken line): {m.get('hook', '')}
+VERIFIED FACT THIS VIDEO IS BUILT ON: {fact_line}
+CENTRAL QUESTION (if any): {whatif or '(none)'}
+THIS VIDEO'S ASSIGNED ENDING STYLE: {cta_style}
+
+NUMBERED SCENE-BY-SCENE VOICEOVER (in scene order):
+{numbered}
+
+Do TWO things:
+1) REDUNDANCY: list the ids of any scenes that add NO new information — everything the scene says was already conveyed, even in different words, by an EARLIER scene. Scene 1 never counts (there is no earlier scene). A scene revealing a new number, mechanism, consequence, or comparison is NOT redundant even if it's on the same topic.
+2) SCORE each criterion 0-10 (integers, be strict):
+- hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
+- surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
+- escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
+- payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
+- rewatch: {rewatch_hint}
+- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+
+Return ONLY valid JSON, exactly:
+{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+        raw = call_groq(prompt)
+        data = json.loads(raw)
+    except Exception as e:  # noqa: BLE001 - both halves fail open together
+        print(f"  [critique] failed open ({e}) — no redundancy gate this attempt, unscored")
+        return None, None
+
+    # --- redundancy half (same coercion as the old check_information_gain) ---
+    redundant_err = None
+    try:
+        ids = data.get("no_new_info_scene_ids", [])
+        clean_ids = []
+        if isinstance(ids, list):
+            for i in ids:
+                if isinstance(i, bool):
+                    continue
+                if isinstance(i, int):
+                    clean_ids.append(i)
+                elif isinstance(i, str) and i.strip().lstrip("-").isdigit():
+                    clean_ids.append(int(i.strip()))
+        if len(clean_ids) >= 1:
+            print(f"  [info-gain] flagged {len(clean_ids)} redundant scene(s) {clean_ids} "
+                  f"— no new information beyond an earlier scene")
+            redundant_err = (f"information-gain check flagged {len(clean_ids)} redundant scene(s) "
+                             f"{clean_ids} (no new information beyond an earlier scene) — cut or replace them")
+    except Exception:  # noqa: BLE001
+        redundant_err = None
+
+    # --- score half (same coercion as the old score_script) ---
+    scores = None
+    try:
+        s, missing = {}, 0
+        for k in QUALITY_RUBRIC_CRITERIA:
+            sv = _coerce_score(data.get(k))
+            if sv is None:
+                missing += 1
+            else:
+                s[k] = sv
+        if len(s) >= 4:  # readable majority of the 6 criteria
+            if missing:
+                mean = sum(s.values()) / len(s)
+                for k in QUALITY_RUBRIC_CRITERIA:
+                    s.setdefault(k, round(mean, 2))
+            s["overall"] = round(sum(s[k] for k in QUALITY_RUBRIC_CRITERIA) / len(QUALITY_RUBRIC_CRITERIA), 2)
+            scores = s
+    except Exception:  # noqa: BLE001
+        scores = None
+
+    return redundant_err, scores
+
+
 def _slugify(text, maxlen=40):
     s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
     return s[:maxlen] or "video"
@@ -1857,12 +1953,21 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                       f"(flocking/emergence/etc), retrying"); continue
             if _metaphor_too_similar(m.get("metaphor", ""), history):
                 print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
-            ig_err = check_information_gain(m)
+            # ONE call does the redundancy gate AND the rubric score (was two
+            # separate Groq calls over the same voiceover list). The score is
+            # stashed on the manifest so main()'s quality ratchet can reuse it
+            # without a second call — valid because a strong clean draft skips
+            # punch-up below, so this is the script that ships. Any path that
+            # rewrites the script (punch-up, near-miss repair) clears/omits the
+            # stash and main() re-scores.
+            ig_err, _stashed_quality = critique_script(m, fact=chosen_fact, cta_style=cta_style)
             if ig_err:
                 print(f"  attempt {attempt+1} invalid: {ig_err}")
                 if near_miss is None:
                     near_miss = m
                 continue
+            if _stashed_quality:
+                m["_quality"] = _stashed_quality
             manifest = m; break
         except Exception as e:
             print(f"  attempt {attempt+1} error: {e}")
@@ -1974,6 +2079,11 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         print("  [budget] clean draft from a strong model — skipping punch-up (saves 2 LLM calls)")
         return manifest
 
+    # Past this point the script gets rewritten (punch-up) or was a repaired
+    # near-miss, so the score stashed at the gate no longer describes what will
+    # ship. Drop it (punch_up deepcopies the manifest, so it would otherwise
+    # ride a stale score onto the rewrite) — main() re-scores this path fresh.
+    manifest.pop("_quality", None)
     result = punch_up(manifest, chosen_fact, cta_style=cta_style)
     # Ensure information-gain is checked on the SCRIPT THAT ACTUALLY SHIPS,
     # not just the pre-punch-up draft: punch_up rewrites every voiceover line,
@@ -2103,7 +2213,13 @@ def main():
         if candidate is None:
             print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
             continue
-        quality = score_script(candidate, chosen_fact, cta_style=cta_style)
+        # Reuse the score computed alongside the redundancy gate (critique_script)
+        # when the candidate carried it through unchanged — the common strong-clean
+        # path — so we don't spend a second LLM call re-scoring the identical
+        # script. Any rewritten/near-miss path has no stash and is scored here.
+        quality = candidate.pop("_quality", None)
+        if quality is None:
+            quality = score_script(candidate, chosen_fact, cta_style=cta_style)
         if quality is None:
             # Scoring itself broke (usually the LLM is rate-limited/exhausted).
             # Fail OPEN only for a CLEAN candidate — one that passed strict
@@ -2196,6 +2312,7 @@ def main():
     # internal-only gate flag (see generate_candidate / the quality loop) — never
     # belongs in the manifest main.py renders from.
     manifest.pop("_degraded", None)
+    manifest.pop("_quality", None)  # internal score stash — never ships to render
 
     with open(OUT_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)

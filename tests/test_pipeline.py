@@ -470,6 +470,52 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_critique_script_merges_gain_and_score():
+    section("generate.critique_script: one call returns BOTH redundancy + rubric score")
+    import json as _json
+    m = {"title": "T", "hook": "h",
+         "scenes": [{"id": i, "voiceover": f"scene {i} says a distinct thing"} for i in range(1, 8)]}
+    fact = {"fact": "X is genuinely true", "whatif": "what if X"}
+    _orig = G.call_groq
+    try:
+        # both halves present: redundant ids (incl. a numeric string) + full scores
+        G.call_groq = lambda p: _json.dumps({"no_new_info_scene_ids": [3, "5"],
+                                             "hook": 7, "surprise": 8, "escalation": 7,
+                                             "payoff": 9, "rewatch": 6, "clarity": 9})
+        err, sc = G.critique_script(m, fact, "COMMENT")
+        check(err is not None and "3" in err and "5" in err, f"redundant ids surfaced ({err})")
+        check(sc is not None and sc["overall"] == round((7 + 8 + 7 + 9 + 6 + 9) / 6, 2),
+              f"rubric overall computed from the same call ({sc and sc.get('overall')})")
+
+        # clean script: no redundancy, still fully scored
+        G.call_groq = lambda p: _json.dumps({"no_new_info_scene_ids": [],
+                                             "hook": 8, "surprise": 8, "escalation": 8,
+                                             "payoff": 8, "rewatch": 8, "clarity": 8})
+        err, sc = G.critique_script(m, fact, "COMMENT")
+        check(err is None, "clean script -> no redundancy error")
+        check(sc is not None and sc["overall"] == 8.0, "clean script still scored 8.0")
+
+        # scores as strings + a missing minority still coerce to a usable score
+        G.call_groq = lambda p: _json.dumps({"no_new_info_scene_ids": [],
+                                             "hook": "7", "surprise": "8",
+                                             "escalation": "7", "payoff": "9"})
+        err, sc = G.critique_script(m, fact, "COMMENT")
+        check(sc is not None and "overall" in sc, "string+partial scores coerced, not failed open")
+
+        # unparseable model output fails OPEN on both halves (never bricks a run)
+        G.call_groq = lambda p: "not json"
+        err, sc = G.critique_script(m, fact, "COMMENT")
+        check(err is None and sc is None, "bad JSON -> (None, None), fails open")
+
+        # fewer than 2 scenes short-circuits without a call
+        _boom = lambda p: (_ for _ in ()).throw(AssertionError("must not call LLM"))
+        G.call_groq = _boom
+        err, sc = G.critique_script({"scenes": [{"id": 1, "voiceover": "x"}]}, fact)
+        check(err is None and sc is None, "<2 scenes short-circuits with no LLM call")
+    finally:
+        G.call_groq = _orig
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -483,6 +529,7 @@ def main():
     test_build_ass_fallback_monotonic()
     test_domain_family()
     test_generate_helpers()
+    test_critique_script_merges_gain_and_score()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
