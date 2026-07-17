@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_turtles-breathe-through-rear-ends",
-      "metaphor": "turtle cloaca",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "COMMENT",
-      "title": "Turtles Breathe Through Rear Ends",
-      "fact_id": "turtle_breathing",
-      "domain": "animals",
-      "hook": "You can survive underwater without surfacing",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_mauna-kea-the-tallest-mountain",
       "metaphor": "Mountain Height Comparison",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -264,6 +249,29 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.67
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-crushing-weight-of-the-abyss",
+      "metaphor": "The crushing deep",
+      "viewer_job": "REFRAME",
+      "cta_style": "SHARE",
+      "title": "The Crushing Weight of the Abyss",
+      "fact_id": "mariana_pressure",
+      "domain": "ocean",
+      "hook": "Your body would collapse instantly if you entered the Mariana Trench.",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 7.0,
+        "clarity": 10.0,
+        "overall": 7.83
       }
     }
   ]

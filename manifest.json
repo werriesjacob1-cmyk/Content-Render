@@ -1,110 +1,111 @@
 {
-  "title": "The Great Nothing",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "Bootes void",
-  "metaphor": "Cosmic hole",
-  "hook": "Your night sky is a lie because of the Bootes void.",
-  "script": "Your night sky is a lie because of the Bootes void. It is a region of space 330 million light-years across that is almost completely empty. If you replaced every star in the universe with a grain of sand, this gap would be larger than a football stadium. What if our galaxy floated in the middle of this hole? The night sky would look starless, because the nearest galaxies would be hundreds of millions of light-years away. We would not have known other galaxies existed until the 1960s. This void formed through galactic cannibalism, where dense regions pulled matter away from the empty ones. It contains only a few dozen galaxies where thousands should be. Most people think space is evenly filled, but this proves the universe is fundamentally lumpy. Would you prefer a crowded sky or total cosmic silence?",
+  "title": "The Crushing Weight of the Abyss",
+  "viewer_job": "REFRAME",
+  "keyword": "Mariana Trench",
+  "metaphor": "The crushing deep",
+  "hook": "Your body would collapse instantly if you entered the Mariana Trench.",
+  "script": "Your body would be obliterated the second you entered the Mariana Trench. Down here, the weight of the ocean actually compresses the crystal structure of water. This creates a crushing abyss five percent denser than the surface. But what happens to your body without a submarine? The pressure hits 8 tons per square inch, instantly flattening your lungs. That is over 1,000 times the surface pressure, like balancing an elephant on your thumbnail. Yet, the Mariana snailfish thrives in this nightmare. They survive because their internal pressure perfectly matches the surrounding ocean. Even single-celled Xenophyophores grow twenty centimeters wide in this lethal dark. Send this to the friend who thinks the ocean is just water.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your night sky is a lie because of the Bootes void.",
-      "on_screen_text": "The Bootes void",
-      "search_query": "deep space darkness",
+      "voiceover": "Your body would be obliterated the second you entered the Mariana Trench.",
+      "on_screen_text": "The Mariana Trench",
+      "search_query": "deep sea trench dark",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "It is a region of space 330 million light-years across that is almost completely empty.",
-      "on_screen_text": "330 Million Light-Years",
-      "search_query": "empty starfield space",
+      "voiceover": "Down here, the weight of the ocean actually compresses the crystal structure of water.",
+      "on_screen_text": "Compressed Water",
+      "search_query": "underwater abyss glowing fish",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "If you replaced every star in the universe with a grain of sand, this gap would be larger than a football stadium.",
-      "on_screen_text": "A Cosmic Gap",
-      "search_query": "sand falling hand",
+      "duration": 4,
+      "voiceover": "This creates a crushing abyss five percent denser than the surface.",
+      "on_screen_text": "5% Denser",
+      "search_query": "deep ocean bubbles",
       "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "What if our galaxy floated in the middle of this hole?",
-      "on_screen_text": "Floating in Nothing",
-      "search_query": "milky way galaxy",
+      "voiceover": "But what happens to your body without a submarine?",
+      "on_screen_text": "No Protection",
+      "search_query": "submersible deep ocean",
       "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "The night sky would look starless, because the nearest galaxies would be hundreds of millions of light-years away.",
-      "on_screen_text": "A Starless Sky",
-      "search_query": "distant galaxies black",
+      "duration": 4,
+      "voiceover": "The pressure hits 8 tons per square inch, instantly flattening your lungs.",
+      "on_screen_text": "8 Tons Per Inch",
+      "search_query": "deep sea trench dark",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "We would not have known other galaxies existed until the 1960s.",
-      "on_screen_text": "Hidden Universe",
-      "search_query": "vintage telescope",
+      "voiceover": "That is over 1,000 times the surface pressure, like balancing an elephant on your thumbnail.",
+      "on_screen_text": "Elephant on Thumbnail",
+      "search_query": "african elephant close up",
       "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "This void formed through galactic cannibalism, where dense regions pulled matter away from the empty ones.",
-      "on_screen_text": "Galactic Cannibalism",
-      "search_query": "galaxy nebula",
+      "duration": 4,
+      "voiceover": "Yet, the Mariana snailfish thrives in this nightmare.",
+      "on_screen_text": "The Snailfish",
+      "search_query": "underwater abyss glowing fish",
       "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "It contains only a few dozen galaxies where thousands should be.",
-      "on_screen_text": "Almost Empty",
-      "search_query": "distant galaxies black",
+      "voiceover": "They survive because their internal pressure perfectly matches the surrounding ocean.",
+      "on_screen_text": "Internal Pressure",
+      "search_query": "deep sea fish swimming",
       "motion": "zoom_out"
     },
     {
       "id": 9,
       "duration": 4,
-      "voiceover": "Most people think space is evenly filled, but this proves the universe is fundamentally lumpy.",
-      "on_screen_text": "Cosmic Web",
-      "search_query": "dark matter web",
+      "voiceover": "Even single-celled Xenophyophores grow twenty centimeters wide in this lethal dark.",
+      "on_screen_text": "Giant Single Cells",
+      "search_query": "deep sea floor sediment",
       "motion": "zoom_in"
     },
     {
       "id": 10,
       "duration": 4,
-      "voiceover": "Would you prefer a crowded sky or total cosmic silence?",
-      "on_screen_text": "Crowded or Silent?",
-      "search_query": "night sky stars",
+      "voiceover": "Send this to the friend who thinks the ocean is just water.",
+      "on_screen_text": "Not Just Water",
+      "search_query": "dark ocean surface waves",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "The Bootes void proves the universe isn't what we were taught. Would you survive the cosmic silence?",
-    "A hole in the universe 330 million light-years wide.",
-    "The most unsettling place in space."
+    "The Mariana Trench is more terrifying than you think. Would you dive here for a billion dollars?",
+    "8 tons per square inch is a different kind of physics.",
+    "Reality is stranger than it sounds."
   ],
   "hashtags": [
-    "#space",
-    "#astronomy",
-    "#universe",
+    "#ocean",
     "#science",
-    "#cosmos"
+    "#deepsea",
+    "#nature",
+    "#physics",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-great-nothing",
-  "cta_style": "COMMENT",
-  "domain": "space"
+  "video_id": "science_2026-07-17_the-crushing-weight-of-the-abyss",
+  "cta_style": "SHARE",
+  "domain": "ocean"
 }
