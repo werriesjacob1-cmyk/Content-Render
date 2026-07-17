@@ -1992,7 +1992,14 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     near_miss = None  # a parsed script that only failed soft checks — better than murmuration fallback
     if dossier is None:
         dossier = research_dossier(chosen_fact)
-    for attempt in range(5):
+    # 3 attempts, not 5. Each attempt is a full ~5k-token generation call, and
+    # main() already wraps this in QUALITY_MAX_REGENERATIONS regenerations AND the
+    # workflow retries the whole step once — so 5 here meant up to ~20 generation
+    # calls per render, ~100k tokens, i.e. Groq's ENTIRE 100k/day budget burned by
+    # a single render (the "two videos and the quota's gone" report). 3 attempts +
+    # the near-miss repair path keeps the yield while cutting worst-case burn ~40%,
+    # which is what lets the morning buffer bank several scripts instead of ~2.
+    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "3"))):
         try:
             # If the circuit has already opened (every provider rate-limited 3x
             # in a row this run), the escalating backoff below cannot outlast a
