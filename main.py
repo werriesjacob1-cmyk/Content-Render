@@ -1068,22 +1068,30 @@ def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     repeat = prev_kind is not None and kind == prev_kind
     anchor_i = (idx + (1 if repeat else 0)) % len(_ZOOM_ANCHORS)
     ax, ay = _ZOOM_ANCHORS[anchor_i]
-    base = f"scale=-2:2400,crop={W}:{H},"
+    # SUPERSAMPLED KEN BURNS — fixes the "vibrating"/shaking zoom. zoompan rounds
+    # its crop window to WHOLE pixels every frame, so at the final 1080x1920 each
+    # frame lands a pixel or two off from a perfectly smooth path and the image
+    # jitters. Render the move on a 2x canvas (2160x3840), where one pixel is half
+    # the size, then lanczos-downscale to target: the integer steps collapse into
+    # smooth sub-pixel motion. `static` has no motion so it skips the supersample.
     if kind == "static":
-        return base
+        return f"scale=-2:{H}:flags=lanczos,crop={W}:{H},"
+    W2, H2 = W * 2, H * 2
+    up = f"scale=-2:{H2}:flags=lanczos,crop={W2}:{H2},"
+    down = f"scale={W}:{H}:flags=lanczos,"
     if kind == "zoom_out":
         z = f"if(lte(on,3),1.12,max(zoom-{zspeed},1.06))"
-        return base + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W}x{H}:fps=30,"
+        return up + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W2}x{H2}:fps=30," + down
     if kind == "pan":
         # fixed mild zoom, slide across the frame; direction flips on repeat
         # (or alternates by index) instead of always going left->right
         reverse = (idx % 2 == 1) if not repeat else (idx % 2 == 0)
         x_expr = (f"(iw-iw/zoom)*on/{frames}" if not reverse
                   else f"(iw-iw/zoom)*(1-on/{frames})")
-        return (base + f"zoompan=z='1.09':x='{x_expr}':"
-                        f"y='(ih-ih/zoom)/2':d={frames}:s={W}x{H}:fps=30,")
+        return (up + f"zoompan=z='1.09':x='{x_expr}':"
+                     f"y='(ih-ih/zoom)/2':d={frames}:s={W2}x{H2}:fps=30," + down)
     z = f"if(lte(on,3),1.06,min(zoom+{zspeed},1.12))"  # zoom_in (default)
-    return base + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W}x{H}:fps=30,"
+    return up + f"zoompan=z='{z}':x='{ax}':y='{ay}':d={frames}:s={W2}x{H2}:fps=30," + down
 
 
 # ---------- TYPOGRAPHIC STAT-CARD SCENES ----------
