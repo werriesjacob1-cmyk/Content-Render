@@ -1,95 +1,95 @@
 {
-  "title": "The Organ That Regrows",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "liver regeneration",
-  "metaphor": "Biological self-repair",
-  "hook": "Your body has one organ that can grow itself back from nothing.",
-  "script": "Your body hides a secret organ capable of regenerating itself from nearly nothing. What happens when you carve away a massive piece of your liver? The result is a biological miracle that defies everything we know about healing. Even after donating 65 percent, both pieces regrow to nearly full size in 8 to 10 weeks. It is like a house doubling its entire square footage without adding a foundation. This isn't just stem cells; mature cells simply wake up and start replicating. One liver can be split between two people and grow independently to support both. It is the only solid organ that regrows working tissue instead of just scarring over. We still cannot explain the invisible sensor that tells the growth exactly when to stop.",
+  "title": "The Hidden Giant",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "tallest mountain on Earth",
+  "metaphor": "Hidden ocean giant",
+  "hook": "You've been told the wrong mountain is the tallest on Earth.",
+  "script": "You've been told the wrong mountain is the tallest on Earth. We usually measure peaks from sea level, which gives Everest the crown. But what if you measured from the true base? Mauna Kea in Hawaii starts six thousand metres below the Pacific surface. This makes its total height over 10,000 metres. If you placed it on the same plateau as Everest, it would tower over the Himalayas by more than a kilometer. The mountain is so heavy it actually pushes the ocean floor downward. Its summit is so high that clouds stay below it, making the air transparent for telescopes. Send this to the friend who still thinks Everest is the tallest.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your body hides a secret organ capable of regenerating itself from nearly nothing.",
-      "on_screen_text": "Liver Regeneration",
-      "search_query": "medical team surgery",
+      "voiceover": "You've been told the wrong mountain is the tallest on Earth.",
+      "on_screen_text": "Tallest Mountain on Earth",
+      "search_query": "mountain peak snow",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "What happens when you carve away a massive piece of your liver?",
-      "on_screen_text": "The Big Question",
-      "search_query": "hospital corridor walking",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "We usually measure peaks from sea level, which gives Everest the crown.",
+      "on_screen_text": "Everest's Crown",
+      "search_query": "Everest mountain",
+      "motion": "static"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The result is a biological miracle that defies everything we know about healing.",
-      "on_screen_text": "Biological Miracle",
-      "search_query": "surgeons operating room",
-      "motion": "zoom_in"
+      "voiceover": "But what if you measured from the true base?",
+      "on_screen_text": "The True Base",
+      "search_query": "deep ocean water",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "Even after donating 65 percent, both pieces regrow to nearly full size in 8 to 10 weeks.",
-      "on_screen_text": "65 Percent Regrowth",
-      "search_query": "medical monitor heartrate",
+      "duration": 4,
+      "voiceover": "Mauna Kea in Hawaii starts six thousand metres below the Pacific surface.",
+      "on_screen_text": "Mauna Kea",
+      "search_query": "underwater mountain",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "It is like a house doubling its entire square footage without adding a foundation.",
-      "on_screen_text": "Rapid Expansion",
-      "search_query": "modern house exterior",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "This makes its total height over 10,000 metres.",
+      "on_screen_text": "10,000 Metres Tall",
+      "search_query": "hawaii volcano",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "This isn't just stem cells; mature cells simply wake up and start replicating.",
-      "on_screen_text": "Cell Replication",
-      "search_query": "time lapse plant growth",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 7,
-      "duration": 6,
-      "voiceover": "One liver can be split between two people and grow independently to support both.",
-      "on_screen_text": "Split Liver Transplant",
-      "search_query": "two people shaking hands",
+      "voiceover": "If you placed it on the same plateau as Everest, it would tower over the Himalayas by more than a kilometer.",
+      "on_screen_text": "Taller than Everest",
+      "search_query": "mountain range aerial",
       "motion": "zoom_out"
     },
     {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "The mountain is so heavy it actually pushes the ocean floor downward.",
+      "on_screen_text": "Crushing Weight",
+      "search_query": "ocean floor sediment",
+      "motion": "zoom_in"
+    },
+    {
       "id": 8,
-      "duration": 5,
-      "voiceover": "It is the only solid organ that regrows working tissue instead of just scarring over.",
-      "on_screen_text": "No Scarring",
-      "search_query": "smooth river stone",
+      "duration": 4,
+      "voiceover": "Its summit is so high that clouds stay below it, making the air transparent for telescopes.",
+      "on_screen_text": "Above the Clouds",
+      "search_query": "telescope observatory",
       "motion": "zoom_in"
     },
     {
       "id": 9,
-      "duration": 6,
-      "voiceover": "We still cannot explain the invisible sensor that tells the growth exactly when to stop.",
-      "on_screen_text": "The Mystery Sensor",
-      "search_query": "night sky stars",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "Send this to the friend who still thinks Everest is the tallest.",
+      "on_screen_text": "Who is right?",
+      "search_query": "person looking at phone",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Would you donate a part of your liver if you knew it would grow back? #liverregeneration",
-    "The only organ that can do this.",
-    "Nature's most unsettlingly beautiful repair system."
+    "Who is the tallest mountain on Earth? Everest or Mauna Kea?",
+    "The answer depends on where you start measuring.",
+    "Reality is deeper than you think."
   ],
   "hashtags": [
-    "#biology",
-    "#medicine",
-    "#health",
+    "#geology",
     "#science",
-    "#body",
+    "#nature",
+    "#mountains",
+    "#ocean",
     "#learnontiktok"
   ],
   "render": {
@@ -97,7 +97,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-17_the-organ-that-regrows",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "body"
+  "video_id": "science_2026-07-17_the-hidden-giant",
+  "cta_style": "SHARE",
+  "domain": "earth"
 }

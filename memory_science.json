@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_unseen-oceans",
-      "metaphor": "ocean floor mystery",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Unseen Oceans",
-      "fact_id": "ocean_unmapped",
-      "domain": "ocean",
-      "hook": "You've seen more of Mars than the ocean floor",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
       "metaphor": "hidden dangers in food",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -291,6 +276,29 @@
       "quality": {
         "hook": 6.0,
         "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 10.0,
+        "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-17_the-hidden-giant",
+      "metaphor": "Hidden ocean giant",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SHARE",
+      "title": "The Hidden Giant",
+      "fact_id": "mauna_kea",
+      "domain": "earth",
+      "hook": "You've been told the wrong mountain is the tallest on Earth.",
+      "structure": {
+        "scene_count": 9,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
         "escalation": 8.0,
         "payoff": 9.0,
         "rewatch": 8.0,
