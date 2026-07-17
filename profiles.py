@@ -22,9 +22,13 @@ PROFILES = {
         "cap_size": 120,
         "cap_y": 760,                 # eye level
         "cap_primary": "&H00FFFFFF",  # white
+        "cap_accent": "&H0033CCFF",   # warm gold (ASS BGR) — the core keyword word
+                                       # pops in this colour so the page has a
+                                       # recognizable signature + the eye lands on
+                                       # the important word. Set "" to disable.
         "cap_outline": 4,
         # look
-        "grade": "eq=contrast=1.08:saturation=1.12:brightness=-0.02,curves=preset=medium_contrast",
+        "grade": "eq=contrast=1.08:saturation=1.12:brightness=-0.02,curves=preset=medium_contrast,vignette=PI/6",
         "zoom_speed": 0.0006,         # slow cinematic
         # Number overlay DISABLED (was True): the floating "3.8" / "80,000 times"
         # card popped at the top of the frame and lingered — read as clutter

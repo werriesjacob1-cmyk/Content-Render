@@ -338,6 +338,32 @@ VIEWER_JOBS = [
 # kept defined below in case it's ever wanted, but it is not assigned.
 CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT"]
 
+# HOOK FRAMES — the SHAPE of the opening line, rotated per video (like cta_style)
+# so the page stops feeling same-shaped (every video opening with the same
+# "question or bold claim"). The frame changes the STRUCTURE of the first beat;
+# all the normal hook rules (concrete, instantly pictured, 8-14 words) still
+# apply on top. One is picked per render in main(), avoiding the last one used.
+HOOK_FRAMES = [
+    ("DIRECT_QUESTION",
+     "Open on a concrete question the viewer instantly starts answering in their head — name a "
+     "real thing in it (e.g. 'How much of what you taste is actually smell?'). Not abstract."),
+    ("MYTH_FLIP",
+     "Open by stating a belief the viewer HOLDS, then flip it in the same breath (e.g. 'You were "
+     "taught your tongue has taste zones — it doesn't'). The rest proves the correction."),
+    ("EVERYDAY_UNSEEN",
+     "Open on something the viewer does or sees EVERY DAY and reveal it as secretly strange (e.g. "
+     "'Every time you smell rain, you're smelling bacteria'). Make the familiar suddenly alien."),
+    ("CHALLENGE",
+     "Open with a dare the viewer will get wrong (e.g. 'Name something older than trees — whatever "
+     "you guessed is probably wrong'). It provokes them to argue and keep watching."),
+    ("BODY_SCENARIO",
+     "Open on a vivid thing happening RIGHT NOW in the viewer's own body or surroundings (e.g. "
+     "'Right now, microbes in your gut are voting on what you crave'). Immediate and physical."),
+    ("IMPOSSIBLE_FACT",
+     "Open on a flat claim so specific it sounds fake but is TRUE (e.g. 'Sharks are older than "
+     "Saturn's rings'). The brain can't scroll past needing the 'how is that possible' answer."),
+]
+
 CTA_ENDING_RULES = {
     "SAVE_WORTHY": (
         "ENDING STYLE FOR THIS VIDEO: RESONANT PAYOFF. End on the single most striking, "
@@ -599,7 +625,13 @@ PAGE_IDENTITY = (
 
 
 def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_style="SAVE_WORTHY",
-                 dossier=None):
+                 dossier=None, hook_frame=None):
+    frame_block = ""
+    if hook_frame:
+        frame_block = (f"\n\nTHIS VIDEO'S OPENING MOVE ({hook_frame[0]}): {hook_frame[1]}\n"
+                       f"Use this SHAPE for the first line so the page doesn't feel formulaic — but "
+                       f"still obey every HOOK rule below (concrete, instantly pictured, 8-14 words, "
+                       f"no setup needed). The frame changes the opening's structure, not the rules.")
     series_block = ""
     if SERIES:
         part = SERIES_PART or "1"
@@ -679,7 +711,7 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
 
 {PAGE_IDENTITY}{fact_block}{dossier_block}
 
-THIS VIDEO'S JOB: {job_name}. {job_desc}
+THIS VIDEO'S JOB: {job_name}. {job_desc}{frame_block}
 
 ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fact pages):
 - STRUCTURE IT AS A TINY MYSTERY, not a list: open a real question the brain CANNOT ignore, build
@@ -2001,7 +2033,7 @@ def research_dossier(fact):
 
 
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
-                        cta_style="SAVE_WORTHY", dossier=None):
+                        cta_style="SAVE_WORTHY", dossier=None, hook_frame=None):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
     once and return a finished manifest, or None if nothing usable came out
     of it. Called once per quality-ratchet attempt (see
@@ -2043,7 +2075,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
             raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
                                           avoid_openers=avoid_openers, cta_style=cta_style,
-                                          dossier=dossier))
+                                          dossier=dossier, hook_frame=hook_frame))
             m = json.loads(raw)
             if not isinstance(m, dict):
                 # some models (esp. gemma) occasionally return a bare JSON array
@@ -2294,6 +2326,13 @@ def main():
         cta_style = random.choice(cta_options)
     print(f"[generate] cta_style={cta_style}")
 
+    # Rotate the OPENING-LINE shape too (see HOOK_FRAMES) so consecutive videos
+    # don't all open the same way — avoid the frame the last video used.
+    last_frame = history[-1].get("hook_frame") if history else None
+    frame_options = [f for f in HOOK_FRAMES if f[0] != last_frame] or HOOK_FRAMES
+    hook_frame = random.choice(frame_options)
+    print(f"[generate] hook_frame={hook_frame[0]}")
+
     # Quality ratchet (improvement loop, part 1): generate, self-critique,
     # and — if the score is below QUALITY_THRESHOLD — regenerate from
     # scratch, bounded to QUALITY_MAX_REGENERATIONS extra attempts. Keeps
@@ -2320,7 +2359,7 @@ def main():
                   f"fails fast instead of grinding on doomed retries")
             break
         candidate = generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers,
-                                        cta_style=cta_style, dossier=shared_dossier)
+                                        cta_style=cta_style, dossier=shared_dossier, hook_frame=hook_frame)
         if candidate is None:
             print(f"  [quality] attempt {regen_i+1}: generation produced nothing usable")
             continue
@@ -2439,6 +2478,7 @@ def main():
         "metaphor": manifest.get("metaphor", manifest["title"]),
         "viewer_job": job_name,
         "cta_style": cta_style,
+        "hook_frame": hook_frame[0] if hook_frame else None,
         "title": manifest["title"],
         "fact_id": chosen_fact["id"] if chosen_fact else None,
         "domain": chosen_fact.get("domain") if chosen_fact else None,
