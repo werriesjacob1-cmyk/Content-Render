@@ -1610,6 +1610,50 @@ def _event(start, end, word):
     tag = f"{{\\pos(540,{PROFILE['cap_y']})\\fad(40,0)}}"
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
+# Short function words that read as a weak caption frame when shown alone
+# ("OF", "THE", "A"). They ride along with an adjacent word instead — see
+# _group_function_words. NOT dropped: the word still appears, just grouped.
+_CAPTION_FUNCTION_WORDS = {
+    "a", "an", "the", "of", "to", "in", "on", "at", "is", "it", "as", "or",
+    "and", "by", "for", "its", "so", "up", "no", "if", "we", "be",
+}
+
+
+def _group_function_words(word_times, max_chars=15):
+    """Merge a lone short function word into an adjacent caption frame so no
+    frame is just 'OF'/'THE'/'A' — WITHOUT dropping any word. Both words show in
+    the merged frame and it spans both their spoken windows, so coverage stays
+    word-for-word (the thing the user asked for) while killing the weak
+    single-function-word frames. A function word attaches FORWARD to the word it
+    leads into (articles/prepositions -> their noun); a trailing one attaches
+    backward. Skipped when the merged text would be too wide for the no-wrap
+    one-word style (max_chars), so a caption never overflows the frame."""
+    n = len(word_times)
+    if n < 2:
+        return list(word_times)
+    out = []
+    i = 0
+    while i < n:
+        w, st, en = word_times[i]
+        bare = re.sub(r"[^A-Za-z0-9]", "", w).lower()
+        is_fn = bare in _CAPTION_FUNCTION_WORDS
+        if is_fn and i + 1 < n:
+            w2, st2, en2 = word_times[i + 1]
+            if len(w) + 1 + len(w2) <= max_chars:
+                out.append((f"{w} {w2}", min(st, st2), max(en, en2)))
+                i += 2
+                continue
+        if is_fn and out and i + 1 >= n:          # trailing function word
+            pw, pst, pen = out[-1]
+            if len(pw) + 1 + len(w) <= max_chars:
+                out[-1] = (f"{pw} {w}", min(pst, st), max(pen, en))
+                i += 1
+                continue
+        out.append((w, st, en))
+        i += 1
+    return out
+
+
 def build_ass(scenes, segments, actual_durs, path):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
@@ -1641,13 +1685,14 @@ def build_ass(scenes, segments, actual_durs, path):
             return 0.0
         return final_starts[j] - orig_starts[j]
 
-    # Emit ONE caption per spoken word. (An earlier version folded short
-    # function words into a neighbour to avoid lone 'THE'/'TO' frames, but the
-    # user watched that build and read it as "the subtitles don't pick up every
-    # word the narrator says" — full word-for-word coverage, tightly synced, is
-    # what they want. So every word gets its own frame at its real spoken time.)
+    # One caption per spoken word, EXCEPT a lone short function word rides along
+    # with its neighbour (_group_function_words) so there's no weak 'OF'/'THE'
+    # frame. An earlier version was read as "the subtitles don't pick up every
+    # word" because it DROPPED the function word; this one keeps every word (both
+    # show in the merged frame), so coverage stays word-for-word and tightly
+    # synced while the lone-function-word frames are gone.
     def _emit(word_times):
-        for w, st, en in word_times:
+        for w, st, en in _group_function_words(word_times):
             events.append(_event(st, en, w))
 
     if WORD_TIMINGS:

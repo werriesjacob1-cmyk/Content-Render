@@ -470,6 +470,31 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_caption_function_word_grouping():
+    section("main._group_function_words: no lone 'OF'/'THE' frame, and NO word dropped")
+    # "capable of stopping the plane" -> 'of' rides with 'stopping', 'the' with 'plane'
+    wt = [("capable", 0.0, 0.4), ("of", 0.4, 0.5), ("stopping", 0.5, 1.0),
+          ("the", 1.0, 1.1), ("plane", 1.1, 1.6)]
+    grouped = M._group_function_words(wt)
+    texts = [g[0] for g in grouped]
+    # every original word still present somewhere (word-for-word coverage kept)
+    joined = " ".join(texts).split()
+    for w in ("capable", "of", "stopping", "the", "plane"):
+        check(w in joined, f"'{w}' still shown after grouping ({texts})")
+    check(not any(t.lower() in M._CAPTION_FUNCTION_WORDS for t in texts),
+          f"no lone function-word frame remains ({texts})")
+    # merged frames span both words' windows and stay monotonic
+    check(all(a[2] <= b[2] for a, b in zip(grouped, grouped[1:])),
+          "grouped end-times stay monotonic")
+    # a merge that would overflow the no-wrap width is left alone (both kept apart)
+    wt2 = [("of", 0.0, 0.2), ("extraordinarily", 0.2, 1.0)]
+    g2 = M._group_function_words(wt2, max_chars=10)
+    check(len(g2) == 2, "over-wide merge skipped (kept as separate frames, still no drop)")
+    # a single word is returned unchanged
+    check(M._group_function_words([("hello", 0.0, 0.5)]) == [("hello", 0.0, 0.5)],
+          "single word unchanged")
+
+
 def test_script_buffer_queue():
     section("generate.py buffer: enqueue/dequeue is FIFO, empty=3, malformed-safe")
     import json as _json
@@ -577,6 +602,7 @@ def main():
     test_build_ass_fallback_monotonic()
     test_domain_family()
     test_generate_helpers()
+    test_caption_function_word_grouping()
     test_script_buffer_queue()
     test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
