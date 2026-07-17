@@ -2013,9 +2013,16 @@ def main():
         print("[sfx] mixing signature intro sting")
         ff_inputs += ["-i", sting]
         labels.append(f"[{idx}:a]"); idx += 1
+    # Final loudness normalization to the social-media standard (~-14 LUFS
+    # integrated, -1.5 dBTP true peak). Without it, output loudness drifts with
+    # the voice/music levels, so some videos land quiet and get turned UP by the
+    # platform (raising noise) while others get turned down — inconsistent and
+    # unprofessional. loudnorm makes every video hit the same loudness the feed
+    # expects, with headroom so it never clips.
+    _LOUDNORM = "loudnorm=I=-14:TP=-1.5:LRA=11"
     if len(labels) > 1:
         filt.append(f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:"
-                    f"dropout_transition=0:normalize=0[a]")
+                    f"dropout_transition=0:normalize=0,{_LOUDNORM}[a]")
         run(["ffmpeg", "-y", *ff_inputs, "-filter_complex", ";".join(filt),
              "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, "-preset", "medium",
@@ -2023,7 +2030,7 @@ def main():
     else:
         run(["ffmpeg", "-y", "-i", captioned, "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, "-preset", "medium",
-             "-c:a", "aac", "-pix_fmt", "yuv420p", final])
+             "-af", _LOUDNORM, "-c:a", "aac", "-pix_fmt", "yuv420p", final])
 
     with open(os.path.join(OUT, "post.json"), "w") as f:
         # video_id (if present) is the key generate.py's performance-memory
