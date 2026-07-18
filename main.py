@@ -542,11 +542,11 @@ _LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
                             # unparseably" (keep vetoing, avoids the belly-button bug).
 
 
-JUDGE_GEMINI_MODEL = "gemini-2.0-flash"  # NOTE: gemini-2.5-flash-lite 404s for
-                                         # newly-created keys ("no longer available
-                                         # to new users"), so we can't use it here
-                                         # either — 2.0-flash is what a fresh key
-                                         # can actually call.
+# 2026-07: gemini-2.0-flash was 404'd by Google ("no longer available"). Moved to
+# the current 2.5 family (works on a billed key). Env-overridable so a future
+# deprecation is a one-variable fix. Used by both the vision footage judge and the
+# text judge's Gemini fallback.
+JUDGE_GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").split(",")[0].strip()
 
 
 def _gemini_chat(prompt, max_tokens, temperature):

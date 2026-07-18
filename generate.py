@@ -70,7 +70,13 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
 # still carry generation. If this key can't reach flash-lite it simply 404s and
 # falls through harmlessly — no worse than before. Cerebras (auto-discovered)
 # remains the capacity backstop when both Gemini buckets are out.
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
+# 2026-07: Google 404'd gemini-2.0-flash / -2.0-flash-lite ("no longer available")
+# — every Gemini call died and the paid tier went unused. Moved to the current
+# 2.5 family (available on a BILLED key; the old "404 for new keys" limit was a
+# free-tier thing). Env-overridable (GEMINI_MODEL, comma-separated) so the NEXT
+# deprecation is a one-variable fix with no code change / redeploy.
+GEMINI_MODELS = [m.strip() for m in os.environ.get(
+    "GEMINI_MODEL", "gemini-2.5-flash,gemini-2.5-flash-lite").split(",") if m.strip()]
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
