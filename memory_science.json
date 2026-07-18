@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
-      "metaphor": "hidden dangers in food",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "Bananas are Slightly Radioactive",
-      "fact_id": "banana_radioactive",
-      "domain": "physics",
-      "hook": "Your bananas are secretly giving you a tiny dose of radiation.",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_rainbow-deception",
       "metaphor": "colorful atmospheric phenomenon",
       "viewer_job": "MYTH_BUSTER",
@@ -305,6 +290,30 @@
         "payoff": 8.0,
         "rewatch": 5.0,
         "clarity": 7.0,
+        "overall": 6.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-18_the-mantis-shrimp-s-unimaginable-vision",
+      "metaphor": "extraordinary vision",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Mantis Shrimp's Unimaginable Vision",
+      "fact_id": "mantis_shrimp_eyes",
+      "domain": "senses",
+      "hook": "What if an animal could see colors you can't imagine?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 8.0,
         "overall": 6.83
       }
     }

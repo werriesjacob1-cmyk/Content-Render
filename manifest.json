@@ -1,86 +1,78 @@
 {
-  "title": "The Hidden Physics of GPS",
-  "viewer_job": "REFRAME",
-  "keyword": "bending time",
-  "metaphor": "space and time",
-  "hook": "What if your GPS was wrong by ten kilometers every day?",
-  "script": "What if your GPS was wrong by ten kilometers every day? GPS satellites orbit at 20,200 kilometers, moving at 14,000 kilometers per hour. This speed causes their atomic clocks to tick faster, gaining about 38 microseconds daily. The satellites are farther from Earth's gravity, which also speeds up their clocks. Over a million days, that adds up to a staggering 38 seconds of time gained. Each time you follow a map, your phone silently adjusts for these time differences. Reality bends around you, and you remain blissfully unaware.",
+  "title": "The Mantis Shrimp's Unimaginable Vision",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "mantis shrimp",
+  "metaphor": "extraordinary vision",
+  "hook": "What if an animal could see colors you can't imagine?",
+  "script": "What if an animal could see colors you can't imagine? The mantis shrimp has a vision system that defies human comprehension. This creature's eye contains up to 10,000 lenses, allowing it to detect details others miss. Unlike us, it sees circularly polarized light using a unique mechanism in its eye. Yet, they also throw some of the fastest punches in nature, creating shockwaves that can boil water. Imagine a creature that sees colors you can't even name and strikes faster than you can blink.",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "What if your GPS was wrong by ten kilometers every day?",
-      "on_screen_text": "GPS Miscalculations?",
-      "search_query": "gps navigation phone",
+      "duration": 4,
+      "voiceover": "What if an animal could see colors you can't imagine?",
+      "on_screen_text": "Unimaginable Colors",
+      "search_query": "mantis shrimp colorful",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 6,
-      "voiceover": "GPS satellites orbit at 20,200 kilometers, moving at 14,000 kilometers per hour.",
-      "on_screen_text": "Orbiting Satellites",
-      "search_query": "satellite orbit earth",
+      "duration": 4,
+      "voiceover": "The mantis shrimp has a vision system that defies human comprehension.",
+      "on_screen_text": "Unique Vision System",
+      "search_query": "mantis shrimp eye close-up",
       "motion": "pan"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "This speed causes their atomic clocks to tick faster, gaining about 38 microseconds daily.",
-      "on_screen_text": "Time Dilation",
-      "search_query": "gps navigation phone",
+      "duration": 4,
+      "voiceover": "This creature's eye contains up to 10,000 lenses, allowing it to detect details others miss.",
+      "on_screen_text": "10,000 Lenses",
+      "search_query": "mantis shrimp lenses",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "The satellites are farther from Earth's gravity, which also speeds up their clocks.",
-      "on_screen_text": "Gravity's Influence",
-      "search_query": "satellite orbit earth",
+      "duration": 4,
+      "voiceover": "Unlike us, it sees circularly polarized light using a unique mechanism in its eye.",
+      "on_screen_text": "Polarized Light",
+      "search_query": "polarized light mantis shrimp",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "Over a million days, that adds up to a staggering 38 seconds of time gained.",
-      "on_screen_text": "38 Seconds Gained",
-      "search_query": "gps navigation phone",
-      "motion": "pan"
-    },
-    {
-      "id": 6,
-      "duration": 6,
-      "voiceover": "Each time you follow a map, your phone silently adjusts for these time differences.",
-      "on_screen_text": "Silent Adjustments",
-      "search_query": "gps navigation phone",
+      "duration": 4,
+      "voiceover": "Yet, they also throw some of the fastest punches in nature, creating shockwaves that can boil water.",
+      "on_screen_text": "Fastest Punches",
+      "search_query": "mantis shrimp punch",
       "motion": "zoom_in"
     },
     {
-      "id": 7,
-      "duration": 5,
-      "voiceover": "Reality bends around you, and you remain blissfully unaware.",
-      "on_screen_text": "Blissfully Unaware",
-      "search_query": "gps navigation phone",
+      "id": 6,
+      "duration": 4,
+      "voiceover": "Imagine a creature that sees colors you can't even name and strikes faster than you can blink.",
+      "on_screen_text": "Faster Than You Blink",
+      "search_query": "mantis shrimp striking",
       "motion": "pan"
     }
   ],
   "captions": [
-    "Did you know GPS can be off by ten kilometers? Yes or no?",
-    "What else do you think we take for granted?",
-    "Time is not as constant as you think."
+    "Do you believe this about the mantis shrimp?",
+    "Can you imagine their vision?",
+    "What other strange creatures exist?"
   ],
   "hashtags": [
-    "#science",
-    "#space",
-    "#gps",
-    "#facts",
-    "#relativity"
+    "#mantisshrimp",
+    "#vision",
+    "#nature",
+    "#ocean",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-18_the-hidden-physics-of-gps",
-  "cta_style": "COMMENT",
-  "domain": "physics"
+  "video_id": "science_2026-07-18_the-mantis-shrimp-s-unimaginable-vision",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "senses"
 }
