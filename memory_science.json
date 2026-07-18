@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_rainbow-deception",
-      "metaphor": "colorful atmospheric phenomenon",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Rainbow Deception",
-      "fact_id": "rainbow_circle",
-      "domain": "light",
-      "hook": "What if you could see a rainbow as a full circle?",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-15_the-rodent-that-breaks-biology",
       "metaphor": "Biological Rule Breaker",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -315,6 +300,30 @@
         "rewatch": 5.0,
         "clarity": 8.0,
         "overall": 6.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-18_the-silent-eruption-of-lake-nyos",
+      "metaphor": "natural disaster",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "hook_frame": "CHALLENGE",
+      "title": "The Silent Eruption of Lake Nyos",
+      "fact_id": "exploding_lake_nyos",
+      "domain": "earth",
+      "hook": "How could a peaceful lake suddenly kill over a thousand people?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 8.0
       }
     }
   ]

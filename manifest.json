@@ -1,78 +1,94 @@
 {
-  "title": "The Mantis Shrimp's Unimaginable Vision",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "mantis shrimp",
-  "metaphor": "extraordinary vision",
-  "hook": "What if an animal could see colors you can't imagine?",
-  "script": "What if an animal could see colors you can't imagine? The mantis shrimp has a vision system that defies human comprehension. This creature's eye contains up to 10,000 lenses, allowing it to detect details others miss. Unlike us, it sees circularly polarized light using a unique mechanism in its eye. Yet, they also throw some of the fastest punches in nature, creating shockwaves that can boil water. Imagine a creature that sees colors you can't even name and strikes faster than you can blink.",
+  "title": "The Silent Eruption of Lake Nyos",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "Lake Nyos explosion",
+  "metaphor": "natural disaster",
+  "hook": "How could a peaceful lake suddenly kill over a thousand people?",
+  "script": "How could a peaceful lake suddenly kill over a thousand people? In 1986, Lake Nyos in Cameroon erupted without warning. This seemingly calm body of water released 1.2 cubic kilometers of carbon dioxide overnight. The gas, heavier than air, suffocated more than 1,700 people in their sleep. Locals had no chance to escape the invisible blanket of death. Scientists still debate what triggered this disaster, but the consequences were catastrophic. To prevent another tragedy, engineers now ventilate the lake continuously. This industrial effort turns a potential disaster into a managed resource.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if an animal could see colors you can't imagine?",
-      "on_screen_text": "Unimaginable Colors",
-      "search_query": "mantis shrimp colorful",
+      "voiceover": "How could a peaceful lake suddenly kill over a thousand people?",
+      "on_screen_text": "Silent Lake Disaster",
+      "search_query": "calm crater lake",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The mantis shrimp has a vision system that defies human comprehension.",
-      "on_screen_text": "Unique Vision System",
-      "search_query": "mantis shrimp eye close-up",
+      "voiceover": "In 1986, Lake Nyos in Cameroon erupted without warning.",
+      "on_screen_text": "1986 Eruption",
+      "search_query": "calm lake explosion",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This creature's eye contains up to 10,000 lenses, allowing it to detect details others miss.",
-      "on_screen_text": "10,000 Lenses",
-      "search_query": "mantis shrimp lenses",
-      "motion": "zoom_in"
+      "voiceover": "This seemingly calm body of water released 1.2 cubic kilometers of carbon dioxide overnight.",
+      "on_screen_text": "1.2 Cubic Kilometers",
+      "search_query": "volcanic lake aerial",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Unlike us, it sees circularly polarized light using a unique mechanism in its eye.",
-      "on_screen_text": "Polarized Light",
-      "search_query": "polarized light mantis shrimp",
-      "motion": "zoom_in"
+      "voiceover": "The gas, heavier than air, suffocated more than 1,700 people in their sleep.",
+      "on_screen_text": "1,700 Lives Lost",
+      "search_query": "still lake water",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Yet, they also throw some of the fastest punches in nature, creating shockwaves that can boil water.",
-      "on_screen_text": "Fastest Punches",
-      "search_query": "mantis shrimp punch",
-      "motion": "zoom_in"
+      "voiceover": "Locals had no chance to escape the invisible blanket of death.",
+      "on_screen_text": "Invisible Threat",
+      "search_query": "misty lake morning",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Imagine a creature that sees colors you can't even name and strikes faster than you can blink.",
-      "on_screen_text": "Faster Than You Blink",
-      "search_query": "mantis shrimp striking",
+      "voiceover": "Scientists still debate what triggered this disaster, but the consequences were catastrophic.",
+      "on_screen_text": "Catastrophic Consequences",
+      "search_query": "fog over lake",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "To prevent another tragedy, engineers now ventilate the lake continuously.",
+      "on_screen_text": "Continuous Ventilation",
+      "search_query": "volcanic lake safety",
       "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "This industrial effort turns a potential disaster into a managed resource.",
+      "on_screen_text": "Managed Resource",
+      "search_query": "safety engineering",
+      "motion": "static"
     }
   ],
   "captions": [
-    "Do you believe this about the mantis shrimp?",
-    "Can you imagine their vision?",
-    "What other strange creatures exist?"
+    "Did you know about the Lake Nyos explosion? Yes or no?",
+    "More than 1,700 people lost their lives.",
+    "Invisible gases can be deadly."
   ],
   "hashtags": [
-    "#mantisshrimp",
-    "#vision",
+    "#science",
     "#nature",
-    "#ocean",
-    "#science"
+    "#facts",
+    "#history",
+    "#disaster"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-18_the-mantis-shrimp-s-unimaginable-vision",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "senses"
+  "video_id": "science_2026-07-18_the-silent-eruption-of-lake-nyos",
+  "cta_style": "LOOP",
+  "domain": "earth"
 }
