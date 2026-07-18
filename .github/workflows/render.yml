@@ -173,10 +173,17 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
+          # Stage the always-present state files FIRST, on their own line. A
+          # single `git add memory_*.json manifest.json ... queue_*` aborts
+          # ATOMICALLY (stages nothing) when any one pathspec matches no files —
+          # and on the live-gen path (empty buffer, the normal case) `queue_*`
+          # matches nothing, so the manifest + memory + dossier never committed.
+          # That silently froze memory_science.json's used-fact/domain history
+          # (topic diversity) and left a STALE manifest on the branch.
+          git add -A memory_*.json manifest.json dossier_cache_*.json 2>/dev/null || true
           # -A on the queue path stages the DELETION of a just-dequeued manifest
-          # too; without it the fresh checkout on the next run would still carry
-          # that file and render the same video again.
-          git add -A memory_*.json manifest.json dossier_cache_*.json queue_* 2>/dev/null || true
+          # too; separate line so an empty queue_* glob can't abort the add above.
+          git add -A queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
           git push 2>/dev/null || echo "push skipped"
 
