@@ -163,24 +163,6 @@
       ]
     },
     {
-      "id": "ocean_oxygen",
-      "domain": "ocean",
-      "fact": "Most of the oxygen you breathe comes from the ocean, not forests; tiny drifting plankton produce over half of it.",
-      "angle": "reframes where your air comes from",
-      "key_terms": [
-        "plankton",
-        "50 percent",
-        "Prochlorococcus"
-      ],
-      "whatif": "What if every forest on Earth burned but the plankton survived? You'd still breathe, because the ocean's plankton, not the rainforest, makes at least 50 percent of Earth's oxygen.",
-      "wow": "A single type of these microbes, Prochlorococcus, is the most abundant photosynthetic life on the planet and makes up to one in five breaths you take.",
-      "queries": [
-        "ocean surface waves",
-        "bioluminescent plankton ocean",
-        "sunlight underwater"
-      ]
-    },
-    {
       "id": "mauna_kea",
       "domain": "earth",
       "fact": "Everest is the highest point above sea level, but Mauna Kea in Hawaii is the tallest mountain on Earth measured from its base on the ocean floor.",
@@ -196,24 +178,6 @@
         "mountain peak snow",
         "hawaii volcano",
         "underwater mountain"
-      ]
-    },
-    {
-      "id": "lightning_hotter",
-      "domain": "physics",
-      "fact": "A bolt of lightning is about five times hotter than the surface of the Sun, reaching roughly 30,000 degrees in a fraction of a second.",
-      "angle": "everyday thing is more extreme than the Sun",
-      "key_terms": [
-        "30,000 degrees",
-        "five times hotter",
-        "surface of the Sun"
-      ],
-      "whatif": "What if you could touch a lightning channel for an instant? It flashes to about 30,000 degrees, five times hotter than the surface of the Sun, in a few millionths of a second.",
-      "wow": "That bolt heats the air so violently that it explodes outward, and the shockwave slamming back together is the crack of thunder you hear.",
-      "queries": [
-        "lightning strike storm",
-        "thunderstorm sky",
-        "lightning night"
       ]
     },
     {
@@ -253,24 +217,6 @@
       ]
     },
     {
-      "id": "octopus_hearts",
-      "domain": "animals",
-      "fact": "An octopus has three hearts and blue blood, and the main heart stops beating when it swims, which is why it prefers to crawl.",
-      "angle": "alien biology on Earth",
-      "key_terms": [
-        "three hearts",
-        "blue blood",
-        "copper"
-      ],
-      "whatif": "What if an octopus had to race for its life? Its main heart stops beating the moment it swims, so it tires quickly and would rather crawl along the seabed.",
-      "wow": "Its blood is blue because it carries oxygen with a copper-based molecule called hemocyanin instead of the iron that makes our blood red.",
-      "queries": [
-        "octopus ocean",
-        "octopus swimming",
-        "deep sea creature"
-      ]
-    },
-    {
       "id": "tardigrade",
       "domain": "animals",
       "fact": "The tardigrade, a microscopic animal, can survive being frozen, boiled, crushed, and even the vacuum of outer space.",
@@ -305,24 +251,6 @@
         "mantis shrimp colorful",
         "underwater shrimp",
         "ocean reef creature"
-      ]
-    },
-    {
-      "id": "sharks_older_trees",
-      "domain": "animals",
-      "fact": "Sharks are older than trees; sharks have existed for over 400 million years, predating the first trees by tens of millions of years.",
-      "angle": "scrambles your sense of timeline",
-      "key_terms": [
-        "sharks",
-        "450 million years",
-        "trees"
-      ],
-      "whatif": "What if you lined up the whole history of life on Earth? Sharks appear around 450 million years ago, roughly 50 million years before the very first tree ever grew.",
-      "wow": "That means sharks are older than Saturn's rings, older than the North Star, and they outlived the dinosaurs too.",
-      "queries": [
-        "shark swimming ocean",
-        "ancient forest",
-        "shark deep blue"
       ]
     },
     {
@@ -377,24 +305,6 @@
         "lightning storm night",
         "race car speed",
         "fiber optic lights"
-      ]
-    },
-    {
-      "id": "more_bacteria",
-      "domain": "body",
-      "fact": "You carry roughly as many bacterial cells as human cells, meaning you are, by cell count, about half not-you.",
-      "angle": "unsettling truth about identity",
-      "key_terms": [
-        "38 trillion bacteria",
-        "30 trillion",
-        "microbiome"
-      ],
-      "whatif": "What if you wiped out every microbe living on and inside you? You'd lose about 38 trillion cells, because by count you are slightly more them than you.",
-      "wow": "The famous claim that microbes outnumber your cells 10 to 1 was wrong; your microbiome is closer to a 1.3 to 1 ratio, about 38 trillion bacteria to 30 trillion human cells.",
-      "queries": [
-        "petri dish science",
-        "yogurt spoon closeup",
-        "crowd people walking"
       ]
     },
     {
@@ -1637,6 +1547,246 @@
         "mantis shrimp colorful",
         "coral reef macro",
         "rainbow light spectrum"
+      ]
+    },
+    {
+      "id": "card_shuffle_52",
+      "domain": "math",
+      "fact": "Shuffle a deck of 52 cards and you have almost certainly created an order that has never existed before in the history of the universe. The number of possible arrangements is 52 factorial, about an 8 followed by 67 zeros.",
+      "angle": "a number so large it breaks your intuition",
+      "key_terms": [
+        "52 factorial",
+        "8 followed by 67 zeros",
+        "never existed before"
+      ],
+      "whatif": "What are the odds that exact order has ever been dealt before, by anyone, anywhere? Essentially zero, because there are far more ways to arrange 52 cards than there are atoms making up the entire Earth.",
+      "wow": "If every person who ever lived shuffled one deck every second since the Big Bang, they still would not have made the tiniest dent in all the possible orders.",
+      "queries": [
+        "shuffling deck of cards",
+        "hands dealing cards",
+        "playing cards falling",
+        "casino card table",
+        "night sky stars"
+      ]
+    },
+    {
+      "id": "chess_possible_games",
+      "domain": "math",
+      "fact": "There are more possible games of chess than there are atoms in the observable universe.",
+      "angle": "how a simple game hides something bigger than reality",
+      "key_terms": [
+        "more than atoms",
+        "observable universe",
+        "after just a few moves"
+      ],
+      "whatif": "A chessboard has only 64 squares, so how can it hold more games than the universe has atoms? Because the moves branch so fast that the count blows past a number with 120 zeros, while the universe has only about 80.",
+      "wow": "No computer will ever list them all. There is not enough matter in all of existence to even store the list.",
+      "queries": [
+        "chess board pieces",
+        "chess game close up",
+        "chess player thinking",
+        "galaxy stars space",
+        "chess pieces macro"
+      ]
+    },
+    {
+      "id": "pineapple_bromelain",
+      "domain": "chemistry",
+      "fact": "When you eat fresh pineapple, it is digesting you back. It contains bromelain, an enzyme that breaks down protein, which is why your tongue can feel raw.",
+      "angle": "an everyday food that fights back",
+      "key_terms": [
+        "bromelain",
+        "breaks down protein",
+        "digesting you back"
+      ],
+      "whatif": "Why does fresh pineapple make your mouth tingle or sting? Its enzyme is actually dissolving the surface protein of your tongue and cheeks. You just replace those cells fast enough not to notice.",
+      "wow": "Canned pineapple never does it, because heat destroys the enzyme. Only raw pineapple bites back.",
+      "queries": [
+        "fresh pineapple slices",
+        "cutting pineapple open",
+        "juicy pineapple close up",
+        "tropical pineapple fruit",
+        "pineapple on cutting board"
+      ]
+    },
+    {
+      "id": "single_photon_eye",
+      "domain": "senses",
+      "fact": "Your eyes are so sensitive that, in the dark, they can register a single particle of light, one photon, the smallest amount of light that can exist.",
+      "angle": "the physical limit of human perception",
+      "key_terms": [
+        "single photon",
+        "one particle of light",
+        "smallest amount possible"
+      ],
+      "whatif": "What is the faintest thing a human being can possibly see? Experiments show your eye can react to a single photon, so you are sensing light right at the edge of what physics even allows.",
+      "wow": "On a truly dark, clear night your eyes are sensitive enough that you could catch the light of a single candle flame from miles away.",
+      "queries": [
+        "human eye macro",
+        "starry night sky",
+        "candle flame in the dark",
+        "pupil close up",
+        "dark forest at night"
+      ]
+    },
+    {
+      "id": "cold_welding_space",
+      "domain": "physics",
+      "fact": "In the vacuum of space, two pieces of the same bare metal pressed together will fuse into one solid piece, with no heat at all. It is called cold welding.",
+      "angle": "a hidden hazard of space engineering",
+      "key_terms": [
+        "cold welding",
+        "vacuum of space",
+        "no heat"
+      ],
+      "whatif": "Why would metal parts weld together in space with no torch and no heat? On Earth a thin layer of air and oxide keeps metal surfaces apart. Remove the air, and clean metal cannot tell where one piece ends and the next begins.",
+      "wow": "This is a real engineering nightmare. Moving parts on spacecraft have jammed in orbit because they quietly welded themselves shut.",
+      "queries": [
+        "polished metal surface",
+        "satellite orbiting earth",
+        "astronaut spacewalk",
+        "steel beams industrial",
+        "spacecraft in space"
+      ]
+    },
+    {
+      "id": "twin_fingerprints",
+      "domain": "body",
+      "fact": "Identical twins share the exact same DNA, yet they have completely different fingerprints. Your prints are not written in your genes.",
+      "angle": "the part of you that no code decides",
+      "key_terms": [
+        "identical twins",
+        "different fingerprints",
+        "not in your genes"
+      ],
+      "whatif": "If twins have identical DNA, why do their fingerprints never match? Because the ridges are shaped by tiny random forces as you press against the womb. Pure chance, not code, gives you the pattern on your fingertips.",
+      "wow": "It means the one mark police use to tell people apart is decided by randomness, not heredity, so not even your genes can predict it.",
+      "queries": [
+        "fingerprint close up",
+        "identical twins faces",
+        "fingertip pressed on glass",
+        "newborn baby hand",
+        "hand ridges macro"
+      ]
+    },
+    {
+      "id": "gallium_melts_hand",
+      "domain": "materials",
+      "fact": "Gallium is a metal that melts in your hand. Its melting point is below body temperature, so a solid chunk turns to liquid just from your warmth.",
+      "angle": "a solid metal that behaves impossibly",
+      "key_terms": [
+        "gallium",
+        "melts in your hand",
+        "below body temperature"
+      ],
+      "whatif": "Could a piece of metal really melt just from being held? Gallium melts at about 30 degrees Celsius, cooler than your skin, so a solid spoon of it slowly collapses into a silver puddle in your palm.",
+      "wow": "You can cast a gallium spoon, stir it into hot tea, and watch the spoon vanish completely into the drink.",
+      "queries": [
+        "liquid metal droplet",
+        "shiny silver metal",
+        "molten metal pouring",
+        "metal melting close up",
+        "mercury like liquid"
+      ]
+    },
+    {
+      "id": "cloud_weight",
+      "domain": "weather",
+      "fact": "A single fluffy white cloud can weigh more than a million pounds, about the same as 100 elephants, yet it floats.",
+      "angle": "an everyday sight hiding an impossible weight",
+      "key_terms": [
+        "million pounds",
+        "100 elephants",
+        "still floats"
+      ],
+      "whatif": "If a cloud weighs as much as a hundred elephants, why does it not fall out of the sky? Its water is spread across billions of droplets so small that the warm air rising beneath easily holds them all up.",
+      "wow": "You are looking up at a swimming pool's worth of water hanging over your head, held there by nothing but rising air.",
+      "queries": [
+        "fluffy white clouds",
+        "cumulus clouds sky",
+        "clouds timelapse",
+        "blue sky clouds",
+        "storm clouds forming"
+      ]
+    },
+    {
+      "id": "pitch_drop_experiment",
+      "domain": "physics",
+      "fact": "The longest running lab experiment in the world watches a blob of tar drip. It looks like a solid you could shatter with a hammer, but it is a liquid so thick it forms only about one drop per decade.",
+      "angle": "a solid that is secretly a liquid",
+      "key_terms": [
+        "one drop per decade",
+        "looks solid",
+        "running since 1927"
+      ],
+      "whatif": "Is the tar in this jar a solid or a liquid? It shatters like glass if you hit it, yet it has been slowly flowing since 1927, dripping so rarely that for decades nobody managed to catch a single drop falling.",
+      "wow": "It is billions of times thicker than honey. A scientist who watched it for years died just months before a drop finally fell.",
+      "queries": [
+        "thick black tar dripping",
+        "slow motion drip",
+        "viscous liquid pouring",
+        "laboratory glass jar",
+        "molasses pouring slow"
+      ]
+    },
+    {
+      "id": "spider_biomass",
+      "domain": "biology",
+      "fact": "The world's spiders eat more meat every year than the entire human race does. Together they kill an estimated 400 to 800 million tons of prey annually.",
+      "angle": "an invisible appetite all around you",
+      "key_terms": [
+        "400 to 800 million tons",
+        "more than all humans",
+        "spiders"
+      ],
+      "whatif": "Could the small creatures in the corners of your home really out-eat all of humanity? Yes. Add up every spider on Earth and the meat they catch each year outweighs all the meat and fish eaten by all people combined.",
+      "wow": "There are so many spiders that their combined weight is estimated at around 25 million tons, and you are almost never more than a few feet from one.",
+      "queries": [
+        "spider spinning web",
+        "spider close up macro",
+        "dew on spider web",
+        "spider in web garden",
+        "orb weaver spider"
+      ]
+    },
+    {
+      "id": "helium_found_on_sun",
+      "domain": "chemistry",
+      "fact": "Helium was discovered on the Sun before it was ever found on Earth, which is why it is named after the Greek sun god, Helios.",
+      "angle": "an element found in the sky before the ground",
+      "key_terms": [
+        "discovered on the Sun",
+        "named after Helios",
+        "found on Earth later"
+      ],
+      "whatif": "How do you discover something 93 million miles away before finding it at home? In 1868 astronomers split the Sun's light during an eclipse and saw a color that matched no known element. It was helium, and nobody isolated it on Earth for another 27 years.",
+      "wow": "The party balloon gas that makes your voice squeak was first spotted glowing in the atmosphere of a star.",
+      "queries": [
+        "sun surface close up",
+        "solar eclipse sky",
+        "helium balloons floating",
+        "bright sun flare",
+        "glowing sun corona"
+      ]
+    },
+    {
+      "id": "shortest_war",
+      "domain": "history",
+      "fact": "The shortest war in recorded history lasted about 38 minutes. It was fought between Britain and Zanzibar in 1896 and was over before most people knew it had started.",
+      "angle": "history at an absurd scale",
+      "key_terms": [
+        "38 minutes",
+        "Britain and Zanzibar",
+        "1896"
+      ],
+      "whatif": "How long can a war between two countries possibly last? In 1896 one lasted under 40 minutes, ending in the time it takes to watch a sitcom, after a brief naval bombardment forced a surrender.",
+      "wow": "A single ceasefire in that war took longer to arrange than the fighting itself.",
+      "queries": [
+        "old naval cannon",
+        "historic warship sea",
+        "antique map close up",
+        "old fort by the sea",
+        "vintage naval flag"
       ]
     }
   ]
