@@ -52,6 +52,12 @@ import random
 # produces readable assets before you've created the accounts.
 BIO_LINK = os.environ.get("BIO_LINK", "").strip() or "the link in my bio"
 CHANNEL_HANDLE = os.environ.get("CHANNEL_HANDLE", "").strip() or "@stranger.science"
+# TRUE only once a real bio link is configured. Until then the captions must NOT
+# promise a newsletter / "weekly in your inbox" / a bio link that doesn't exist —
+# an empty promise a viewer taps and finds nothing is worse than no CTA. When
+# unset we fall back to FOLLOW-only CTAs (a follow is always real), and the
+# newsletter/link language switches on automatically the moment BIO_LINK is set.
+HAS_FUNNEL = bool(os.environ.get("BIO_LINK", "").strip())
 # The owned asset's name — what the viewer is subscribing TO. Keep it concrete
 # and benefit-led, not "my newsletter."
 LIST_NAME = os.environ.get("LIST_NAME", "").strip() or "Stranger Than Fiction"
@@ -104,6 +110,15 @@ BIO_CTA_LINES = [
     "Follow {handle} for more, or get the weekly one at {link}.",
 ]
 
+# Used until a real BIO_LINK exists — these promise ONLY a follow, so nothing
+# can ring hollow. No inbox, no newsletter, no "link in my bio".
+FOLLOW_CTA_LINES = [
+    "If this rewired something for you, there are a hundred more — follow for one a day.",
+    "I collect the ones that sound fake but aren't. Follow so you don't miss the next.",
+    "There are a hundred more of these. Follow and you'll get one every day.",
+    "Follow for more strange-but-true science, one at a time.",
+]
+
 # Pinned-comment templates — the single highest-converting free growth lever on
 # short-form (a pinned comment gets outsized views and drives the profile tap).
 # It asks a light engagement question AND makes the list ask, without touching
@@ -113,6 +128,15 @@ PINNED_COMMENT_LINES = [
     "Tell me you knew this already (I didn't). More strange-but-true weekly: {link}",
     "{hook_frag} — and that's the part most people never hear. Full list: {link}",
     "Save this for the next time someone says science is boring. Weekly drop: {link}",
+]
+
+# Follow-only pinned comments for before a bio link/list exists — engagement
+# hook + a real follow ask, nothing external to over-promise.
+FOLLOW_PINNED_LINES = [
+    "Wildest part to me: {hook_frag}. Follow if you want more like this 👀",
+    "Tell me you knew this already (I didn't). Follow for one a day.",
+    "{hook_frag} — and that's the part most people never hear. Follow so you don't miss the next.",
+    "Save this for the next time someone says science is boring — and follow for more 👀",
 ]
 
 
@@ -128,7 +152,8 @@ def affiliate_for(domain):
 
 def bio_cta(seed=None):
     r = random.Random(seed)
-    return _fill(r.choice(BIO_CTA_LINES))
+    # Newsletter/link CTAs only once a real bio link exists; otherwise follow-only.
+    return _fill(r.choice(BIO_CTA_LINES if HAS_FUNNEL else FOLLOW_CTA_LINES))
 
 
 def pinned_comment(hook="", seed=None):
@@ -140,7 +165,8 @@ def pinned_comment(hook="", seed=None):
         frag = frag[:90].rsplit(" ", 1)[0] + "…"
     if not frag:
         frag = "this one genuinely surprised me"
-    return _fill(r.choice(PINNED_COMMENT_LINES), hook_frag=frag)
+    lines = PINNED_COMMENT_LINES if HAS_FUNNEL else FOLLOW_PINNED_LINES
+    return _fill(r.choice(lines), hook_frag=frag)
 
 
 def newsletter_blurb(title, hook, domain):
