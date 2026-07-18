@@ -1534,19 +1534,21 @@
     {
       "id": "mantis_shrimp_eyes",
       "domain": "senses",
-      "fact": "The mantis shrimp sees colours you physically cannot imagine.",
-      "angle": "a sense far beyond human range",
+      "fact": "The mantis shrimp has 12 to 16 kinds of color receptor in its eyes, to our 3, yet it is actually worse than us at telling similar colors apart.",
+      "angle": "reverses a 'fact' the internet loves to repeat",
       "key_terms": [
-        "mantis shrimp",
         "12 to 16 receptors",
-        "polarized light"
+        "humans have 3",
+        "worse at telling colors apart"
       ],
-      "whatif": "What if an animal could see colours your brain has no name for? The mantis shrimp has 12 to 16 types of colour receptor, where you have just three, and it even sees the twist of polarized light.",
-      "wow": "It also throws one of the fastest punches in nature, fast enough to boil the water around its club into a flash of light.",
+      "whatif": "If the mantis shrimp has five times our color receptors, does it see a far richer world than we do? Astonishingly, no. Tests show it struggles to tell apart colors we find obvious, because its eyes scan like a barcode reader instead of blending colors the way ours do.",
+      "wow": "Each eye also sees in 3D on its own and can detect circular polarized light, a kind of light no other animal on Earth is known to see.",
       "queries": [
-        "mantis shrimp colorful",
-        "coral reef macro",
-        "rainbow light spectrum"
+        "mantis shrimp reef",
+        "mantis shrimp closeup underwater",
+        "colorful coral reef",
+        "peacock mantis shrimp",
+        "tropical reef macro"
       ]
     },
     {
