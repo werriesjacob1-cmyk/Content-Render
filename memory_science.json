@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_unseen-oceans",
-      "metaphor": "ocean floor mystery",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Unseen Oceans",
-      "fact_id": "ocean_unmapped",
-      "domain": "ocean",
-      "hook": "You've seen more of Mars than the ocean floor",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_bananas-are-slightly-radioactive",
       "metaphor": "hidden dangers in food",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -297,6 +282,30 @@
         "rewatch": 5.0,
         "clarity": 9.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-18_the-hidden-physics-of-gps",
+      "metaphor": "space and time",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Hidden Physics of GPS",
+      "fact_id": "gps_relativity",
+      "domain": "physics",
+      "hook": "What if your GPS was wrong by ten kilometers every day?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 6.0,
+        "payoff": 8.0,
+        "rewatch": 5.0,
+        "clarity": 7.0,
+        "overall": 6.83
       }
     }
   ]

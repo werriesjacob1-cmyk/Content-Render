@@ -1,87 +1,86 @@
 {
-  "title": "The Physics of Woodpecker Impacts",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "woodpecker impact",
-  "metaphor": "stiff skull hammer physics",
-  "hook": "A single woodpecker impact would instantly concuss a human.",
-  "script": "A single woodpecker impact would instantly concuss a human. So how does this bird survive striking wood at 20 pecks per second? Each strike decelerates its head at 1,000 times the force of gravity. Its brain is too small for damage, weighing only two paperclips. A 2022 study found its skull acts like a stiff hammer, not a cushion. To prevent its eyes from popping out, a third eyelid locks them in place. This violent headbanging is how they carve out a home.",
+  "title": "The Hidden Physics of GPS",
+  "viewer_job": "REFRAME",
+  "keyword": "bending time",
+  "metaphor": "space and time",
+  "hook": "What if your GPS was wrong by ten kilometers every day?",
+  "script": "What if your GPS was wrong by ten kilometers every day? GPS satellites orbit at 20,200 kilometers, moving at 14,000 kilometers per hour. This speed causes their atomic clocks to tick faster, gaining about 38 microseconds daily. The satellites are farther from Earth's gravity, which also speeds up their clocks. Over a million days, that adds up to a staggering 38 seconds of time gained. Each time you follow a map, your phone silently adjusts for these time differences. Reality bends around you, and you remain blissfully unaware.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "A single woodpecker impact would instantly concuss a human.",
-      "on_screen_text": "Woodpecker impact force",
-      "search_query": "woodpecker pecking tree",
+      "voiceover": "What if your GPS was wrong by ten kilometers every day?",
+      "on_screen_text": "GPS Miscalculations?",
+      "search_query": "gps navigation phone",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 6,
-      "voiceover": "So how does this bird survive striking wood at 20 pecks per second?",
-      "on_screen_text": "Surviving the strike",
-      "search_query": "woodpecker tree trunk",
-      "motion": "zoom_out"
+      "voiceover": "GPS satellites orbit at 20,200 kilometers, moving at 14,000 kilometers per hour.",
+      "on_screen_text": "Orbiting Satellites",
+      "search_query": "satellite orbit earth",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 6,
-      "voiceover": "Each strike decelerates its head at 1,000 times the force of gravity.",
-      "on_screen_text": "Extreme woodpecker impact",
-      "search_query": "bird forest closeup",
-      "motion": "zoom_out"
+      "voiceover": "This speed causes their atomic clocks to tick faster, gaining about 38 microseconds daily.",
+      "on_screen_text": "Time Dilation",
+      "search_query": "gps navigation phone",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 6,
-      "voiceover": "Its brain is too small for damage, weighing only two paperclips.",
-      "on_screen_text": "Featherweight brain",
-      "search_query": "two metal paperclips",
+      "voiceover": "The satellites are farther from Earth's gravity, which also speeds up their clocks.",
+      "on_screen_text": "Gravity's Influence",
+      "search_query": "satellite orbit earth",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 6,
-      "voiceover": "A 2022 study found its skull acts like a stiff hammer, not a cushion.",
-      "on_screen_text": "No shock absorption",
-      "search_query": "woodpecker pecking tree closeup",
-      "motion": "zoom_out"
+      "voiceover": "Over a million days, that adds up to a staggering 38 seconds of time gained.",
+      "on_screen_text": "38 Seconds Gained",
+      "search_query": "gps navigation phone",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 6,
-      "voiceover": "To prevent its eyes from popping out, a third eyelid locks them in place.",
-      "on_screen_text": "Eyeball seatbelts",
-      "search_query": "bird eye close up",
+      "voiceover": "Each time you follow a map, your phone silently adjusts for these time differences.",
+      "on_screen_text": "Silent Adjustments",
+      "search_query": "gps navigation phone",
       "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "This violent headbanging is how they carve out a home.",
-      "on_screen_text": "Carving a home",
-      "search_query": "woodpecker flying forest",
-      "motion": "zoom_out"
+      "voiceover": "Reality bends around you, and you remain blissfully unaware.",
+      "on_screen_text": "Blissfully Unaware",
+      "search_query": "gps navigation phone",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "How does a woodpecker impact not turn its brain to mush? \ud83e\udde0\ud83d\udd28",
-    "Did you know their skulls are actually rigid hammers, not shock absorbers?",
-    "Would you wear a helmet inspired by a bird? Yes or no?"
+    "Did you know GPS can be off by ten kilometers? Yes or no?",
+    "What else do you think we take for granted?",
+    "Time is not as constant as you think."
   ],
   "hashtags": [
     "#science",
-    "#nature",
-    "#physics",
-    "#biology",
-    "#woodpecker",
-    "#evolution"
+    "#space",
+    "#gps",
+    "#facts",
+    "#relativity"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-18_the-physics-of-woodpecker-impacts",
-  "cta_style": "LOOP",
-  "domain": "animals"
+  "video_id": "science_2026-07-18_the-hidden-physics-of-gps",
+  "cta_style": "COMMENT",
+  "domain": "physics"
 }
