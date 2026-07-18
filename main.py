@@ -557,7 +557,10 @@ def _gemini_chat(prompt, max_tokens, temperature):
         return None
     body = json.dumps({
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
+        # thinkingBudget=0: newer Gemini models otherwise burn the token budget
+        # reasoning and return an empty/truncated answer for these tiny judge calls.
+        "generationConfig": {"temperature": temperature, "maxOutputTokens": max(max_tokens, 64),
+                             "thinkingConfig": {"thinkingBudget": 0}},
     }).encode()
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent",
@@ -790,7 +793,8 @@ def _gemini_vision_pick(intent, candidates):
         parts.append({"inline_data": {"mime_type": "image/jpeg",
                                       "data": base64.b64encode(raw).decode()}})
     body = json.dumps({"contents": [{"parts": parts}],
-                       "generationConfig": {"temperature": 0, "maxOutputTokens": 60}}).encode()
+                       "generationConfig": {"temperature": 0, "maxOutputTokens": 80,
+                                            "thinkingConfig": {"thinkingBudget": 0}}}).encode()
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
     try:
         rq = urllib.request.Request(url, data=body,
