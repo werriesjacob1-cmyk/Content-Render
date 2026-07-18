@@ -1174,10 +1174,17 @@ def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     # jitters. Render the move on a 2x canvas (2160x3840), where one pixel is half
     # the size, then lanczos-downscale to target: the integer steps collapse into
     # smooth sub-pixel motion. `static` has no motion so it skips the supersample.
+    # COVER-then-crop (force_original_aspect_ratio=increase): scale so the frame
+    # is at LEAST the target box in BOTH dimensions, then center-crop to exact.
+    # The old `scale=-2:{H}` only guaranteed the HEIGHT — a source TALLER than
+    # 9:16 (e.g. a 1080x2048 clip) then scaled to a width < the crop width, and
+    # `crop` aborted the whole render with "Invalid too big size for width"
+    # (run 108, "two metal paperclips"). increase+crop is aspect-ratio-safe for
+    # any source shape (portrait, landscape, or odd).
     if kind == "static":
-        return f"scale=-2:{H}:flags=lanczos,crop={W}:{H},"
+        return f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},"
     W2, H2 = W * 2, H * 2
-    up = f"scale=-2:{H2}:flags=lanczos,crop={W2}:{H2},"
+    up = f"scale={W2}:{H2}:force_original_aspect_ratio=increase:flags=lanczos,crop={W2}:{H2},"
     down = f"scale={W}:{H}:flags=lanczos,"
     if idx == 0:
         # HOOK PUNCH-IN: the first ~0.8s pushes in faster (1.03 -> 1.14) to stop a
