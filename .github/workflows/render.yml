@@ -185,7 +185,11 @@ jobs:
           # too; separate line so an empty queue_* glob can't abort the add above.
           git add -A queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
-          git push 2>/dev/null || echo "push skipped"
+          # Rebase-retry so a moved origin doesn't silently drop the memory/manifest
+          # commit (topic-diversity history must persist). Mirrors buffer.yml.
+          for a in 1 2 3; do
+            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+          done
 
       - name: Render
         env:
@@ -207,7 +211,9 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add used_footage_*.json 2>/dev/null || true
           git commit -m "auto: update footage dedup history ($PAGE)" 2>/dev/null || echo "nothing to commit"
-          git push 2>/dev/null || echo "push skipped"
+          for a in 1 2 3; do
+            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+          done
 
       - name: Prove output
         run: |

@@ -1353,8 +1353,13 @@ def _openverse_image(query, dest):
     success, never raises. No API key required."""
     try:
         q = urllib.parse.quote(query.strip()[:80])
+        # category=photograph EXCLUDES illustrations / diagrams / infographics —
+        # an ungated archival search returned a busy "collision of a protosolar
+        # mass" infographic for a GPS video (run 112). We only ever want a real
+        # photo here; if there's no photo the caller falls through to Wikimedia /
+        # AI image / a clean stat-card, all of which beat a random diagram.
         url = (f"https://api.openverse.org/v1/images/?q={q}"
-               f"&license_type=commercial&page_size=8&mature=false")
+               f"&license_type=commercial&category=photograph&page_size=8&mature=false")
         req = urllib.request.Request(url, headers={"User-Agent": "content-render/1.0"})
         with urllib.request.urlopen(req, timeout=20) as r:
             data = json.loads(r.read().decode())
