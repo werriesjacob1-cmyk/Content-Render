@@ -182,10 +182,15 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "duplicated adjacent scene voiceover rejected")
 
-    # scene count out of range (too few)
+    # scene count out of range (too few) — floor is now 7 (was 6) to cut linger
     m = copy.deepcopy(FIX_GEO); m["scenes"] = m["scenes"][:4]
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
-    check(G.validate(m, "EXPLAIN") is not None, "scene count below 6 rejected")
+    check(G.validate(m, "EXPLAIN") is not None, "scene count 4 rejected")
+    # boundary: 6 scenes now rejected, 7 accepted (given FIX_GEO has >=7)
+    if len(FIX_GEO["scenes"]) >= 7:
+        m6 = copy.deepcopy(FIX_GEO); m6["scenes"] = m6["scenes"][:6]
+        m6["script"] = " ".join(s["voiceover"] for s in m6["scenes"])
+        check(G.validate(m6, "EXPLAIN") is not None, "scene count 6 now rejected (floor raised to 7)")
 
     # a single run-on scene over the 22-word cap
     m = copy.deepcopy(FIX_PHYS)

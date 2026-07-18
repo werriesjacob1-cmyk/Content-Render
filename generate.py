@@ -1479,7 +1479,13 @@ def validate(m, job_name, fact=None):
     # build_prompt): the Sun video ran 12 scenes at 166 words and read as
     # "does not stop talking" -- fewer, better-paced scenes beat cramming in
     # more reveals, and a tight ~30-40s video wins on completion.
-    if not isinstance(m["scenes"], list) or not (6 <= len(m["scenes"]) <= 10):
+    # Floor raised 6 -> 7 to match the prompt's "7-9 scenes" and, crucially, to
+    # kill the single-clip LINGER problem: a 6-scene ~40s video runs ~6.7s per
+    # scene, and each scene loops ONE clip, so a 7.9s scene sat on one Roman-ruins
+    # aerial for 8s (run 105). 7-9 scenes = ~4.5-5.5s each = more distinct clips,
+    # less lingering, more visual variety — "use more videos" for free. Ceiling
+    # stays 10 (a 12-scene/166-word Sun video read as "never stops talking").
+    if not isinstance(m["scenes"], list) or not (7 <= len(m["scenes"]) <= 10):
         return f"scene count {len(m.get('scenes', []))} out of range"
 
     # clean top-level text
