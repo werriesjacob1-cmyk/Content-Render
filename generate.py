@@ -413,6 +413,14 @@ HOOK_FRAMES = [
     ("IMPOSSIBLE_FACT",
      "Open on a flat claim so specific it sounds fake but is TRUE (e.g. 'Sharks are older than "
      "Saturn's rings'). The brain can't scroll past needing the 'how is that possible' answer."),
+    ("SCALE_SHOCK",
+     "Open by collapsing an incomprehensible scale into one felt image the viewer can picture (e.g. "
+     "'Shuffle a deck of cards and you just made an order that has never existed in all of time'). "
+     "The hook IS the wow — then the video explains how something that big is real."),
+    ("COMPARISON_COLLISION",
+     "Open by smashing together two things the viewer would never connect, as a plain statement of "
+     "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
+     "collision itself is the hook; the curiosity is 'wait, how are those two even related?'"),
 ]
 
 CTA_ENDING_RULES = {

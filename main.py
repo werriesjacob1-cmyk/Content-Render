@@ -781,6 +781,12 @@ def _gemini_vision_pick(intent, candidates):
     parts = [{"text": (f"Choosing stock footage for a science-video scene about: \"{intent}\". "
                        f"Below are {len(idxs)} candidate clip thumbnails, numbered from 0. Pick the "
                        f"ONE that most LITERALLY shows that subject (not just vaguely related). "
+                       f"Scoring rules: 8-10 = the thumbnail clearly, literally shows the subject; "
+                       f"4-7 = related/plausible but not exact; 0-3 = NONE of them really show it, "
+                       f"or the best option is generic/off-topic. Score LOW (0-3) rather than force "
+                       f"a stretch — a low score triggers a smarter re-search. Also penalize (cap at "
+                       f"3) any thumbnail dominated by on-screen text/watermarks/logos, cartoons, 3D "
+                       f"renders, or infographics; this channel needs REAL, clean footage. "
                        f"Return ONLY JSON: {{\"best\": <0-{len(idxs)-1}>, \"score\": <0-10 match>}}.")}]
     for n, i in enumerate(idxs):
         try:
