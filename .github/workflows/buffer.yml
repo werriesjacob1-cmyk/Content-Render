@@ -88,7 +88,11 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add -A memory_*.json dossier_cache_*.json queue_* 2>/dev/null || true
+          # separate lines: a single add aborts atomically if any pathspec
+          # matches nothing (e.g. an all-aborted batch leaves no queue_* dir),
+          # which would drop the memory/dossier updates too.
+          git add -A memory_*.json dossier_cache_*.json 2>/dev/null || true
+          git add -A queue_* 2>/dev/null || true
           git commit -m "auto: fill $PAGE script buffer" 2>/dev/null || echo "nothing to commit"
           for a in 1 2 3 4; do
             git push && break || { echo "push retry $a"; sleep $((2**a)); git pull --rebase origin claude/epic-edison-jybjd1 || true; }

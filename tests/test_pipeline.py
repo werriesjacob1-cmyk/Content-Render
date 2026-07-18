@@ -182,10 +182,15 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "duplicated adjacent scene voiceover rejected")
 
-    # scene count out of range (too few)
+    # scene count out of range (too few) — floor is now 7 (was 6) to cut linger
     m = copy.deepcopy(FIX_GEO); m["scenes"] = m["scenes"][:4]
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
-    check(G.validate(m, "EXPLAIN") is not None, "scene count below 6 rejected")
+    check(G.validate(m, "EXPLAIN") is not None, "scene count 4 rejected")
+    # boundary: 6 scenes now rejected, 7 accepted (given FIX_GEO has >=7)
+    if len(FIX_GEO["scenes"]) >= 7:
+        m6 = copy.deepcopy(FIX_GEO); m6["scenes"] = m6["scenes"][:6]
+        m6["script"] = " ".join(s["voiceover"] for s in m6["scenes"])
+        check(G.validate(m6, "EXPLAIN") is not None, "scene count 6 now rejected (floor raised to 7)")
 
     # a single run-on scene over the 22-word cap
     m = copy.deepcopy(FIX_PHYS)
@@ -589,6 +594,31 @@ def test_critique_script_merges_gain_and_score():
         G.call_groq = _orig
 
 
+def test_shadow_lift_filter():
+    section("main._shadow_lift_filter: dim clips lifted, bright/unknown untouched")
+    # already-bright or unknown -> no lift, no filter appended
+    check(M._shadow_lift_filter(None) == "", "unknown luma -> no lift")
+    check(M._shadow_lift_filter(80.0) == "", "bright clip -> no lift")
+    check(M._shadow_lift_filter(58.0) == "", "at target -> no lift")
+    # a dim clip gets an eq snippet that raises gamma above 1 (opens shadows)
+    dim = M._shadow_lift_filter(20.0)
+    # CRITICAL comma placement: inserted after _motion_filter (trailing comma)
+    # and before the grade (no leading comma). A leading comma would double up
+    # (",,") and make ffmpeg fail the scene, so assert exactly the right shape.
+    check(not dim.startswith(","), f"no leading comma (would double up) ({dim})")
+    check(dim.endswith(","), f"has trailing comma to join the grade ({dim})")
+    check("eq=gamma=" in dim, f"dim clip -> eq gamma snippet ({dim})")
+    import re as _re
+    gamma = float(_re.search(r"gamma=([0-9.]+)", dim).group(1))
+    bright = float(_re.search(r"brightness=([0-9.\-]+)", dim).group(1))
+    check(1.0 < gamma <= 1.55, f"gamma opens shadows but is capped ({gamma})")
+    check(0.0 < bright <= 0.10, f"brightness nudge is capped ({bright})")
+    # darker clip -> stronger (or equal, at the cap) lift than a less-dark clip
+    g_dark = float(_re.search(r"gamma=([0-9.]+)", M._shadow_lift_filter(10.0)).group(1))
+    g_mild = float(_re.search(r"gamma=([0-9.]+)", M._shadow_lift_filter(45.0)).group(1))
+    check(g_dark >= g_mild, f"darker clip lifted at least as hard ({g_dark} >= {g_mild})")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -606,6 +636,7 @@ def main():
     test_script_buffer_queue()
     test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
+    test_shadow_lift_filter()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0

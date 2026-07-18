@@ -70,7 +70,58 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
 # still carry generation. If this key can't reach flash-lite it simply 404s and
 # falls through harmlessly — no worse than before. Cerebras (auto-discovered)
 # remains the capacity backstop when both Gemini buckets are out.
-GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
+# 2026-07: Google keeps 404'ing hardcoded ids — a NEWLY-created key is restricted
+# to only the newest models ("no longer available to new users" on 2.0-flash AND
+# 2.5-flash). So we AUTO-DISCOVER what this key can actually call via ListModels
+# (like cerebras_models) instead of guessing. GEMINI_MODEL env still forces a
+# specific list if you want; otherwise gemini_models() picks live.
+GEMINI_MODELS_FALLBACK = [m.strip() for m in os.environ.get(
+    "GEMINI_MODEL", "gemini-flash-latest").split(",") if m.strip()]
+_GEMINI_MODELS_CACHE = None
+
+
+def gemini_models():
+    """Models THIS key can call for generateContent, discovered live (newest flash
+    first). Google restricts older ids on new keys, so a hardcoded value 404s;
+    discovery self-heals. Falls back to GEMINI_MODELS_FALLBACK (GEMINI_MODEL env,
+    default gemini-flash-latest) on any failure. Cached for the run."""
+    global _GEMINI_MODELS_CACHE
+    if _GEMINI_MODELS_CACHE is not None:
+        return _GEMINI_MODELS_CACHE
+    if os.environ.get("GEMINI_MODEL"):          # explicit override wins, no discovery
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+        return _GEMINI_MODELS_CACHE
+    if not GEMINI_KEY:
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+        return _GEMINI_MODELS_CACHE
+    try:
+        req = urllib.request.Request(
+            "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000",
+            headers={"x-goog-api-key": GEMINI_KEY, "User-Agent": "content-render/1.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read().decode())
+        flash, other = [], []
+        for m in data.get("models", []):
+            if "generateContent" not in (m.get("supportedGenerationMethods") or []):
+                continue
+            nm = m.get("name", "").split("/")[-1]
+            if any(b in nm for b in ("vision", "thinking", "image", "tts", "embedding", "aqa", "learnlm")):
+                continue
+            (flash if "flash" in nm else other).append(nm)
+        # prefer flash (cheap/fast), stable over preview/exp, newest id first
+        def _rank(lst):
+            stable = [n for n in lst if "preview" not in n and "exp" not in n and "-latest" not in n]
+            latest = [n for n in lst if "-latest" in n]
+            rest = [n for n in lst if n not in stable and n not in latest]
+            return latest + sorted(set(stable), reverse=True) + sorted(set(rest), reverse=True)
+        picked = _rank(flash) or _rank(other)
+        _GEMINI_MODELS_CACHE = picked[:3] or GEMINI_MODELS_FALLBACK
+        if picked:
+            print(f"  [model] gemini models available to this key: {_GEMINI_MODELS_CACHE}")
+    except Exception as e:  # noqa: BLE001
+        print(f"  [model] gemini model discovery failed ({e}); using {GEMINI_MODELS_FALLBACK}")
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+    return _GEMINI_MODELS_CACHE
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
@@ -362,6 +413,14 @@ HOOK_FRAMES = [
     ("IMPOSSIBLE_FACT",
      "Open on a flat claim so specific it sounds fake but is TRUE (e.g. 'Sharks are older than "
      "Saturn's rings'). The brain can't scroll past needing the 'how is that possible' answer."),
+    ("SCALE_SHOCK",
+     "Open by collapsing an incomprehensible scale into one felt image the viewer can picture (e.g. "
+     "'Shuffle a deck of cards and you just made an order that has never existed in all of time'). "
+     "The hook IS the wow — then the video explains how something that big is real."),
+    ("COMPARISON_COLLISION",
+     "Open by smashing together two things the viewer would never connect, as a plain statement of "
+     "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
+     "collision itself is the hook; the curiosity is 'wait, how are those two even related?'"),
 ]
 
 CTA_ENDING_RULES = {
@@ -657,9 +716,16 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
         whatif_block = ""
         if whatif:
             whatif_block = (
-                f"- THE CENTRAL QUESTION (curiosity gap): pose this as a genuine question EARLY "
-                f"(in the hook or one of the first 3-4 scenes), in your own words, based on: "
+                f"- THE CENTRAL QUESTION (curiosity gap) — HARD REQUIREMENT, ENFORCED: one of the "
+                f"first FOUR lines (the hook or scenes 1-3) MUST literally end in a question mark "
+                f"'?'. A script with no '?' in its first four lines is REJECTED and regenerated, so "
+                f"do it on the first try. Pose this question in your own plain words, based on: "
                 f"\"{whatif}\"\n"
+                f"  It's fine to lead with a punchy STATEMENT hook and make the very next line the "
+                f"question (e.g. hook: 'Your phone is being hit by proof that time bends.' then "
+                f"scene 2: 'So why doesn't a particle that should die in an instant ever reach you?'). "
+                f"Either the hook itself is the question, or an early scene is — but the '?' must be "
+                f"there.\n"
                 f"  Then ANSWER it for real as the MIDPOINT TWIST payoff (around scene 5-7) — the "
                 f"actual answer with the real numbers/names, not a tease or a shrug. The viewer must "
                 f"walk away knowing exactly what would really happen.\n")
@@ -810,7 +876,13 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   trail off, restate the premise, or stack two different endings together.
 
 SEARCH DISCOVERY (now as important as hashtags):
-- Pick ONE core keyword phrase (what someone would type to find this).
+- Pick ONE core keyword phrase (what someone would type to find this). It must be PLAIN, everyday
+  words a normal person would actually search — 1-3 common words, NOT a technical/jargon term and
+  NOT a scientist's name for the concept. This word also pops on-screen in gold, so it has to read
+  as instantly meaningful, not like a textbook heading.
+  GOOD: "bending time", "living fossil", "frozen light", "the oldest tree".
+  BAD: "einstein time dilation", "muon flux", "quantum tunneling", "antisolar point" (jargon —
+  nobody types these and they read as cold on screen).
 - Put it in the hook, in at least 2 on_screen_text labels, and in the first caption.
 
 SHARES (THE #1 weighted signal — 10x a like). Engineer the video to be SENT to a friend:
@@ -1008,7 +1080,7 @@ def _gemini_retry_delay(err):
         return None
 
 
-def _call_gemini(model, prompt):
+def _call_gemini(model, prompt, ground=False):
     """Google Gemini generateContent. Same contract as _call_model: returns the
     model's text (a JSON string). Raises HTTPError on failure so the provider
     chain can fall through. NOTE: no responseMimeType — an earlier version set
@@ -1016,16 +1088,38 @@ def _call_gemini(model, prompt):
     call; a plain generateContent works on every model, and _extract_json handles
     any markdown fences the reply might carry.
 
+    ground=True attaches the google_search tool so the model answers from REAL,
+    current web results instead of only its training memory — used for the
+    research dossier so scripts are built on sourced, accurate specifics. The
+    text part is still parsed as JSON (grounding metadata rides separately in the
+    response and is ignored here). Caller falls back to an ungrounded call on any
+    failure, so grounding can never brick generation.
+
     RPM SELF-HEAL: one render fires ~25-40 LLM calls in a burst, which trips the
     free tier's per-minute cap (~15 RPM) even with a full daily quota. On a 429
     whose retryDelay is short, sleep it out and retry the SAME model ONCE — that
     turns a fall-through-to-Groq into a Gemini success and keeps generation on the
     high-quota provider. A long retryDelay (daily quota gone) is re-raised so the
     chain falls through immediately instead of stalling."""
-    body = json.dumps({
+    # Gemini 2.5+/3.x are "thinking" models and BILL their reasoning tokens.
+    # thinkingBudget=0 (no reasoning) tanked quality (run 104 = 3.5/10); leaving
+    # thinking UNBOUNDED (the old 24k output, no budget) let a single generation
+    # burn ~15-20k reasoning tokens and run ~7 min — ~$1/render on the paid key.
+    # A BOUNDED budget is the fix: 4096 reasoning tokens is plenty to plan a
+    # ~90-word script, caps the billed cost hard, and keeps the quality that a
+    # little reasoning buys. maxOutputTokens (8k) sits well above the JSON so the
+    # 'Unterminated string' truncation never returns. Override per-need with
+    # GEMINI_THINKING_BUDGET / GEMINI_MAX_OUTPUT_TOKENS.
+    _think = int(os.getenv("GEMINI_THINKING_BUDGET", "4096"))
+    _maxout = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "8192"))
+    _payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096},
-    }).encode()
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": _maxout,
+                             "thinkingConfig": {"thinkingBudget": _think}},
+    }
+    if ground:
+        _payload["tools"] = [{"google_search": {}}]
+    body = json.dumps(_payload).encode()
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
         data=body,
@@ -1076,14 +1170,27 @@ def call_groq(prompt):
     # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
     # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
     # 100k/day budget comfortably covers both.
-    chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
-            ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
-            ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) + \
-            ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
-            ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) + \
-            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
-            ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) + \
-            [("cerebras", m) for m in cerebras_models()]
+    # COST MODEL: the render itself is free (GitHub Actions + free footage + TTS);
+    # only the LLM writing the script costs money, and only because GEMINI is a
+    # PAID key now. But the free providers (OpenRouter/Groq llama-3.3-70b, GitHub
+    # gpt-4o-mini) write strong scripts — ESPECIALLY when handed the Gemini-grounded
+    # research dossier (research_dossier still grounds on Gemini directly). So for
+    # the generic text calls we go FREE-FIRST and keep paid Gemini only as a
+    # last-resort quality backstop. That turns the common 4-7-renders/day case into
+    # ~$0 of generation, while grounding (cached per fact) + the vision judge stay
+    # the only small Gemini spend. Set GEMINI_GENERATION=1 to restore Gemini-first.
+    _gemini_chain = [("gemini", m) for m in gemini_models()] if GEMINI_KEY else []
+    _free_chain = (([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) +
+                   ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
+                   ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) +
+                   ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) +
+                   ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
+                   ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) +
+                   [("cerebras", m) for m in cerebras_models()])
+    if os.getenv("GEMINI_GENERATION", "0") == "1":
+        chain = _gemini_chain + _free_chain     # legacy: paid Gemini first
+    else:
+        chain = _free_chain + _gemini_chain      # default: free-first, Gemini backstop
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
     # without ever falling back to the other provider).
@@ -1400,7 +1507,13 @@ def validate(m, job_name, fact=None):
     # build_prompt): the Sun video ran 12 scenes at 166 words and read as
     # "does not stop talking" -- fewer, better-paced scenes beat cramming in
     # more reveals, and a tight ~30-40s video wins on completion.
-    if not isinstance(m["scenes"], list) or not (6 <= len(m["scenes"]) <= 10):
+    # Floor raised 6 -> 7 to match the prompt's "7-9 scenes" and, crucially, to
+    # kill the single-clip LINGER problem: a 6-scene ~40s video runs ~6.7s per
+    # scene, and each scene loops ONE clip, so a 7.9s scene sat on one Roman-ruins
+    # aerial for 8s (run 105). 7-9 scenes = ~4.5-5.5s each = more distinct clips,
+    # less lingering, more visual variety — "use more videos" for free. Ceiling
+    # stays 10 (a 12-scene/166-word Sun video read as "never stops talking").
+    if not isinstance(m["scenes"], list) or not (7 <= len(m["scenes"]) <= 10):
         return f"scene count {len(m.get('scenes', []))} out of range"
 
     # clean top-level text
@@ -2017,7 +2130,24 @@ def research_dossier(fact):
         'Return ONLY JSON: {"facts": ["...", "...", "...", "...", "...", "...", "...", "...", "..."]}'
     )
     try:
-        raw = call_groq(prompt)
+        # GROUNDED RESEARCH: pull the facts from REAL Google Search results via
+        # Gemini's grounding tool so the dossier is sourced and accurate, not just
+        # the model's memory. Falls back to the ordinary (ungrounded) provider
+        # chain on any failure, so this never blocks a run.
+        raw = None
+        # Grounding is the one Gemini call that runs even on the free-first chain
+        # (it's Gemini-unique). It's cached per fact, so it's a ONE-TIME cost per
+        # topic — but GROUND_DOSSIER=0 skips it entirely for max frugality, falling
+        # back to the free provider chain (the topic_bank facts are already curated,
+        # so an ungrounded dossier is still solid).
+        if GEMINI_KEY and os.getenv("GROUND_DOSSIER", "1") != "0":
+            try:
+                raw = _call_gemini(gemini_models()[0], prompt, ground=True)
+                print("  [research] grounded on live Google Search")
+            except Exception as e:  # noqa: BLE001
+                print(f"  [research] grounded search unavailable ({e}); using model knowledge")
+        if raw is None:
+            raw = call_groq(prompt)
         data = json.loads(raw)
         facts = [str(x).strip() for x in (data.get("facts") or []) if str(x).strip()]
         facts = [f for f in facts if len(f) > 12][:10]
@@ -2059,7 +2189,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     # a single render (the "two videos and the quota's gone" report). 3 attempts +
     # the near-miss repair path keeps the yield while cutting worst-case burn ~40%,
     # which is what lets the morning buffer bank several scripts instead of ~2.
-    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "3"))):
+    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "2"))):
         try:
             # If the circuit has already opened (every provider rate-limited 3x
             # in a row this run), the escalating backoff below cannot outlast a

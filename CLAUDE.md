@@ -23,15 +23,20 @@ funnel) → GitHub Release → Zapier → Buffer (Draft). Driven by
 `.github/workflows/render.yml` (manual `workflow_dispatch` + daily `schedule` at
 13:00 UTC / 8:00 AM CT). PAGE=science.
 
-## LLM providers (free), tried in this order — all env-gated
-1. **Gemini** (`GEMINI_API_KEY`): models `gemini-2.0-flash`, `gemini-2.0-flash-lite`
-   (each is a SEPARATE free daily bucket — flash-lite unblocked evening renders
-   once flash was spent). NOTE: `gemini-2.5-flash` AND `-2.5-flash-lite` now 404
-   for new keys ("no longer available to new users") — do NOT add them back.
-   Free daily cap is small (~200/model/day); each render burns ~20-50 calls
-   (generation + per-scene footage judge), so the free tier realistically yields
-   ~5-8 good videos/DAY across ALL consumers (this loop + daily cron + any other
-   session). Resets **midnight Pacific = 2:00 AM CT / 07:00 UTC**.
+## LLM providers, tried in this order — all env-gated
+1. **Gemini** (`GEMINI_API_KEY`): models are **auto-discovered** at runtime via
+   the ListModels API (`gemini_models()` in generate.py, `JUDGE_GEMINI_MODEL` in
+   main.py) — do NOT hardcode a version. A newly-created key is locked to the
+   NEWEST models only: `gemini-2.0/2.5-*` all 404 ("not available to new users");
+   as of 2026-07 the key resolves `gemini-flash-latest` / `gemini-3.5-flash`.
+   `gemini-3.5-flash` is a THINKING model — reasoning consumes `maxOutputTokens`,
+   so generation uses `maxOutputTokens: 24000` with thinking ON (a small budget
+   or thinkingBudget=0 truncates JSON or tanks quality — learned the hard way in
+   runs 103-105). The user has added **paid billing (~$10)** to this key, so it is
+   no longer strictly free-tier; spend it deliberately. Generation is grounded on
+   live Google Search (`_call_gemini(..., ground=True)`), and the footage judge
+   has a **vision** path (`_gemini_vision_pick`) that looks at Pexels thumbnails.
+   Resets **midnight Pacific = 2:00 AM CT / 07:00 UTC**.
 2. **OpenRouter** (`OPENROUTER_API_KEY`): `meta-llama/llama-3.3-70b-instruct:free`
    — the strongest free model; separate free daily bucket (small, ~50/day).
 3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`.
@@ -89,19 +94,51 @@ Watch the actual video (extract frames + read the script). It must have:
    user to review consistency before proposing to post.
 
 ## Topic bank
-`topic_bank.json` — **91 verified facts across 19 domains** (added materials/
-weather/deep_time/history/geology/senses + high-wow facts). `memory_science.json`
-tracks used facts; `used_footage_science.json` dedups clips across runs.
+`topic_bank.json` — **104 verified facts across 20 domains** (2026-07-18: deduped
+5 twin facts that shared a topic under different IDs, then added 18 high-wow
+"leaves-you-thinking" facts weighted to thin domains — math/chemistry/senses/
+materials/weather/history/biology/geology/deep_time/plants). Each fact carries
+`key_terms` (real names/numbers the script MUST say), a `whatif` question (opens
+the curiosity gap — validate() enforces a '?' in the first 4 lines), and a `wow`
+escalation detail. `memory_science.json` tracks used facts; `used_footage_science.json`
+dedups clips across runs.
 Domain selection now dedups by FAMILY (`DOMAIN_FAMILIES`: geology/earth/weather
 = one family) so two deep-earth videos don't run back-to-back.
 
 ## Zero-quota test suite — RUN THIS before shipping generate.py/main.py changes
-`GROQ_API_KEY=x python tests/test_pipeline.py` — **80 checks** over the trickiest
+`GROQ_API_KEY=x python tests/test_pipeline.py` — **97 checks** over the trickiest
 PURE logic (caption content-alignment, footage `_footage_intent` anchoring,
 `_diversify_scene_queries`, timing, `validate()` across 5 topic fixtures + broken
-ones, fast-fail-when-throttled, domain families, **`critique_script` merge,
-script-buffer FIFO/empty/malformed, `_xfade_offsets` math**). No ffmpeg, no
-network, no LLM. It already caught a real validate() false-positive.
+ones incl. the 7-scene floor, fast-fail-when-throttled, domain families,
+**`critique_script` merge, script-buffer FIFO/empty/malformed, `_xfade_offsets`
+math, `_shadow_lift_filter` brightness lift**). No ffmpeg, no network, no LLM.
+It already caught a real validate() false-positive.
+
+## Overnight quality batch shipped 2026-07-18 (branch `claude/epic-edison-jybjd1`)
+Reviewed render 105 ("Cosmic Proof of Relativity", muon time dilation — Gemini
+`gemini-flash-latest` carried it, grounded + vision judge fired; a solid B/B+
+with 3 concrete flaws). Fixed the flaws and pushed further. All test-verified
+(97 zero-quota checks); **not yet render-verified — do one render after the
+07:00 UTC reset and WATCH it**:
+- **CI staging bug (critical)**: `git add memory_*.json manifest.json … queue_*`
+  aborts ATOMICALLY when `queue_*` matches nothing (the empty-buffer live-gen
+  case), so the manifest + `memory_science.json` history never committed — topic
+  diversity silently froze and the branch kept a stale manifest. Split the
+  always-present paths onto their own `git add` (render.yml + buffer.yml).
+- **Footage brightness (was pending)**: `_clip_luma()` samples across ~8s (not 4
+  early frames) and `_clip_too_dark` now rejects a near-black STRETCH too; dim-
+  but-real footage (space/deep-sea/night) is **lifted** (`_shadow_lift_filter`,
+  a capped gamma/brightness eq, unit-tested) instead of rejected, so no scene
+  reads as a black screen and science footage never collapses into text cards.
+- **Prompt**: the whatif curiosity-gap is now a HARD mechanical rule mirroring
+  validate() (a '?' in the first 4 lines, shown as a statement-hook + question-
+  scene-2 pattern) so drafts pass first try; the keyword must be PLAIN search
+  words (jargon like "einstein time dilation" is banned — it also pops on-screen).
+- **Pacing**: scene floor 6 → 7 (ceiling still 10) to kill single-clip linger
+  (run 105 sat 8s on one Roman-ruins aerial) → shorter scenes = more clips.
+- **Creativity/relevance**: +2 hook frames (SCALE_SHOCK, COMPARISON_COLLISION);
+  vision judge given explicit scoring bands (score 0-3 when nothing matches → a
+  re-search fires) + a penalty for text/watermark/cartoon/3D thumbnails.
 
 ## Quota-efficiency batch shipped 2026-07-17 (branch `claude/epic-edison-jybjd1`)
 User asked to solve free-tier quota fragility. Root cause seen in render 82:

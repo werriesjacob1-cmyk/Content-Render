@@ -472,7 +472,8 @@ def _pexels_candidates(query):
                 slug = (v.get("url", "") or "").rstrip("/").split("/")[-1]
                 slug = re.sub(r"-\d+$", "", slug)
                 out.append({"id": v.get("id"), "url": best["link"],
-                            "desc": slug.replace("-", " "), "source": "Pexels"})
+                            "desc": slug.replace("-", " "), "source": "Pexels",
+                            "image": v.get("image")})   # preview thumbnail for the vision judge
     except urllib.error.HTTPError as e:
         print(f"  Pexels HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
@@ -541,11 +542,11 @@ _LAST_GROQ_FAILED = False  # True when the most recent _groq_chat call failed at
                             # unparseably" (keep vetoing, avoids the belly-button bug).
 
 
-JUDGE_GEMINI_MODEL = "gemini-2.0-flash"  # NOTE: gemini-2.5-flash-lite 404s for
-                                         # newly-created keys ("no longer available
-                                         # to new users"), so we can't use it here
-                                         # either — 2.0-flash is what a fresh key
-                                         # can actually call.
+# 2026-07: gemini-2.0-flash was 404'd by Google ("no longer available"). Moved to
+# the current 2.5 family (works on a billed key). Env-overridable so a future
+# deprecation is a one-variable fix. Used by both the vision footage judge and the
+# text judge's Gemini fallback.
+JUDGE_GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest").split(",")[0].strip()
 
 
 def _gemini_chat(prompt, max_tokens, temperature):
@@ -556,7 +557,10 @@ def _gemini_chat(prompt, max_tokens, temperature):
         return None
     body = json.dumps({
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
+        # thinkingBudget=0: newer Gemini models otherwise burn the token budget
+        # reasoning and return an empty/truncated answer for these tiny judge calls.
+        "generationConfig": {"temperature": temperature, "maxOutputTokens": max(max_tokens, 64),
+                             "thinkingConfig": {"thinkingBudget": 0}},
     }).encode()
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent",
@@ -753,6 +757,68 @@ UNRESOLVED = "unresolved"
 JUDGE_UNAVAILABLE = "judge_unavailable"
 
 
+# ---------- VISION FOOTAGE JUDGE (paid Gemini) ----------
+# The text judge reads a candidate's URL slug ("desc") — it never SEES the clip,
+# so a slug that says "spider web" over a clip that's actually a dewy leaf still
+# scores well. This judge sends the actual candidate THUMBNAILS to Gemini vision
+# and picks the one that visually matches the scene. Best-effort + cost-capped:
+# any failure returns None and the caller falls back to the text judge, so it can
+# never break a render. Only Pexels candidates carry a thumbnail today.
+VISION_JUDGE = os.environ.get("VISION_JUDGE", "1") != "0"
+VISION_MAX_CANDS = int(os.environ.get("VISION_MAX_CANDS", "5"))
+
+
+def _gemini_vision_pick(intent, candidates):
+    """Return (index_into_candidates, score 0-10) for the thumbnail that best
+    matches `intent`, judged by Gemini vision — or None on any failure."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not (VISION_JUDGE and key):
+        return None
+    idxs = [i for i, c in enumerate(candidates) if c.get("image")][:VISION_MAX_CANDS]
+    if len(idxs) < 2:
+        return None   # nothing to compare visually — let the text judge handle it
+    import base64
+    parts = [{"text": (f"Choosing stock footage for a science-video scene about: \"{intent}\". "
+                       f"Below are {len(idxs)} candidate clip thumbnails, numbered from 0. Pick the "
+                       f"ONE that most LITERALLY shows that subject (not just vaguely related). "
+                       f"Scoring rules: 8-10 = the thumbnail clearly, literally shows the subject; "
+                       f"4-7 = related/plausible but not exact; 0-3 = NONE of them really show it, "
+                       f"or the best option is generic/off-topic. Score LOW (0-3) rather than force "
+                       f"a stretch — a low score triggers a smarter re-search. Also penalize (cap at "
+                       f"3) any thumbnail dominated by on-screen text/watermarks/logos, cartoons, 3D "
+                       f"renders, or infographics; this channel needs REAL, clean footage. "
+                       f"Return ONLY JSON: {{\"best\": <0-{len(idxs)-1}>, \"score\": <0-10 match>}}.")}]
+    for n, i in enumerate(idxs):
+        try:
+            rq = urllib.request.Request(candidates[i]["image"], headers={"User-Agent": BROWSER_UA})
+            with urllib.request.urlopen(rq, timeout=20) as r:
+                raw = r.read()
+        except Exception:
+            return None   # a thumbnail wouldn't load — bail to the text judge
+        parts.append({"text": f"Image {n}:"})
+        parts.append({"inline_data": {"mime_type": "image/jpeg",
+                                      "data": base64.b64encode(raw).decode()}})
+    body = json.dumps({"contents": [{"parts": parts}],
+                       "generationConfig": {"temperature": 0, "maxOutputTokens": 80,
+                                            "thinkingConfig": {"thinkingBudget": 0}}}).encode()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
+    try:
+        rq = urllib.request.Request(url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(rq, timeout=45) as r:
+            data = json.loads(r.read().decode())
+        txt = data["candidates"][0]["content"]["parts"][0]["text"]
+        m = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+        best, score = int(m.get("best")), int(m.get("score"))
+        if 0 <= best < len(idxs):
+            print(f"  [vision] Gemini picked clip index {idxs[best]} (match {score}/10) by thumbnail")
+            return idxs[best], max(0, min(10, score))
+    except Exception as e:  # noqa: BLE001 - fall back to the text judge
+        print(f"  [vision] judge unavailable ({e}); using text judge")
+    return None
+
+
 def _groq_judge(intent, candidates, _allow_retry=True):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
@@ -877,26 +943,57 @@ JUDGE_SCORES = []      # every scene's best judged score this render (None exclu
                         # printed as a min/avg summary at the end for quick QA of a run
 
 
-def _clip_too_dark(path, min_luma=26.0):
-    """True if a downloaded clip is so dark it reads as a near-black/broken
-    frame — the "photos are too dark" / "goes to a black screen" complaint.
-    Samples a few frames' average luma (0-255) and compares to a CONSERVATIVE
-    floor, so only genuinely near-black footage is rejected (moody-but-visible
-    night/ocean/space clips still pass). Fully fail-safe: any probe error returns
-    False (accept the clip), so brightness-checking can never block a render."""
+def _clip_luma(path, stride=20, n=12):
+    """(avg_luma, min_luma) sampled across the clip — every `stride`-th frame,
+    up to `n` samples, so it spans ~8s instead of only the first fraction of a
+    second. Returns (None, None) on any probe error (fully fail-safe: callers
+    treat that as 'accept / no lift'). Luma is 0-255."""
     try:
         out = subprocess.run(
             ["ffmpeg", "-hide_banner", "-i", path, "-vf",
-             "select='eq(n\\,1)+eq(n\\,25)+eq(n\\,55)+eq(n\\,90)',"
+             f"select='not(mod(n\\,{stride}))',"
              "signalstats,metadata=print:key=lavfi.signalstats.YAVG",
-             "-frames:v", "4", "-f", "null", "-"],
+             "-frames:v", str(n), "-f", "null", "-"],
             capture_output=True, text=True, timeout=20).stderr
         vals = [float(m) for m in re.findall(r"YAVG=([0-9.]+)", out)]
         if not vals:
-            return False
-        return (sum(vals) / len(vals)) < min_luma
+            return (None, None)
+        return (sum(vals) / len(vals), min(vals))
     except Exception:
+        return (None, None)
+
+
+def _clip_too_dark(path, min_avg=24.0, min_floor=7.0):
+    """True only if a clip is genuinely near-black — the "goes to a black
+    screen" complaint. Rejects on a dark AVERAGE *or* a near-black STRETCH
+    (min_floor): the run-105 lab clip passed the old average-only check but
+    still had a ~2s black span under a caption. Dim-but-visible night/ocean/
+    space clips are NOT rejected here — they're kept and brightened by
+    `_shadow_lift_filter` instead, so science footage never collapses into a
+    wall of text cards. Fail-safe: a probe error returns False (accept)."""
+    avg, mn = _clip_luma(path)
+    if avg is None:
         return False
+    return avg < min_avg or mn < min_floor
+
+
+def _shadow_lift_filter(avg_luma, target=58.0):
+    """Pure helper (no ffmpeg) → an eq brightness/gamma snippet that lifts a
+    dim clip toward `target` luma, or '' if it's already bright enough or
+    unknown. Gamma does most of the work (opens shadows without washing out
+    highlights); a small brightness nudge finishes it. Both are capped so a
+    legitimately moody clip is made LEGIBLE, not flat/grey.
+
+    Returns a snippet with a TRAILING comma and NO leading comma, because it is
+    inserted between _motion_filter's output (which always ends in a comma) and
+    the grade (which has no leading comma): `...lanczos,` + `eq=...,` + `eq=grade`.
+    A leading comma here would double up (`,,`) and make ffmpeg fail the scene."""
+    if avg_luma is None or avg_luma >= target:
+        return ""
+    deficit = (target - avg_luma) / target          # 0..1, bigger = darker
+    gamma = 1.0 + min(0.55, deficit * 0.9)          # ≤1.55
+    bright = min(0.10, deficit * 0.16)              # ≤0.10
+    return f"eq=gamma={gamma:.3f}:brightness={bright:.3f},"
 
 
 def _accept(chosen, dest, query, score):
@@ -992,7 +1089,10 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
                     return True, best_score
                 except Exception as e:  # too-dark / download failed → let the judge try
                     print(f"  keyword-matched clip unusable ({e}) — falling to judge")
-            idx, score = _groq_judge(intent, cands)
+            # VISION FIRST: let Gemini actually look at the thumbnails and pick the
+            # visual match; fall back to the text (slug) judge if vision is off/fails.
+            _vj = _gemini_vision_pick(intent, cands)
+            idx, score = _vj if _vj is not None else _groq_judge(intent, cands)
             chosen = cands[idx]
             numeric = isinstance(score, int)
             if numeric and (best_score is None or score > best_score):
@@ -1074,10 +1174,17 @@ def _motion_filter(scene, frames, zspeed, idx=0, prev_kind=None):
     # jitters. Render the move on a 2x canvas (2160x3840), where one pixel is half
     # the size, then lanczos-downscale to target: the integer steps collapse into
     # smooth sub-pixel motion. `static` has no motion so it skips the supersample.
+    # COVER-then-crop (force_original_aspect_ratio=increase): scale so the frame
+    # is at LEAST the target box in BOTH dimensions, then center-crop to exact.
+    # The old `scale=-2:{H}` only guaranteed the HEIGHT — a source TALLER than
+    # 9:16 (e.g. a 1080x2048 clip) then scaled to a width < the crop width, and
+    # `crop` aborted the whole render with "Invalid too big size for width"
+    # (run 108, "two metal paperclips"). increase+crop is aspect-ratio-safe for
+    # any source shape (portrait, landscape, or odd).
     if kind == "static":
-        return f"scale=-2:{H}:flags=lanczos,crop={W}:{H},"
+        return f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},"
     W2, H2 = W * 2, H * 2
-    up = f"scale=-2:{H2}:flags=lanczos,crop={W2}:{H2},"
+    up = f"scale={W2}:{H2}:force_original_aspect_ratio=increase:flags=lanczos,crop={W2}:{H2},"
     down = f"scale={W}:{H}:flags=lanczos,"
     if idx == 0:
         # HOOK PUNCH-IN: the first ~0.8s pushes in faster (1.03 -> 1.14) to stop a
@@ -1471,6 +1578,61 @@ def _diversify_scene_queries(scenes):
             seen[key] = seen.get(key, i)
 
 
+# ---------- AI-GENERATED ILLUSTRATIONS (paid Gemini / Imagen) ----------
+# When real footage AND archival stills both fail for a scene, generate an EXACT,
+# on-topic vertical image instead of dropping to a plain text card — the single
+# biggest fix for "the footage doesn't match what's being said". Gated + cost-
+# capped (Imagen bills per image), and best-effort: any failure (no billing,
+# safety block, wrong model, network) falls back to the stat card, so it can
+# never break a render. Whole pipeline is already AI-disclosed per platform.
+AI_IMAGE = os.environ.get("AI_IMAGE", "1") != "0"
+AI_IMAGE_MODEL = os.environ.get("AI_IMAGE_MODEL", "imagen-3.0-generate-002")
+MAX_AI_IMAGES = int(os.environ.get("MAX_AI_IMAGES", "4"))   # per-video cost cap
+AI_IMAGE_SCENES = 0
+
+
+def _gemini_image(scene, dest):
+    """Generate a relevant 9:16 image for a scene via Imagen on the paid Gemini
+    tier. Returns True on success (bytes written to dest), False on any failure so
+    the caller falls through to the stat card. Cost-capped at MAX_AI_IMAGES/video."""
+    global AI_IMAGE_SCENES
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not (AI_IMAGE and key) or AI_IMAGE_SCENES >= MAX_AI_IMAGES:
+        return False
+    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
+    if not subject:
+        return False
+    prompt = (f"Photorealistic cinematic vertical photograph, documentary science style: "
+              f"{subject}. Dramatic natural lighting, shallow depth of field, ultra-detailed, "
+              f"realistic, no text, no words, no captions, no watermark, no logo.")
+    body = json.dumps({
+        "instances": [{"prompt": prompt}],
+        "parameters": {"sampleCount": 1, "aspectRatio": "9:16"},
+    }).encode()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{AI_IMAGE_MODEL}:predict"
+    try:
+        req = urllib.request.Request(
+            url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            data = json.loads(r.read().decode())
+        preds = data.get("predictions") or []
+        b64 = preds[0].get("bytesBase64Encoded") if preds else None
+        if not b64:
+            return False
+        import base64
+        with open(dest, "wb") as f:
+            f.write(base64.b64decode(b64))
+        ok = os.path.exists(dest) and os.path.getsize(dest) > 5000
+        if ok:
+            AI_IMAGE_SCENES += 1
+        return ok
+    except Exception as e:  # noqa: BLE001 - best-effort; fall back to stat card
+        print(f"  AI image gen unavailable ({e})")
+        return False
+
+
 def _footage_intent(scene):
     """What the footage judge + rescue requery match candidates against. LEADS
     with the scene's search_query (the literal, filmable subject the generator
@@ -1507,9 +1669,16 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     stat = _stat_overlay(scene, seg_dur)
 
     if have:
+        # Lift dim-but-kept footage so no frame reads as a black screen under
+        # the caption (the run-105 dark-lab scene). Measured once here; a pure,
+        # capped eq snippet opens the shadows before the cinematic grade.
+        _avg, _mn = _clip_luma(raw)
+        lift = _shadow_lift_filter(_avg)
+        if lift:
+            print(f"  [grade] lifting dim clip (avg luma {_avg:.0f}) for legibility")
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
-             "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
+             "-filter_complex", f"[0:v]{motion}{lift}{grade}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
         return out
@@ -1543,6 +1712,26 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                 return out
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
+
+    # AI ILLUSTRATION (paid Gemini/Imagen): before dropping to a plain text card,
+    # generate an EXACT, on-topic vertical image for this scene and Ken-Burns it —
+    # turns the least-relevant scenes (no real footage) from a boring card into a
+    # matching visual. Counts as real imagery (not a stat card), so it also relaxes
+    # the footage-starvation abort. Any failure falls through to the stat card.
+    if AI_IMAGE:
+        ai_img = os.path.join(WORK, f"s{idx}_ai.png")
+        if _gemini_image(scene, ai_img):
+            try:
+                run(["ffmpeg", "-y", "-loop", "1", "-i", ai_img, "-i", seg_mp3,
+                     "-t", f"{seg_dur:.3f}", "-r", "30",
+                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
+                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                ARCHIVAL_SCENES += 1
+                print("  AI-generated illustration scene (Imagen + Ken Burns)")
+                return out
+            except Exception as e:  # noqa: BLE001
+                print(f"  AI image render failed ({e}) — falling back to card")
 
     # No clip cleared RELEVANCE_FLOOR (or there were zero results). Render a
     # designed typographic stat-card scene instead of shipping the least-bad
