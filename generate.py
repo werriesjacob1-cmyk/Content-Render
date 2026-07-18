@@ -822,12 +822,15 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 74-88 words. At this channel's narration speed that renders to about 38-42
-  seconds — measured, not guessed (a 99-word script came out at 46s, slightly long). Write the FULL
-  script, but keep it TIGHT. Too short = rejected; padded = rejected.
+- Total narration MUST be 74-88 words — this is the HARDEST constraint; a script over 93 words is
+  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~10 words each
+  is ~80 words, right in range. If you're past 88, DELETE a whole weak scene — never pad. At this
+  channel's narration speed 74-88 words renders to ~38-42 seconds (a 99-word script came out at 46s,
+  too long). Too short = rejected; over 93 = rejected.
   A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: 6-16 words is the sweet spot. NEVER exceed 22 words in a single scene — a long
+- PER-SCENE LENGTH: aim ~8-12 words (7-9 scenes x ~10 words = your 74-88 total). NEVER exceed 22 words
+  in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
 - BREATHING ROOM: this is spoken narration, not a wall of text — each scene is its own sentence with

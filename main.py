@@ -766,17 +766,28 @@ JUDGE_UNAVAILABLE = "judge_unavailable"
 # never break a render. Only Pexels candidates carry a thumbnail today.
 VISION_JUDGE = os.environ.get("VISION_JUDGE", "1") != "0"
 VISION_MAX_CANDS = int(os.environ.get("VISION_MAX_CANDS", "5"))
+# HARD per-render budget on PAID Gemini vision calls. The judge re-searches per
+# ambiguous scene, so a pathological render fired ~19 vision calls (run 112),
+# each sending up to VISION_MAX_CANDS thumbnails to the paid key. This caps the
+# only uncapped paid-Gemini cost per render; once spent, footage selection falls
+# back to the FREE text judge (never breaks a render). Set 0 to disable the cap.
+VISION_CALL_BUDGET = int(os.environ.get("VISION_CALL_BUDGET", "10"))
+_VISION_CALLS = 0
 
 
 def _gemini_vision_pick(intent, candidates):
     """Return (index_into_candidates, score 0-10) for the thumbnail that best
     matches `intent`, judged by Gemini vision — or None on any failure."""
+    global _VISION_CALLS
     key = os.environ.get("GEMINI_API_KEY", "")
     if not (VISION_JUDGE and key):
         return None
+    if VISION_CALL_BUDGET and _VISION_CALLS >= VISION_CALL_BUDGET:
+        return None   # paid-vision budget spent this render — use the free text judge
     idxs = [i for i, c in enumerate(candidates) if c.get("image")][:VISION_MAX_CANDS]
     if len(idxs) < 2:
         return None   # nothing to compare visually — let the text judge handle it
+    _VISION_CALLS += 1   # count an actual paid attempt against the budget
     import base64
     parts = [{"text": (f"Choosing stock footage for a science-video scene about: \"{intent}\". "
                        f"Below are {len(idxs)} candidate clip thumbnails, numbered from 0. Pick the "
