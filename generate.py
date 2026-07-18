@@ -1080,15 +1080,14 @@ def _call_gemini(model, prompt, ground=False):
     turns a fall-through-to-Groq into a Gemini success and keeps generation on the
     high-quota provider. A long retryDelay (daily quota gone) is re-raised so the
     chain falls through immediately instead of stalling."""
-    # thinkingBudget=0 DISABLES the newer models' internal reasoning (gemini 2.5+/
-    # 3.x are "thinking" models that otherwise spend the output budget reasoning and
-    # truncate the JSON answer — the 'Unterminated string' failures on run 103).
-    # Bigger maxOutputTokens gives the full script room. Older models ignore the
-    # thinkingConfig; if one 400s on it, the chain just falls through.
+    # Gemini 2.5+/3.x are "thinking" models. Disabling thinking (thinkingBudget=0)
+    # made them write noticeably WORSE scripts (run 104 scored 3.5/10) — they rely
+    # on the reasoning for quality. So we KEEP thinking but give a big output budget
+    # (24k) so the reasoning + the JSON answer both fit and it never truncates (the
+    # 'Unterminated string' failures came from thinking eating a small 4k budget).
     _payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192,
-                             "thinkingConfig": {"thinkingBudget": 0}},
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 24000},
     }
     if ground:
         _payload["tools"] = [{"google_search": {}}]
