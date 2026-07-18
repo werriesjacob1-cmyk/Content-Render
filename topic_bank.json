@@ -1788,6 +1788,126 @@
         "old fort by the sea",
         "vintage naval flag"
       ]
+    },
+    {
+      "id": "greenland_shark_age",
+      "domain": "ocean",
+      "fact": "A Greenland shark swimming in the Arctic right now may have been born before the United States existed. They can live around 400 years, making them the longest-lived animals with a backbone.",
+      "angle": "a living animal that outlasts nations",
+      "key_terms": [
+        "around 400 years",
+        "Greenland shark",
+        "longest-lived vertebrate"
+      ],
+      "whatif": "How old is the oldest fish in the ocean today? A Greenland shark alive now could have been swimming since the 1600s, meaning it was already a century old before America was even a country.",
+      "wow": "They grow only about a centimeter a year and do not even become adults until they are around 150 years old.",
+      "queries": [
+        "shark swimming deep ocean",
+        "arctic ocean underwater",
+        "greenland shark",
+        "cold dark sea",
+        "shark silhouette water"
+      ]
+    },
+    {
+      "id": "atlantic_widening",
+      "domain": "geology",
+      "fact": "The Atlantic Ocean is getting wider every year, at about the same speed your fingernails grow. The Americas are drifting away from Europe and Africa.",
+      "angle": "the ground moving under everything",
+      "key_terms": [
+        "Atlantic widening",
+        "fingernail speed",
+        "2.5 centimeters a year"
+      ],
+      "whatif": "Is the distance between New York and London fixed? No. The seafloor between them splits open a little more each year, pushing the continents apart at roughly the rate your fingernails grow.",
+      "wow": "Iceland sits right on the crack, so you can literally stand with one foot on the North American plate and one on the European plate.",
+      "queries": [
+        "mid atlantic ridge",
+        "iceland rift valley",
+        "ocean waves aerial",
+        "tectonic rift landscape",
+        "cracked earth ground"
+      ]
+    },
+    {
+      "id": "trees_made_of_air",
+      "domain": "plants",
+      "fact": "A giant tree is built mostly out of thin air. Most of its solid wood comes from carbon pulled out of the sky, not from the soil.",
+      "angle": "reframes something you walk past every day",
+      "key_terms": [
+        "built from air",
+        "carbon from the sky",
+        "not from soil"
+      ],
+      "whatif": "Where does the mass of a 100-ton tree actually come from? Not mostly the ground, as it feels like it should. Most of that wood is carbon the tree pulled straight out of the air as carbon dioxide.",
+      "wow": "So a forest is, in a real sense, sky turned solid, and burning it sends that captured air right back up.",
+      "queries": [
+        "giant tree trunk",
+        "forest canopy sunlight",
+        "tall redwood trees",
+        "sunlight through forest",
+        "old growth forest"
+      ]
+    },
+    {
+      "id": "exploding_lake_nyos",
+      "domain": "earth",
+      "fact": "In 1986 a calm lake in Cameroon suddenly exploded a cloud of invisible gas that silently suffocated more than 1,700 people in a single night.",
+      "angle": "a peaceful place hiding a lethal switch",
+      "key_terms": [
+        "Lake Nyos",
+        "1,700 people",
+        "carbon dioxide"
+      ],
+      "whatif": "How could a still, quiet lake kill an entire region without a wave or a sound? For years it trapped volcanic carbon dioxide in its deep water, until one night the lake overturned and released it all at once, a heavy invisible blanket that smothered everything below it.",
+      "wow": "Engineers now keep giant pipes running in the lake around the clock, slowly venting the gas so it can never build up and burst again.",
+      "queries": [
+        "calm crater lake",
+        "misty lake morning",
+        "volcanic lake aerial",
+        "still lake water",
+        "fog over lake"
+      ]
+    },
+    {
+      "id": "everyone_is_your_ancestor",
+      "domain": "math",
+      "fact": "Go back only a few thousand years and every single person alive then who has any descendants today is an ancestor of every human on Earth right now.",
+      "angle": "a family tree that collapses into everyone",
+      "key_terms": [
+        "a few thousand years",
+        "everyone alive today",
+        "shared ancestors"
+      ],
+      "whatif": "How far back do you and a total stranger share a common ancestor? Astonishingly little. The math of doubling ancestors means that just a few thousand years ago, the same people were forefathers of the entire modern human race.",
+      "wow": "It means everyone alive, of every background, is at least a distant cousin, all branches of one recent tree.",
+      "queries": [
+        "old family photographs",
+        "crowd of people walking",
+        "ancient stone statues",
+        "antique portrait paintings",
+        "busy street crowd"
+      ]
+    },
+    {
+      "id": "green_sahara",
+      "domain": "deep_time",
+      "fact": "The Sahara, the largest hot desert on Earth, was a green land of lakes, rivers, and hippos just a few thousand years ago. Ancient rock art there even shows people swimming.",
+      "angle": "the world's emptiest place was once its lushest",
+      "key_terms": [
+        "green Sahara",
+        "lakes and rivers",
+        "rock art of swimmers"
+      ],
+      "whatif": "What did the Sahara look like when the first pyramids were being planned? Not endless sand, but a wet savanna full of grazing animals and human settlements. A slow wobble in Earth's orbit dried it out into the desert we know.",
+      "wow": "Cave paintings deep in the Sahara still show people swimming, in a place where it now almost never rains.",
+      "queries": [
+        "sahara desert dunes",
+        "african savanna wildlife",
+        "ancient cave paintings",
+        "desert oasis water",
+        "dry cracked desert"
+      ]
     }
   ]
 }
