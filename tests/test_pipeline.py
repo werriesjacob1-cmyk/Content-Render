@@ -619,6 +619,26 @@ def test_shadow_lift_filter():
     check(g_dark >= g_mild, f"darker clip lifted at least as hard ({g_dark} >= {g_mild})")
 
 
+def test_vision_call_budget():
+    section("main._gemini_vision_pick: paid-vision call budget caps spend")
+    prev_key = os.environ.get("GEMINI_API_KEY")
+    prev_calls = M._VISION_CALLS
+    try:
+        os.environ["GEMINI_API_KEY"] = "x"      # make the key check pass
+        cands = [{"image": "http://x/1.jpg"}, {"image": "http://x/2.jpg"}]
+        # at/over budget -> None, short-circuited BEFORE any network attempt
+        M._VISION_CALLS = M.VISION_CALL_BUDGET
+        check(M._gemini_vision_pick("intent", cands) is None, "over budget -> None (no paid call)")
+        check(M._VISION_CALLS == M.VISION_CALL_BUDGET, "budget guard does not increment the counter")
+        check(M.VISION_CALL_BUDGET > 0, f"a sane default budget is set ({M.VISION_CALL_BUDGET})")
+    finally:
+        M._VISION_CALLS = prev_calls
+        if prev_key is None:
+            os.environ.pop("GEMINI_API_KEY", None)
+        else:
+            os.environ["GEMINI_API_KEY"] = prev_key
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -637,6 +657,7 @@ def main():
     test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
+    test_vision_call_budget()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
