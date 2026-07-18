@@ -1170,14 +1170,27 @@ def call_groq(prompt):
     # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
     # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
     # 100k/day budget comfortably covers both.
-    chain = ([("gemini", m) for m in gemini_models()] if GEMINI_KEY else []) + \
-            ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
-            ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) + \
-            ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
-            ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) + \
-            ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) + \
-            ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) + \
-            [("cerebras", m) for m in cerebras_models()]
+    # COST MODEL: the render itself is free (GitHub Actions + free footage + TTS);
+    # only the LLM writing the script costs money, and only because GEMINI is a
+    # PAID key now. But the free providers (OpenRouter/Groq llama-3.3-70b, GitHub
+    # gpt-4o-mini) write strong scripts — ESPECIALLY when handed the Gemini-grounded
+    # research dossier (research_dossier still grounds on Gemini directly). So for
+    # the generic text calls we go FREE-FIRST and keep paid Gemini only as a
+    # last-resort quality backstop. That turns the common 4-7-renders/day case into
+    # ~$0 of generation, while grounding (cached per fact) + the vision judge stay
+    # the only small Gemini spend. Set GEMINI_GENERATION=1 to restore Gemini-first.
+    _gemini_chain = [("gemini", m) for m in gemini_models()] if GEMINI_KEY else []
+    _free_chain = (([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) +
+                   ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
+                   ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) +
+                   ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) +
+                   ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
+                   ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) +
+                   [("cerebras", m) for m in cerebras_models()])
+    if os.getenv("GEMINI_GENERATION", "0") == "1":
+        chain = _gemini_chain + _free_chain     # legacy: paid Gemini first
+    else:
+        chain = _free_chain + _gemini_chain      # default: free-first, Gemini backstop
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
     # without ever falling back to the other provider).
@@ -2122,7 +2135,12 @@ def research_dossier(fact):
         # the model's memory. Falls back to the ordinary (ungrounded) provider
         # chain on any failure, so this never blocks a run.
         raw = None
-        if GEMINI_KEY:
+        # Grounding is the one Gemini call that runs even on the free-first chain
+        # (it's Gemini-unique). It's cached per fact, so it's a ONE-TIME cost per
+        # topic — but GROUND_DOSSIER=0 skips it entirely for max frugality, falling
+        # back to the free provider chain (the topic_bank facts are already curated,
+        # so an ungrounded dossier is still solid).
+        if GEMINI_KEY and os.getenv("GROUND_DOSSIER", "1") != "0":
             try:
                 raw = _call_gemini(gemini_models()[0], prompt, ground=True)
                 print("  [research] grounded on live Google Search")
