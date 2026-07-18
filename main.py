@@ -982,14 +982,18 @@ def _shadow_lift_filter(avg_luma, target=58.0):
     dim clip toward `target` luma, or '' if it's already bright enough or
     unknown. Gamma does most of the work (opens shadows without washing out
     highlights); a small brightness nudge finishes it. Both are capped so a
-    legitimately moody clip is made LEGIBLE, not flat/grey. Returned string
-    starts with ',' so it slots straight into the scene filter chain."""
+    legitimately moody clip is made LEGIBLE, not flat/grey.
+
+    Returns a snippet with a TRAILING comma and NO leading comma, because it is
+    inserted between _motion_filter's output (which always ends in a comma) and
+    the grade (which has no leading comma): `...lanczos,` + `eq=...,` + `eq=grade`.
+    A leading comma here would double up (`,,`) and make ffmpeg fail the scene."""
     if avg_luma is None or avg_luma >= target:
         return ""
     deficit = (target - avg_luma) / target          # 0..1, bigger = darker
     gamma = 1.0 + min(0.55, deficit * 0.9)          # ≤1.55
     bright = min(0.10, deficit * 0.16)              # ≤0.10
-    return f",eq=gamma={gamma:.3f}:brightness={bright:.3f}"
+    return f"eq=gamma={gamma:.3f}:brightness={bright:.3f},"
 
 
 def _accept(chosen, dest, query, score):

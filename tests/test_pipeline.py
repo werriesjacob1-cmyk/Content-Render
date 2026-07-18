@@ -602,7 +602,12 @@ def test_shadow_lift_filter():
     check(M._shadow_lift_filter(58.0) == "", "at target -> no lift")
     # a dim clip gets an eq snippet that raises gamma above 1 (opens shadows)
     dim = M._shadow_lift_filter(20.0)
-    check(dim.startswith(",eq=gamma="), f"dim clip -> eq gamma snippet ({dim})")
+    # CRITICAL comma placement: inserted after _motion_filter (trailing comma)
+    # and before the grade (no leading comma). A leading comma would double up
+    # (",,") and make ffmpeg fail the scene, so assert exactly the right shape.
+    check(not dim.startswith(","), f"no leading comma (would double up) ({dim})")
+    check(dim.endswith(","), f"has trailing comma to join the grade ({dim})")
+    check("eq=gamma=" in dim, f"dim clip -> eq gamma snippet ({dim})")
     import re as _re
     gamma = float(_re.search(r"gamma=([0-9.]+)", dim).group(1))
     bright = float(_re.search(r"brightness=([0-9.\-]+)", dim).group(1))
