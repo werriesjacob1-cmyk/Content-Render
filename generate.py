@@ -708,9 +708,16 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
         whatif_block = ""
         if whatif:
             whatif_block = (
-                f"- THE CENTRAL QUESTION (curiosity gap): pose this as a genuine question EARLY "
-                f"(in the hook or one of the first 3-4 scenes), in your own words, based on: "
+                f"- THE CENTRAL QUESTION (curiosity gap) — HARD REQUIREMENT, ENFORCED: one of the "
+                f"first FOUR lines (the hook or scenes 1-3) MUST literally end in a question mark "
+                f"'?'. A script with no '?' in its first four lines is REJECTED and regenerated, so "
+                f"do it on the first try. Pose this question in your own plain words, based on: "
                 f"\"{whatif}\"\n"
+                f"  It's fine to lead with a punchy STATEMENT hook and make the very next line the "
+                f"question (e.g. hook: 'Your phone is being hit by proof that time bends.' then "
+                f"scene 2: 'So why doesn't a particle that should die in an instant ever reach you?'). "
+                f"Either the hook itself is the question, or an early scene is — but the '?' must be "
+                f"there.\n"
                 f"  Then ANSWER it for real as the MIDPOINT TWIST payoff (around scene 5-7) — the "
                 f"actual answer with the real numbers/names, not a tease or a shrug. The viewer must "
                 f"walk away knowing exactly what would really happen.\n")
@@ -861,7 +868,13 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   trail off, restate the premise, or stack two different endings together.
 
 SEARCH DISCOVERY (now as important as hashtags):
-- Pick ONE core keyword phrase (what someone would type to find this).
+- Pick ONE core keyword phrase (what someone would type to find this). It must be PLAIN, everyday
+  words a normal person would actually search — 1-3 common words, NOT a technical/jargon term and
+  NOT a scientist's name for the concept. This word also pops on-screen in gold, so it has to read
+  as instantly meaningful, not like a textbook heading.
+  GOOD: "bending time", "living fossil", "frozen light", "the oldest tree".
+  BAD: "einstein time dilation", "muon flux", "quantum tunneling", "antisolar point" (jargon —
+  nobody types these and they read as cold on screen).
 - Put it in the hook, in at least 2 on_screen_text labels, and in the first caption.
 
 SHARES (THE #1 weighted signal — 10x a like). Engineer the video to be SENT to a friend:
