@@ -1101,14 +1101,21 @@ def _call_gemini(model, prompt, ground=False):
     turns a fall-through-to-Groq into a Gemini success and keeps generation on the
     high-quota provider. A long retryDelay (daily quota gone) is re-raised so the
     chain falls through immediately instead of stalling."""
-    # Gemini 2.5+/3.x are "thinking" models. Disabling thinking (thinkingBudget=0)
-    # made them write noticeably WORSE scripts (run 104 scored 3.5/10) — they rely
-    # on the reasoning for quality. So we KEEP thinking but give a big output budget
-    # (24k) so the reasoning + the JSON answer both fit and it never truncates (the
-    # 'Unterminated string' failures came from thinking eating a small 4k budget).
+    # Gemini 2.5+/3.x are "thinking" models and BILL their reasoning tokens.
+    # thinkingBudget=0 (no reasoning) tanked quality (run 104 = 3.5/10); leaving
+    # thinking UNBOUNDED (the old 24k output, no budget) let a single generation
+    # burn ~15-20k reasoning tokens and run ~7 min — ~$1/render on the paid key.
+    # A BOUNDED budget is the fix: 4096 reasoning tokens is plenty to plan a
+    # ~90-word script, caps the billed cost hard, and keeps the quality that a
+    # little reasoning buys. maxOutputTokens (8k) sits well above the JSON so the
+    # 'Unterminated string' truncation never returns. Override per-need with
+    # GEMINI_THINKING_BUDGET / GEMINI_MAX_OUTPUT_TOKENS.
+    _think = int(os.getenv("GEMINI_THINKING_BUDGET", "4096"))
+    _maxout = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "8192"))
     _payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 24000},
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": _maxout,
+                             "thinkingConfig": {"thinkingBudget": _think}},
     }
     if ground:
         _payload["tools"] = [{"google_search": {}}]
@@ -2164,7 +2171,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
     # a single render (the "two videos and the quota's gone" report). 3 attempts +
     # the near-miss repair path keeps the yield while cutting worst-case burn ~40%,
     # which is what lets the morning buffer bank several scripts instead of ~2.
-    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "3"))):
+    for attempt in range(int(os.getenv("GEN_MAX_ATTEMPTS", "2"))):
         try:
             # If the circuit has already opened (every provider rate-limited 3x
             # in a row this run), the escalating backoff below cannot outlast a
