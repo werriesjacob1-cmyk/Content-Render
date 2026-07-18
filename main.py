@@ -937,26 +937,53 @@ JUDGE_SCORES = []      # every scene's best judged score this render (None exclu
                         # printed as a min/avg summary at the end for quick QA of a run
 
 
-def _clip_too_dark(path, min_luma=26.0):
-    """True if a downloaded clip is so dark it reads as a near-black/broken
-    frame — the "photos are too dark" / "goes to a black screen" complaint.
-    Samples a few frames' average luma (0-255) and compares to a CONSERVATIVE
-    floor, so only genuinely near-black footage is rejected (moody-but-visible
-    night/ocean/space clips still pass). Fully fail-safe: any probe error returns
-    False (accept the clip), so brightness-checking can never block a render."""
+def _clip_luma(path, stride=20, n=12):
+    """(avg_luma, min_luma) sampled across the clip — every `stride`-th frame,
+    up to `n` samples, so it spans ~8s instead of only the first fraction of a
+    second. Returns (None, None) on any probe error (fully fail-safe: callers
+    treat that as 'accept / no lift'). Luma is 0-255."""
     try:
         out = subprocess.run(
             ["ffmpeg", "-hide_banner", "-i", path, "-vf",
-             "select='eq(n\\,1)+eq(n\\,25)+eq(n\\,55)+eq(n\\,90)',"
+             f"select='not(mod(n\\,{stride}))',"
              "signalstats,metadata=print:key=lavfi.signalstats.YAVG",
-             "-frames:v", "4", "-f", "null", "-"],
+             "-frames:v", str(n), "-f", "null", "-"],
             capture_output=True, text=True, timeout=20).stderr
         vals = [float(m) for m in re.findall(r"YAVG=([0-9.]+)", out)]
         if not vals:
-            return False
-        return (sum(vals) / len(vals)) < min_luma
+            return (None, None)
+        return (sum(vals) / len(vals), min(vals))
     except Exception:
+        return (None, None)
+
+
+def _clip_too_dark(path, min_avg=24.0, min_floor=7.0):
+    """True only if a clip is genuinely near-black — the "goes to a black
+    screen" complaint. Rejects on a dark AVERAGE *or* a near-black STRETCH
+    (min_floor): the run-105 lab clip passed the old average-only check but
+    still had a ~2s black span under a caption. Dim-but-visible night/ocean/
+    space clips are NOT rejected here — they're kept and brightened by
+    `_shadow_lift_filter` instead, so science footage never collapses into a
+    wall of text cards. Fail-safe: a probe error returns False (accept)."""
+    avg, mn = _clip_luma(path)
+    if avg is None:
         return False
+    return avg < min_avg or mn < min_floor
+
+
+def _shadow_lift_filter(avg_luma, target=58.0):
+    """Pure helper (no ffmpeg) → an eq brightness/gamma snippet that lifts a
+    dim clip toward `target` luma, or '' if it's already bright enough or
+    unknown. Gamma does most of the work (opens shadows without washing out
+    highlights); a small brightness nudge finishes it. Both are capped so a
+    legitimately moody clip is made LEGIBLE, not flat/grey. Returned string
+    starts with ',' so it slots straight into the scene filter chain."""
+    if avg_luma is None or avg_luma >= target:
+        return ""
+    deficit = (target - avg_luma) / target          # 0..1, bigger = darker
+    gamma = 1.0 + min(0.55, deficit * 0.9)          # ≤1.55
+    bright = min(0.10, deficit * 0.16)              # ≤0.10
+    return f",eq=gamma={gamma:.3f}:brightness={bright:.3f}"
 
 
 def _accept(chosen, dest, query, score):
@@ -1625,9 +1652,16 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     stat = _stat_overlay(scene, seg_dur)
 
     if have:
+        # Lift dim-but-kept footage so no frame reads as a black screen under
+        # the caption (the run-105 dark-lab scene). Measured once here; a pure,
+        # capped eq snippet opens the shadows before the cinematic grade.
+        _avg, _mn = _clip_luma(raw)
+        lift = _shadow_lift_filter(_avg)
+        if lift:
+            print(f"  [grade] lifting dim clip (avg luma {_avg:.0f}) for legibility")
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
-             "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
+             "-filter_complex", f"[0:v]{motion}{lift}{grade}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
         return out

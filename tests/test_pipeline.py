@@ -589,6 +589,26 @@ def test_critique_script_merges_gain_and_score():
         G.call_groq = _orig
 
 
+def test_shadow_lift_filter():
+    section("main._shadow_lift_filter: dim clips lifted, bright/unknown untouched")
+    # already-bright or unknown -> no lift, no filter appended
+    check(M._shadow_lift_filter(None) == "", "unknown luma -> no lift")
+    check(M._shadow_lift_filter(80.0) == "", "bright clip -> no lift")
+    check(M._shadow_lift_filter(58.0) == "", "at target -> no lift")
+    # a dim clip gets an eq snippet that raises gamma above 1 (opens shadows)
+    dim = M._shadow_lift_filter(20.0)
+    check(dim.startswith(",eq=gamma="), f"dim clip -> eq gamma snippet ({dim})")
+    import re as _re
+    gamma = float(_re.search(r"gamma=([0-9.]+)", dim).group(1))
+    bright = float(_re.search(r"brightness=([0-9.\-]+)", dim).group(1))
+    check(1.0 < gamma <= 1.55, f"gamma opens shadows but is capped ({gamma})")
+    check(0.0 < bright <= 0.10, f"brightness nudge is capped ({bright})")
+    # darker clip -> stronger (or equal, at the cap) lift than a less-dark clip
+    g_dark = float(_re.search(r"gamma=([0-9.]+)", M._shadow_lift_filter(10.0)).group(1))
+    g_mild = float(_re.search(r"gamma=([0-9.]+)", M._shadow_lift_filter(45.0)).group(1))
+    check(g_dark >= g_mild, f"darker clip lifted at least as hard ({g_dark} >= {g_mild})")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -606,6 +626,7 @@ def main():
     test_script_buffer_queue()
     test_xfade_offsets_monotonic()
     test_critique_script_merges_gain_and_score()
+    test_shadow_lift_filter()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
