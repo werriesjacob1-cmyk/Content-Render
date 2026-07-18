@@ -923,6 +923,13 @@ AVOID these recent topics entirely: {avoid}{series_block}{opener_block}
 FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
 - Each scene needs a 2-5 word query for something a videographer ACTUALLY FILMS: a concrete subject +
   action/setting (animals, nature, weather, oceans, space, cities, machines, food, hands, reactions).
+- NEVER copy words out of the scene's spoken sentence into the query. The query is a NOUN PHRASE for a
+  filmable object/scene, not a fragment of the narration. A stock library has nothing for grammar
+  fragments — they return junk that gets rejected and the scene falls back to a worse image.
+  BAD (voiceover fragments — every one returned garbage): "satellites farther gravity", "differences
+  silently adjusts", "microseconds gaining causes", "staggering million seconds".
+  GOOD (real filmable subjects for those same lines): "gps satellite orbiting earth", "atomic clock
+  laboratory", "car dashboard navigation map", "stopwatch close up". Name the THING on screen.
 - BANNED query words (free libraries have nothing real — they degrade to random flesh/lab/texture):
   anatomy, organ, cell/cells, microscope, diagram, xray, molecular, atom, quantum, abstract, concept, system.
 - If the concept is invisible (acid, time, gravity, DNA, nerve speed), use a VISUAL METAPHOR libraries
