@@ -1,94 +1,78 @@
 {
-  "title": "The Silent Eruption of Lake Nyos",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "Lake Nyos explosion",
-  "metaphor": "natural disaster",
-  "hook": "How could a peaceful lake suddenly kill over a thousand people?",
-  "script": "How could a peaceful lake suddenly kill over a thousand people? In 1986, Lake Nyos in Cameroon erupted without warning. This seemingly calm body of water released 1.2 cubic kilometers of carbon dioxide overnight. The gas, heavier than air, suffocated more than 1,700 people in their sleep. Locals had no chance to escape the invisible blanket of death. Scientists still debate what triggered this disaster, but the consequences were catastrophic. To prevent another tragedy, engineers now ventilate the lake continuously. This industrial effort turns a potential disaster into a managed resource.",
+  "title": "Trees are Built from Air",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "trees built from air",
+  "metaphor": "carbon from the sky",
+  "hook": "Where does a giant tree's mass really come from?",
+  "script": "Where does a giant tree's mass really come from? A surprising truth about trees is that they are built mostly from thin air. Most people assume trees get their mass from soil nutrients, but that's not true. A mature oak tree can absorb over a ton of carbon dioxide during its lifetime. This process happens through tiny pores in leaves called stomata, where CO2 enters. In essence, a forest is sky that has turned solid, transforming air into living giants.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "How could a peaceful lake suddenly kill over a thousand people?",
-      "on_screen_text": "Silent Lake Disaster",
-      "search_query": "calm crater lake",
+      "voiceover": "Where does a giant tree's mass really come from?",
+      "on_screen_text": "Giant Tree Mass",
+      "search_query": "forest tall trees",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "In 1986, Lake Nyos in Cameroon erupted without warning.",
-      "on_screen_text": "1986 Eruption",
-      "search_query": "calm lake explosion",
+      "voiceover": "A surprising truth about trees is that they are built mostly from thin air.",
+      "on_screen_text": "Built from Air",
+      "search_query": "sunlight through forest",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This seemingly calm body of water released 1.2 cubic kilometers of carbon dioxide overnight.",
-      "on_screen_text": "1.2 Cubic Kilometers",
-      "search_query": "volcanic lake aerial",
-      "motion": "zoom_out"
+      "voiceover": "Most people assume trees get their mass from soil nutrients, but that's not true.",
+      "on_screen_text": "Mass from Soil?",
+      "search_query": "old growth forest",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The gas, heavier than air, suffocated more than 1,700 people in their sleep.",
-      "on_screen_text": "1,700 Lives Lost",
-      "search_query": "still lake water",
+      "voiceover": "A mature oak tree can absorb over a ton of carbon dioxide during its lifetime.",
+      "on_screen_text": "One Ton Absorbed",
+      "search_query": "giant tree trunk",
       "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Locals had no chance to escape the invisible blanket of death.",
-      "on_screen_text": "Invisible Threat",
-      "search_query": "misty lake morning",
+      "voiceover": "This process happens through tiny pores in leaves called stomata, where CO2 enters.",
+      "on_screen_text": "Photosynthesis Process",
+      "search_query": "leaves absorbing sunlight",
       "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Scientists still debate what triggered this disaster, but the consequences were catastrophic.",
-      "on_screen_text": "Catastrophic Consequences",
-      "search_query": "fog over lake",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "To prevent another tragedy, engineers now ventilate the lake continuously.",
-      "on_screen_text": "Continuous Ventilation",
-      "search_query": "volcanic lake safety",
-      "motion": "pan"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "This industrial effort turns a potential disaster into a managed resource.",
-      "on_screen_text": "Managed Resource",
-      "search_query": "safety engineering",
-      "motion": "static"
+      "voiceover": "In essence, a forest is sky that has turned solid, transforming air into living giants.",
+      "on_screen_text": "Sky Turned Solid",
+      "search_query": "forest landscape",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know about the Lake Nyos explosion? Yes or no?",
-    "More than 1,700 people lost their lives.",
-    "Invisible gases can be deadly."
+    "Did you know trees are built from air? Yes or no?",
+    "Trees absorb CO2 from the air.",
+    "Most of their mass comes from carbon."
   ],
   "hashtags": [
-    "#science",
+    "#trees",
     "#nature",
-    "#facts",
-    "#history",
-    "#disaster"
+    "#science",
+    "#carbon",
+    "#environment"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-18_the-silent-eruption-of-lake-nyos",
-  "cta_style": "LOOP",
-  "domain": "earth"
+  "video_id": "science_2026-07-18_trees-are-built-from-air",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "plants"
 }
