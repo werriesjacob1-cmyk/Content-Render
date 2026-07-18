@@ -1,21 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-14_you-re-made-of-dust",
-      "metaphor": "Skin Cells",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "title": "You're Made of Dust",
-      "fact_id": "skin_cells",
-      "domain": "body",
-      "hook": "You shed skin every minute",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": null
-    },
-    {
       "video_id": "science_2026-07-14_unseen-oceans",
       "metaphor": "ocean floor mystery",
       "viewer_job": "REFRAME",
@@ -288,6 +273,30 @@
         "rewatch": 6.0,
         "clarity": 9.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-18_the-physics-of-woodpecker-impacts",
+      "metaphor": "stiff skull hammer physics",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Physics of Woodpecker Impacts",
+      "fact_id": "woodpecker_skull",
+      "domain": "animals",
+      "hook": "A single woodpecker impact would instantly concuss a human.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 9.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.33
       }
     }
   ]
