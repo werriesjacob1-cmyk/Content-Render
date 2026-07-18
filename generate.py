@@ -70,13 +70,58 @@ if GEMINI_KEY and not (GEMINI_KEY.startswith("AIza") or GEMINI_KEY.startswith("A
 # still carry generation. If this key can't reach flash-lite it simply 404s and
 # falls through harmlessly — no worse than before. Cerebras (auto-discovered)
 # remains the capacity backstop when both Gemini buckets are out.
-# 2026-07: Google 404'd gemini-2.0-flash / -2.0-flash-lite ("no longer available")
-# — every Gemini call died and the paid tier went unused. Moved to the current
-# 2.5 family (available on a BILLED key; the old "404 for new keys" limit was a
-# free-tier thing). Env-overridable (GEMINI_MODEL, comma-separated) so the NEXT
-# deprecation is a one-variable fix with no code change / redeploy.
-GEMINI_MODELS = [m.strip() for m in os.environ.get(
-    "GEMINI_MODEL", "gemini-2.5-flash,gemini-2.5-flash-lite").split(",") if m.strip()]
+# 2026-07: Google keeps 404'ing hardcoded ids — a NEWLY-created key is restricted
+# to only the newest models ("no longer available to new users" on 2.0-flash AND
+# 2.5-flash). So we AUTO-DISCOVER what this key can actually call via ListModels
+# (like cerebras_models) instead of guessing. GEMINI_MODEL env still forces a
+# specific list if you want; otherwise gemini_models() picks live.
+GEMINI_MODELS_FALLBACK = [m.strip() for m in os.environ.get(
+    "GEMINI_MODEL", "gemini-flash-latest").split(",") if m.strip()]
+_GEMINI_MODELS_CACHE = None
+
+
+def gemini_models():
+    """Models THIS key can call for generateContent, discovered live (newest flash
+    first). Google restricts older ids on new keys, so a hardcoded value 404s;
+    discovery self-heals. Falls back to GEMINI_MODELS_FALLBACK (GEMINI_MODEL env,
+    default gemini-flash-latest) on any failure. Cached for the run."""
+    global _GEMINI_MODELS_CACHE
+    if _GEMINI_MODELS_CACHE is not None:
+        return _GEMINI_MODELS_CACHE
+    if os.environ.get("GEMINI_MODEL"):          # explicit override wins, no discovery
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+        return _GEMINI_MODELS_CACHE
+    if not GEMINI_KEY:
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+        return _GEMINI_MODELS_CACHE
+    try:
+        req = urllib.request.Request(
+            "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000",
+            headers={"x-goog-api-key": GEMINI_KEY, "User-Agent": "content-render/1.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read().decode())
+        flash, other = [], []
+        for m in data.get("models", []):
+            if "generateContent" not in (m.get("supportedGenerationMethods") or []):
+                continue
+            nm = m.get("name", "").split("/")[-1]
+            if any(b in nm for b in ("vision", "thinking", "image", "tts", "embedding", "aqa", "learnlm")):
+                continue
+            (flash if "flash" in nm else other).append(nm)
+        # prefer flash (cheap/fast), stable over preview/exp, newest id first
+        def _rank(lst):
+            stable = [n for n in lst if "preview" not in n and "exp" not in n and "-latest" not in n]
+            latest = [n for n in lst if "-latest" in n]
+            rest = [n for n in lst if n not in stable and n not in latest]
+            return latest + sorted(set(stable), reverse=True) + sorted(set(rest), reverse=True)
+        picked = _rank(flash) or _rank(other)
+        _GEMINI_MODELS_CACHE = picked[:3] or GEMINI_MODELS_FALLBACK
+        if picked:
+            print(f"  [model] gemini models available to this key: {_GEMINI_MODELS_CACHE}")
+    except Exception as e:  # noqa: BLE001
+        print(f"  [model] gemini model discovery failed ({e}); using {GEMINI_MODELS_FALLBACK}")
+        _GEMINI_MODELS_CACHE = GEMINI_MODELS_FALLBACK
+    return _GEMINI_MODELS_CACHE
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
@@ -1092,7 +1137,7 @@ def call_groq(prompt):
     # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
     # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
     # 100k/day budget comfortably covers both.
-    chain = ([("gemini", m) for m in GEMINI_MODELS] if GEMINI_KEY else []) + \
+    chain = ([("gemini", m) for m in gemini_models()] if GEMINI_KEY else []) + \
             ([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) + \
             ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) + \
             ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) + \
@@ -2040,7 +2085,7 @@ def research_dossier(fact):
         raw = None
         if GEMINI_KEY:
             try:
-                raw = _call_gemini(GEMINI_MODELS[0], prompt, ground=True)
+                raw = _call_gemini(gemini_models()[0], prompt, ground=True)
                 print("  [research] grounded on live Google Search")
             except Exception as e:  # noqa: BLE001
                 print(f"  [research] grounded search unavailable ({e}); using model knowledge")
