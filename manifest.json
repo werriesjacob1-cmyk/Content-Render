@@ -1,86 +1,95 @@
 {
-  "title": "The Green Sahara: A Forgotten Paradise",
-  "viewer_job": "REFRAME",
-  "keyword": "green Sahara",
-  "metaphor": "ancient landscapes",
-  "hook": "The Sahara was once a paradise of lakes and rivers?",
-  "script": "The Sahara was once a paradise of lakes and rivers? This vibrant ecosystem included 'Lake Mega-Chad', spanning over 350,000 square kilometers. But what caused this dramatic transformation? Earth's axial precession shifted the monsoon rains northward, turning greenery into desert. Remarkably, ancient rock art still shows people swimming in this now parched land. The Sahara's once-diverse ecosystem shaped human history, prompting migrations that led to the rise of ancient Egypt. Imagine a place that now rarely sees rain, where hippos once thrived.",
+  "title": "Cosmic Rays and Time Dilation",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "bending time",
+  "metaphor": "cosmic particles",
+  "hook": "What if particles created in the sky defy time itself?",
+  "script": "What if particles created in the sky defy time itself? When cosmic rays smash into our atmosphere, they create muons. These fleeting particles exist for just 2.2 microseconds. Surprisingly, they reach the ground at near light speed. This is time dilation, stretching their brief lives. So how is it that billions of muons arrive here? Each minute, about one of these muons passes through every square centimetre of Earth. It\u2019s a quiet reminder that Einstein's theories are at work above us.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "The Sahara was once a paradise of lakes and rivers?",
-      "on_screen_text": "Lush Greenery",
-      "search_query": "sahara desert rivers",
-      "motion": "pan"
-    },
-    {
-      "id": 2,
-      "duration": 4,
-      "voiceover": "This vibrant ecosystem included 'Lake Mega-Chad', spanning over 350,000 square kilometers.",
-      "on_screen_text": "Lake Mega-Chad",
-      "search_query": "lake mega chad",
+      "voiceover": "What if particles created in the sky defy time itself?",
+      "on_screen_text": "Cosmic particles",
+      "search_query": "cosmic rays atmosphere",
       "motion": "zoom_in"
     },
     {
+      "id": 2,
+      "duration": 5,
+      "voiceover": "When cosmic rays smash into our atmosphere, they create muons.",
+      "on_screen_text": "Creating muons",
+      "search_query": "cosmic rays collision",
+      "motion": "pan"
+    },
+    {
       "id": 3,
-      "duration": 4,
-      "voiceover": "But what caused this dramatic transformation?",
-      "on_screen_text": "What Changed?",
-      "search_query": "sahara transformation",
+      "duration": 5,
+      "voiceover": "These fleeting particles exist for just 2.2 microseconds.",
+      "on_screen_text": "2.2 microseconds",
+      "search_query": "muon lifespan",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Earth's axial precession shifted the monsoon rains northward, turning greenery into desert.",
-      "on_screen_text": "Axial Precession",
-      "search_query": "earth axial precession",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "Surprisingly, they reach the ground at near light speed.",
+      "on_screen_text": "Near light speed",
+      "search_query": "particles speed",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Remarkably, ancient rock art still shows people swimming in this now parched land.",
-      "on_screen_text": "Rock Art Swimmers",
-      "search_query": "ancient rock art swimmers",
+      "duration": 5,
+      "voiceover": "This is time dilation, stretching their brief lives.",
+      "on_screen_text": "Time dilation",
+      "search_query": "time dilation explained",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "The Sahara's once-diverse ecosystem shaped human history, prompting migrations that led to the rise of ancient Egypt.",
-      "on_screen_text": "Ancient Egypt",
-      "search_query": "rise of ancient egypt",
+      "duration": 5,
+      "voiceover": "So how is it that billions of muons arrive here?",
+      "on_screen_text": "Billions of muons",
+      "search_query": "muons reaching ground",
       "motion": "pan"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Imagine a place that now rarely sees rain, where hippos once thrived.",
-      "on_screen_text": "Once Thriving",
-      "search_query": "sahara hippos",
+      "duration": 5,
+      "voiceover": "Each minute, about one of these muons passes through every square centimetre of Earth.",
+      "on_screen_text": "Every minute",
+      "search_query": "muon flux",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 8,
+      "duration": 5,
+      "voiceover": "It\u2019s a quiet reminder that Einstein's theories are at work above us.",
+      "on_screen_text": "Einstein's theories",
+      "search_query": "Einstein relativity",
       "motion": "pan"
     }
   ],
   "captions": [
-    "The Sahara was once a lush paradise. Did you know?",
-    "Discover the ancient green Sahara.",
-    "What do you think of this transformation?"
+    "Do you know how time bends around us?",
+    "Cosmic rays create muons!",
+    "2.2 microseconds of existence."
   ],
   "hashtags": [
-    "#sahara",
-    "#history",
-    "#climate",
-    "#geography",
-    "#facts"
+    "#science",
+    "#space",
+    "#facts",
+    "#physics",
+    "#time",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-19_the-green-sahara-a-forgotten-paradise",
-  "cta_style": "LOOP",
-  "domain": "deep_time"
+  "video_id": "science_2026-07-19_cosmic-rays-and-time-dilation",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "physics"
 }

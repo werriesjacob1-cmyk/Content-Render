@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
-      "metaphor": "Underground fungal internet",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "title": "The Hidden Social Life of Forests",
-      "fact_id": "wood_wide_web",
-      "domain": "plants",
-      "hook": "Your walk through the woods is actually a trip through a city.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
       "metaphor": "World-breaking sound",
       "viewer_job": "MYTH_BUSTER",
@@ -326,6 +303,30 @@
         "rewatch": 8.0,
         "clarity": 9.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-19_cosmic-rays-and-time-dilation",
+      "metaphor": "cosmic particles",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "SCALE_SHOCK",
+      "title": "Cosmic Rays and Time Dilation",
+      "fact_id": "muon_time_dilation",
+      "domain": "physics",
+      "hook": "What if particles created in the sky defy time itself?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.17
       }
     }
   ]
