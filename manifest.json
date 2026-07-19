@@ -1,78 +1,86 @@
 {
-  "title": "Trees are Built from Air",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "trees built from air",
-  "metaphor": "carbon from the sky",
-  "hook": "Where does a giant tree's mass really come from?",
-  "script": "Where does a giant tree's mass really come from? A surprising truth about trees is that they are built mostly from thin air. Most people assume trees get their mass from soil nutrients, but that's not true. A mature oak tree can absorb over a ton of carbon dioxide during its lifetime. This process happens through tiny pores in leaves called stomata, where CO2 enters. In essence, a forest is sky that has turned solid, transforming air into living giants.",
+  "title": "The Green Sahara: A Forgotten Paradise",
+  "viewer_job": "REFRAME",
+  "keyword": "green Sahara",
+  "metaphor": "ancient landscapes",
+  "hook": "The Sahara was once a paradise of lakes and rivers?",
+  "script": "The Sahara was once a paradise of lakes and rivers? This vibrant ecosystem included 'Lake Mega-Chad', spanning over 350,000 square kilometers. But what caused this dramatic transformation? Earth's axial precession shifted the monsoon rains northward, turning greenery into desert. Remarkably, ancient rock art still shows people swimming in this now parched land. The Sahara's once-diverse ecosystem shaped human history, prompting migrations that led to the rise of ancient Egypt. Imagine a place that now rarely sees rain, where hippos once thrived.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Where does a giant tree's mass really come from?",
-      "on_screen_text": "Giant Tree Mass",
-      "search_query": "forest tall trees",
-      "motion": "zoom_in"
+      "voiceover": "The Sahara was once a paradise of lakes and rivers?",
+      "on_screen_text": "Lush Greenery",
+      "search_query": "sahara desert rivers",
+      "motion": "pan"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "A surprising truth about trees is that they are built mostly from thin air.",
-      "on_screen_text": "Built from Air",
-      "search_query": "sunlight through forest",
-      "motion": "pan"
+      "voiceover": "This vibrant ecosystem included 'Lake Mega-Chad', spanning over 350,000 square kilometers.",
+      "on_screen_text": "Lake Mega-Chad",
+      "search_query": "lake mega chad",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Most people assume trees get their mass from soil nutrients, but that's not true.",
-      "on_screen_text": "Mass from Soil?",
-      "search_query": "old growth forest",
-      "motion": "zoom_in"
+      "voiceover": "But what caused this dramatic transformation?",
+      "on_screen_text": "What Changed?",
+      "search_query": "sahara transformation",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "A mature oak tree can absorb over a ton of carbon dioxide during its lifetime.",
-      "on_screen_text": "One Ton Absorbed",
-      "search_query": "giant tree trunk",
-      "motion": "zoom_out"
+      "voiceover": "Earth's axial precession shifted the monsoon rains northward, turning greenery into desert.",
+      "on_screen_text": "Axial Precession",
+      "search_query": "earth axial precession",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "This process happens through tiny pores in leaves called stomata, where CO2 enters.",
-      "on_screen_text": "Photosynthesis Process",
-      "search_query": "leaves absorbing sunlight",
-      "motion": "pan"
+      "voiceover": "Remarkably, ancient rock art still shows people swimming in this now parched land.",
+      "on_screen_text": "Rock Art Swimmers",
+      "search_query": "ancient rock art swimmers",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "In essence, a forest is sky that has turned solid, transforming air into living giants.",
-      "on_screen_text": "Sky Turned Solid",
-      "search_query": "forest landscape",
-      "motion": "zoom_out"
+      "voiceover": "The Sahara's once-diverse ecosystem shaped human history, prompting migrations that led to the rise of ancient Egypt.",
+      "on_screen_text": "Ancient Egypt",
+      "search_query": "rise of ancient egypt",
+      "motion": "pan"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Imagine a place that now rarely sees rain, where hippos once thrived.",
+      "on_screen_text": "Once Thriving",
+      "search_query": "sahara hippos",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Did you know trees are built from air? Yes or no?",
-    "Trees absorb CO2 from the air.",
-    "Most of their mass comes from carbon."
+    "The Sahara was once a lush paradise. Did you know?",
+    "Discover the ancient green Sahara.",
+    "What do you think of this transformation?"
   ],
   "hashtags": [
-    "#trees",
-    "#nature",
-    "#science",
-    "#carbon",
-    "#environment"
+    "#sahara",
+    "#history",
+    "#climate",
+    "#geography",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-18_trees-are-built-from-air",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "plants"
+  "video_id": "science_2026-07-19_the-green-sahara-a-forgotten-paradise",
+  "cta_style": "LOOP",
+  "domain": "deep_time"
 }

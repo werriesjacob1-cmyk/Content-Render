@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-15_the-diamond-rain-of-ice-giants",
-      "metaphor": "alien gemstone weather",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SHARE",
-      "title": "The Diamond Rain of Ice Giants",
-      "fact_id": "diamond_rain",
-      "domain": "space",
-      "hook": "Your jewelry is actually a common weather pattern on other planets.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 9.0,
-        "overall": 8.33
-      }
-    },
-    {
       "video_id": "science_2026-07-15_the-hidden-social-life-of-forests",
       "metaphor": "Underground fungal internet",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -325,6 +302,30 @@
         "rewatch": 9.0,
         "clarity": 9.0,
         "overall": 8.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-19_the-green-sahara-a-forgotten-paradise",
+      "metaphor": "ancient landscapes",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "MYTH_FLIP",
+      "title": "The Green Sahara: A Forgotten Paradise",
+      "fact_id": "green_sahara",
+      "domain": "deep_time",
+      "hook": "The Sahara was once a paradise of lakes and rivers?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.5
       }
     }
   ]
