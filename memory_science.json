@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-15_the-sound-that-broke-the-world",
-      "metaphor": "World-breaking sound",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SHARE",
-      "title": "The Sound That Broke the World",
-      "fact_id": "krakatoa_loudest",
-      "domain": "physics",
-      "hook": "You think the loudest sounds are nearby, but one traveled 3,000 miles.",
-      "structure": {
-        "scene_count": 10,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
       "metaphor": "volcanic conveyor belt",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -327,6 +304,30 @@
         "rewatch": 5.0,
         "clarity": 9.0,
         "overall": 7.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-19_footprints-on-the-moon-a-lasting-legacy",
+      "metaphor": "timeless lunar marks",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Footprints on the Moon: A Lasting Legacy",
+      "fact_id": "footprints_moon",
+      "domain": "space",
+      "hook": "What if you returned to the Moon a million years from now?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.33
       }
     }
   ]

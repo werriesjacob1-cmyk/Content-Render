@@ -1,95 +1,86 @@
 {
-  "title": "Cosmic Rays and Time Dilation",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "bending time",
-  "metaphor": "cosmic particles",
-  "hook": "What if particles created in the sky defy time itself?",
-  "script": "What if particles created in the sky defy time itself? When cosmic rays smash into our atmosphere, they create muons. These fleeting particles exist for just 2.2 microseconds. Surprisingly, they reach the ground at near light speed. This is time dilation, stretching their brief lives. So how is it that billions of muons arrive here? Each minute, about one of these muons passes through every square centimetre of Earth. It\u2019s a quiet reminder that Einstein's theories are at work above us.",
+  "title": "Footprints on the Moon: A Lasting Legacy",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "moon footprints",
+  "metaphor": "timeless lunar marks",
+  "hook": "What if you returned to the Moon a million years from now?",
+  "script": "What if you returned to the Moon a million years from now? The footprints left by Apollo astronauts are astonishingly permanent. On Earth, similar footprints vanish within days due to erosion. The Moon\u2019s lack of atmosphere means no such forces exist to alter its surface. Buzz Aldrin's footprint measures about 12 inches long, a reminder of human exploration. The Moon's regolith, a fine dust, preserves these marks well, despite the vacuum. Interestingly, the same conditions ensure that lunar flags and rover tracks may outlive Earth's monuments.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if particles created in the sky defy time itself?",
-      "on_screen_text": "Cosmic particles",
-      "search_query": "cosmic rays atmosphere",
+      "voiceover": "What if you returned to the Moon a million years from now?",
+      "on_screen_text": "Timeless Lunar Marks",
+      "search_query": "moon surface",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "When cosmic rays smash into our atmosphere, they create muons.",
-      "on_screen_text": "Creating muons",
-      "search_query": "cosmic rays collision",
-      "motion": "pan"
+      "duration": 4,
+      "voiceover": "The footprints left by Apollo astronauts are astonishingly permanent.",
+      "on_screen_text": "Permanent Footprints",
+      "search_query": "astronaut footprint moon",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "These fleeting particles exist for just 2.2 microseconds.",
-      "on_screen_text": "2.2 microseconds",
-      "search_query": "muon lifespan",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "On Earth, similar footprints vanish within days due to erosion.",
+      "on_screen_text": "Earth vs. Moon",
+      "search_query": "moon erosion comparison",
+      "motion": "pan"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "Surprisingly, they reach the ground at near light speed.",
-      "on_screen_text": "Near light speed",
-      "search_query": "particles speed",
+      "duration": 4,
+      "voiceover": "The Moon\u2019s lack of atmosphere means no such forces exist to alter its surface.",
+      "on_screen_text": "No Atmosphere",
+      "search_query": "lunar landscape",
       "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "This is time dilation, stretching their brief lives.",
-      "on_screen_text": "Time dilation",
-      "search_query": "time dilation explained",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "Buzz Aldrin's footprint measures about 12 inches long, a reminder of human exploration.",
+      "on_screen_text": "12-Inch Footprint",
+      "search_query": "Buzz Aldrin footprint",
+      "motion": "pan"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "So how is it that billions of muons arrive here?",
-      "on_screen_text": "Billions of muons",
-      "search_query": "muons reaching ground",
+      "duration": 4,
+      "voiceover": "The Moon's regolith, a fine dust, preserves these marks well, despite the vacuum.",
+      "on_screen_text": "Regolith Preservation",
+      "search_query": "moon regolith",
       "motion": "pan"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Each minute, about one of these muons passes through every square centimetre of Earth.",
-      "on_screen_text": "Every minute",
-      "search_query": "muon flux",
+      "voiceover": "Interestingly, the same conditions ensure that lunar flags and rover tracks may outlive Earth's monuments.",
+      "on_screen_text": "Outlasting Earth",
+      "search_query": "lunar flags tracks",
       "motion": "zoom_out"
-    },
-    {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "It\u2019s a quiet reminder that Einstein's theories are at work above us.",
-      "on_screen_text": "Einstein's theories",
-      "search_query": "Einstein relativity",
-      "motion": "pan"
     }
   ],
   "captions": [
-    "Do you know how time bends around us?",
-    "Cosmic rays create muons!",
-    "2.2 microseconds of existence."
+    "Did you know moon footprints could last millions of years?",
+    "Explore the permanence of lunar marks.",
+    "What else could survive on the Moon?"
   ],
   "hashtags": [
     "#science",
     "#space",
     "#facts",
-    "#physics",
-    "#time",
-    "#learnontiktok"
+    "#moon",
+    "#exploration"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-19_cosmic-rays-and-time-dilation",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "physics"
+  "video_id": "science_2026-07-19_footprints-on-the-moon-a-lasting-legacy",
+  "cta_style": "COMMENT",
+  "domain": "space"
 }
