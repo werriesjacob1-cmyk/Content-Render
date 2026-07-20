@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-16_the-star-inside-earth",
-      "metaphor": "The subterranean star",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "title": "The Star Inside Earth",
-      "fact_id": "earths_core_hot_as_sun",
-      "domain": "earth",
-      "hook": "You are walking on a thin crust above a hidden star.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 10.0,
-        "overall": 8.0
-      }
-    },
-    {
       "video_id": "science_2026-07-16_the-ocean-s-hidden-air",
       "metaphor": "The invisible air-maker",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -329,6 +306,30 @@
         "rewatch": 6.0,
         "clarity": 9.0,
         "overall": 7.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-20_the-surprising-link-between-two-deserts",
+      "metaphor": "Nature's Hidden Connections",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Surprising Link Between Two Deserts",
+      "fact_id": "sahara_feeds_amazon",
+      "domain": "earth",
+      "hook": "What if the Amazon rainforest thrived on dust from the Sahara?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]

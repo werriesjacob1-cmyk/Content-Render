@@ -1,93 +1,86 @@
 {
-  "title": "Your Brain's Power: Less Than a Light Bulb",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "brain power",
-  "metaphor": "mind-bending efficiency",
-  "hook": "Your brain runs on less energy than a dim light bulb?",
-  "script": "Your brain runs on less energy than a dim light bulb? The human brain operates on just 20 watts of power. That's enough energy to light a 20-watt bulb. Yet, it outperforms supercomputers that consume millions of watts. This tiny organ accounts for about 2% of your body weight. Remarkably, it manages to fire around 86 billion neurons. Each neuron communicates using only 1-2 milliwatts per spike. In a single day, it generates more electrical impulses than all mobile phones combined.",
+  "title": "The Surprising Link Between Two Deserts",
+  "viewer_job": "REFRAME",
+  "keyword": "Sahara dust",
+  "metaphor": "Nature's Hidden Connections",
+  "hook": "What if the Amazon rainforest thrived on dust from the Sahara?",
+  "script": "What if the Amazon rainforest thrived on dust from the Sahara? This dust carries vital nutrients like phosphorus, essential for the rainforest's growth. Surprisingly, the Amazon isn't self-sustaining; it relies on this external input. In 2018, a single dust storm deposited 1.5 million tonnes of nutrients across the Atlantic. Much of this dust originates from an ancient lake bed in Chad, now a lifeless desert. This connection shows how ecosystems can be beautifully intertwined, spanning thousands of kilometers. So next time you think of the Sahara and Amazon, remember their unseen bond.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your brain runs on less energy than a dim light bulb?",
-      "on_screen_text": "Brain Power Explained",
-      "search_query": "light bulb glowing",
+      "voiceover": "What if the Amazon rainforest thrived on dust from the Sahara?",
+      "on_screen_text": "Sahara Dust Connection",
+      "search_query": "Sahara desert dust",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The human brain operates on just 20 watts of power.",
-      "on_screen_text": "20 Watts",
-      "search_query": "brain scan visualization",
-      "motion": "pan"
+      "voiceover": "This dust carries vital nutrients like phosphorus, essential for the rainforest's growth.",
+      "on_screen_text": "Vital Nutrients",
+      "search_query": "dust storm sky",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "That's enough energy to light a 20-watt bulb.",
-      "on_screen_text": "Energy Comparison",
-      "search_query": "light bulb glowing",
-      "motion": "zoom_out"
+      "voiceover": "Surprisingly, the Amazon isn't self-sustaining; it relies on this external input.",
+      "on_screen_text": "Not Self-Sustaining",
+      "search_query": "Amazon rainforest aerial",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Yet, it outperforms supercomputers that consume millions of watts.",
-      "on_screen_text": "Supercomputer vs Brain",
-      "search_query": "supercomputer operation",
-      "motion": "pan"
+      "voiceover": "In 2018, a single dust storm deposited 1.5 million tonnes of nutrients across the Atlantic.",
+      "on_screen_text": "1.5 Million Tonnes",
+      "search_query": "dust storm sky",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "This tiny organ accounts for about 2% of your body weight.",
-      "on_screen_text": "Tiny Yet Powerful",
-      "search_query": "human body weight",
+      "voiceover": "Much of this dust originates from an ancient lake bed in Chad, now a lifeless desert.",
+      "on_screen_text": "Ancient Lake Bed",
+      "search_query": "Sahara desert dust",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Remarkably, it manages to fire around 86 billion neurons.",
-      "on_screen_text": "Neurons Firing",
-      "search_query": "neurons firing animation",
-      "motion": "pan"
+      "voiceover": "This connection shows how ecosystems can be beautifully intertwined, spanning thousands of kilometers.",
+      "on_screen_text": "Intertwined Ecosystems",
+      "search_query": "Amazon rainforest aerial",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Each neuron communicates using only 1-2 milliwatts per spike.",
-      "on_screen_text": "Efficient Communication",
-      "search_query": "brain electrical impulses",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "In a single day, it generates more electrical impulses than all mobile phones combined.",
-      "on_screen_text": "Astonishing Output",
-      "search_query": "mobile phones communication",
-      "motion": "pan"
+      "voiceover": "So next time you think of the Sahara and Amazon, remember their unseen bond.",
+      "on_screen_text": "Unseen Bond",
+      "search_query": "Sahara desert dust",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know your brain runs on 20 watts?",
-    "How many neurons fire each day?",
-    "The brain's power is astonishing."
+    "Did you know Sahara dust feeds the Amazon? Yes or no?",
+    "The Amazon relies on external nutrients.",
+    "Nature's connections are often hidden."
   ],
   "hashtags": [
     "#science",
-    "#brain",
-    "#energy",
-    "#facts"
+    "#nature",
+    "#Sahara",
+    "#Amazon",
+    "#ecosystems"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-20_your-brain-s-power-less-than-a-light-bul",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "body"
+  "video_id": "science_2026-07-20_the-surprising-link-between-two-deserts",
+  "cta_style": "LOOP",
+  "domain": "earth"
 }
