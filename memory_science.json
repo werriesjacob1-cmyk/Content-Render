@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-15_the-hawaiian-conveyor-belt",
-      "metaphor": "volcanic conveyor belt",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "title": "The Hawaiian Conveyor Belt",
-      "fact_id": "hawaii_moving_japan",
-      "domain": "geology",
-      "hook": "Your fingernails grow at the same speed the Hawaiian Islands move.",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 10.0,
-        "clarity": 9.0,
-        "overall": 8.17
-      }
-    },
-    {
       "video_id": "science_2026-07-16_the-star-inside-earth",
       "metaphor": "The subterranean star",
       "viewer_job": "REFRAME",
@@ -328,6 +305,30 @@
         "rewatch": 5.0,
         "clarity": 9.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-20_your-brain-s-power-less-than-a-light-bul",
+      "metaphor": "mind-bending efficiency",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "CHALLENGE",
+      "title": "Your Brain's Power: Less Than a Light Bulb",
+      "fact_id": "brain_twenty_watts",
+      "domain": "body",
+      "hook": "Your brain runs on less energy than a dim light bulb?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 7.17
       }
     }
   ]

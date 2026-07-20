@@ -1,86 +1,93 @@
 {
-  "title": "Footprints on the Moon: A Lasting Legacy",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "moon footprints",
-  "metaphor": "timeless lunar marks",
-  "hook": "What if you returned to the Moon a million years from now?",
-  "script": "What if you returned to the Moon a million years from now? The footprints left by Apollo astronauts are astonishingly permanent. On Earth, similar footprints vanish within days due to erosion. The Moon\u2019s lack of atmosphere means no such forces exist to alter its surface. Buzz Aldrin's footprint measures about 12 inches long, a reminder of human exploration. The Moon's regolith, a fine dust, preserves these marks well, despite the vacuum. Interestingly, the same conditions ensure that lunar flags and rover tracks may outlive Earth's monuments.",
+  "title": "Your Brain's Power: Less Than a Light Bulb",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "brain power",
+  "metaphor": "mind-bending efficiency",
+  "hook": "Your brain runs on less energy than a dim light bulb?",
+  "script": "Your brain runs on less energy than a dim light bulb? The human brain operates on just 20 watts of power. That's enough energy to light a 20-watt bulb. Yet, it outperforms supercomputers that consume millions of watts. This tiny organ accounts for about 2% of your body weight. Remarkably, it manages to fire around 86 billion neurons. Each neuron communicates using only 1-2 milliwatts per spike. In a single day, it generates more electrical impulses than all mobile phones combined.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if you returned to the Moon a million years from now?",
-      "on_screen_text": "Timeless Lunar Marks",
-      "search_query": "moon surface",
+      "voiceover": "Your brain runs on less energy than a dim light bulb?",
+      "on_screen_text": "Brain Power Explained",
+      "search_query": "light bulb glowing",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The footprints left by Apollo astronauts are astonishingly permanent.",
-      "on_screen_text": "Permanent Footprints",
-      "search_query": "astronaut footprint moon",
-      "motion": "zoom_in"
+      "voiceover": "The human brain operates on just 20 watts of power.",
+      "on_screen_text": "20 Watts",
+      "search_query": "brain scan visualization",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "On Earth, similar footprints vanish within days due to erosion.",
-      "on_screen_text": "Earth vs. Moon",
-      "search_query": "moon erosion comparison",
-      "motion": "pan"
+      "voiceover": "That's enough energy to light a 20-watt bulb.",
+      "on_screen_text": "Energy Comparison",
+      "search_query": "light bulb glowing",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The Moon\u2019s lack of atmosphere means no such forces exist to alter its surface.",
-      "on_screen_text": "No Atmosphere",
-      "search_query": "lunar landscape",
-      "motion": "zoom_out"
+      "voiceover": "Yet, it outperforms supercomputers that consume millions of watts.",
+      "on_screen_text": "Supercomputer vs Brain",
+      "search_query": "supercomputer operation",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Buzz Aldrin's footprint measures about 12 inches long, a reminder of human exploration.",
-      "on_screen_text": "12-Inch Footprint",
-      "search_query": "Buzz Aldrin footprint",
-      "motion": "pan"
+      "voiceover": "This tiny organ accounts for about 2% of your body weight.",
+      "on_screen_text": "Tiny Yet Powerful",
+      "search_query": "human body weight",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "The Moon's regolith, a fine dust, preserves these marks well, despite the vacuum.",
-      "on_screen_text": "Regolith Preservation",
-      "search_query": "moon regolith",
+      "voiceover": "Remarkably, it manages to fire around 86 billion neurons.",
+      "on_screen_text": "Neurons Firing",
+      "search_query": "neurons firing animation",
       "motion": "pan"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "Interestingly, the same conditions ensure that lunar flags and rover tracks may outlive Earth's monuments.",
-      "on_screen_text": "Outlasting Earth",
-      "search_query": "lunar flags tracks",
+      "duration": 4,
+      "voiceover": "Each neuron communicates using only 1-2 milliwatts per spike.",
+      "on_screen_text": "Efficient Communication",
+      "search_query": "brain electrical impulses",
       "motion": "zoom_out"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "In a single day, it generates more electrical impulses than all mobile phones combined.",
+      "on_screen_text": "Astonishing Output",
+      "search_query": "mobile phones communication",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Did you know moon footprints could last millions of years?",
-    "Explore the permanence of lunar marks.",
-    "What else could survive on the Moon?"
+    "Did you know your brain runs on 20 watts?",
+    "How many neurons fire each day?",
+    "The brain's power is astonishing."
   ],
   "hashtags": [
     "#science",
-    "#space",
-    "#facts",
-    "#moon",
-    "#exploration"
+    "#brain",
+    "#energy",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-19_footprints-on-the-moon-a-lasting-legacy",
-  "cta_style": "COMMENT",
-  "domain": "space"
+  "video_id": "science_2026-07-20_your-brain-s-power-less-than-a-light-bul",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "body"
 }
