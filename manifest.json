@@ -1,86 +1,78 @@
 {
-  "title": "The Hidden Ocean of Viruses",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "seawater viruses",
-  "metaphor": "the unseen world",
-  "hook": "What if a liter of seawater held a secret army?",
-  "script": "What if a liter of seawater held a secret army? Estimates suggest there are between 10 billion to 100 billion viruses in that single liter. Most of these viruses are harmless to us, predominantly targeting bacteria. They can kill up to 40% of ocean bacteria daily, regulating the entire marine ecosystem. The Sargasso Sea even hosts concentrations exceeding 10 trillion viral particles per liter. These tiny entities help recycle nutrients, supporting life in the ocean and beyond. If you could gather all viruses from the oceans, they would weigh about 1 billion tons.",
+  "title": "The Largest Living Thing on Earth",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "largest living organism",
+  "metaphor": "hidden life beneath soil",
+  "hook": "What if the biggest creature alive was hiding under a forest?",
+  "script": "What if the biggest creature alive was hiding under a forest? It\u2019s a single fungus, specifically the honey fungus, in Oregon. This organism stretches over 2,385 acres, a footprint larger than 1,600 football fields. It\u2019s a single organism, estimated to be between 1,900 and 8,650 years old. The honey fungus spreads using black, shoelace-like threads, invading tree roots and choking them. Almost all of this giant lives underground as a web of threads, and most of it has never been seen by anyone.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if a liter of seawater held a secret army?",
-      "on_screen_text": "Hidden Army",
-      "search_query": "ocean water surface",
+      "voiceover": "What if the biggest creature alive was hiding under a forest?",
+      "on_screen_text": "Hidden Life",
+      "search_query": "dark forest canopy",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Estimates suggest there are between 10 billion to 100 billion viruses in that single liter.",
-      "on_screen_text": "Billions of Viruses",
-      "search_query": "blue ocean aerial",
-      "motion": "zoom_out"
+      "voiceover": "It\u2019s a single fungus, specifically the honey fungus, in Oregon.",
+      "on_screen_text": "Honey Fungus",
+      "search_query": "honey fungus close up",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Most of these viruses are harmless to us, predominantly targeting bacteria.",
-      "on_screen_text": "Harmless Viruses",
-      "search_query": "bacteria in ocean",
-      "motion": "pan"
+      "voiceover": "This organism stretches over 2,385 acres, a footprint larger than 1,600 football fields.",
+      "on_screen_text": "Massive Footprint",
+      "search_query": "aerial view forest",
+      "motion": "static"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "They can kill up to 40% of ocean bacteria daily, regulating the entire marine ecosystem.",
-      "on_screen_text": "Regulating Life",
-      "search_query": "marine ecosystem",
-      "motion": "pan"
+      "voiceover": "It\u2019s a single organism, estimated to be between 1,900 and 8,650 years old.",
+      "on_screen_text": "Ancient Organism",
+      "search_query": "ancient tree rings",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The Sargasso Sea even hosts concentrations exceeding 10 trillion viral particles per liter.",
-      "on_screen_text": "Trillions in the Sea",
-      "search_query": "Sargasso Sea",
-      "motion": "zoom_in"
+      "voiceover": "The honey fungus spreads using black, shoelace-like threads, invading tree roots and choking them.",
+      "on_screen_text": "Invading Roots",
+      "search_query": "fungus growing on tree",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "These tiny entities help recycle nutrients, supporting life in the ocean and beyond.",
-      "on_screen_text": "Nutrient Recyclers",
-      "search_query": "marine life",
-      "motion": "pan"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "If you could gather all viruses from the oceans, they would weigh about 1 billion tons.",
-      "on_screen_text": "A Billion Tons",
-      "search_query": "weight of ocean viruses",
+      "voiceover": "Almost all of this giant lives underground as a web of threads, and most of it has never been seen by anyone.",
+      "on_screen_text": "Unseen Giant",
+      "search_query": "underground fungus network",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know there are more viruses than humans in seawater?",
-    "A hidden world within the ocean.",
-    "Viruses play a crucial role in marine life."
+    "Did you know the largest living organism is underground?",
+    "It's older than many trees!",
+    "How does it spread?"
   ],
   "hashtags": [
-    "#ocean",
-    "#viruses",
-    "#marine",
-    "#bacteria",
-    "#nature"
+    "#fungus",
+    "#nature",
+    "#science",
+    "#facts",
+    "#weird"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-21_the-hidden-ocean-of-viruses",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "biology"
+  "video_id": "science_2026-07-21_the-largest-living-thing-on-earth",
+  "cta_style": "COMMENT",
+  "domain": "fungi"
 }

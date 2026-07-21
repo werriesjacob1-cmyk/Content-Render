@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-16_dna-stretched-out",
-      "metaphor": "Cellular Scale",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "title": "DNA Stretched Out",
-      "fact_id": "dna_length",
-      "domain": "body",
-      "hook": "Your DNA is incredibly long",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-16_the-glass-rain-planet",
       "metaphor": "liquid glass storm",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -331,6 +308,30 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-21_the-largest-living-thing-on-earth",
+      "metaphor": "hidden life beneath soil",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "The Largest Living Thing on Earth",
+      "fact_id": "largest_fungus",
+      "domain": "fungi",
+      "hook": "What if the biggest creature alive was hiding under a forest?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 8.0,
+        "rewatch": 5.0,
+        "clarity": 7.0,
+        "overall": 6.83
       }
     }
   ]
