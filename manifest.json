@@ -1,86 +1,86 @@
 {
-  "title": "The Surprising Link Between Two Deserts",
-  "viewer_job": "REFRAME",
-  "keyword": "Sahara dust",
-  "metaphor": "Nature's Hidden Connections",
-  "hook": "What if the Amazon rainforest thrived on dust from the Sahara?",
-  "script": "What if the Amazon rainforest thrived on dust from the Sahara? This dust carries vital nutrients like phosphorus, essential for the rainforest's growth. Surprisingly, the Amazon isn't self-sustaining; it relies on this external input. In 2018, a single dust storm deposited 1.5 million tonnes of nutrients across the Atlantic. Much of this dust originates from an ancient lake bed in Chad, now a lifeless desert. This connection shows how ecosystems can be beautifully intertwined, spanning thousands of kilometers. So next time you think of the Sahara and Amazon, remember their unseen bond.",
+  "title": "The Hidden Ocean of Viruses",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "seawater viruses",
+  "metaphor": "the unseen world",
+  "hook": "What if a liter of seawater held a secret army?",
+  "script": "What if a liter of seawater held a secret army? Estimates suggest there are between 10 billion to 100 billion viruses in that single liter. Most of these viruses are harmless to us, predominantly targeting bacteria. They can kill up to 40% of ocean bacteria daily, regulating the entire marine ecosystem. The Sargasso Sea even hosts concentrations exceeding 10 trillion viral particles per liter. These tiny entities help recycle nutrients, supporting life in the ocean and beyond. If you could gather all viruses from the oceans, they would weigh about 1 billion tons.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if the Amazon rainforest thrived on dust from the Sahara?",
-      "on_screen_text": "Sahara Dust Connection",
-      "search_query": "Sahara desert dust",
+      "voiceover": "What if a liter of seawater held a secret army?",
+      "on_screen_text": "Hidden Army",
+      "search_query": "ocean water surface",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "This dust carries vital nutrients like phosphorus, essential for the rainforest's growth.",
-      "on_screen_text": "Vital Nutrients",
-      "search_query": "dust storm sky",
-      "motion": "zoom_in"
+      "voiceover": "Estimates suggest there are between 10 billion to 100 billion viruses in that single liter.",
+      "on_screen_text": "Billions of Viruses",
+      "search_query": "blue ocean aerial",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Surprisingly, the Amazon isn't self-sustaining; it relies on this external input.",
-      "on_screen_text": "Not Self-Sustaining",
-      "search_query": "Amazon rainforest aerial",
-      "motion": "zoom_in"
+      "voiceover": "Most of these viruses are harmless to us, predominantly targeting bacteria.",
+      "on_screen_text": "Harmless Viruses",
+      "search_query": "bacteria in ocean",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "In 2018, a single dust storm deposited 1.5 million tonnes of nutrients across the Atlantic.",
-      "on_screen_text": "1.5 Million Tonnes",
-      "search_query": "dust storm sky",
-      "motion": "zoom_out"
+      "voiceover": "They can kill up to 40% of ocean bacteria daily, regulating the entire marine ecosystem.",
+      "on_screen_text": "Regulating Life",
+      "search_query": "marine ecosystem",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Much of this dust originates from an ancient lake bed in Chad, now a lifeless desert.",
-      "on_screen_text": "Ancient Lake Bed",
-      "search_query": "Sahara desert dust",
+      "voiceover": "The Sargasso Sea even hosts concentrations exceeding 10 trillion viral particles per liter.",
+      "on_screen_text": "Trillions in the Sea",
+      "search_query": "Sargasso Sea",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "This connection shows how ecosystems can be beautifully intertwined, spanning thousands of kilometers.",
-      "on_screen_text": "Intertwined Ecosystems",
-      "search_query": "Amazon rainforest aerial",
-      "motion": "zoom_in"
+      "voiceover": "These tiny entities help recycle nutrients, supporting life in the ocean and beyond.",
+      "on_screen_text": "Nutrient Recyclers",
+      "search_query": "marine life",
+      "motion": "pan"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "So next time you think of the Sahara and Amazon, remember their unseen bond.",
-      "on_screen_text": "Unseen Bond",
-      "search_query": "Sahara desert dust",
-      "motion": "zoom_in"
+      "voiceover": "If you could gather all viruses from the oceans, they would weigh about 1 billion tons.",
+      "on_screen_text": "A Billion Tons",
+      "search_query": "weight of ocean viruses",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know Sahara dust feeds the Amazon? Yes or no?",
-    "The Amazon relies on external nutrients.",
-    "Nature's connections are often hidden."
+    "Did you know there are more viruses than humans in seawater?",
+    "A hidden world within the ocean.",
+    "Viruses play a crucial role in marine life."
   ],
   "hashtags": [
-    "#science",
-    "#nature",
-    "#Sahara",
-    "#Amazon",
-    "#ecosystems"
+    "#ocean",
+    "#viruses",
+    "#marine",
+    "#bacteria",
+    "#nature"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-20_the-surprising-link-between-two-deserts",
-  "cta_style": "LOOP",
-  "domain": "earth"
+  "video_id": "science_2026-07-21_the-hidden-ocean-of-viruses",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "biology"
 }

@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-16_the-ocean-s-hidden-air",
-      "metaphor": "The invisible air-maker",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "title": "The Ocean's Hidden Air",
-      "fact_id": "ocean_oxygen",
-      "domain": "ocean",
-      "hook": "Your next breath doesn't come from a forest, but the ocean.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-16_dna-stretched-out",
       "metaphor": "Cellular Scale",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -330,6 +307,30 @@
         "rewatch": 8.0,
         "clarity": 9.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-21_the-hidden-ocean-of-viruses",
+      "metaphor": "the unseen world",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Hidden Ocean of Viruses",
+      "fact_id": "ocean_viruses",
+      "domain": "biology",
+      "hook": "What if a liter of seawater held a secret army?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 6.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 7.5
       }
     }
   ]
