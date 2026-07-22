@@ -1,93 +1,94 @@
 {
-  "title": "Pineapple: The Fruit That Digests You",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "pineapple digestion",
-  "metaphor": "tropical fruit science",
-  "hook": "Eating fresh pineapple means it\u2019s digesting you back?",
-  "script": "Eating fresh pineapple means it\u2019s digesting you back? It contains bromelain, an enzyme that breaks down protein. Bromelain targets the proteins in your saliva, dissolving cells. Your mouth regenerates quickly, replacing cells every 3 to 7 days. Interestingly, canned pineapple doesn't have this effect. This is because heat destroys the enzyme bromelain. Only raw pineapple bites back, making it unique. So, would you eat raw pineapple again knowing this?",
+  "title": "The Infinite Possibilities of Chess",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "chess possibilities",
+  "metaphor": "infinite games",
+  "hook": "A chessboard has only 64 squares, so how can it hold more games than the universe has atoms?",
+  "script": "The staggering number of chess games goes beyond imagination. After just four moves per side, there are already 84 billion possible variations. This branching occurs because each player has about 35 legal moves per turn. By the tenth move, the possibilities explode to over 7 sextillion. The maximum length of a chess game is 8,848.5 moves, but most sequences are meaningless. In fact, there are 10 to the power of 120 potential games. This far exceeds the 10 to the power of 80 atoms in the observable universe. No computer will ever list them all; there isn't enough matter in existence to store the full list.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Eating fresh pineapple means it\u2019s digesting you back?",
-      "on_screen_text": "Pineapple Digestion",
-      "search_query": "fresh pineapple slices",
+      "voiceover": "The staggering number of chess games goes beyond imagination.",
+      "on_screen_text": "Endless Possibilities",
+      "search_query": "chess game pieces",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "It contains bromelain, an enzyme that breaks down protein.",
-      "on_screen_text": "Bromelain Enzyme",
-      "search_query": "juicy pineapple close up",
-      "motion": "zoom_out"
+      "voiceover": "After just four moves per side, there are already 84 billion possible variations.",
+      "on_screen_text": "84 Billion Variations",
+      "search_query": "chess game close up",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Bromelain targets the proteins in your saliva, dissolving cells.",
-      "on_screen_text": "Cell Dissolution",
-      "search_query": "cutting pineapple open",
-      "motion": "pan"
+      "voiceover": "This branching occurs because each player has about 35 legal moves per turn.",
+      "on_screen_text": "35 Legal Moves",
+      "search_query": "chess player thinking",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Your mouth regenerates quickly, replacing cells every 3 to 7 days.",
-      "on_screen_text": "Rapid Regeneration",
-      "search_query": "pineapple on cutting board",
+      "voiceover": "By the tenth move, the possibilities explode to over 7 sextillion.",
+      "on_screen_text": "7 Sextillion Paths",
+      "search_query": "chess pieces macro",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Interestingly, canned pineapple doesn't have this effect.",
-      "on_screen_text": "Canned vs. Fresh",
-      "search_query": "tropical pineapple fruit",
-      "motion": "pan"
+      "voiceover": "The maximum length of a chess game is 8,848.5 moves, but most sequences are meaningless.",
+      "on_screen_text": "8,848.5 Moves",
+      "search_query": "chess board with pieces",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "This is because heat destroys the enzyme bromelain.",
-      "on_screen_text": "Heat Destroys Enzyme",
-      "search_query": "pineapple digestion process",
-      "motion": "zoom_out"
+      "voiceover": "In fact, there are 10 to the power of 120 potential games.",
+      "on_screen_text": "10^120 Potential Games",
+      "search_query": "chess pieces on board",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Only raw pineapple bites back, making it unique.",
-      "on_screen_text": "Unique Fruit",
-      "search_query": "pineapple fruit close up",
+      "voiceover": "This far exceeds the 10 to the power of 80 atoms in the observable universe.",
+      "on_screen_text": "More Than Atoms",
+      "search_query": "observable universe stars",
       "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "So, would you eat raw pineapple again knowing this?",
-      "on_screen_text": "Would You Eat It?",
-      "search_query": "pineapple cutting",
-      "motion": "pan"
+      "voiceover": "No computer will ever list them all; there isn't enough matter in existence to store the full list.",
+      "on_screen_text": "Infinite Combinations",
+      "search_query": "galaxy stars space",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know pineapple digests you? Yes or no?",
-    "What makes pineapple unique?",
-    "How often does your mouth regenerate?"
+    "Did you know chess has more possibilities than atoms? Yes or no?",
+    "How many games can you imagine?",
+    "Chess is a universe of possibilities."
   ],
   "hashtags": [
-    "#pineapple",
+    "#chess",
+    "#possibilities",
+    "#universe",
     "#science",
-    "#foodfacts",
-    "#health"
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_pineapple-the-fruit-that-digests-you",
-  "cta_style": "COMMENT",
-  "domain": "chemistry"
+  "video_id": "science_2026-07-22_the-infinite-possibilities-of-chess",
+  "cta_style": "LOOP",
+  "domain": "math"
 }
