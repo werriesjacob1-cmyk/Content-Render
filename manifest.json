@@ -1,87 +1,87 @@
 {
-  "title": "How Sensitive Are Your Eyes?",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "single photon",
-  "metaphor": "human eye light sensitivity",
-  "hook": "What is the faintest thing a human eye can possibly see?",
-  "script": "What is the faintest thing a human eye can possibly see? Most people think our vision is surprisingly weak in the dark. In reality, your eyes can register one particle of light. Each retina packs 120 million rod cells designed to trap a single photon. When hit, a molecule inside flips in less than a trillionth of a second. That tiny packet carries so little energy it cannot lift a grain of sand. Yet on a dark clear night, your eyes can catch a candle flame miles away. You are sensing light at the smallest amount possible in physics.",
+  "title": "The Radioactive Fruit in Your Kitchen",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "banana radiation",
+  "metaphor": "everyday natural radioactivity",
+  "hook": "A single banana releases a burst of pure antimatter every ninety minutes.",
+  "script": "A single banana releases a burst of pure antimatter every ninety minutes. So how many bananas would you eat before the radiation becomes fatal? Each one delivers 0.1 microsieverts of radiation from an isotope called potassium-40. Cargo containers full of bananas regularly trigger nuclear alarms at border checkpoints. Eating forty-two bananas at once stops your heart from potassium toxicity long before radiation matters. Your own body is even more radioactive, firing potassium-40 decays 5,000 times a second. This isotope has decayed since Earth formed, outlasting human history eighty thousand times over. Your kidneys flush the extra dose, leaving you glowing quietly in the dark.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "What is the faintest thing a human eye can possibly see?",
-      "on_screen_text": "faintest light",
-      "search_query": "pupil close up",
+      "voiceover": "A single banana releases a burst of pure antimatter every ninety minutes.",
+      "on_screen_text": "banana radiation",
+      "search_query": "banana yellow",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "Most people think our vision is surprisingly weak in the dark.",
-      "on_screen_text": "night vision myth",
-      "search_query": "dark forest at night",
-      "motion": "zoom_in"
+      "voiceover": "So how many bananas would you eat before the radiation becomes fatal?",
+      "on_screen_text": "a fatal dose?",
+      "search_query": "bananas bunch",
+      "motion": "static"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "In reality, your eyes can register one particle of light.",
-      "on_screen_text": "one particle of light",
-      "search_query": "human eye macro",
+      "duration": 6,
+      "voiceover": "Each one delivers 0.1 microsieverts of radiation from an isotope called potassium-40.",
+      "on_screen_text": "potassium-40 isotope",
+      "search_query": "fruit market",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "Each retina packs 120 million rod cells designed to trap a single photon.",
-      "on_screen_text": "single photon",
-      "search_query": "starry night sky",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "Cargo containers full of bananas regularly trigger nuclear alarms at border checkpoints.",
+      "on_screen_text": "nuclear portal alarm",
+      "search_query": "cargo port container",
+      "motion": "static"
     },
     {
       "id": 5,
       "duration": 6,
-      "voiceover": "When hit, a molecule inside flips in less than a trillionth of a second.",
-      "on_screen_text": "instant reaction",
-      "search_query": "laser beam dark room",
+      "voiceover": "Eating forty-two bananas at once stops your heart from potassium toxicity long before radiation matters.",
+      "on_screen_text": "42 bananas fatal",
+      "search_query": "human heart beating",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 6,
-      "voiceover": "That tiny packet carries so little energy it cannot lift a grain of sand.",
-      "on_screen_text": "minuscule energy",
-      "search_query": "sand dripping through fingers",
-      "motion": "zoom_out"
+      "voiceover": "Your own body is even more radioactive, firing potassium-40 decays 5,000 times a second.",
+      "on_screen_text": "5,000 times a second",
+      "search_query": "human body silhouette",
+      "motion": "pan"
     },
     {
       "id": 7,
       "duration": 6,
-      "voiceover": "Yet on a dark clear night, your eyes can catch a candle flame miles away.",
-      "on_screen_text": "miles away",
-      "search_query": "candle flame in the dark",
-      "motion": "zoom_in"
+      "voiceover": "This isotope has decayed since Earth formed, outlasting human history eighty thousand times over.",
+      "on_screen_text": "80,000 civilizations",
+      "search_query": "planet earth space",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 5,
-      "voiceover": "You are sensing light at the smallest amount possible in physics.",
-      "on_screen_text": "smallest amount possible",
-      "search_query": "person looking at stars night",
-      "motion": "zoom_in"
+      "voiceover": "Your kidneys flush the extra dose, leaving you glowing quietly in the dark.",
+      "on_screen_text": "quietly radioactive",
+      "search_query": "night sky dark",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Could you spot a single photon in absolute darkness? Yes or no?",
-    "Your eyes are built right at the ultimate physical limit of light.",
-    "Did you think animal vision was always better than human vision?"
+    "How many bananas did you think it took to be fatal \u2014 yes or no, did you guess under 50? #bananaradiation",
+    "Cargo ships carrying bananas trigger nuclear detectors at border checkpoints every day.",
+    "Your body fires 5,000 radioactive decays every second of your life."
   ],
   "hashtags": [
     "#science",
-    "#humanbody",
     "#physics",
-    "#eyes",
-    "#space",
+    "#facts",
+    "#radioactivity",
+    "#nature",
     "#learnontiktok"
   ],
   "render": {
@@ -89,7 +89,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_how-sensitive-are-your-eyes",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "senses"
+  "video_id": "science_2026-07-22_the-radioactive-fruit-in-your-kitchen",
+  "cta_style": "LOOP",
+  "domain": "physics"
 }
