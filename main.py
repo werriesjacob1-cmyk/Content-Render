@@ -236,45 +236,62 @@ def tts_full(full_text, out_mp3, voice, rate):
             except Exception as e:
                 print(f"  ElevenLabs failed: {e}")
                 break
-    # Local neural TTS (Piper) — the preferred FREE voice: natural, offline, no
-    # quota, no rate limits. Tried before edge-tts. Clear WORD_TIMINGS so the
-    # later whisper_align pass supplies the real per-word caption times.
-    if _piper_tts(full_text, out_mp3):
-        WORD_TIMINGS = []
-        print(f"  Piper SUCCESS (local neural voice, length-scale {PIPER_LENGTH_SCALE})")
-        return True
+    # ---- FREE voices (used whenever ElevenLabs is absent or out of credits) ----
+    # ORDER MATTERS and is the fix for the user's "robotic / choppy narrator"
+    # complaint. ElevenLabs' 10k free credits/month get spent, so for most of the
+    # month the FREE voice IS the product. edge-tts speaks with Azure NEURAL voices
+    # that sound markedly more human/smooth than Piper's local model, it's free and
+    # unlimited, and its slightly slower cadence (EDGE_RATE) also lifts a stubby
+    # ~31s Piper read toward the ~38s watch-time sweet spot. So edge-tts is tried
+    # FIRST now; Piper stays as the always-available OFFLINE fallback that
+    # guarantees a render never breaks if edge-tts's free endpoint 403s or stops
+    # streaming (the reliability reason it used to be first). VOICE_ENGINE lets the
+    # user A/B by ear without a code change: "edge" (default order), "piper" (force
+    # the local voice first), "auto" == "edge".
+    def _try_edge():
+        # Capture REAL per-word timing from edge-tts's WordBoundary events (the
+        # Python API exposes them; the CLI --write-media does not) so captions +
+        # scene cuts are word-accurate instead of a proportional guess that drifts
+        # behind fast speech. Only trust the timings if their count is close to the
+        # script's word count; otherwise fall through to the proportional estimate.
+        try:
+            wt = _edge_tts_with_timings(full_text, voice, EDGE_RATE, out_mp3)
+            if os.path.getsize(out_mp3) > 1000:
+                sw = len(full_text.split())
+                if wt and abs(len(wt) - sw) <= max(3, 0.2 * sw):
+                    WORD_TIMINGS[:] = wt
+                    print(f"  edge-tts SUCCESS ({len(wt)} real word timings, rate {EDGE_RATE})")
+                else:
+                    WORD_TIMINGS[:] = []
+                    print(f"  edge-tts SUCCESS (got {len(wt)} timings vs {sw} words — "
+                          f"count mismatch, using proportional caption estimate)")
+                return True
+        except Exception as e:  # noqa: BLE001
+            print("  edge-tts (python api) failed, trying CLI:", e)
+        try:
+            run(["edge-tts", f"--voice={voice}", f"--rate={EDGE_RATE}",
+                 f"--text={full_text}", f"--write-media={out_mp3}"])
+            if os.path.getsize(out_mp3) > 1000:
+                WORD_TIMINGS[:] = []
+                return True
+        except Exception as e:  # noqa: BLE001
+            print("  edge-tts failed:", e)
+        return False
 
-    # edge-tts fallback (when ElevenLabs is unavailable / out of credits). Two
-    # fixes vs the old plain CLI call, both aimed at the "narrator too fast and
-    # the subtitles can't keep up" complaint:
-    #  1) Capture REAL per-word timing from edge-tts's WordBoundary events (the
-    #     Python API exposes them; the CLI --write-media does not), so the free
-    #     voice gets word-accurate captions + scene cuts exactly like ElevenLabs
-    #     instead of the old proportional GUESS that drifted behind fast speech.
-    #  2) Speak a bit slower (EDGE_RATE) — edge-tts's default cadence is quick.
-    # Only trust the captured timings if their count is close to the script's
-    # word count (a big mismatch means edge tokenised numbers/hyphenates oddly);
-    # otherwise fall through to the proportional estimate rather than desync.
-    try:
-        wt = _edge_tts_with_timings(full_text, voice, EDGE_RATE, out_mp3)
-        if os.path.getsize(out_mp3) > 1000:
-            script_words = len(full_text.split())
-            if wt and abs(len(wt) - script_words) <= max(3, 0.2 * script_words):
-                WORD_TIMINGS = wt
-                print(f"  edge-tts SUCCESS ({len(wt)} real word timings, rate {EDGE_RATE})")
-            else:
-                print(f"  edge-tts SUCCESS (got {len(wt)} timings vs {script_words} words — "
-                      f"count mismatch, using proportional caption estimate)")
+    def _try_piper():
+        # Local neural TTS (Piper): free, offline, no quota. Clear WORD_TIMINGS so
+        # the later whisper_align pass supplies the real per-word caption times.
+        if _piper_tts(full_text, out_mp3):
+            WORD_TIMINGS[:] = []
+            print(f"  Piper SUCCESS (local neural voice, length-scale {PIPER_LENGTH_SCALE})")
             return True
-    except Exception as e:
-        print("  edge-tts (python api) failed, trying CLI:", e)
-    try:
-        run(["edge-tts", f"--voice={voice}", f"--rate={EDGE_RATE}",
-             f"--text={full_text}", f"--write-media={out_mp3}"])
-        if os.path.getsize(out_mp3) > 1000:
+        return False
+
+    engine = os.environ.get("VOICE_ENGINE", "edge").strip().lower()
+    free_order = [_try_piper, _try_edge] if engine == "piper" else [_try_edge, _try_piper]
+    for _try in free_order:
+        if _try():
             return True
-    except Exception as e:
-        print("  edge-tts failed:", e)
     return False
 
 

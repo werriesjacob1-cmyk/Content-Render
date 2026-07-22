@@ -298,6 +298,19 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
 GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
 
+
+def draft_is_weak(overall, quality):
+    """True when a scored draft is genuinely weak — below the clean threshold OR
+    breaking any per-criterion floor. Gates the frugal Gemini quality-rescue in
+    main(): a weak best-draft is worth ONE paid Gemini attempt; a strong one (or
+    an ungradable-but-clean one, where overall/quality is None) is not. Pure so
+    the rescue trigger is unit-tested without any LLM."""
+    if overall is None or quality is None:
+        return False   # a clean script we simply couldn't grade — leave it be
+    if overall < QUALITY_THRESHOLD:
+        return True
+    return any(quality.get(k, 10) < fl for k, fl in QUALITY_CRITERION_FLOORS.items())
+
 # ---------------------------------------------------------------------------
 # PERFORMANCE MEMORY — bias future generation using REAL engagement data
 # ---------------------------------------------------------------------------
@@ -347,6 +360,11 @@ def load_bank():
     except Exception:
         return []
 _WORKING_MODEL = None  # cached once we find one that responds
+# One-shot switch for the Gemini quality-rescue (main() sets it True for a single
+# grounded attempt when the free chain could only manage a weak draft, then clears
+# it). While True, call_groq puts the paid Gemini chain FIRST regardless of the
+# free-first default — the rescue explicitly wants Gemini to author the retry.
+_FORCE_GEMINI_GEN = False
 
 VIEWER_JOBS = [
     ("REFRAME",
@@ -830,15 +848,16 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 84-96 words — this is the HARDEST constraint; under 80 or over 100 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~11 words each
-  is ~88 words, right in range. If you're past 96, DELETE a whole weak scene; if under 84, you're too
+- Total narration MUST be 95-110 words — this is the HARDEST constraint; under 85 or over 115 words is
+  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~13 words each
+  is ~104 words, right in range. If you're past 110, TIGHTEN wording (never DELETE a whole scene — every
+  scene is a distinct escalation beat and losing one flattens the payoff); if under 95, you're too
   thin — add one more real fact from the research, never filler. At this channel's narration speed
-  84-96 words renders to ~38-44 seconds — the sweet spot for completion (too short and it feels stubby
-  and un-satisfying; a 110-word script came out at 50s, too long). Under 80 = rejected; over 100 = rejected.
-  A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
+  95-110 words renders to ~40-46 seconds — the sweet spot for completion (too short feels stubby and
+  un-satisfying; past ~120 words drags toward 50s+). Under 85 = rejected; over 115 = rejected.
+  A tight ~42s video beats a padded 55s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~10-13 words (7-9 scenes x ~11 words = your 84-96 total). NEVER exceed 22 words
+- PER-SCENE LENGTH: aim ~12-14 words (8 scenes x ~13 words = your ~104 total). NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1183,7 +1202,7 @@ def call_groq(prompt):
     x escalating sleeps x every pipeline stage) AND wasted whatever little quota
     remained. Fail-fast = the render aborts in seconds and stops hammering the
     limit. When the LLM is healthy the circuit never opens (behaviour identical)."""
-    global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN
+    global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN, _FORCE_GEMINI_GEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
     # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
@@ -1214,8 +1233,10 @@ def call_groq(prompt):
                    ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
                    ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) +
                    [("cerebras", m) for m in cerebras_models()])
-    if os.getenv("GEMINI_GENERATION", "0") == "1":
-        chain = _gemini_chain + _free_chain     # legacy: paid Gemini first
+    if _FORCE_GEMINI_GEN or os.getenv("GEMINI_GENERATION", "0") == "1":
+        # _FORCE_GEMINI_GEN = the one-shot quality-rescue; GEMINI_GENERATION=1 =
+        # the permanent legacy override. Either one puts paid Gemini first.
+        chain = _gemini_chain + _free_chain
     else:
         chain = _free_chain + _gemini_chain      # default: free-first, Gemini backstop
     # try the cached working provider first (also re-walks the chain if it now
@@ -1597,13 +1618,18 @@ def validate(m, job_name, fact=None):
 
     # script length sanity. FLOOR raised 60 -> 80: the ElevenLabs voice speaks
     # noticeably faster than the old edge-tts pacing the 60-word floor was tuned
-    # for, so 60-72-word scripts (often a near-miss repair over-trimming the free
-    # models' long drafts) rendered to a stubby ~28-32s — too short to hold a
-    # viewer or earn watch-time. 80-100 words lands ~37-45s at ElevenLabs' pace,
-    # the sweet spot for completion. Ceiling 93 -> 100 for that headroom.
+    # for. But the previous 80-100 window was ALSO wrong — too TIGHT: the free
+    # models naturally write ~110-140-word science scripts, so nearly every draft
+    # blew the 100 cap, got scene-trimmed to fit, and lost an escalation rung each
+    # time it dropped a scene → escalation floor violations → aborted runs (branch
+    # render 2026-07-22: 139/141/148-word drafts, all trimmed, escalation 4-5).
+    # 85-115 matches what the models actually produce, so a clean draft passes with
+    # ALL its scenes (escalation) intact, AND Gemini's ~105-word rescue drafts pass
+    # instead of being trimmed to mush. 95-110 renders ~40-46s on the neural voices
+    # (edge-tts/Piper), the completion sweet spot; 115 is the hard ceiling.
     wc = len(_clean(m["script"]).split())
-    if not (80 <= wc <= 100):
-        return f"script word count {wc} out of range (target 84-96, hard cap 100)"
+    if not (85 <= wc <= 115):
+        return f"script word count {wc} out of range (target 95-110, hard cap 115)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2293,7 +2319,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
         NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 100    # keep in lockstep with validate()'s hard cap
+        NEARMISS_MAX_WORDS = 115    # keep in lockstep with validate()'s hard cap
         NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):
@@ -2582,6 +2608,54 @@ def main():
         if best_manifest is not None:
             print(f"  [quality] no attempt cleared {QUALITY_THRESHOLD} with all floors intact — "
                   f"shipping best-scoring attempt (overall {best_overall})")
+
+    # --- Gemini quality-rescue (frugal escalation) ---------------------------
+    # The free providers (github:gpt-4o-mini / groq:llama) carry the COMMON case
+    # at ~$0. But when the strongest free models are unavailable — e.g. after
+    # OpenRouter dropped its free llama-3.3-70b and render 130 could only manage
+    # overall 6.83 / surprise 4 on gpt-4o-mini — the free chain returns a
+    # syntactically-valid but genuinely WEAK script, and the Gemini backstop in
+    # call_groq never fires (it only triggers when a provider FAILS to return, not
+    # when it returns something weak). Rather than ship that weak video OR abort
+    # the whole run, spend exactly ONE grounded Gemini attempt here, gated so it
+    # fires ONLY on weak nights: a paid Gemini key must exist AND the best free
+    # draft must be genuinely weak (below the clean threshold OR breaking a
+    # per-criterion floor). On the many nights the free chain writes a clean 7.5+,
+    # the loop already `break`s above and this block is skipped → $0. This is the
+    # "use some Gemini credits but be frugal" trade: pennies only when they buy
+    # back the "consistently GOOD" the channel depends on.
+    if GEMINI_KEY and best_manifest is not None and draft_is_weak(best_overall, best_quality):
+        global _FORCE_GEMINI_GEN
+        print(f"  [rescue] best free draft is weak (overall {best_overall}) — spending ONE "
+              f"grounded Gemini attempt before shipping-weak/aborting (frugal escalation; "
+              f"consistency over cadence)")
+        _FORCE_GEMINI_GEN = True
+        try:
+            cand = generate_candidate(job_name, job_desc, avoid, chosen_fact, history,
+                                      avoid_openers, cta_style=cta_style,
+                                      dossier=shared_dossier, hook_frame=hook_frame)
+        except Exception as e:  # noqa: BLE001 — a failed rescue must never crash the run
+            print(f"  [rescue] gemini attempt errored ({e}); keeping the free draft")
+            cand = None
+        finally:
+            _FORCE_GEMINI_GEN = False
+        if cand is not None:
+            q = cand.pop("_quality", None)
+            if q is None:
+                q = score_script(cand, chosen_fact, cta_style=cta_style)
+            if q is not None:
+                ov = q["overall"]
+                viol = {k: q[k] for k, fl in QUALITY_CRITERION_FLOORS.items() if q.get(k, 10) < fl}
+                rank = (0 if viol else 1, ov)
+                print(f"  [rescue] gemini attempt: overall {ov}/10 {q}"
+                      + (f" — FLOOR VIOLATION {viol}" if viol else ""))
+                if best_rank is None or rank > best_rank:
+                    best_manifest, best_overall, best_quality, best_rank = cand, ov, q, rank
+                    print(f"  [rescue] gemini draft adopted (rank {rank}) — stronger than the free draft")
+                else:
+                    print("  [rescue] gemini draft was no better than the free draft — keeping the free one")
+            else:
+                print("  [rescue] gemini attempt could not be scored — keeping the free draft")
 
     manifest = best_manifest
     if not manifest:

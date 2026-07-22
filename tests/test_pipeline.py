@@ -104,6 +104,7 @@ FIX_BIO = manifest(
         ("In this state it can shrug off temperatures near minus 272 degrees.", "NEAR MINUS 272", "ice frozen crystals"),
         ("It can also take radiation that would kill a human many times over.", "HUGE RADIATION", "radiation warning glow"),
         ("Scientists once sent some into orbit and exposed them to raw space.", "SENT TO ORBIT", "satellite earth orbit"),
+        ("They manage this by replacing the water in their cells with a glassy sugar that shields every part.", "GLASS TRICK", "glass crystal macro"),
         ("Back on the ground, many woke up and had healthy babies.", "WOKE UP FINE", "baby animals nature"),
     ),
 )
@@ -118,6 +119,7 @@ FIX_GEO = manifest(
         ("Yet crushing pressure keeps that iron solid instead of molten.", "STAYS SOLID", "deep pressure rock"),
         ("Around it a churning liquid outer core keeps everything moving.", "LIQUID SHELL", "swirling lava flow"),
         ("That motion generates the magnetic field that guides every compass.", "MAKES MAGNETISM", "compass needle north"),
+        ("Strangely, that inner ball is thought to spin a little faster than the rest of the planet does.", "SPINS FASTER", "spinning core animation"),
         ("Without it, the solar wind would slowly strip our air away.", "SHIELDS THE AIR", "aurora night sky"),
     ),
 )
@@ -132,6 +134,7 @@ FIX_PHYS = manifest(
         ("Warm water near 90 degrees loses mass to evaporation, so less has to freeze.", "LESS TO FREEZE", "steam rising water"),
         ("Dissolved gases and currents inside the warm cup also play a part.", "GAS AND FLOW", "bubbles in water"),
         ("The effect is fussy and does not happen every single time.", "NOT ALWAYS", "frost forming glass"),
+        ("Cold water can also supercool below freezing and stubbornly refuse to turn to ice for a while.", "SUPERCOOL", "supercooled water ice"),
         ("It is a reminder that even boiling a kettle still hides mysteries.", "EVERYDAY MYSTERY", "kettle steam kitchen"),
     ),
 )
@@ -641,6 +644,29 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_draft_is_weak():
+    section("generate.draft_is_weak: frugal Gemini-rescue trigger")
+    thr = G.QUALITY_THRESHOLD
+    floors = G.QUALITY_CRITERION_FLOORS
+    # a clean, well-above-threshold script with all floors intact -> NOT weak
+    strong = {k: 9 for k in G.QUALITY_RUBRIC_CRITERIA}
+    check(G.draft_is_weak(thr + 0.5, strong) is False, "strong clean draft -> not weak (no rescue)")
+    check(G.draft_is_weak(thr, strong) is False, "exactly at threshold, floors ok -> not weak")
+    # below the clean threshold -> weak (the render-130 case: 6.83 < 7.5)
+    check(G.draft_is_weak(6.83, {**strong, "overall": 6.83}) is True,
+          "below clean threshold (6.83) -> weak (rescue)")
+    # AT/above threshold overall but a broken per-criterion floor -> still weak
+    fk = next(iter(floors))
+    broken = {**strong, fk: floors[fk] - 1}
+    check(G.draft_is_weak(thr + 1.0, broken) is True,
+          f"high overall but {fk} below floor -> weak (rescue)")
+    # ungradable-but-clean (overall/quality None) -> NOT weak: leave it be, no spend
+    check(G.draft_is_weak(None, None) is False, "unscored clean script -> not weak (no rescue)")
+    check(G.draft_is_weak(8.0, None) is False, "quality None -> not weak")
+    # the force flag exists and defaults off so normal runs stay free-first
+    check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -660,6 +686,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_draft_is_weak()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
