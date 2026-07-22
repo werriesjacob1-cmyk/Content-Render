@@ -90,6 +90,7 @@ FIX_ASTRO = manifest(
         ("Stranger still, it spins backwards compared with almost every other planet.", "SPINS BACKWARD", "spinning globe reverse"),
         ("Stand there and the Sun would rise in the west and set in the east.", "WEST TO EAST", "desert sun west"),
         ("A clock on Venus would make almost no sense to us at all.", "NO NORMAL CLOCK", "old clock face"),
+        ("Even the thick sky there glows a dull orange beneath its heavy clouds.", "ORANGE SKY", "orange cloudy sky"),
     ),
 )
 
@@ -146,6 +147,7 @@ FIX_CHEM = manifest(
         ("Unlike mercury it is barely toxic, so labs handle it freely.", "LOW TOXICITY", "lab gloves beaker"),
         ("People use it for a prank spoon that vanishes into hot tea.", "VANISHING SPOON", "spoon in teacup"),
         ("Cool it back down and it hardens into silver once again.", "HARDENS AGAIN", "cooling metal solid"),
+        ("Yet a solid bar of it holds its shape just fine on a cold winter day.", "SOLID WHEN COLD", "silver bar macro"),
     ),
 )
 
@@ -388,7 +390,7 @@ def test_build_ass_fallback_monotonic():
     sc = FIX_CHEM["scenes"]
     seg_durs = [3.0] * len(sc)
     segments = [(f"/tmp/seg{i}.mp3", d) for i, d in enumerate(seg_durs)]
-    actual_durs = [3.05, 2.95, 3.0, 3.1, 2.9, 3.0, 3.0]
+    actual_durs = [3.05, 2.95, 3.0, 3.1, 2.9, 3.0, 3.0, 3.0][:len(sc)]
     old_wt = M.WORD_TIMINGS
     M.WORD_TIMINGS = []                      # force the estimate/fallback path
     try:

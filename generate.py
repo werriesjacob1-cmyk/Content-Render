@@ -830,14 +830,15 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 74-88 words — this is the HARDEST constraint; a script over 93 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~10 words each
-  is ~80 words, right in range. If you're past 88, DELETE a whole weak scene — never pad. At this
-  channel's narration speed 74-88 words renders to ~38-42 seconds (a 99-word script came out at 46s,
-  too long). Too short = rejected; over 93 = rejected.
+- Total narration MUST be 84-96 words — this is the HARDEST constraint; under 80 or over 100 words is
+  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~11 words each
+  is ~88 words, right in range. If you're past 96, DELETE a whole weak scene; if under 84, you're too
+  thin — add one more real fact from the research, never filler. At this channel's narration speed
+  84-96 words renders to ~38-44 seconds — the sweet spot for completion (too short and it feels stubby
+  and un-satisfying; a 110-word script came out at 50s, too long). Under 80 = rejected; over 100 = rejected.
   A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~8-12 words (7-9 scenes x ~10 words = your 74-88 total). NEVER exceed 22 words
+- PER-SCENE LENGTH: aim ~10-13 words (7-9 scenes x ~11 words = your 84-96 total). NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1594,14 +1595,15 @@ def validate(m, job_name, fact=None):
         if s.get("motion") not in ("zoom_in", "zoom_out", "pan", "static"):
             s["motion"] = random.choice(["zoom_in", "zoom_out", "pan", "static"])
 
-    # script length sanity: target is 78-98 words (see build_prompt). Ceiling
-    # tightened 135 -> 112 because 110-117-word scripts (renders 66/67) rendered
-    # to 49-53s at this channel's narration speed — too long for completion.
-    # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
-    # dense script isn't penalized for being efficient.
+    # script length sanity. FLOOR raised 60 -> 80: the ElevenLabs voice speaks
+    # noticeably faster than the old edge-tts pacing the 60-word floor was tuned
+    # for, so 60-72-word scripts (often a near-miss repair over-trimming the free
+    # models' long drafts) rendered to a stubby ~28-32s — too short to hold a
+    # viewer or earn watch-time. 80-100 words lands ~37-45s at ElevenLabs' pace,
+    # the sweet spot for completion. Ceiling 93 -> 100 for that headroom.
     wc = len(_clean(m["script"]).split())
-    if not (60 <= wc <= 93):
-        return f"script word count {wc} out of range (target 74-88, hard cap 93)"
+    if not (80 <= wc <= 100):
+        return f"script word count {wc} out of range (target 84-96, hard cap 100)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2291,8 +2293,8 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
         NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 93     # keep in lockstep with validate()'s hard cap
-        NEARMISS_MIN_SCENES = 6     # validate()'s floor — never trim below it
+        NEARMISS_MAX_WORDS = 100    # keep in lockstep with validate()'s hard cap
+        NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):
             return sum(len(s.get("voiceover", "").split()) for s in scs)
