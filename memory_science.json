@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-16_deep-time",
-      "metaphor": "Dinosaur Timeline",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "title": "Deep Time",
-      "fact_id": "trex_stegosaurus_time",
-      "domain": "deep_time",
-      "hook": "Tyrannosaurus rex lived closer to you",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-18_the-physics-of-woodpecker-impacts",
       "metaphor": "stiff skull hammer physics",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -333,6 +310,30 @@
         "rewatch": 9.0,
         "clarity": 8.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-22_pineapple-the-fruit-that-digests-you",
+      "metaphor": "tropical fruit science",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "Pineapple: The Fruit That Digests You",
+      "fact_id": "pineapple_bromelain",
+      "domain": "chemistry",
+      "hook": "Eating fresh pineapple means it\u2019s digesting you back?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 4.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "overall": 6.83
       }
     }
   ]

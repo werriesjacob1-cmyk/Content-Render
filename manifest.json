@@ -1,78 +1,93 @@
 {
-  "title": "You\u2019re Always Seeing the Past",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "seeing the past",
-  "metaphor": "time and light",
-  "hook": "What if the Sun simply switched off right this second?",
-  "script": "What if the Sun simply switched off right this second? The light from the Sun takes about eight minutes to reach you. If a solar flare occurred, you'd only know about it after that delay. In that time, light travels 93 million miles, circling the Earth 7.5 times. But here's the even wilder part: every time you look at the Sun, it's actually eight minutes and twenty seconds in the past. This means you're never witnessing its current state.",
+  "title": "Pineapple: The Fruit That Digests You",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "pineapple digestion",
+  "metaphor": "tropical fruit science",
+  "hook": "Eating fresh pineapple means it\u2019s digesting you back?",
+  "script": "Eating fresh pineapple means it\u2019s digesting you back? It contains bromelain, an enzyme that breaks down protein. Bromelain targets the proteins in your saliva, dissolving cells. Your mouth regenerates quickly, replacing cells every 3 to 7 days. Interestingly, canned pineapple doesn't have this effect. This is because heat destroys the enzyme bromelain. Only raw pineapple bites back, making it unique. So, would you eat raw pineapple again knowing this?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if the Sun simply switched off right this second?",
-      "on_screen_text": "The Sun's Light Delay",
-      "search_query": "sunlight rays",
-      "motion": "static"
+      "voiceover": "Eating fresh pineapple means it\u2019s digesting you back?",
+      "on_screen_text": "Pineapple Digestion",
+      "search_query": "fresh pineapple slices",
+      "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The light from the Sun takes about eight minutes to reach you.",
-      "on_screen_text": "Eight Minute Delay",
-      "search_query": "sunlight traveling",
-      "motion": "zoom_in"
+      "voiceover": "It contains bromelain, an enzyme that breaks down protein.",
+      "on_screen_text": "Bromelain Enzyme",
+      "search_query": "juicy pineapple close up",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "If a solar flare occurred, you'd only know about it after that delay.",
-      "on_screen_text": "Delayed Solar Events",
-      "search_query": "solar flare",
-      "motion": "zoom_out"
+      "voiceover": "Bromelain targets the proteins in your saliva, dissolving cells.",
+      "on_screen_text": "Cell Dissolution",
+      "search_query": "cutting pineapple open",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "In that time, light travels 93 million miles, circling the Earth 7.5 times.",
-      "on_screen_text": "93 Million Miles",
-      "search_query": "earth circumference",
+      "voiceover": "Your mouth regenerates quickly, replacing cells every 3 to 7 days.",
+      "on_screen_text": "Rapid Regeneration",
+      "search_query": "pineapple on cutting board",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "But here's the even wilder part: every time you look at the Sun, it's actually eight minutes and twenty seconds in the past.",
-      "on_screen_text": "Eight Minutes and Twenty",
-      "search_query": "sunlight delay",
-      "motion": "zoom_in"
+      "voiceover": "Interestingly, canned pineapple doesn't have this effect.",
+      "on_screen_text": "Canned vs. Fresh",
+      "search_query": "tropical pineapple fruit",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "This means you're never witnessing its current state.",
-      "on_screen_text": "Never Current",
-      "search_query": "sunlight rays",
+      "voiceover": "This is because heat destroys the enzyme bromelain.",
+      "on_screen_text": "Heat Destroys Enzyme",
+      "search_query": "pineapple digestion process",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Only raw pineapple bites back, making it unique.",
+      "on_screen_text": "Unique Fruit",
+      "search_query": "pineapple fruit close up",
       "motion": "zoom_in"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "So, would you eat raw pineapple again knowing this?",
+      "on_screen_text": "Would You Eat It?",
+      "search_query": "pineapple cutting",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Are you seeing the past in sunlight? Yes or no?",
-    "What would happen if the Sun turned off?",
-    "Reality is stranger than it seems."
+    "Did you know pineapple digests you? Yes or no?",
+    "What makes pineapple unique?",
+    "How often does your mouth regenerate?"
   ],
   "hashtags": [
+    "#pineapple",
     "#science",
-    "#space",
-    "#facts",
-    "#time",
-    "#light"
+    "#foodfacts",
+    "#health"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_you-re-always-seeing-the-past",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-22_pineapple-the-fruit-that-digests-you",
+  "cta_style": "COMMENT",
+  "domain": "chemistry"
 }
