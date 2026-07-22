@@ -1,95 +1,93 @@
 {
-  "title": "The Solid Made of Air",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "frozen smoke",
-  "metaphor": "solid trapped air material",
-  "hook": "A piece of frozen smoke can stop a blowtorch flame from burning your hand.",
-  "script": "A piece of frozen smoke can stop a blowtorch flame from burning your hand. How can a solid that is 99.8 percent air block thousands of degrees? Chemist Samuel Kistler created aerogel in 1931 after a bet over drying fruit jelly. Though it looks like trapped cloud, aerogel tinkles like hard candy when dropped on glass. Heat fails to cross because microscopic pores stop air molecules from touching each other. Inside, one gram contains enough folded surface to stretch across three full tennis courts. NASA used it to trap hypersonic comet dust without melting the tiny particles. Holding over a dozen world records, it scatters light just like Earth's atmosphere does.",
+  "title": "The Plant That Grows at Visible Speed",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "fastest growing plant",
+  "metaphor": "visible plant speed",
+  "hook": "Right now, somewhere in a quiet forest, a green stalk is outrunning you.",
+  "script": "Right now, somewhere in a quiet forest, a green stalk is outrunning you. How can a plant climb nearly a meter a day without stopping? Madake bamboo shoots water into pre-formed cells, expanding forty stem sections at once. Align a ruler with a fresh shoot, and it crosses a mark every ninety seconds. This giant plant is actually the fastest growing grass on Earth. During peak growth, entire groves crack and pop as protective sheaths burst open. An internal genetic clock forces every plant worldwide to bloom and die at once. While you sat here, a single stalk somewhere just gained another full millimeter of height.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "A piece of frozen smoke can stop a blowtorch flame from burning your hand.",
-      "on_screen_text": "frozen smoke defense",
-      "search_query": "blowtorch flame closeup",
+      "voiceover": "Right now, somewhere in a quiet forest, a green stalk is outrunning you.",
+      "on_screen_text": "Outrunning You",
+      "search_query": "bamboo forest sunlight",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "How can a solid that is 99.8 percent air block thousands of degrees?",
-      "on_screen_text": "99.8 percent air",
-      "search_query": "blue smoke wisps",
-      "motion": "zoom_out"
+      "voiceover": "How can a plant climb nearly a meter a day without stopping?",
+      "on_screen_text": "Meter A Day",
+      "search_query": "green bamboo stalks",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Chemist Samuel Kistler created aerogel in 1931 after a bet over drying fruit jelly.",
-      "on_screen_text": "born from jelly",
-      "search_query": "glass jar liquid laboratory",
-      "motion": "zoom_out"
+      "voiceover": "Madake bamboo shoots water into pre-formed cells, expanding forty stem sections at once.",
+      "on_screen_text": "Hydraulic Expansion",
+      "search_query": "bamboo shoot close up",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "Though it looks like trapped cloud, aerogel tinkles like hard candy when dropped on glass.",
-      "on_screen_text": "hard candy glass",
-      "search_query": "aerogel material closeup",
-      "motion": "zoom_in"
+      "duration": 6,
+      "voiceover": "Align a ruler with a fresh shoot, and it crosses a mark every ninety seconds.",
+      "on_screen_text": "Every 90 Seconds",
+      "search_query": "measuring stick plant shoot",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "Heat fails to cross because microscopic pores stop air molecules from touching each other.",
-      "on_screen_text": "trapped heat energy",
-      "search_query": "thermal camera heat closeup",
-      "motion": "pan"
+      "voiceover": "This giant plant is actually the fastest growing grass on Earth.",
+      "on_screen_text": "Fastest Growing Grass",
+      "search_query": "tall green bamboo forest",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "Inside, one gram contains enough folded surface to stretch across three full tennis courts.",
-      "on_screen_text": "three tennis courts",
-      "search_query": "tennis court aerial view",
-      "motion": "zoom_in"
+      "voiceover": "During peak growth, entire groves crack and pop as protective sheaths burst open.",
+      "on_screen_text": "Groves Cracking Open",
+      "search_query": "bamboo grove sunlight",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "NASA used it to trap hypersonic comet dust without melting the tiny particles.",
-      "on_screen_text": "trapping comet dust",
-      "search_query": "comet deep space starry sky",
-      "motion": "pan"
+      "duration": 6,
+      "voiceover": "An internal genetic clock forces every plant worldwide to bloom and die at once.",
+      "on_screen_text": "Global Genetic Clock",
+      "search_query": "flowering bamboo forest",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
-      "duration": 6,
-      "voiceover": "Holding over a dozen world records, it scatters light just like Earth's atmosphere does.",
-      "on_screen_text": "scattering atmospheric light",
-      "search_query": "blue sky sunlight clouds",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "While you sat here, a single stalk somewhere just gained another full millimeter of height.",
+      "on_screen_text": "Moving Right Now",
+      "search_query": "green bamboo forest light",
+      "motion": "static"
     }
   ],
   "captions": [
-    "Would you trust frozen smoke to protect your hand from a blowtorch flame?",
-    "Aerogel is 99.8 percent air yet stops intense heat completely.",
-    "The lightest solid on Earth turns out to behave like frozen atmosphere."
+    "Could you stand still long enough to watch the fastest growing plant rise \u2014 yes or no?",
+    "Madake bamboo expands nearly a meter a day using high water pressure.",
+    "The world is moving faster than it looks."
   ],
   "hashtags": [
+    "#nature",
     "#science",
-    "#physics",
-    "#materials",
-    "#aerogel",
-    "#space",
-    "#learnontiktok"
+    "#plants",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_the-solid-made-of-air",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "materials"
+  "video_id": "science_2026-07-22_the-plant-that-grows-at-visible-speed",
+  "cta_style": "LOOP",
+  "domain": "plants"
 }
