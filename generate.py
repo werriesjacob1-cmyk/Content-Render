@@ -845,6 +845,15 @@ HOOK (first 2 seconds decide 70% of retention):
   BAD: "Reality isn't what it seems." (vague fortune-cookie phrasing, not a real claim)
   If your hook needs the rest of the script to make sense, rewrite it — name the concrete thing
   (a body part, an animal, an object, a number) up front.
+- OPEN COLD ON THE SHOCK — no scene-setting preamble (backed by THIS channel's own analytics:
+  videos that opened calm or scenic — "a peaceful lake…", a slow establishing shot — bled the viewer
+  by ~4 seconds; average watch time was stuck at 4.5s of a 40s video). The single most surprising
+  thing must be the VERY FIRST words, never the second sentence. Do not warm up, do not set a scene,
+  do not narrate the footage — hit them with the claim instantly.
+- OPENING SHOT MUST STOP THE SCROLL: scene 1's search_query must name a visually DYNAMIC, high-
+  contrast subject (motion, a bold close-up, a striking creature or object) — never a dark, static,
+  ambient, or "establishing" landscape. The first frame is also the thumbnail; a dim or calm frame
+  reads as skippable in the feed. Prefer a bright, punchy, in-motion image on the very first scene.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
