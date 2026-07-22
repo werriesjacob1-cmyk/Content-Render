@@ -2202,8 +2202,15 @@ def main():
     # of subtitles at once (user feedback on Unseen Oceans). Just the karaoke
     # captions now.
     captioned = os.path.join(WORK, "captioned.mp4")
+    # NO fade-IN from black: a fade-from-black makes frame 0 a black frame, and
+    # video pickers/schedulers (Publer, TikTok upload, etc.) use frame 0 as the
+    # thumbnail — so every video looked like an identical black tile in the queue
+    # and the user couldn't tell them apart (user feedback 2026-07-22). Starting
+    # hard on the first footage frame fixes the thumbnail AND recovers the ~0.2s
+    # of black at the top (every fraction counts for retention). Keep the fade-OUT
+    # at the end — the last frame isn't used as a thumbnail.
     run(["ffmpeg", "-y", "-i", body,
-         "-vf", (f"ass='{ass}',fade=t=in:st=0:d=0.2,"
+         "-vf", (f"ass='{ass}',"
                  f"fade=t=out:st={fade_out_start:.2f}:d=0.3"),
          "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", captioned])
 
