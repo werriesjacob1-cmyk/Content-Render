@@ -35,6 +35,14 @@ if "--dequeue" in _ARGV:
     GEN_MODE = "dequeue"; _ARGV.remove("--dequeue")
 elif "--enqueue" in _ARGV:
     GEN_MODE = "enqueue"; _ARGV.remove("--enqueue")
+elif "--record" in _ARGV:
+    # Feed real analytics back into perf_<page>.json so generation learns what
+    # works. Usage:
+    #   python generate.py --record <video_id> views=18400 watch=0.63 follows=41 shares=210
+    # 'watch' is watch_through_pct (0..1). Any subset of metrics is fine. This is
+    # how a human OR a future analytics-pull automation writes the feedback loop's
+    # data — no dashboard integration required to start.
+    GEN_MODE = "record"; _ARGV.remove("--record")
 OUT_MANIFEST = _ARGV[0] if _ARGV else os.path.join(ROOT, "manifest.json")
 QUEUE_DIR = os.path.join(ROOT, f"queue_{PAGE}")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
@@ -822,14 +830,15 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 74-88 words — this is the HARDEST constraint; a script over 93 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~10 words each
-  is ~80 words, right in range. If you're past 88, DELETE a whole weak scene — never pad. At this
-  channel's narration speed 74-88 words renders to ~38-42 seconds (a 99-word script came out at 46s,
-  too long). Too short = rejected; over 93 = rejected.
+- Total narration MUST be 84-96 words — this is the HARDEST constraint; under 80 or over 100 words is
+  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~11 words each
+  is ~88 words, right in range. If you're past 96, DELETE a whole weak scene; if under 84, you're too
+  thin — add one more real fact from the research, never filler. At this channel's narration speed
+  84-96 words renders to ~38-44 seconds — the sweet spot for completion (too short and it feels stubby
+  and un-satisfying; a 110-word script came out at 50s, too long). Under 80 = rejected; over 100 = rejected.
   A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~8-12 words (7-9 scenes x ~10 words = your 74-88 total). NEVER exceed 22 words
+- PER-SCENE LENGTH: aim ~10-13 words (7-9 scenes x ~11 words = your 84-96 total). NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1586,14 +1595,15 @@ def validate(m, job_name, fact=None):
         if s.get("motion") not in ("zoom_in", "zoom_out", "pan", "static"):
             s["motion"] = random.choice(["zoom_in", "zoom_out", "pan", "static"])
 
-    # script length sanity: target is 78-98 words (see build_prompt). Ceiling
-    # tightened 135 -> 112 because 110-117-word scripts (renders 66/67) rendered
-    # to 49-53s at this channel's narration speed — too long for completion.
-    # A ~40s cut wins on retention. Floor kept at 62 so a legitimately tight,
-    # dense script isn't penalized for being efficient.
+    # script length sanity. FLOOR raised 60 -> 80: the ElevenLabs voice speaks
+    # noticeably faster than the old edge-tts pacing the 60-word floor was tuned
+    # for, so 60-72-word scripts (often a near-miss repair over-trimming the free
+    # models' long drafts) rendered to a stubby ~28-32s — too short to hold a
+    # viewer or earn watch-time. 80-100 words lands ~37-45s at ElevenLabs' pace,
+    # the sweet spot for completion. Ceiling 93 -> 100 for that headroom.
     wc = len(_clean(m["script"]).split())
-    if not (60 <= wc <= 93):
-        return f"script word count {wc} out of range (target 74-88, hard cap 93)"
+    if not (80 <= wc <= 100):
+        return f"script word count {wc} out of range (target 84-96, hard cap 100)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2283,8 +2293,8 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
         NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 93     # keep in lockstep with validate()'s hard cap
-        NEARMISS_MIN_SCENES = 6     # validate()'s floor — never trim below it
+        NEARMISS_MAX_WORDS = 100    # keep in lockstep with validate()'s hard cap
+        NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):
             return sum(len(s.get("voiceover", "").split()) for s in scs)
@@ -2412,6 +2422,7 @@ def main():
     fact_scores = score_by_key(history, perf, "fact_id") if perf else {}
     job_scores = score_by_key(history, perf, "viewer_job") if perf else {}
     cta_scores = score_by_key(history, perf, "cta_style") if perf else {}
+    hook_scores = score_by_key(history, perf, "hook_frame") if perf else {}
 
     # Path C: pick a verified fact from the bank not used recently. Dedup is
     # now two-layered: exclude the exact fact_id used before AND exclude the
@@ -2478,7 +2489,15 @@ def main():
     # don't all open the same way — avoid the frame the last video used.
     last_frame = history[-1].get("hook_frame") if history else None
     frame_options = [f for f in HOOK_FRAMES if f[0] != last_frame] or HOOK_FRAMES
-    hook_frame = random.choice(frame_options)
+    # The hook drives retention more than anything, so once perf data exists lean
+    # toward the opening shapes that actually held viewers on THIS page (same
+    # explore/exploit + unseen-floor mechanic as fact/job/cta above). No data =
+    # plain rotation, unchanged.
+    if hook_scores:
+        weights = [hook_scores.get(f[0], 0.0) + PERF_UNSEEN_FLOOR for f in frame_options]
+        hook_frame = _weighted_choice(frame_options, weights, EXPLORE_EPSILON)
+    else:
+        hook_frame = random.choice(frame_options)
     print(f"[generate] hook_frame={hook_frame[0]}")
 
     # Quality ratchet (improvement loop, part 1): generate, self-critique,
@@ -2641,9 +2660,47 @@ def main():
     print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
           f"{_dest} [video_id={video_id}]")
 
+def record_perf(argv):
+    """Write/merge one video's engagement metrics into perf_<page>.json so future
+    generation leans toward what performs (see PERF_PATH doc). argv is
+    [video_id, key=value, ...] with keys views/watch/follows/shares. Idempotent
+    merge: re-recording a video updates only the keys you pass. Returns exit code."""
+    if not argv:
+        print("usage: generate.py --record <video_id> views=.. watch=0..1 follows=.. shares=..")
+        return 2
+    vid = argv[0]
+    alias = {"watch": "watch_through_pct", "watch_pct": "watch_through_pct",
+             "wtp": "watch_through_pct", "view": "views", "follow": "follows",
+             "share": "shares"}
+    metrics = {}
+    for tok in argv[1:]:
+        if "=" not in tok:
+            print(f"  skipping '{tok}' (expected key=value)"); continue
+        k, v = tok.split("=", 1)
+        k = alias.get(k.strip().lower(), k.strip().lower())
+        try:
+            metrics[k] = float(v) if ("." in v or k == "watch_through_pct") else int(v)
+        except ValueError:
+            print(f"  skipping '{tok}' (value not a number)")
+    try:
+        data = load_perf()
+    except Exception:
+        data = {}
+    entry = data.get(vid, {}) if isinstance(data.get(vid), dict) else {}
+    entry.update(metrics)
+    data[vid] = entry
+    with open(PERF_PATH, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"[perf] recorded {vid}: {entry}  (score {_perf_score(entry):.3f}) -> {PERF_PATH}")
+    print(f"[perf] {len(data)} video(s) now have analytics; generation will weight toward winners.")
+    return 0
+
+
 if __name__ == "__main__":
     # --dequeue renders from the pre-generated buffer with no LLM call; exit 3
     # (empty buffer) tells the workflow to fall back to live generation.
     if GEN_MODE == "dequeue":
         sys.exit(dequeue_to(OUT_MANIFEST))
+    if GEN_MODE == "record":
+        sys.exit(record_perf(_ARGV))
     main()
