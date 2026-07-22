@@ -1,78 +1,78 @@
 {
-  "title": "The Largest Living Thing on Earth",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "largest living organism",
-  "metaphor": "hidden life beneath soil",
-  "hook": "What if the biggest creature alive was hiding under a forest?",
-  "script": "What if the biggest creature alive was hiding under a forest? It\u2019s a single fungus, specifically the honey fungus, in Oregon. This organism stretches over 2,385 acres, a footprint larger than 1,600 football fields. It\u2019s a single organism, estimated to be between 1,900 and 8,650 years old. The honey fungus spreads using black, shoelace-like threads, invading tree roots and choking them. Almost all of this giant lives underground as a web of threads, and most of it has never been seen by anyone.",
+  "title": "You\u2019re Always Seeing the Past",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "seeing the past",
+  "metaphor": "time and light",
+  "hook": "What if the Sun simply switched off right this second?",
+  "script": "What if the Sun simply switched off right this second? The light from the Sun takes about eight minutes to reach you. If a solar flare occurred, you'd only know about it after that delay. In that time, light travels 93 million miles, circling the Earth 7.5 times. But here's the even wilder part: every time you look at the Sun, it's actually eight minutes and twenty seconds in the past. This means you're never witnessing its current state.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if the biggest creature alive was hiding under a forest?",
-      "on_screen_text": "Hidden Life",
-      "search_query": "dark forest canopy",
-      "motion": "zoom_in"
+      "voiceover": "What if the Sun simply switched off right this second?",
+      "on_screen_text": "The Sun's Light Delay",
+      "search_query": "sunlight rays",
+      "motion": "static"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "It\u2019s a single fungus, specifically the honey fungus, in Oregon.",
-      "on_screen_text": "Honey Fungus",
-      "search_query": "honey fungus close up",
+      "voiceover": "The light from the Sun takes about eight minutes to reach you.",
+      "on_screen_text": "Eight Minute Delay",
+      "search_query": "sunlight traveling",
       "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This organism stretches over 2,385 acres, a footprint larger than 1,600 football fields.",
-      "on_screen_text": "Massive Footprint",
-      "search_query": "aerial view forest",
-      "motion": "static"
+      "voiceover": "If a solar flare occurred, you'd only know about it after that delay.",
+      "on_screen_text": "Delayed Solar Events",
+      "search_query": "solar flare",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "It\u2019s a single organism, estimated to be between 1,900 and 8,650 years old.",
-      "on_screen_text": "Ancient Organism",
-      "search_query": "ancient tree rings",
+      "voiceover": "In that time, light travels 93 million miles, circling the Earth 7.5 times.",
+      "on_screen_text": "93 Million Miles",
+      "search_query": "earth circumference",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The honey fungus spreads using black, shoelace-like threads, invading tree roots and choking them.",
-      "on_screen_text": "Invading Roots",
-      "search_query": "fungus growing on tree",
-      "motion": "pan"
+      "voiceover": "But here's the even wilder part: every time you look at the Sun, it's actually eight minutes and twenty seconds in the past.",
+      "on_screen_text": "Eight Minutes and Twenty",
+      "search_query": "sunlight delay",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Almost all of this giant lives underground as a web of threads, and most of it has never been seen by anyone.",
-      "on_screen_text": "Unseen Giant",
-      "search_query": "underground fungus network",
-      "motion": "zoom_out"
+      "voiceover": "This means you're never witnessing its current state.",
+      "on_screen_text": "Never Current",
+      "search_query": "sunlight rays",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know the largest living organism is underground?",
-    "It's older than many trees!",
-    "How does it spread?"
+    "Are you seeing the past in sunlight? Yes or no?",
+    "What would happen if the Sun turned off?",
+    "Reality is stranger than it seems."
   ],
   "hashtags": [
-    "#fungus",
-    "#nature",
     "#science",
+    "#space",
     "#facts",
-    "#weird"
+    "#time",
+    "#light"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-21_the-largest-living-thing-on-earth",
-  "cta_style": "COMMENT",
-  "domain": "fungi"
+  "video_id": "science_2026-07-22_you-re-always-seeing-the-past",
+  "cta_style": "LOOP",
+  "domain": "space"
 }

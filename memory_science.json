@@ -1,29 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-16_the-glass-rain-planet",
-      "metaphor": "liquid glass storm",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "title": "The Glass Rain Planet",
-      "fact_id": "glass_rain_exoplanet",
-      "domain": "space",
-      "hook": "You are looking at a deep blue planet that is actually hell.",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 7.0,
-        "payoff": 9.0,
-        "rewatch": 4.0,
-        "clarity": 10.0,
-        "overall": 7.33
-      }
-    },
-    {
       "video_id": "science_2026-07-16_deep-time",
       "metaphor": "Dinosaur Timeline",
       "viewer_job": "REFRAME",
@@ -332,6 +309,30 @@
         "rewatch": 5.0,
         "clarity": 7.0,
         "overall": 6.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-22_you-re-always-seeing-the-past",
+      "metaphor": "time and light",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "You\u2019re Always Seeing the Past",
+      "fact_id": "sun_light_time",
+      "domain": "space",
+      "hook": "What if the Sun simply switched off right this second?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 9.0,
+        "clarity": 8.0,
+        "overall": 7.5
       }
     }
   ]
