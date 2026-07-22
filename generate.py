@@ -298,6 +298,19 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
 GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
 
+
+def draft_is_weak(overall, quality):
+    """True when a scored draft is genuinely weak — below the clean threshold OR
+    breaking any per-criterion floor. Gates the frugal Gemini quality-rescue in
+    main(): a weak best-draft is worth ONE paid Gemini attempt; a strong one (or
+    an ungradable-but-clean one, where overall/quality is None) is not. Pure so
+    the rescue trigger is unit-tested without any LLM."""
+    if overall is None or quality is None:
+        return False   # a clean script we simply couldn't grade — leave it be
+    if overall < QUALITY_THRESHOLD:
+        return True
+    return any(quality.get(k, 10) < fl for k, fl in QUALITY_CRITERION_FLOORS.items())
+
 # ---------------------------------------------------------------------------
 # PERFORMANCE MEMORY — bias future generation using REAL engagement data
 # ---------------------------------------------------------------------------
@@ -347,6 +360,11 @@ def load_bank():
     except Exception:
         return []
 _WORKING_MODEL = None  # cached once we find one that responds
+# One-shot switch for the Gemini quality-rescue (main() sets it True for a single
+# grounded attempt when the free chain could only manage a weak draft, then clears
+# it). While True, call_groq puts the paid Gemini chain FIRST regardless of the
+# free-first default — the rescue explicitly wants Gemini to author the retry.
+_FORCE_GEMINI_GEN = False
 
 VIEWER_JOBS = [
     ("REFRAME",
@@ -1183,7 +1201,7 @@ def call_groq(prompt):
     x escalating sleeps x every pipeline stage) AND wasted whatever little quota
     remained. Fail-fast = the render aborts in seconds and stops hammering the
     limit. When the LLM is healthy the circuit never opens (behaviour identical)."""
-    global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN
+    global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN, _FORCE_GEMINI_GEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
     # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
@@ -1214,8 +1232,10 @@ def call_groq(prompt):
                    ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
                    ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) +
                    [("cerebras", m) for m in cerebras_models()])
-    if os.getenv("GEMINI_GENERATION", "0") == "1":
-        chain = _gemini_chain + _free_chain     # legacy: paid Gemini first
+    if _FORCE_GEMINI_GEN or os.getenv("GEMINI_GENERATION", "0") == "1":
+        # _FORCE_GEMINI_GEN = the one-shot quality-rescue; GEMINI_GENERATION=1 =
+        # the permanent legacy override. Either one puts paid Gemini first.
+        chain = _gemini_chain + _free_chain
     else:
         chain = _free_chain + _gemini_chain      # default: free-first, Gemini backstop
     # try the cached working provider first (also re-walks the chain if it now
@@ -2582,6 +2602,54 @@ def main():
         if best_manifest is not None:
             print(f"  [quality] no attempt cleared {QUALITY_THRESHOLD} with all floors intact — "
                   f"shipping best-scoring attempt (overall {best_overall})")
+
+    # --- Gemini quality-rescue (frugal escalation) ---------------------------
+    # The free providers (github:gpt-4o-mini / groq:llama) carry the COMMON case
+    # at ~$0. But when the strongest free models are unavailable — e.g. after
+    # OpenRouter dropped its free llama-3.3-70b and render 130 could only manage
+    # overall 6.83 / surprise 4 on gpt-4o-mini — the free chain returns a
+    # syntactically-valid but genuinely WEAK script, and the Gemini backstop in
+    # call_groq never fires (it only triggers when a provider FAILS to return, not
+    # when it returns something weak). Rather than ship that weak video OR abort
+    # the whole run, spend exactly ONE grounded Gemini attempt here, gated so it
+    # fires ONLY on weak nights: a paid Gemini key must exist AND the best free
+    # draft must be genuinely weak (below the clean threshold OR breaking a
+    # per-criterion floor). On the many nights the free chain writes a clean 7.5+,
+    # the loop already `break`s above and this block is skipped → $0. This is the
+    # "use some Gemini credits but be frugal" trade: pennies only when they buy
+    # back the "consistently GOOD" the channel depends on.
+    if GEMINI_KEY and best_manifest is not None and draft_is_weak(best_overall, best_quality):
+        global _FORCE_GEMINI_GEN
+        print(f"  [rescue] best free draft is weak (overall {best_overall}) — spending ONE "
+              f"grounded Gemini attempt before shipping-weak/aborting (frugal escalation; "
+              f"consistency over cadence)")
+        _FORCE_GEMINI_GEN = True
+        try:
+            cand = generate_candidate(job_name, job_desc, avoid, chosen_fact, history,
+                                      avoid_openers, cta_style=cta_style,
+                                      dossier=shared_dossier, hook_frame=hook_frame)
+        except Exception as e:  # noqa: BLE001 — a failed rescue must never crash the run
+            print(f"  [rescue] gemini attempt errored ({e}); keeping the free draft")
+            cand = None
+        finally:
+            _FORCE_GEMINI_GEN = False
+        if cand is not None:
+            q = cand.pop("_quality", None)
+            if q is None:
+                q = score_script(cand, chosen_fact, cta_style=cta_style)
+            if q is not None:
+                ov = q["overall"]
+                viol = {k: q[k] for k, fl in QUALITY_CRITERION_FLOORS.items() if q.get(k, 10) < fl}
+                rank = (0 if viol else 1, ov)
+                print(f"  [rescue] gemini attempt: overall {ov}/10 {q}"
+                      + (f" — FLOOR VIOLATION {viol}" if viol else ""))
+                if best_rank is None or rank > best_rank:
+                    best_manifest, best_overall, best_quality, best_rank = cand, ov, q, rank
+                    print(f"  [rescue] gemini draft adopted (rank {rank}) — stronger than the free draft")
+                else:
+                    print("  [rescue] gemini draft was no better than the free draft — keeping the free one")
+            else:
+                print("  [rescue] gemini attempt could not be scored — keeping the free draft")
 
     manifest = best_manifest
     if not manifest:

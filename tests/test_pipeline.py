@@ -641,6 +641,29 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_draft_is_weak():
+    section("generate.draft_is_weak: frugal Gemini-rescue trigger")
+    thr = G.QUALITY_THRESHOLD
+    floors = G.QUALITY_CRITERION_FLOORS
+    # a clean, well-above-threshold script with all floors intact -> NOT weak
+    strong = {k: 9 for k in G.QUALITY_RUBRIC_CRITERIA}
+    check(G.draft_is_weak(thr + 0.5, strong) is False, "strong clean draft -> not weak (no rescue)")
+    check(G.draft_is_weak(thr, strong) is False, "exactly at threshold, floors ok -> not weak")
+    # below the clean threshold -> weak (the render-130 case: 6.83 < 7.5)
+    check(G.draft_is_weak(6.83, {**strong, "overall": 6.83}) is True,
+          "below clean threshold (6.83) -> weak (rescue)")
+    # AT/above threshold overall but a broken per-criterion floor -> still weak
+    fk = next(iter(floors))
+    broken = {**strong, fk: floors[fk] - 1}
+    check(G.draft_is_weak(thr + 1.0, broken) is True,
+          f"high overall but {fk} below floor -> weak (rescue)")
+    # ungradable-but-clean (overall/quality None) -> NOT weak: leave it be, no spend
+    check(G.draft_is_weak(None, None) is False, "unscored clean script -> not weak (no rescue)")
+    check(G.draft_is_weak(8.0, None) is False, "quality None -> not weak")
+    # the force flag exists and defaults off so normal runs stay free-first
+    check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -660,6 +683,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_draft_is_weak()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
