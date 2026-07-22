@@ -1897,6 +1897,15 @@ def _group_function_words(word_times, max_chars=15):
     return out
 
 
+# Captions are nudged a touch LATER than the word's raw onset. ElevenLabs' word
+# "start" marks the phoneme onset, which lands a hair BEFORE the ear registers
+# the word — so word-perfect timing still reads as "the subtitle is ahead of the
+# narrator" (the user's "he's behind the subtitles" note). A small lead-in delay
+# makes the caption appear WITH the voice (the eye is happy to trail the ear,
+# never to lead it). Tunable via CAPTION_DELAY_MS; 0 restores raw onset timing.
+CAPTION_DELAY_S = max(0.0, float(os.environ.get("CAPTION_DELAY_MS", "110"))) / 1000.0
+
+
 def build_ass(scenes, segments, actual_durs, path):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
@@ -1936,7 +1945,7 @@ def build_ass(scenes, segments, actual_durs, path):
     # synced while the lone-function-word frames are gone.
     def _emit(word_times):
         for w, st, en in _group_function_words(word_times):
-            events.append(_event(st, en, w))
+            events.append(_event(st + CAPTION_DELAY_S, en + CAPTION_DELAY_S, w))
 
     if WORD_TIMINGS:
         # exact: drive captions from ElevenLabs word timings, per-scene shift

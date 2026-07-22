@@ -837,6 +837,14 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   a natural beat before the next one starts. The video should feel PACED, not like it never stops
   talking. If you can't say a scene's line out loud in one comfortable breath, it's too long or too
   packed with clauses — split the idea or cut it.
+- SPEAK IN FLOWING SENTENCES, NOT FRAGMENTS (this is read aloud by a voice — write for the EAR):
+  every scene must be a COMPLETE, natural-sounding sentence that a narrator can say smoothly in one
+  breath, with a real subject and verb. Do NOT write clipped telegram fragments or stacked noun
+  phrases — they make the narrator sound choppy and robotic, like he's punching out words instead of
+  talking. BAD (fragments): "Muons. Born miles up. Racing down. Impossible speed." GOOD (flows):
+  "These particles are born miles up in the sky and race toward the ground at nearly the speed of
+  light." Read every line aloud in your head; if it sounds like a list instead of a sentence, rewrite
+  it so it flows.
 - ESCALATION LADDER (critical, ZERO exceptions): the core reveal — the specific number or comparison
   from the verified fact — may appear in EXACTLY ONE scene, ONE time, as the payoff moment. This is
   a hard rule, not a suggestion: if you catch yourself writing that same number, comparison, or its
