@@ -35,6 +35,14 @@ if "--dequeue" in _ARGV:
     GEN_MODE = "dequeue"; _ARGV.remove("--dequeue")
 elif "--enqueue" in _ARGV:
     GEN_MODE = "enqueue"; _ARGV.remove("--enqueue")
+elif "--record" in _ARGV:
+    # Feed real analytics back into perf_<page>.json so generation learns what
+    # works. Usage:
+    #   python generate.py --record <video_id> views=18400 watch=0.63 follows=41 shares=210
+    # 'watch' is watch_through_pct (0..1). Any subset of metrics is fine. This is
+    # how a human OR a future analytics-pull automation writes the feedback loop's
+    # data — no dashboard integration required to start.
+    GEN_MODE = "record"; _ARGV.remove("--record")
 OUT_MANIFEST = _ARGV[0] if _ARGV else os.path.join(ROOT, "manifest.json")
 QUEUE_DIR = os.path.join(ROOT, f"queue_{PAGE}")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
@@ -2412,6 +2420,7 @@ def main():
     fact_scores = score_by_key(history, perf, "fact_id") if perf else {}
     job_scores = score_by_key(history, perf, "viewer_job") if perf else {}
     cta_scores = score_by_key(history, perf, "cta_style") if perf else {}
+    hook_scores = score_by_key(history, perf, "hook_frame") if perf else {}
 
     # Path C: pick a verified fact from the bank not used recently. Dedup is
     # now two-layered: exclude the exact fact_id used before AND exclude the
@@ -2478,7 +2487,15 @@ def main():
     # don't all open the same way — avoid the frame the last video used.
     last_frame = history[-1].get("hook_frame") if history else None
     frame_options = [f for f in HOOK_FRAMES if f[0] != last_frame] or HOOK_FRAMES
-    hook_frame = random.choice(frame_options)
+    # The hook drives retention more than anything, so once perf data exists lean
+    # toward the opening shapes that actually held viewers on THIS page (same
+    # explore/exploit + unseen-floor mechanic as fact/job/cta above). No data =
+    # plain rotation, unchanged.
+    if hook_scores:
+        weights = [hook_scores.get(f[0], 0.0) + PERF_UNSEEN_FLOOR for f in frame_options]
+        hook_frame = _weighted_choice(frame_options, weights, EXPLORE_EPSILON)
+    else:
+        hook_frame = random.choice(frame_options)
     print(f"[generate] hook_frame={hook_frame[0]}")
 
     # Quality ratchet (improvement loop, part 1): generate, self-critique,
@@ -2641,9 +2658,47 @@ def main():
     print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
           f"{_dest} [video_id={video_id}]")
 
+def record_perf(argv):
+    """Write/merge one video's engagement metrics into perf_<page>.json so future
+    generation leans toward what performs (see PERF_PATH doc). argv is
+    [video_id, key=value, ...] with keys views/watch/follows/shares. Idempotent
+    merge: re-recording a video updates only the keys you pass. Returns exit code."""
+    if not argv:
+        print("usage: generate.py --record <video_id> views=.. watch=0..1 follows=.. shares=..")
+        return 2
+    vid = argv[0]
+    alias = {"watch": "watch_through_pct", "watch_pct": "watch_through_pct",
+             "wtp": "watch_through_pct", "view": "views", "follow": "follows",
+             "share": "shares"}
+    metrics = {}
+    for tok in argv[1:]:
+        if "=" not in tok:
+            print(f"  skipping '{tok}' (expected key=value)"); continue
+        k, v = tok.split("=", 1)
+        k = alias.get(k.strip().lower(), k.strip().lower())
+        try:
+            metrics[k] = float(v) if ("." in v or k == "watch_through_pct") else int(v)
+        except ValueError:
+            print(f"  skipping '{tok}' (value not a number)")
+    try:
+        data = load_perf()
+    except Exception:
+        data = {}
+    entry = data.get(vid, {}) if isinstance(data.get(vid), dict) else {}
+    entry.update(metrics)
+    data[vid] = entry
+    with open(PERF_PATH, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"[perf] recorded {vid}: {entry}  (score {_perf_score(entry):.3f}) -> {PERF_PATH}")
+    print(f"[perf] {len(data)} video(s) now have analytics; generation will weight toward winners.")
+    return 0
+
+
 if __name__ == "__main__":
     # --dequeue renders from the pre-generated buffer with no LLM call; exit 3
     # (empty buffer) tells the workflow to fall back to live generation.
     if GEN_MODE == "dequeue":
         sys.exit(dequeue_to(OUT_MANIFEST))
+    if GEN_MODE == "record":
+        sys.exit(record_perf(_ARGV))
     main()
