@@ -22,10 +22,14 @@ on:
     # pressure, as long as the morning buffer-fill keeps up. They serialize via
     # the render-video concurrency group, so they never clobber each other's
     # memory/queue commits.
-    - cron: "12 7 * * *"    # ~12 min after the 07:00 UTC quota reset (freshest buckets)
-    - cron: "0 13 * * *"    # mid-afternoon EU/US
-    - cron: "0 17 * * *"    # noon US-Central
-    - cron: "0 21 * * *"    # late-afternoon US-Central, before evening posting
+    # 2 renders/day (user cadence choice 2026-07-22). Spaced ~10h apart so the
+    # two main-branch memory commits never collide, and each finishes well BEFORE
+    # a Central-time posting wave: 09:00 UTC = 4am CT -> ready for the ~11am-1pm CT
+    # midday posts; 19:00 UTC = 2pm CT -> ready for the ~5-7pm CT evening posts.
+    # Both are after the 07:00 UTC Gemini quota reset. Bump back to 3-4 crons for
+    # more volume once the channel is proven.
+    - cron: "0 9 * * *"     # 4:00 AM CT — feeds the midday CT posting wave
+    - cron: "0 19 * * *"    # 2:00 PM CT — feeds the evening CT posting wave
 
 permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
