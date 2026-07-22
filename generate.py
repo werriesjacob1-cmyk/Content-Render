@@ -848,15 +848,16 @@ HOOK (first 2 seconds decide 70% of retention):
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 84-96 words — this is the HARDEST constraint; under 80 or over 100 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~11 words each
-  is ~88 words, right in range. If you're past 96, DELETE a whole weak scene; if under 84, you're too
+- Total narration MUST be 95-110 words — this is the HARDEST constraint; under 85 or over 115 words is
+  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~13 words each
+  is ~104 words, right in range. If you're past 110, TIGHTEN wording (never DELETE a whole scene — every
+  scene is a distinct escalation beat and losing one flattens the payoff); if under 95, you're too
   thin — add one more real fact from the research, never filler. At this channel's narration speed
-  84-96 words renders to ~38-44 seconds — the sweet spot for completion (too short and it feels stubby
-  and un-satisfying; a 110-word script came out at 50s, too long). Under 80 = rejected; over 100 = rejected.
-  A tight ~40s video beats a padded 50s one: competitors win on completion, so cut every non-essential
+  95-110 words renders to ~40-46 seconds — the sweet spot for completion (too short feels stubby and
+  un-satisfying; past ~120 words drags toward 50s+). Under 85 = rejected; over 115 = rejected.
+  A tight ~42s video beats a padded 55s one: competitors win on completion, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~10-13 words (7-9 scenes x ~11 words = your 84-96 total). NEVER exceed 22 words
+- PER-SCENE LENGTH: aim ~12-14 words (8 scenes x ~13 words = your ~104 total). NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1617,13 +1618,18 @@ def validate(m, job_name, fact=None):
 
     # script length sanity. FLOOR raised 60 -> 80: the ElevenLabs voice speaks
     # noticeably faster than the old edge-tts pacing the 60-word floor was tuned
-    # for, so 60-72-word scripts (often a near-miss repair over-trimming the free
-    # models' long drafts) rendered to a stubby ~28-32s — too short to hold a
-    # viewer or earn watch-time. 80-100 words lands ~37-45s at ElevenLabs' pace,
-    # the sweet spot for completion. Ceiling 93 -> 100 for that headroom.
+    # for. But the previous 80-100 window was ALSO wrong — too TIGHT: the free
+    # models naturally write ~110-140-word science scripts, so nearly every draft
+    # blew the 100 cap, got scene-trimmed to fit, and lost an escalation rung each
+    # time it dropped a scene → escalation floor violations → aborted runs (branch
+    # render 2026-07-22: 139/141/148-word drafts, all trimmed, escalation 4-5).
+    # 85-115 matches what the models actually produce, so a clean draft passes with
+    # ALL its scenes (escalation) intact, AND Gemini's ~105-word rescue drafts pass
+    # instead of being trimmed to mush. 95-110 renders ~40-46s on the neural voices
+    # (edge-tts/Piper), the completion sweet spot; 115 is the hard ceiling.
     wc = len(_clean(m["script"]).split())
-    if not (80 <= wc <= 100):
-        return f"script word count {wc} out of range (target 84-96, hard cap 100)"
+    if not (85 <= wc <= 115):
+        return f"script word count {wc} out of range (target 95-110, hard cap 115)"
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2313,7 +2319,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
         NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 100    # keep in lockstep with validate()'s hard cap
+        NEARMISS_MAX_WORDS = 115    # keep in lockstep with validate()'s hard cap
         NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):

@@ -104,6 +104,7 @@ FIX_BIO = manifest(
         ("In this state it can shrug off temperatures near minus 272 degrees.", "NEAR MINUS 272", "ice frozen crystals"),
         ("It can also take radiation that would kill a human many times over.", "HUGE RADIATION", "radiation warning glow"),
         ("Scientists once sent some into orbit and exposed them to raw space.", "SENT TO ORBIT", "satellite earth orbit"),
+        ("They manage this by replacing the water in their cells with a glassy sugar that shields every part.", "GLASS TRICK", "glass crystal macro"),
         ("Back on the ground, many woke up and had healthy babies.", "WOKE UP FINE", "baby animals nature"),
     ),
 )
@@ -118,6 +119,7 @@ FIX_GEO = manifest(
         ("Yet crushing pressure keeps that iron solid instead of molten.", "STAYS SOLID", "deep pressure rock"),
         ("Around it a churning liquid outer core keeps everything moving.", "LIQUID SHELL", "swirling lava flow"),
         ("That motion generates the magnetic field that guides every compass.", "MAKES MAGNETISM", "compass needle north"),
+        ("Strangely, that inner ball is thought to spin a little faster than the rest of the planet does.", "SPINS FASTER", "spinning core animation"),
         ("Without it, the solar wind would slowly strip our air away.", "SHIELDS THE AIR", "aurora night sky"),
     ),
 )
@@ -132,6 +134,7 @@ FIX_PHYS = manifest(
         ("Warm water near 90 degrees loses mass to evaporation, so less has to freeze.", "LESS TO FREEZE", "steam rising water"),
         ("Dissolved gases and currents inside the warm cup also play a part.", "GAS AND FLOW", "bubbles in water"),
         ("The effect is fussy and does not happen every single time.", "NOT ALWAYS", "frost forming glass"),
+        ("Cold water can also supercool below freezing and stubbornly refuse to turn to ice for a while.", "SUPERCOOL", "supercooled water ice"),
         ("It is a reminder that even boiling a kettle still hides mysteries.", "EVERYDAY MYSTERY", "kettle steam kitchen"),
     ),
 )
