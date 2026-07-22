@@ -38,7 +38,13 @@ funnel) → GitHub Release → Zapier → Buffer (Draft). Driven by
    has a **vision** path (`_gemini_vision_pick`) that looks at Pexels thumbnails.
    Resets **midnight Pacific = 2:00 AM CT / 07:00 UTC**.
 2. **OpenRouter** (`OPENROUTER_API_KEY`): `meta-llama/llama-3.3-70b-instruct:free`
-   — the strongest free model; separate free daily bucket (small, ~50/day).
+   — WAS the strongest free model, but as of **2026-07-22 it returns HTTP 404
+   "This model is unavailable for free. The paid version is available now"** —
+   OpenRouter discontinued the free tier for it. The chain falls straight through
+   to `github:gpt-4o-mini` (weak — overshoots word count then trims to mush;
+   shipped the 6.83/surprise-4 near-miss in render 130). Until a strong free
+   replacement is found, the **Gemini quality-rescue** (below) is what keeps
+   quality up.
 3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`.
    Only `gemma-4-31b` returns clean JSON; `gpt-oss-*` and `zai-glm-*` reply with
    non-JSON reasoning and are excluded (`cerebras_models()` denylist). RPM-limited
@@ -113,6 +119,34 @@ ones incl. the 7-scene floor, fast-fail-when-throttled, domain families,
 **`critique_script` merge, script-buffer FIFO/empty/malformed, `_xfade_offsets`
 math, `_shadow_lift_filter` brightness lift**). No ffmpeg, no network, no LLM.
 It already caught a real validate() false-positive.
+
+## Resource-exhaustion resilience shipped 2026-07-22 (branch `claude/epic-edison-jybjd1`)
+Render 130 ("Pineapple: The Fruit That Digests You") came out 31s, robotic, weak
+(6.83/surprise-4). Root cause was NOT code — **two free resources hit their caps
+the same night**, so the pipeline silently ran on its weakest fallbacks:
+- **ElevenLabs free credits exhausted** (`401 quota_exceeded`, 102/10000 left) →
+  every render falls to **Piper** (robotic — the "choppy narrator" complaint).
+  Won't return until the monthly reset.
+- **OpenRouter free llama-70b discontinued** (`404`, see provider #2) →
+  generation falls to weak `github:gpt-4o-mini`.
+Two fixes (both test-verified, **109 zero-quota checks**; render-verify on the
+branch before/after merge to main):
+- **Voice: edge-tts BEFORE Piper** (`main.py` `tts_full`). edge-tts's Azure
+  *neural* voices are free/unlimited and markedly smoother than Piper; Piper is
+  kept as the offline last-resort so a render never breaks if edge's endpoint
+  403s. edge's slower cadence also lifts the ~31s stub toward ~38s. **`VOICE_ENGINE`
+  env** (`edge` default / `piper`) lets the user A/B by ear — NEEDS the user's ears
+  to confirm which voice to lock.
+- **Script: frugal Gemini quality-rescue** (`generate.py` `main()`). When the free
+  chain's best draft is weak (`draft_is_weak()` = below `QUALITY_THRESHOLD` 7.5 OR
+  a floor violation) and a paid Gemini key exists, spend ONE grounded Gemini
+  attempt before shipping-weak/aborting. Fires ONLY on weak nights ($0 otherwise);
+  `_FORCE_GEMINI_GEN` one-shot flag routes `call_groq` to Gemini-first for the
+  retry. This is the "use Gemini but be frugal" trade — pennies only when they buy
+  back a good video. NOTE: the `--dequeue` buffer path does NOT run the rescue (it
+  replays pre-scored manifests), so buffered scripts written under weak providers
+  ship as-is; the branch force-push wiped the stale `queue_science/` so live-gen
+  (with rescue) runs until buffer.yml refills.
 
 ## Overnight quality batch shipped 2026-07-18 (branch `claude/epic-edison-jybjd1`)
 Reviewed render 105 ("Cosmic Proof of Relativity", muon time dilation — Gemini
