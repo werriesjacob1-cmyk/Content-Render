@@ -1,94 +1,95 @@
 {
-  "title": "The Infinite Possibilities of Chess",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "chess possibilities",
-  "metaphor": "infinite games",
-  "hook": "A chessboard has only 64 squares, so how can it hold more games than the universe has atoms?",
-  "script": "The staggering number of chess games goes beyond imagination. After just four moves per side, there are already 84 billion possible variations. This branching occurs because each player has about 35 legal moves per turn. By the tenth move, the possibilities explode to over 7 sextillion. The maximum length of a chess game is 8,848.5 moves, but most sequences are meaningless. In fact, there are 10 to the power of 120 potential games. This far exceeds the 10 to the power of 80 atoms in the observable universe. No computer will ever list them all; there isn't enough matter in existence to store the full list.",
+  "title": "How Sensitive Are Your Eyes?",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "single photon",
+  "metaphor": "human eye light sensitivity",
+  "hook": "What is the faintest thing a human eye can possibly see?",
+  "script": "What is the faintest thing a human eye can possibly see? Most people think our vision is surprisingly weak in the dark. In reality, your eyes can register one particle of light. Each retina packs 120 million rod cells designed to trap a single photon. When hit, a molecule inside flips in less than a trillionth of a second. That tiny packet carries so little energy it cannot lift a grain of sand. Yet on a dark clear night, your eyes can catch a candle flame miles away. You are sensing light at the smallest amount possible in physics.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "The staggering number of chess games goes beyond imagination.",
-      "on_screen_text": "Endless Possibilities",
-      "search_query": "chess game pieces",
+      "duration": 5,
+      "voiceover": "What is the faintest thing a human eye can possibly see?",
+      "on_screen_text": "faintest light",
+      "search_query": "pupil close up",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "After just four moves per side, there are already 84 billion possible variations.",
-      "on_screen_text": "84 Billion Variations",
-      "search_query": "chess game close up",
+      "duration": 5,
+      "voiceover": "Most people think our vision is surprisingly weak in the dark.",
+      "on_screen_text": "night vision myth",
+      "search_query": "dark forest at night",
       "motion": "zoom_in"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "This branching occurs because each player has about 35 legal moves per turn.",
-      "on_screen_text": "35 Legal Moves",
-      "search_query": "chess player thinking",
-      "motion": "zoom_in"
+      "duration": 5,
+      "voiceover": "In reality, your eyes can register one particle of light.",
+      "on_screen_text": "one particle of light",
+      "search_query": "human eye macro",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "By the tenth move, the possibilities explode to over 7 sextillion.",
-      "on_screen_text": "7 Sextillion Paths",
-      "search_query": "chess pieces macro",
-      "motion": "zoom_in"
+      "duration": 6,
+      "voiceover": "Each retina packs 120 million rod cells designed to trap a single photon.",
+      "on_screen_text": "single photon",
+      "search_query": "starry night sky",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "The maximum length of a chess game is 8,848.5 moves, but most sequences are meaningless.",
-      "on_screen_text": "8,848.5 Moves",
-      "search_query": "chess board with pieces",
+      "duration": 6,
+      "voiceover": "When hit, a molecule inside flips in less than a trillionth of a second.",
+      "on_screen_text": "instant reaction",
+      "search_query": "laser beam dark room",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "In fact, there are 10 to the power of 120 potential games.",
-      "on_screen_text": "10^120 Potential Games",
-      "search_query": "chess pieces on board",
-      "motion": "zoom_in"
+      "duration": 6,
+      "voiceover": "That tiny packet carries so little energy it cannot lift a grain of sand.",
+      "on_screen_text": "minuscule energy",
+      "search_query": "sand dripping through fingers",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "This far exceeds the 10 to the power of 80 atoms in the observable universe.",
-      "on_screen_text": "More Than Atoms",
-      "search_query": "observable universe stars",
+      "duration": 6,
+      "voiceover": "Yet on a dark clear night, your eyes can catch a candle flame miles away.",
+      "on_screen_text": "miles away",
+      "search_query": "candle flame in the dark",
       "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 4,
-      "voiceover": "No computer will ever list them all; there isn't enough matter in existence to store the full list.",
-      "on_screen_text": "Infinite Combinations",
-      "search_query": "galaxy stars space",
+      "duration": 5,
+      "voiceover": "You are sensing light at the smallest amount possible in physics.",
+      "on_screen_text": "smallest amount possible",
+      "search_query": "person looking at stars night",
       "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Did you know chess has more possibilities than atoms? Yes or no?",
-    "How many games can you imagine?",
-    "Chess is a universe of possibilities."
+    "Could you spot a single photon in absolute darkness? Yes or no?",
+    "Your eyes are built right at the ultimate physical limit of light.",
+    "Did you think animal vision was always better than human vision?"
   ],
   "hashtags": [
-    "#chess",
-    "#possibilities",
-    "#universe",
     "#science",
-    "#facts"
+    "#humanbody",
+    "#physics",
+    "#eyes",
+    "#space",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_the-infinite-possibilities-of-chess",
-  "cta_style": "LOOP",
-  "domain": "math"
+  "video_id": "science_2026-07-22_how-sensitive-are-your-eyes",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "senses"
 }

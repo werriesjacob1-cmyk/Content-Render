@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-18_the-hidden-physics-of-gps",
-      "metaphor": "space and time",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Hidden Physics of GPS",
-      "fact_id": "gps_relativity",
-      "domain": "physics",
-      "hook": "What if your GPS was wrong by ten kilometers every day?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 6.0,
-        "payoff": 8.0,
-        "rewatch": 5.0,
-        "clarity": 7.0,
-        "overall": 6.83
-      }
-    },
-    {
       "video_id": "science_2026-07-18_the-mantis-shrimp-s-unimaginable-vision",
       "metaphor": "extraordinary vision",
       "viewer_job": "MYTH_BUSTER",
@@ -334,6 +310,30 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-22_how-sensitive-are-your-eyes",
+      "metaphor": "human eye light sensitivity",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "How Sensitive Are Your Eyes?",
+      "fact_id": "single_photon_eye",
+      "domain": "senses",
+      "hook": "What is the faintest thing a human eye can possibly see?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 7.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 7.67
       }
     }
   ]
