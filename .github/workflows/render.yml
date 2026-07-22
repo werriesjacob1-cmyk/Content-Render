@@ -105,6 +105,14 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          # GEMINI-FIRST generation (user-approved 2026-07-22 for reliability +
+          # quality). The free writers (gpt-4o-mini / groq-llama) overshoot the word
+          # count and abort on escalation-floor violations; Gemini is grounded, writes
+          # tighter/stronger hooks, and stops the abort spiral — the "generate
+          # multiple without failure" the user asked for. Cost is pennies/render on
+          # gemini-flash (~$2-3/mo at 4-7 renders/day). Set to "0" to revert to the
+          # free-first chain (Gemini then only rescues weak drafts).
+          GEMINI_GENERATION: "1"
           # Gemini's free tier has a far larger daily quota than Groq's; when set,
           # generate.py prefers it so renders stop aborting at this step. Optional
           # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
