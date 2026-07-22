@@ -112,7 +112,7 @@ Domain selection now dedups by FAMILY (`DOMAIN_FAMILIES`: geology/earth/weather
 = one family) so two deep-earth videos don't run back-to-back.
 
 ## Zero-quota test suite — RUN THIS before shipping generate.py/main.py changes
-`GROQ_API_KEY=x python tests/test_pipeline.py` — **97 checks** over the trickiest
+`GROQ_API_KEY=x python tests/test_pipeline.py` — **109 checks** over the trickiest
 PURE logic (caption content-alignment, footage `_footage_intent` anchoring,
 `_diversify_scene_queries`, timing, `validate()` across 5 topic fixtures + broken
 ones incl. the 7-scene floor, fast-fail-when-throttled, domain families,
@@ -147,13 +147,33 @@ branch before/after merge to main):
   replays pre-scored manifests), so buffered scripts written under weak providers
   ship as-is; the branch force-push wiped the stale `queue_science/` so live-gen
   (with rescue) runs until buffer.yml refills.
+- **Word window 80-100 → 85-115 (target 95-110)** — the ACTUAL cause of the
+  aborts. The free models write ~110-140-word science drafts; the old tight cap
+  rejected every one, and the near-miss repair trimmed whole SCENES to fit — each
+  dropped scene a lost escalation rung → escalation floor violations → aborted
+  runs (and render 130 only shipped at 6.83 because ONE attempt trimmed cleanly;
+  it was a coin flip). 85-115 matches what the models produce, so a clean draft
+  keeps ALL its scenes (escalation) intact AND Gemini's ~105-word rescue drafts
+  pass instead of being trimmed to mush. Prompt now says "tighten wording, never
+  delete a scene" when over length. Renders ~40-46s on the neural voices.
+
+**MERGED TO MAIN 2026-07-22 (PR #11, squash `71a8aa4`) — render-VERIFIED.** Branch
+render 132 ("Turtles Breathe Through Their Rear Ends", animals): edge-tts carried
+the voice (ElevenLabs 401'd → edge, NOT Piper), **37.5s** (was 31s), shipped **7.0
+with all 8 scenes intact** (no floor violation), whisper recovered 90/90 word
+timings, rescue fired + correctly declined a weaker Gemini draft. B/B+ — a clear
+step up from render 130 (C+/B−). Still OPEN for the user: (1) **confirm the voice
+by ear** (edge vs piper via `VOICE_ENGINE`); (2) ceiling is ~7.0 on free
+gpt-4o-mini — Gemini rescue can't lift it much because Gemini ALSO overshoots word
+count for this dense format, so the only path to consistent 8.0+ is a stronger
+writer (Gemini-first, or a cheap paid script tier) — the user's call.
 
 ## Overnight quality batch shipped 2026-07-18 (branch `claude/epic-edison-jybjd1`)
 Reviewed render 105 ("Cosmic Proof of Relativity", muon time dilation — Gemini
 `gemini-flash-latest` carried it, grounded + vision judge fired; a solid B/B+
 with 3 concrete flaws). Fixed the flaws and pushed further. All test-verified
-(97 zero-quota checks); **not yet render-verified — do one render after the
-07:00 UTC reset and WATCH it**:
+(then 97, now 109 zero-quota checks); **not yet render-verified — do one render
+after the 07:00 UTC reset and WATCH it**:
 - **CI staging bug (critical)**: `git add memory_*.json manifest.json … queue_*`
   aborts ATOMICALLY when `queue_*` matches nothing (the empty-buffer live-gen
   case), so the manifest + `memory_science.json` history never committed — topic
