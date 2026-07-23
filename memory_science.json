@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-20_the-surprising-link-between-two-deserts",
-      "metaphor": "Nature's Hidden Connections",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Surprising Link Between Two Deserts",
-      "fact_id": "sahara_feeds_amazon",
-      "domain": "earth",
-      "hook": "What if the Amazon rainforest thrived on dust from the Sahara?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-21_the-hidden-ocean-of-viruses",
       "metaphor": "the unseen world",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -334,6 +310,30 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
+      "metaphor": "incredible card arrangements",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Astonishing Possibilities of a Shuffled Deck",
+      "fact_id": "card_shuffle_52",
+      "domain": "math",
+      "hook": "What if every shuffled deck has never existed before?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 9.0,
+        "rewatch": 4.0,
+        "clarity": 7.0,
+        "overall": 6.83
       }
     }
   ]

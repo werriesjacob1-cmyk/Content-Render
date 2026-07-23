@@ -1,86 +1,94 @@
 {
-  "title": "The Color Mystery of Mantis Shrimp",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "mantis shrimp vision",
-  "metaphor": "color perception",
-  "hook": "Mantis shrimp have up to 16 color receptors \u2014 so what do they see?",
-  "script": "Mantis shrimp have up to 16 color receptors \u2014 so what do they see? This means they can theoretically see up to 100,000 different colors, while we can see about 1 million. However, astonishingly, mantis shrimp struggle to differentiate between similar colors, particularly shades of green. This challenges the idea that more receptors equate to better color discrimination. In fact, their eyes work differently, scanning colors like a barcode reader rather than blending them as ours do. Each eye also independently provides a 3D view of their environment, enhancing their perception. Furthermore, they can detect circular polarized light, a capability unique to them among animals.",
+  "title": "The Astonishing Possibilities of a Shuffled Deck",
+  "viewer_job": "REFRAME",
+  "keyword": "shuffled deck of cards",
+  "metaphor": "incredible card arrangements",
+  "hook": "What if every shuffled deck has never existed before?",
+  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Mantis shrimp have up to 16 color receptors \u2014 so what do they see?",
-      "on_screen_text": "Color Perception",
-      "search_query": "mantis shrimp closeup underwater",
+      "voiceover": "What if every shuffled deck has never existed before?",
+      "on_screen_text": "Unique Card Order",
+      "search_query": "shuffling deck of cards",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "This means they can theoretically see up to 100,000 different colors, while we can see about 1 million.",
-      "on_screen_text": "Color Spectrum",
-      "search_query": "tropical reef macro",
-      "motion": "zoom_out"
+      "voiceover": "You create an order that has almost certainly never existed before.",
+      "on_screen_text": "Cosmic Uniqueness",
+      "search_query": "deck of cards shuffled",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "However, astonishingly, mantis shrimp struggle to differentiate between similar colors, particularly shades of green.",
-      "on_screen_text": "Color Confusion",
-      "search_query": "peacock mantis shrimp",
-      "motion": "pan"
+      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
+      "on_screen_text": "52 Factorial",
+      "search_query": "52 factorial explanation",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This challenges the idea that more receptors equate to better color discrimination.",
-      "on_screen_text": "Receptor Paradox",
-      "search_query": "mantis shrimp reef",
-      "motion": "pan"
+      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
+      "on_screen_text": "8 Followed by 67",
+      "search_query": "how many card arrangements",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "In fact, their eyes work differently, scanning colors like a barcode reader rather than blending them as ours do.",
-      "on_screen_text": "Scanning Vision",
-      "search_query": "mantis shrimp closeup underwater",
-      "motion": "zoom_in"
+      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
+      "on_screen_text": "Beyond Atoms",
+      "search_query": "night sky stars",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Each eye also independently provides a 3D view of their environment, enhancing their perception.",
-      "on_screen_text": "3D Vision",
-      "search_query": "colorful coral reef",
-      "motion": "pan"
+      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
+      "on_screen_text": "Statistical Randomness",
+      "search_query": "perfect card shuffle",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Furthermore, they can detect circular polarized light, a capability unique to them among animals.",
-      "on_screen_text": "Polarized Light",
-      "search_query": "tropical reef macro",
+      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
+      "on_screen_text": "Rare Odds",
+      "search_query": "identical shuffled decks",
+      "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+      "on_screen_text": "Beyond the Universe",
+      "search_query": "card arrangements distance",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know mantis shrimp can see more colors than us?",
-    "They struggle with similar colors, though.",
-    "What do you think about their unique vision?"
+    "Have you ever shuffled a deck of cards? Yes or no?",
+    "The odds are staggering!",
+    "Every shuffle is a cosmic first."
   ],
   "hashtags": [
-    "#mantisshrimp",
-    "#vision",
-    "#nature",
-    "#biology",
-    "#marine"
+    "#science",
+    "#math",
+    "#cards",
+    "#facts",
+    "#universe"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-color-mystery-of-mantis-shrimp",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "senses"
+  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
+  "cta_style": "COMMENT",
+  "domain": "math"
 }
