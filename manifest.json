@@ -1,85 +1,85 @@
 {
-  "title": "The Plant That Grows at Visible Speed",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "fastest growing plant",
-  "metaphor": "visible plant speed",
-  "hook": "Right now, somewhere in a quiet forest, a green stalk is outrunning you.",
-  "script": "Right now, somewhere in a quiet forest, a green stalk is outrunning you. How can a plant climb nearly a meter a day without stopping? Madake bamboo shoots water into pre-formed cells, expanding forty stem sections at once. Align a ruler with a fresh shoot, and it crosses a mark every ninety seconds. This giant plant is actually the fastest growing grass on Earth. During peak growth, entire groves crack and pop as protective sheaths burst open. An internal genetic clock forces every plant worldwide to bloom and die at once. While you sat here, a single stalk somewhere just gained another full millimeter of height.",
+  "title": "The Ground Beneath Your Feet Is Moving",
+  "viewer_job": "REFRAME",
+  "keyword": "pole reversal",
+  "metaphor": "Earth's Hidden Changes",
+  "hook": "What if your compass pointed south instead of north?",
+  "script": "What if your compass pointed south instead of north? Earth's magnetic poles have swapped places hundreds of times, often without warning. The last full flip was about 780,000 years ago during the Brunhes-Matuyama reversal. This phenomenon occurs due to molten iron moving in the Earth's outer core. During the last reversal, Earth's magnetic field strength dropped to just 10% of today's level. Amazingly, these flips take thousands of years, creating a gradual shift rather than a sudden change. The record of these flips is frozen into the rock of the ocean floor like a barcode written by the planet itself. So the ground beneath your feet is far less permanent than it feels.",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "Right now, somewhere in a quiet forest, a green stalk is outrunning you.",
-      "on_screen_text": "Outrunning You",
-      "search_query": "bamboo forest sunlight",
+      "duration": 4,
+      "voiceover": "What if your compass pointed south instead of north?",
+      "on_screen_text": "Compass Confusion",
+      "search_query": "compass needle closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "How can a plant climb nearly a meter a day without stopping?",
-      "on_screen_text": "Meter A Day",
-      "search_query": "green bamboo stalks",
+      "duration": 4,
+      "voiceover": "Earth's magnetic poles have swapped places hundreds of times, often without warning.",
+      "on_screen_text": "Pole Swaps",
+      "search_query": "earth from space",
       "motion": "pan"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "Madake bamboo shoots water into pre-formed cells, expanding forty stem sections at once.",
-      "on_screen_text": "Hydraulic Expansion",
-      "search_query": "bamboo shoot close up",
+      "duration": 4,
+      "voiceover": "The last full flip was about 780,000 years ago during the Brunhes-Matuyama reversal.",
+      "on_screen_text": "780,000 Years Ago",
+      "search_query": "ocean floor rock",
       "motion": "zoom_in"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "Align a ruler with a fresh shoot, and it crosses a mark every ninety seconds.",
-      "on_screen_text": "Every 90 Seconds",
-      "search_query": "measuring stick plant shoot",
+      "duration": 4,
+      "voiceover": "This phenomenon occurs due to molten iron moving in the Earth's outer core.",
+      "on_screen_text": "Molten Core",
+      "search_query": "molten lava flow",
       "motion": "pan"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "This giant plant is actually the fastest growing grass on Earth.",
-      "on_screen_text": "Fastest Growing Grass",
-      "search_query": "tall green bamboo forest",
+      "duration": 4,
+      "voiceover": "During the last reversal, Earth's magnetic field strength dropped to just 10% of today's level.",
+      "on_screen_text": "Field Strength Drop",
+      "search_query": "earth magnetic field",
       "motion": "zoom_in"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "During peak growth, entire groves crack and pop as protective sheaths burst open.",
-      "on_screen_text": "Groves Cracking Open",
-      "search_query": "bamboo grove sunlight",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "Amazingly, these flips take thousands of years, creating a gradual shift rather than a sudden change.",
+      "on_screen_text": "Gradual Change",
+      "search_query": "time lapse earth",
+      "motion": "pan"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "An internal genetic clock forces every plant worldwide to bloom and die at once.",
-      "on_screen_text": "Global Genetic Clock",
-      "search_query": "flowering bamboo forest",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "The record of these flips is frozen into the rock of the ocean floor like a barcode written by the planet itself.",
+      "on_screen_text": "Earth's Barcode",
+      "search_query": "ocean floor geology",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
-      "duration": 5,
-      "voiceover": "While you sat here, a single stalk somewhere just gained another full millimeter of height.",
-      "on_screen_text": "Moving Right Now",
-      "search_query": "green bamboo forest light",
-      "motion": "static"
+      "duration": 4,
+      "voiceover": "So the ground beneath your feet is far less permanent than it feels.",
+      "on_screen_text": "Unstable Ground",
+      "search_query": "shifting earth",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Could you stand still long enough to watch the fastest growing plant rise \u2014 yes or no?",
-    "Madake bamboo expands nearly a meter a day using high water pressure.",
-    "The world is moving faster than it looks."
+    "Did you know about pole reversal? Yes or no?",
+    "Earth's magnetic field is unstable.",
+    "What else is hidden beneath our feet?"
   ],
   "hashtags": [
-    "#nature",
     "#science",
-    "#plants",
+    "#earth",
+    "#magnetism",
     "#facts"
   ],
   "render": {
@@ -87,7 +87,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-22_the-plant-that-grows-at-visible-speed",
-  "cta_style": "LOOP",
-  "domain": "plants"
+  "video_id": "science_2026-07-23_the-ground-beneath-your-feet-is-moving",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "earth"
 }
