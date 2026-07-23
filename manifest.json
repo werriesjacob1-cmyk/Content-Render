@@ -1,86 +1,95 @@
 {
-  "title": "The Element Discovered Before It Existed on Earth",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "helium discovery",
-  "metaphor": "cosmic element mystery",
-  "hook": "How do you discover something 93 million miles away before finding it at home?",
-  "script": "In 1868, astronomers first discovered helium on the Sun during a solar eclipse. They spotted an unusual yellow line at 587.49 nanometers in the solar spectrum. This discovery was so groundbreaking that it took 27 years to isolate helium on Earth. Sir William Ramsay finally did this in 1895 by treating uranium-bearing cleveite with sulfuric acid. Helium, named after the Greek sun god Helios, constitutes about 24% of the elemental mass in the universe. Yet, it makes up just 0.00052% of Earth's atmosphere due to its lightness. The next time you inhale helium, remember it was first seen in the sky, not the ground.",
+  "title": "What Happens If You're Thrown Into Space?",
+  "viewer_job": "REFRAME",
+  "keyword": "space exposure",
+  "metaphor": "science fiction reality",
+  "hook": "If an airlock burst, what would happen to you?",
+  "script": "If an airlock burst, what would happen to you? You wouldn\u2019t freeze solid or explode. Instead, you would remain conscious for about 15 seconds. During this time, your body struggles without oxygen. As the pressure drops, your blood begins to boil, a phenomenon known as ebullism. This unsettling reaction happens because the vacuum of space causes the water in your body to vaporize at body temperature. In a NASA test in 1966, a subject experienced this, feeling saliva bubbling on his tongue before losing consciousness. Imagine the sensation of your own blood boiling, trapped in a void where life cannot survive.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "In 1868, astronomers first discovered helium on the Sun during a solar eclipse.",
-      "on_screen_text": "Helium on the Sun",
-      "search_query": "solar eclipse helium discovery",
+      "voiceover": "If an airlock burst, what would happen to you?",
+      "on_screen_text": "What happens in space?",
+      "search_query": "space exposure",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "They spotted an unusual yellow line at 587.49 nanometers in the solar spectrum.",
-      "on_screen_text": "Unusual Yellow Line",
-      "search_query": "sun spectrum yellow line",
-      "motion": "zoom_in"
+      "voiceover": "You wouldn\u2019t freeze solid or explode.",
+      "on_screen_text": "Not what you think",
+      "search_query": "astronaut spacewalk",
+      "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This discovery was so groundbreaking that it took 27 years to isolate helium on Earth.",
-      "on_screen_text": "27 Years Later",
-      "search_query": "helium isolation history",
+      "voiceover": "Instead, you would remain conscious for about 15 seconds.",
+      "on_screen_text": "15 seconds of awareness",
+      "search_query": "outer space stars",
       "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Sir William Ramsay finally did this in 1895 by treating uranium-bearing cleveite with sulfuric acid.",
-      "on_screen_text": "Ramsay's Experiment",
-      "search_query": "William Ramsay helium experiment",
-      "motion": "zoom_in"
+      "voiceover": "During this time, your body struggles without oxygen.",
+      "on_screen_text": "Struggling for breath",
+      "search_query": "space helmet reflection",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Helium, named after the Greek sun god Helios, constitutes about 24% of the elemental mass in the universe.",
-      "on_screen_text": "Named After Helios",
-      "search_query": "helium elemental mass",
-      "motion": "zoom_in"
+      "voiceover": "As the pressure drops, your blood begins to boil, a phenomenon known as ebullism.",
+      "on_screen_text": "Ebullism explained",
+      "search_query": "night sky stars",
+      "motion": "static"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Yet, it makes up just 0.00052% of Earth's atmosphere due to its lightness.",
-      "on_screen_text": "Earth's Helium Levels",
-      "search_query": "helium atmosphere percentage",
+      "voiceover": "This unsettling reaction happens because the vacuum of space causes the water in your body to vaporize at body temperature.",
+      "on_screen_text": "Water vaporizes",
+      "search_query": "galaxy nebula",
       "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The next time you inhale helium, remember it was first seen in the sky, not the ground.",
-      "on_screen_text": "Seen in the Sky",
-      "search_query": "helium sky discovery",
-      "motion": "zoom_in"
+      "voiceover": "In a NASA test in 1966, a subject experienced this, feeling saliva bubbling on his tongue before losing consciousness.",
+      "on_screen_text": "NASA test subject",
+      "search_query": "telescope observatory",
+      "motion": "static"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "Imagine the sensation of your own blood boiling, trapped in a void where life cannot survive.",
+      "on_screen_text": "A haunting reality",
+      "search_query": "space exposure",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know helium was discovered on the Sun? Yes or no?",
-    "A gas found only in the stars?",
-    "Helium is named after the sun god Helios."
+    "What happens in space \u2014 did you know this?",
+    "The truth about space exposure.",
+    "A chilling reality awaits."
   ],
   "hashtags": [
     "#science",
     "#space",
     "#facts",
-    "#helium",
-    "#astronomy"
+    "#astronomy",
+    "#reality",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-element-discovered-before-it-existed",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "chemistry"
+  "video_id": "science_2026-07-23_what-happens-if-you-re-thrown-into-space",
+  "cta_style": "LOOP",
+  "domain": "space"
 }
