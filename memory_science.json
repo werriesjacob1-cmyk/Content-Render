@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-20_your-brain-s-power-less-than-a-light-bul",
-      "metaphor": "mind-bending efficiency",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "CHALLENGE",
-      "title": "Your Brain's Power: Less Than a Light Bulb",
-      "fact_id": "brain_twenty_watts",
-      "domain": "body",
-      "hook": "Your brain runs on less energy than a dim light bulb?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 7.17
-      }
-    },
-    {
       "video_id": "science_2026-07-20_the-surprising-link-between-two-deserts",
       "metaphor": "Nature's Hidden Connections",
       "viewer_job": "REFRAME",
@@ -334,6 +310,30 @@
         "rewatch": 4.0,
         "clarity": 9.0,
         "overall": 7.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-23_the-color-mystery-of-mantis-shrimp",
+      "metaphor": "color perception",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Color Mystery of Mantis Shrimp",
+      "fact_id": "mantis_shrimp_eyes",
+      "domain": "senses",
+      "hook": "Mantis shrimp have up to 16 color receptors \u2014 so what do they see?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 9.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 7.83
       }
     }
   ]
