@@ -2238,7 +2238,16 @@ def main():
     # amix normalize=0 so narration keeps its level (music_vol is pre-tuned to sit
     # ~18-20 dB under the voice; the sting is short and quiet). Handles any subset.
     final = os.path.join(OUT, "final.mp4")
-    crf = random.choice(["19", "20", "21"])
+    # Keep final.mp4 SMALL (~5MB) so Publer's "Upload Media from URL" (Zapier) can
+    # fetch it within its ~30-second action timeout. A ~14MB file was timing out
+    # and returning an EMPTY media id, which made Publer's "Create Post" fail with
+    # "Document(s) not found for class Media::Base with id(s) ." (empty id). Capping
+    # the bitrate to ~1 Mbps (=~5MB for a ~40s video) downloads in a few seconds;
+    # TikTok/Reels/Shorts re-encode every upload anyway, so the visible-quality hit
+    # is negligible while the post now actually succeeds. Override with UPLOAD_MAXRATE.
+    crf = "27"
+    _vbv_max = os.environ.get("UPLOAD_MAXRATE", "1000k")
+    VBV = ["-maxrate", _vbv_max, "-bufsize", "2000k"]
     ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
     if os.path.exists(MUSIC):
         print("[music] mixing bed under voice...")
@@ -2263,12 +2272,12 @@ def main():
                     f"dropout_transition=0:normalize=0,{_LOUDNORM}[a]")
         run(["ffmpeg", "-y", *ff_inputs, "-filter_complex", ";".join(filt),
              "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
-             "-c:v", "libx264", "-crf", crf, "-preset", "medium",
-             "-c:a", "aac", "-shortest", final])
+             "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
+             "-c:a", "aac", "-b:a", "96k", "-shortest", final])
     else:
         run(["ffmpeg", "-y", "-i", captioned, "-map_metadata", "-1",
-             "-c:v", "libx264", "-crf", crf, "-preset", "medium",
-             "-af", _LOUDNORM, "-c:a", "aac", "-pix_fmt", "yuv420p", final])
+             "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
+             "-af", _LOUDNORM, "-c:a", "aac", "-b:a", "96k", "-pix_fmt", "yuv420p", final])
 
     with open(os.path.join(OUT, "post.json"), "w") as f:
         # video_id (if present) is the key generate.py's performance-memory
