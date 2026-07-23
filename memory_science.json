@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-19_cosmic-rays-and-time-dilation",
-      "metaphor": "cosmic particles",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "SCALE_SHOCK",
-      "title": "Cosmic Rays and Time Dilation",
-      "fact_id": "muon_time_dilation",
-      "domain": "physics",
-      "hook": "What if particles created in the sky defy time itself?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 5.0,
-        "clarity": 9.0,
-        "overall": 7.17
-      }
-    },
-    {
       "video_id": "science_2026-07-19_footprints-on-the-moon-a-lasting-legacy",
       "metaphor": "timeless lunar marks",
       "viewer_job": "MYTH_BUSTER",
@@ -334,6 +310,30 @@
         "rewatch": 5.0,
         "clarity": 9.0,
         "overall": 7.17
+      }
+    },
+    {
+      "video_id": "science_2026-07-23_molten-glass-rain-on-a-blue-planet",
+      "metaphor": "alien weather phenomena",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "hook_frame": "SCALE_SHOCK",
+      "title": "Molten Glass Rain on a Blue Planet",
+      "fact_id": "glass_rain_exoplanet",
+      "domain": "space",
+      "hook": "What if rain fell sideways at 8,000 kilometres per hour?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "overall": 7.5
       }
     }
   ]

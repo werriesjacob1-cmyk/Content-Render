@@ -1,93 +1,86 @@
 {
-  "title": "The Ground Beneath Your Feet Is Moving",
-  "viewer_job": "REFRAME",
-  "keyword": "pole reversal",
-  "metaphor": "Earth's Hidden Changes",
-  "hook": "What if your compass pointed south instead of north?",
-  "script": "What if your compass pointed south instead of north? Earth's magnetic poles have swapped places hundreds of times, often without warning. The last full flip was about 780,000 years ago during the Brunhes-Matuyama reversal. This phenomenon occurs due to molten iron moving in the Earth's outer core. During the last reversal, Earth's magnetic field strength dropped to just 10% of today's level. Amazingly, these flips take thousands of years, creating a gradual shift rather than a sudden change. The record of these flips is frozen into the rock of the ocean floor like a barcode written by the planet itself. So the ground beneath your feet is far less permanent than it feels.",
+  "title": "Molten Glass Rain on a Blue Planet",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "molten glass",
+  "metaphor": "alien weather phenomena",
+  "hook": "What if rain fell sideways at 8,000 kilometres per hour?",
+  "script": "What if rain fell sideways at 8,000 kilometres per hour? This is HD 189733b, a deep blue world not painted by oceans, but by clouds of silicate. Those clouds create rain that doesn\u2019t fall straight down, but sideways, slicing through the atmosphere. Temperatures here soar to 1,000 degrees Celsius, hot enough to vaporize solid material into liquid glass. The planet spins rapidly, completing a rotation in just 13.1 hours, intensifying this hellish weather. One side of HD 189733b is eternally scorched by its star, while the other remains cloaked in darkness. So, on a planet that can turn solid rock into molten rain, how different is our own weather, really?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if your compass pointed south instead of north?",
-      "on_screen_text": "Compass Confusion",
-      "search_query": "compass needle closeup",
+      "voiceover": "What if rain fell sideways at 8,000 kilometres per hour?",
+      "on_screen_text": "Extreme Alien Weather",
+      "search_query": "stormy alien world",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Earth's magnetic poles have swapped places hundreds of times, often without warning.",
-      "on_screen_text": "Pole Swaps",
-      "search_query": "earth from space",
+      "voiceover": "This is HD 189733b, a deep blue world not painted by oceans, but by clouds of silicate.",
+      "on_screen_text": "HD 189733b",
+      "search_query": "blue planet space",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The last full flip was about 780,000 years ago during the Brunhes-Matuyama reversal.",
-      "on_screen_text": "780,000 Years Ago",
-      "search_query": "ocean floor rock",
-      "motion": "zoom_in"
+      "voiceover": "Those clouds create rain that doesn\u2019t fall straight down, but sideways, slicing through the atmosphere.",
+      "on_screen_text": "Sideways Rain",
+      "search_query": "exoplanet illustration",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This phenomenon occurs due to molten iron moving in the Earth's outer core.",
-      "on_screen_text": "Molten Core",
-      "search_query": "molten lava flow",
-      "motion": "pan"
+      "voiceover": "Temperatures here soar to 1,000 degrees Celsius, hot enough to vaporize solid material into liquid glass.",
+      "on_screen_text": "1,000 Degrees Celsius",
+      "search_query": "blue planet space",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "During the last reversal, Earth's magnetic field strength dropped to just 10% of today's level.",
-      "on_screen_text": "Field Strength Drop",
-      "search_query": "earth magnetic field",
-      "motion": "zoom_in"
+      "voiceover": "The planet spins rapidly, completing a rotation in just 13.1 hours, intensifying this hellish weather.",
+      "on_screen_text": "Rapid Rotation",
+      "search_query": "exoplanet illustration",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Amazingly, these flips take thousands of years, creating a gradual shift rather than a sudden change.",
-      "on_screen_text": "Gradual Change",
-      "search_query": "time lapse earth",
+      "voiceover": "One side of HD 189733b is eternally scorched by its star, while the other remains cloaked in darkness.",
+      "on_screen_text": "Eternal Scorch",
+      "search_query": "blue planet space",
       "motion": "pan"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The record of these flips is frozen into the rock of the ocean floor like a barcode written by the planet itself.",
-      "on_screen_text": "Earth's Barcode",
-      "search_query": "ocean floor geology",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "So the ground beneath your feet is far less permanent than it feels.",
-      "on_screen_text": "Unstable Ground",
-      "search_query": "shifting earth",
-      "motion": "pan"
+      "voiceover": "So, on a planet that can turn solid rock into molten rain, how different is our own weather, really?",
+      "on_screen_text": "Question Reality",
+      "search_query": "stormy alien world",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know about pole reversal? Yes or no?",
-    "Earth's magnetic field is unstable.",
-    "What else is hidden beneath our feet?"
+    "Did you know it rains molten glass on HD 189733b?",
+    "A blue planet with deadly winds!",
+    "How does this compare to Earth's weather?"
   ],
   "hashtags": [
     "#science",
-    "#earth",
-    "#magnetism",
-    "#facts"
+    "#space",
+    "#facts",
+    "#weather",
+    "#exoplanets"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-ground-beneath-your-feet-is-moving",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "earth"
+  "video_id": "science_2026-07-23_molten-glass-rain-on-a-blue-planet",
+  "cta_style": "LOOP",
+  "domain": "space"
 }
