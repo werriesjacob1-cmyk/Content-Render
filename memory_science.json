@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-19_footprints-on-the-moon-a-lasting-legacy",
-      "metaphor": "timeless lunar marks",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "COMMENT",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "Footprints on the Moon: A Lasting Legacy",
-      "fact_id": "footprints_moon",
-      "domain": "space",
-      "hook": "What if you returned to the Moon a million years from now?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 9.0,
-        "rewatch": 5.0,
-        "clarity": 9.0,
-        "overall": 7.33
-      }
-    },
-    {
       "video_id": "science_2026-07-20_your-brain-s-power-less-than-a-light-bul",
       "metaphor": "mind-bending efficiency",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -334,6 +310,30 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "overall": 7.5
+      }
+    },
+    {
+      "video_id": "science_2026-07-23_the-toughest-animal-you-can-t-see",
+      "metaphor": "invisible resilience",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Toughest Animal You Can't See",
+      "fact_id": "tardigrade",
+      "domain": "animals",
+      "hook": "What if you left a tardigrade in the vacuum of space?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 9.0,
+        "rewatch": 4.0,
+        "clarity": 9.0,
+        "overall": 7.17
       }
     }
   ]

@@ -318,5 +318,16 @@
     "The first confirmation of HD 189733b's extreme weather came from a 2007 study led by astronomers from the University of California, Berkeley, who detected the planet's atmosphere using the Hubble Space Telescope, marking a significant milestone in exoplanet research.",
     "One open mystery is how such high-speed winds can exist in a planet's atmosphere without being dissipated; scientists are still investigating the dynamics of the atmosphere and the role of temperature and pressure gradients.",
     "Interestingly, HD 189733b is tidally locked to its star, meaning one side always faces the star while the other remains in perpetual darkness, creating extreme temperature differences that contribute to its stormy weather."
+  ],
+  "29ba8fc54588bb4c": [
+    "The Apollo Guidance Computer (AGC) had a processing speed of 1 MHz and utilized a mere 64 KB of memory, whereas a modern smartphone can have processing speeds exceeding 2.5 GHz and up to 12 GB of RAM, making it millions of times more powerful.",
+    "The AGC operated using integrated circuits, which were a significant innovation at the time, but modern smartphones use billions of transistors on chips made with advanced semiconductor technology, allowing for complex calculations and multitasking.",
+    "The total computing power of all the AGCs used during the Apollo missions is estimated to be around 2,000 times less than that of a single modern smartphone, with the iPhone 13, for instance, utilizing the A15 Bionic chip capable of 15 trillion operations per second.",
+    "Despite the incredible computing power of modern devices, they are still limited by battery life and thermal management, meaning that while they can process vast amounts of data, they do not always run at full capacity to conserve energy.",
+    "To visualize the difference, imagine carrying around a device that fits in your pocket, capable of performing the calculations equivalent to the combined power of about 100,000 AGCs \u2014 that\u2019s how powerful today\u2019s smartphones have become.",
+    "The capabilities of your smartphone allow you to access the entirety of human knowledge via the internet, something that was unimaginable during the Apollo era, when astronauts relied on pre-programmed data and calculations done far in advance.",
+    "In 1969, the AGC was the first computer system to use a real-time operating system, a concept that is foundational in today's computing but was revolutionary at the time and allowed for critical tasks to be executed under tight deadlines.",
+    "Scientists still explore how the brain processes information and compares it to modern computing systems, raising questions about efficiency and the potential for developing even more powerful artificial intelligence systems that mimic human thought.",
+    "The AGC used a unique programming language called AGC assembly language, which was different from the high-level programming languages we use today; this reflects just how much the field of computer science has evolved in a relatively short time."
   ]
 }

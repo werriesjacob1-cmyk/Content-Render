@@ -1,86 +1,92 @@
 {
-  "title": "Molten Glass Rain on a Blue Planet",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "molten glass",
-  "metaphor": "alien weather phenomena",
-  "hook": "What if rain fell sideways at 8,000 kilometres per hour?",
-  "script": "What if rain fell sideways at 8,000 kilometres per hour? This is HD 189733b, a deep blue world not painted by oceans, but by clouds of silicate. Those clouds create rain that doesn\u2019t fall straight down, but sideways, slicing through the atmosphere. Temperatures here soar to 1,000 degrees Celsius, hot enough to vaporize solid material into liquid glass. The planet spins rapidly, completing a rotation in just 13.1 hours, intensifying this hellish weather. One side of HD 189733b is eternally scorched by its star, while the other remains cloaked in darkness. So, on a planet that can turn solid rock into molten rain, how different is our own weather, really?",
+  "title": "The Toughest Animal You Can't See",
+  "viewer_job": "REFRAME",
+  "keyword": "tardigrade",
+  "metaphor": "invisible resilience",
+  "hook": "What if you left a tardigrade in the vacuum of space?",
+  "script": "What if you left a tardigrade in the vacuum of space? The tardigrade, a microscopic animal, can survive extreme conditions. It can endure temperatures near absolute zero and boiling heat. How is this tiny creature so resilient? By entering a state called cryptobiosis, it effectively halts its metabolism. Tardigrades can withstand radiation doses of up to 6,000 Grays. In 2016, researchers revived tardigrades after 30.5 years in suspended animation. The toughest animal is invisible to the naked eye, yet its abilities redefine survival.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if rain fell sideways at 8,000 kilometres per hour?",
-      "on_screen_text": "Extreme Alien Weather",
-      "search_query": "stormy alien world",
+      "voiceover": "What if you left a tardigrade in the vacuum of space?",
+      "on_screen_text": "Vacuum of Space",
+      "search_query": "tardigrade in space",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "This is HD 189733b, a deep blue world not painted by oceans, but by clouds of silicate.",
-      "on_screen_text": "HD 189733b",
-      "search_query": "blue planet space",
-      "motion": "pan"
+      "voiceover": "The tardigrade, a microscopic animal, can survive extreme conditions.",
+      "on_screen_text": "Microscopic Resilience",
+      "search_query": "tardigrade close up",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Those clouds create rain that doesn\u2019t fall straight down, but sideways, slicing through the atmosphere.",
-      "on_screen_text": "Sideways Rain",
-      "search_query": "exoplanet illustration",
+      "voiceover": "It can endure temperatures near absolute zero and boiling heat.",
+      "on_screen_text": "Extreme Temperatures",
+      "search_query": "boiling ice water",
       "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Temperatures here soar to 1,000 degrees Celsius, hot enough to vaporize solid material into liquid glass.",
-      "on_screen_text": "1,000 Degrees Celsius",
-      "search_query": "blue planet space",
+      "voiceover": "How is this tiny creature so resilient?",
+      "on_screen_text": "How Resilient?",
+      "search_query": "tardigrade survival",
       "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The planet spins rapidly, completing a rotation in just 13.1 hours, intensifying this hellish weather.",
-      "on_screen_text": "Rapid Rotation",
-      "search_query": "exoplanet illustration",
+      "voiceover": "By entering a state called cryptobiosis, it effectively halts its metabolism.",
+      "on_screen_text": "Cryptobiosis Explained",
+      "search_query": "cryptobiosis process",
       "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "One side of HD 189733b is eternally scorched by its star, while the other remains cloaked in darkness.",
-      "on_screen_text": "Eternal Scorch",
-      "search_query": "blue planet space",
-      "motion": "pan"
+      "voiceover": "Tardigrades can withstand radiation doses of up to 6,000 Grays.",
+      "on_screen_text": "6,000 Grays",
+      "search_query": "tardigrade radiation survival",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "So, on a planet that can turn solid rock into molten rain, how different is our own weather, really?",
-      "on_screen_text": "Question Reality",
-      "search_query": "stormy alien world",
+      "voiceover": "In 2016, researchers revived tardigrades after 30.5 years in suspended animation.",
+      "on_screen_text": "30.5 Years Frozen",
+      "search_query": "tardigrade revival",
+      "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "The toughest animal is invisible to the naked eye, yet its abilities redefine survival.",
+      "on_screen_text": "Invisible Toughness",
+      "search_query": "tardigrade strength",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know it rains molten glass on HD 189733b?",
-    "A blue planet with deadly winds!",
-    "How does this compare to Earth's weather?"
+    "Did you know about the tardigrade's survival skills?",
+    "Incredible resilience of tiny creatures!",
+    "What do you think about this tough animal?"
   ],
   "hashtags": [
     "#science",
-    "#space",
-    "#facts",
-    "#weather",
-    "#exoplanets"
+    "#microbiology",
+    "#tardigrade"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_molten-glass-rain-on-a-blue-planet",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-23_the-toughest-animal-you-can-t-see",
+  "cta_style": "COMMENT",
+  "domain": "animals"
 }
