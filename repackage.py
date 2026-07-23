@@ -468,38 +468,25 @@ def write_platform_text(resolved_files):
     print("funnel.json written — pinned comment + newsletter + affiliate ("
           f"affiliate: {fnl['affiliate']['search']}).")
 
-    # Also emit a GitHub-Release body (out/release_body.md) that carries each
-    # platform's caption inside unique START/END markers. The Zapier "New
-    # Release" trigger exposes the release body natively, so a NO-premium Zap
-    # can pull each channel's caption with one free Formatter "Extract Pattern"
-    # step (regex ===TIKTOK_START===([\s\S]*?)===TIKTOK_END===) and feed it to
-    # that channel's own Buffer action — giving each platform its own optimized
-    # caption + correct video cut instead of one identical cross-post. See
-    # POSTING.md for the exact per-channel Zap recipe.
-    def _section(marker, text):
-        return f"==={marker}_START===\n{text}\n==={marker}_END===\n"
-    body = ["Automated multi-platform render. Each section below is that channel's",
-            "own caption; attach the matching video asset (files listed at the bottom).",
-            ""]
-    body.append(_section("TIKTOK", out["tiktok"]["caption"]))
-    body.append(_section("INSTAGRAM", out["instagram_reels"]["caption"]))
-    body.append(_section("FACEBOOK", out["facebook_reels"]["caption"]))
-    body.append(_section("YOUTUBE_TITLE", out["youtube_shorts"]["title"]))
-    body.append(_section("YOUTUBE_DESC", out["youtube_shorts"]["description"]))
-    body.append(_section("X", out["x_twitter"]["caption"]))
-    # PINNED_COMMENT: the funnel's list-building ask, meant to be posted as the
-    # FIRST COMMENT on every platform (pinned where supported). Kept out of the
-    # video and out of the main captions so nothing feels like a hard sell.
-    body.append(_section("PINNED_COMMENT", fnl["pinned_comment"]))
-    body.append("\nVideo asset for each channel (attached to this release):")
-    body.append(f"- TikTok:          {out['tiktok']['file']}")
-    body.append(f"- Instagram Reels: {out['instagram_reels']['file']}")
-    body.append(f"- Facebook Reels:  {out['facebook_reels']['file']}")
-    body.append(f"- YouTube Shorts:  {out['youtube_shorts']['file']}")
-    body.append(f"- X / feed:        {out['x_twitter']['file']}")
+    # Emit the GitHub-Release body (out/release_body.md) as JUST the universal
+    # caption + hashtags, in plain text. The Zapier "New Release" trigger exposes
+    # the body natively, so the Zap maps Publer's "Text" field DIRECTLY to
+    # {{Body}} — a TRIGGER field whose ID never changes.
+    #
+    # Why this replaced the old ===MARKER=== body: that layout required a
+    # Formatter "Extract Pattern" step to pull the caption, and every time that
+    # Formatter was edited its output field-ID changed and silently emptied the
+    # downstream mapping — the recurring "Required field Text is missing" failure.
+    # Mapping straight to the trigger's own Body field removes that whole failure
+    # mode (no Formatter, nothing to re-break). The per-platform caption variants
+    # (Instagram "send this…", YouTube title/description, X) and the funnel's
+    # pinned comment still ship in the attached platform_text.json / funnel.json
+    # assets for anyone who wants channel-specific text later.
+    universal_caption = (out.get("tiktok", {}).get("caption")
+                         or post.get("title", "")).strip()
     with open(os.path.join(OUT, "release_body.md"), "w") as f:
-        f.write("\n".join(body))
-    print("release_body.md written — per-channel captions in Formatter-friendly markers.")
+        f.write(universal_caption)
+    print("release_body.md written — clean universal caption for direct {{Body}} mapping.")
 
 
 def main():
