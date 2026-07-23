@@ -1,94 +1,86 @@
 {
-  "title": "The Astonishing Possibilities of a Shuffled Deck",
-  "viewer_job": "REFRAME",
-  "keyword": "shuffled deck of cards",
-  "metaphor": "incredible card arrangements",
-  "hook": "What if every shuffled deck has never existed before?",
-  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+  "title": "The Element Discovered Before It Existed on Earth",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "helium discovery",
+  "metaphor": "cosmic element mystery",
+  "hook": "How do you discover something 93 million miles away before finding it at home?",
+  "script": "In 1868, astronomers first discovered helium on the Sun during a solar eclipse. They spotted an unusual yellow line at 587.49 nanometers in the solar spectrum. This discovery was so groundbreaking that it took 27 years to isolate helium on Earth. Sir William Ramsay finally did this in 1895 by treating uranium-bearing cleveite with sulfuric acid. Helium, named after the Greek sun god Helios, constitutes about 24% of the elemental mass in the universe. Yet, it makes up just 0.00052% of Earth's atmosphere due to its lightness. The next time you inhale helium, remember it was first seen in the sky, not the ground.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if every shuffled deck has never existed before?",
-      "on_screen_text": "Unique Card Order",
-      "search_query": "shuffling deck of cards",
+      "voiceover": "In 1868, astronomers first discovered helium on the Sun during a solar eclipse.",
+      "on_screen_text": "Helium on the Sun",
+      "search_query": "solar eclipse helium discovery",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "You create an order that has almost certainly never existed before.",
-      "on_screen_text": "Cosmic Uniqueness",
-      "search_query": "deck of cards shuffled",
-      "motion": "pan"
+      "voiceover": "They spotted an unusual yellow line at 587.49 nanometers in the solar spectrum.",
+      "on_screen_text": "Unusual Yellow Line",
+      "search_query": "sun spectrum yellow line",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
-      "on_screen_text": "52 Factorial",
-      "search_query": "52 factorial explanation",
-      "motion": "zoom_out"
+      "voiceover": "This discovery was so groundbreaking that it took 27 years to isolate helium on Earth.",
+      "on_screen_text": "27 Years Later",
+      "search_query": "helium isolation history",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
-      "on_screen_text": "8 Followed by 67",
-      "search_query": "how many card arrangements",
+      "voiceover": "Sir William Ramsay finally did this in 1895 by treating uranium-bearing cleveite with sulfuric acid.",
+      "on_screen_text": "Ramsay's Experiment",
+      "search_query": "William Ramsay helium experiment",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
-      "on_screen_text": "Beyond Atoms",
-      "search_query": "night sky stars",
-      "motion": "pan"
+      "voiceover": "Helium, named after the Greek sun god Helios, constitutes about 24% of the elemental mass in the universe.",
+      "on_screen_text": "Named After Helios",
+      "search_query": "helium elemental mass",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
-      "on_screen_text": "Statistical Randomness",
-      "search_query": "perfect card shuffle",
+      "voiceover": "Yet, it makes up just 0.00052% of Earth's atmosphere due to its lightness.",
+      "on_screen_text": "Earth's Helium Levels",
+      "search_query": "helium atmosphere percentage",
       "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
-      "on_screen_text": "Rare Odds",
-      "search_query": "identical shuffled decks",
-      "motion": "pan"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
-      "on_screen_text": "Beyond the Universe",
-      "search_query": "card arrangements distance",
-      "motion": "zoom_out"
+      "voiceover": "The next time you inhale helium, remember it was first seen in the sky, not the ground.",
+      "on_screen_text": "Seen in the Sky",
+      "search_query": "helium sky discovery",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Have you ever shuffled a deck of cards? Yes or no?",
-    "The odds are staggering!",
-    "Every shuffle is a cosmic first."
+    "Did you know helium was discovered on the Sun? Yes or no?",
+    "A gas found only in the stars?",
+    "Helium is named after the sun god Helios."
   ],
   "hashtags": [
     "#science",
-    "#math",
-    "#cards",
+    "#space",
     "#facts",
-    "#universe"
+    "#helium",
+    "#astronomy"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
-  "cta_style": "COMMENT",
-  "domain": "math"
+  "video_id": "science_2026-07-23_the-element-discovered-before-it-existed",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "chemistry"
 }
