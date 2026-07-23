@@ -1,95 +1,94 @@
 {
-  "title": "What Happens If You're Thrown Into Space?",
-  "viewer_job": "REFRAME",
-  "keyword": "space exposure",
-  "metaphor": "science fiction reality",
-  "hook": "If an airlock burst, what would happen to you?",
-  "script": "If an airlock burst, what would happen to you? You wouldn\u2019t freeze solid or explode. Instead, you would remain conscious for about 15 seconds. During this time, your body struggles without oxygen. As the pressure drops, your blood begins to boil, a phenomenon known as ebullism. This unsettling reaction happens because the vacuum of space causes the water in your body to vaporize at body temperature. In a NASA test in 1966, a subject experienced this, feeling saliva bubbling on his tongue before losing consciousness. Imagine the sensation of your own blood boiling, trapped in a void where life cannot survive.",
+  "title": "The Metal That Melts in Your Hand",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "melting metal",
+  "metaphor": "strange reality",
+  "hook": "Imagine holding a metal that melts in your hand.",
+  "script": "Imagine holding a metal that melts in your hand. Could a piece of metal really melt just from being held? Gallium, with a melting point of 29.76 degrees Celsius, is unique among metals. This fascinating metal destabilizes at higher temperatures, absorbing heat from your skin. You can even stir gallium into hot tea and watch it vanish completely into the drink. To put this in perspective, gallium melts at a temperature only 7.5 degrees above a warm cup of coffee. Discovered in 1875 by Paul-\u00c9mile Lecoq de Boisbaudran, gallium challenges our assumptions about metals. So, would you want to hold something that melts in your hand?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "If an airlock burst, what would happen to you?",
-      "on_screen_text": "What happens in space?",
-      "search_query": "space exposure",
+      "voiceover": "Imagine holding a metal that melts in your hand.",
+      "on_screen_text": "Melting Metal",
+      "search_query": "liquid metal droplet",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "You wouldn\u2019t freeze solid or explode.",
-      "on_screen_text": "Not what you think",
-      "search_query": "astronaut spacewalk",
-      "motion": "zoom_out"
+      "voiceover": "Could a piece of metal really melt just from being held?",
+      "on_screen_text": "A Real Question",
+      "search_query": "metal melting close up",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Instead, you would remain conscious for about 15 seconds.",
-      "on_screen_text": "15 seconds of awareness",
-      "search_query": "outer space stars",
-      "motion": "zoom_in"
+      "voiceover": "Gallium, with a melting point of 29.76 degrees Celsius, is unique among metals.",
+      "on_screen_text": "Unique Gallium",
+      "search_query": "shiny silver metal",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "During this time, your body struggles without oxygen.",
-      "on_screen_text": "Struggling for breath",
-      "search_query": "space helmet reflection",
-      "motion": "zoom_out"
+      "voiceover": "This fascinating metal destabilizes at higher temperatures, absorbing heat from your skin.",
+      "on_screen_text": "Absorbing Heat",
+      "search_query": "molten metal pouring",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "As the pressure drops, your blood begins to boil, a phenomenon known as ebullism.",
-      "on_screen_text": "Ebullism explained",
-      "search_query": "night sky stars",
-      "motion": "static"
+      "voiceover": "You can even stir gallium into hot tea and watch it vanish completely into the drink.",
+      "on_screen_text": "Disappearing Spoon",
+      "search_query": "metal melting close up",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "This unsettling reaction happens because the vacuum of space causes the water in your body to vaporize at body temperature.",
-      "on_screen_text": "Water vaporizes",
-      "search_query": "galaxy nebula",
-      "motion": "zoom_in"
+      "voiceover": "To put this in perspective, gallium melts at a temperature only 7.5 degrees above a warm cup of coffee.",
+      "on_screen_text": "Warm Coffee",
+      "search_query": "liquid metal droplet",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "In a NASA test in 1966, a subject experienced this, feeling saliva bubbling on his tongue before losing consciousness.",
-      "on_screen_text": "NASA test subject",
-      "search_query": "telescope observatory",
-      "motion": "static"
+      "voiceover": "Discovered in 1875 by Paul-\u00c9mile Lecoq de Boisbaudran, gallium challenges our assumptions about metals.",
+      "on_screen_text": "A Surprising Discovery",
+      "search_query": "shiny silver metal",
+      "motion": "pan"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "Imagine the sensation of your own blood boiling, trapped in a void where life cannot survive.",
-      "on_screen_text": "A haunting reality",
-      "search_query": "space exposure",
-      "motion": "zoom_out"
+      "voiceover": "So, would you want to hold something that melts in your hand?",
+      "on_screen_text": "Your Choice",
+      "search_query": "metal melting close up",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What happens in space \u2014 did you know this?",
-    "The truth about space exposure.",
-    "A chilling reality awaits."
+    "Have you ever heard of melting metal? Yes or no?",
+    "Gallium can melt in your hand!",
+    "What would you do with it?"
   ],
   "hashtags": [
     "#science",
-    "#space",
     "#facts",
-    "#astronomy",
-    "#reality",
-    "#learnontiktok"
+    "#metal",
+    "#gallium",
+    "#weird"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_what-happens-if-you-re-thrown-into-space",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-23_the-metal-that-melts-in-your-hand",
+  "cta_style": "COMMENT",
+  "domain": "materials"
 }
