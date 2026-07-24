@@ -1,94 +1,94 @@
 {
-  "title": "The Metal That Melts in Your Hand",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "melting metal",
-  "metaphor": "strange reality",
-  "hook": "Imagine holding a metal that melts in your hand.",
-  "script": "Imagine holding a metal that melts in your hand. Could a piece of metal really melt just from being held? Gallium, with a melting point of 29.76 degrees Celsius, is unique among metals. This fascinating metal destabilizes at higher temperatures, absorbing heat from your skin. You can even stir gallium into hot tea and watch it vanish completely into the drink. To put this in perspective, gallium melts at a temperature only 7.5 degrees above a warm cup of coffee. Discovered in 1875 by Paul-\u00c9mile Lecoq de Boisbaudran, gallium challenges our assumptions about metals. So, would you want to hold something that melts in your hand?",
+  "title": "The Tallest Mountain: A Surprising Perspective",
+  "viewer_job": "REFRAME",
+  "keyword": "tallest mountain",
+  "metaphor": "mountain height mystery",
+  "hook": "Mount Everest isn't the tallest mountain on Earth. How can that be?",
+  "script": "Mount Everest isn't the tallest mountain on Earth. How can that be? Everest stands at 8,848.86 meters above sea level. Mauna Kea rises to about 10,210 meters, measured from its base. This makes Mauna Kea over 1,000 meters taller than Everest. Mauna Kea's gentle slopes are a result of its shield volcano formation. If placed on Everest, Mauna Kea would rise above airliner altitudes. Known as 'White Mountain', Mauna Kea hides its true height. So the next time you think of the tallest mountain, remember: it's not just what's above sea level that counts.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Imagine holding a metal that melts in your hand.",
-      "on_screen_text": "Melting Metal",
-      "search_query": "liquid metal droplet",
+      "voiceover": "Mount Everest isn't the tallest mountain on Earth. How can that be?",
+      "on_screen_text": "Not Everest?",
+      "search_query": "mountain peak snow",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Could a piece of metal really melt just from being held?",
-      "on_screen_text": "A Real Question",
-      "search_query": "metal melting close up",
+      "voiceover": "Everest stands at 8,848.86 meters above sea level.",
+      "on_screen_text": "8,848.86 meters",
+      "search_query": "mountain height",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Gallium, with a melting point of 29.76 degrees Celsius, is unique among metals.",
-      "on_screen_text": "Unique Gallium",
-      "search_query": "shiny silver metal",
-      "motion": "zoom_out"
+      "voiceover": "Mauna Kea rises to about 10,210 meters, measured from its base.",
+      "on_screen_text": "10,210 meters",
+      "search_query": "hawaii volcano",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This fascinating metal destabilizes at higher temperatures, absorbing heat from your skin.",
-      "on_screen_text": "Absorbing Heat",
-      "search_query": "molten metal pouring",
-      "motion": "zoom_in"
+      "voiceover": "This makes Mauna Kea over 1,000 meters taller than Everest.",
+      "on_screen_text": "1,000 meters taller",
+      "search_query": "underwater mountain",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "You can even stir gallium into hot tea and watch it vanish completely into the drink.",
-      "on_screen_text": "Disappearing Spoon",
-      "search_query": "metal melting close up",
-      "motion": "pan"
+      "voiceover": "Mauna Kea's gentle slopes are a result of its shield volcano formation.",
+      "on_screen_text": "Shield Volcano",
+      "search_query": "hawaii volcano",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "To put this in perspective, gallium melts at a temperature only 7.5 degrees above a warm cup of coffee.",
-      "on_screen_text": "Warm Coffee",
-      "search_query": "liquid metal droplet",
-      "motion": "zoom_out"
+      "voiceover": "If placed on Everest, Mauna Kea would rise above airliner altitudes.",
+      "on_screen_text": "Above Airliners",
+      "search_query": "mountain peak snow",
+      "motion": "pan"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Discovered in 1875 by Paul-\u00c9mile Lecoq de Boisbaudran, gallium challenges our assumptions about metals.",
-      "on_screen_text": "A Surprising Discovery",
-      "search_query": "shiny silver metal",
-      "motion": "pan"
+      "voiceover": "Known as 'White Mountain', Mauna Kea hides its true height.",
+      "on_screen_text": "White Mountain",
+      "search_query": "hawaii volcano",
+      "motion": "zoom_in"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "So, would you want to hold something that melts in your hand?",
-      "on_screen_text": "Your Choice",
-      "search_query": "metal melting close up",
-      "motion": "zoom_in"
+      "voiceover": "So the next time you think of the tallest mountain, remember: it's not just what's above sea level that counts.",
+      "on_screen_text": "A New Perspective",
+      "search_query": "mountain height mystery",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Have you ever heard of melting metal? Yes or no?",
-    "Gallium can melt in your hand!",
-    "What would you do with it?"
+    "What's the tallest mountain? Comment below!",
+    "Mauna Kea or Everest?",
+    "Hidden heights of Mauna Kea."
   ],
   "hashtags": [
-    "#science",
-    "#facts",
-    "#metal",
-    "#gallium",
-    "#weird"
+    "#mountains",
+    "#Hawaii",
+    "#geology",
+    "#nature",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-metal-that-melts-in-your-hand",
-  "cta_style": "COMMENT",
-  "domain": "materials"
+  "video_id": "science_2026-07-24_the-tallest-mountain-a-surprising-perspe",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "earth"
 }
