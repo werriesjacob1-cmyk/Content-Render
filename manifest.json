@@ -1,94 +1,94 @@
 {
-  "title": "The Tallest Mountain: A Surprising Perspective",
-  "viewer_job": "REFRAME",
-  "keyword": "tallest mountain",
-  "metaphor": "mountain height mystery",
-  "hook": "Mount Everest isn't the tallest mountain on Earth. How can that be?",
-  "script": "Mount Everest isn't the tallest mountain on Earth. How can that be? Everest stands at 8,848.86 meters above sea level. Mauna Kea rises to about 10,210 meters, measured from its base. This makes Mauna Kea over 1,000 meters taller than Everest. Mauna Kea's gentle slopes are a result of its shield volcano formation. If placed on Everest, Mauna Kea would rise above airliner altitudes. Known as 'White Mountain', Mauna Kea hides its true height. So the next time you think of the tallest mountain, remember: it's not just what's above sea level that counts.",
+  "title": "The Hidden Colors We Can't Name",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "color perception",
+  "metaphor": "hidden color world",
+  "hook": "You can see ten million colors, but how many can you name?",
+  "script": "You can see ten million colors, but how many can you name? The human eye can distinguish approximately ten million different colors. So why do we only have names for about a thousand? Most people experience trichromatic vision with three types of cones. A rare few women possess a fourth type of cone, making them tetrachromats. These individuals can see up to a hundred million colors, a staggering difference. Yet, even for most of us, the shades we perceive often lack names. You would need a surface the size of the entire United States to paint every color.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Mount Everest isn't the tallest mountain on Earth. How can that be?",
-      "on_screen_text": "Not Everest?",
-      "search_query": "mountain peak snow",
+      "voiceover": "You can see ten million colors, but how many can you name?",
+      "on_screen_text": "Ten Million Colors",
+      "search_query": "color spectrum",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Everest stands at 8,848.86 meters above sea level.",
-      "on_screen_text": "8,848.86 meters",
-      "search_query": "mountain height",
+      "voiceover": "The human eye can distinguish approximately ten million different colors.",
+      "on_screen_text": "Limitless Perception",
+      "search_query": "human eye closeup",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Mauna Kea rises to about 10,210 meters, measured from its base.",
-      "on_screen_text": "10,210 meters",
-      "search_query": "hawaii volcano",
-      "motion": "zoom_in"
+      "voiceover": "So why do we only have names for about a thousand?",
+      "on_screen_text": "Language Limits",
+      "search_query": "colorful gradient",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This makes Mauna Kea over 1,000 meters taller than Everest.",
-      "on_screen_text": "1,000 meters taller",
-      "search_query": "underwater mountain",
+      "voiceover": "Most people experience trichromatic vision with three types of cones.",
+      "on_screen_text": "Three Types of Cones",
+      "search_query": "color perception",
       "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Mauna Kea's gentle slopes are a result of its shield volcano formation.",
-      "on_screen_text": "Shield Volcano",
-      "search_query": "hawaii volcano",
+      "voiceover": "A rare few women possess a fourth type of cone, making them tetrachromats.",
+      "on_screen_text": "Tetrachromat Vision",
+      "search_query": "human eye closeup",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "If placed on Everest, Mauna Kea would rise above airliner altitudes.",
-      "on_screen_text": "Above Airliners",
-      "search_query": "mountain peak snow",
+      "voiceover": "These individuals can see up to a hundred million colors, a staggering difference.",
+      "on_screen_text": "Astonishing Range",
+      "search_query": "color spectrum",
       "motion": "pan"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Known as 'White Mountain', Mauna Kea hides its true height.",
-      "on_screen_text": "White Mountain",
-      "search_query": "hawaii volcano",
-      "motion": "zoom_in"
+      "voiceover": "Yet, even for most of us, the shades we perceive often lack names.",
+      "on_screen_text": "Unnamed Shades",
+      "search_query": "colorful gradient",
+      "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "So the next time you think of the tallest mountain, remember: it's not just what's above sea level that counts.",
-      "on_screen_text": "A New Perspective",
-      "search_query": "mountain height mystery",
+      "voiceover": "You would need a surface the size of the entire United States to paint every color.",
+      "on_screen_text": "Enormous Canvas",
+      "search_query": "color spectrum",
       "motion": "pan"
     }
   ],
   "captions": [
-    "What's the tallest mountain? Comment below!",
-    "Mauna Kea or Everest?",
-    "Hidden heights of Mauna Kea."
+    "How many colors can you name? color perception",
+    "Discover the hidden colors we can't name.",
+    "Explore the limits of our perception."
   ],
   "hashtags": [
-    "#mountains",
-    "#Hawaii",
-    "#geology",
-    "#nature",
-    "#science"
+    "#color",
+    "#science",
+    "#perception",
+    "#vision",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-24_the-tallest-mountain-a-surprising-perspe",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "earth"
+  "video_id": "science_2026-07-24_the-hidden-colors-we-can-t-name",
+  "cta_style": "LOOP",
+  "domain": "body"
 }
