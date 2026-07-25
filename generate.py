@@ -1044,6 +1044,7 @@ Return ONLY valid JSON, no markdown, exactly:
   "keyword": "the core search phrase",
   "metaphor": "3-5 word topic tag",
   "hook": "first spoken line, 8-14 words",
+  "hook_headline": "2-5 word ALL-CAPS scroll-stopper for the top of the screen — the curiosity gap in a few words, e.g. 'THIS ANIMAL CAN'T DIE' or 'YOU'D HAVE 15 SECONDS'. NOT the same words as the spoken hook; punchier and shorter. Max ~22 characters so it fits on screen.",
   "script": "full narration as one string",
   "scenes": [
     {{"id": 1, "duration": 4, "voiceover": "one sentence", "on_screen_text": "2-4 words", "search_query": "2-5 words", "motion": "zoom_in"}}
