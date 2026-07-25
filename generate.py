@@ -447,6 +447,14 @@ HOOK_FRAMES = [
      "Open by smashing together two things the viewer would never connect, as a plain statement of "
      "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
      "collision itself is the hook; the curiosity is 'wait, how are those two even related?'"),
+    ("STAKES_SCENARIO",
+     "Open on a high-stakes 'what happens if this happens to YOU' scenario — survival, danger, or "
+     "the viewer's own body under extreme conditions (e.g. 'An airlock bursts and you're sucked into "
+     "space — you have about fifteen seconds'). Life-or-death stakes happening to the VIEWER means "
+     "they physically cannot scroll until they see how it ends. This is the channel's HIGHEST-"
+     "retention hook shape, proven in analytics: 2.5x the average watch time and 4x the completion "
+     "rate of a passive 'how many / can you see' question. Frame the fact as a consequence the "
+     "viewer would live through, not a trivia question they can shrug off."),
 ]
 
 CTA_ENDING_RULES = {
@@ -834,6 +842,15 @@ PROVEN RULES (every one is backed by 2026 TikTok performance data — follow the
 HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
+- STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
+  a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
+  you're sucked into space — you have fifteen seconds") held 2.5x the watch time and 4x the
+  completion of a passive question ("how many colors can you see?"). So wherever the fact allows,
+  frame the hook as something HAPPENING — a danger, a survival scenario, a what-happens-if,
+  a consequence to the viewer's own body — not a quiz they can shrug off. A passive "how many /
+  how much / how sensitive / can you see" question is the WEAKEST possible opener; only use a plain
+  question if it carries real stakes or a will-get-it-wrong dare. Give the viewer something to
+  survive, not something to answer.
 - CONCRETE, NOT ABSTRACT (critical): the hook must be something a viewer instantly PICTURES, self-
   contained with no setup needed — not a mood, not a musing about perception vs. reality, not a
   sentence that only makes sense once you already know the twist.
