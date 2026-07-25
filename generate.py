@@ -1234,6 +1234,41 @@ _CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
 _CIRCUIT_OPEN = False     # once open, calls fail fast instead of hammering dead quota
 
 
+def _is_weak_model(prov, model):
+    """The last-resort backstops whose drafts routinely trip the quality floor:
+    Groq's 8B-instant and Cerebras' gemma. Everything else (Gemini, OpenRouter,
+    Groq-70b, GitHub, Together/Fireworks/Mistral) is a 'primary' writer we would
+    rather WAIT a per-minute throttle out for than fall past to a weak draft that
+    the quality gate then aborts on."""
+    m = (model or "").lower()
+    if prov == "cerebras":
+        return True
+    if prov == "groq" and ("8b" in m or "instant" in m):
+        return True
+    return False
+
+
+def _parse_retry_secs(detail):
+    """Seconds a 429 body asks us to wait, or None. Handles Groq 'try again in
+    11.83s', GitHub 'wait 55 seconds', Gemini '"retryDelay": "6s"', and
+    '...in 2 minutes'. None => not a parseable per-minute limit (treat as a hard
+    failure, do not wait-and-retry)."""
+    if not detail:
+        return None
+    for pat, mult in ((r'try again in ([\d.]+)\s*s(?:ec|\b)', 1.0),
+                      (r'wait ([\d.]+)\s*second', 1.0),
+                      (r'retryDelay"?\s*:\s*"?([\d.]+)s', 1.0),
+                      (r'try again in ([\d.]+)\s*minute', 60.0),
+                      (r'in ([\d.]+)\s*minute', 60.0)):
+        mo = re.search(pat, detail, re.I)
+        if mo:
+            try:
+                return float(mo.group(1)) * mult
+            except ValueError:
+                return None
+    return None
+
+
 def call_groq(prompt):
     """Call the LLM for a JSON response. Prefers Gemini (much higher free quota)
     when GEMINI_API_KEY is set, then falls back to Groq automatically. Name kept
@@ -1288,57 +1323,105 @@ def call_groq(prompt):
     if _WORKING_MODEL and _WORKING_MODEL in chain:
         chain = [_WORKING_MODEL] + [c for c in chain if c != _WORKING_MODEL]
     last_err = None
-    for prov, model in chain:
-        try:
-            if prov == "gemini":
-                out = _call_gemini(model, prompt)
-            elif prov == "openrouter":
-                out = _call_openrouter(model, prompt)
-            elif prov == "github":
-                out = _call_github_models(model, prompt)
-            elif prov == "together":
-                out = _call_together(model, prompt)
-            elif prov == "fireworks":
-                out = _call_fireworks(model, prompt)
-            elif prov == "mistral":
-                out = _call_mistral(model, prompt)
-            elif prov == "cerebras":
-                out = _call_cerebras(model, prompt)
-            else:
-                out = _call_model(model, prompt)
-            if _WORKING_MODEL != (prov, model):
-                print(f"  [model] using {prov}:{model}")
-            _WORKING_MODEL = (prov, model)
-            _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
-            return out
-        except urllib.error.HTTPError as e:
-            if e.code in (400, 401, 402, 403, 404, 429):
-                # All of these are THIS-provider-specific, so fall through to the
-                # next entry instead of aborting the whole run:
-                #   400 = bad request (often a wrong-type key or a rejected param)
-                #   401 = unauthorized (invalid/rotated key — e.g. a bad Together/
-                #         Fireworks/Mistral key must NOT abort the chain and starve
-                #         Groq/Cerebras, the exact failure seen on run 95)
-                #   402 = payment required (a provider's free credit ran out)
-                #   403/404 = unavailable;  429 = rate-limited.
-                # If EVERY provider fails, the chain still ends by raising last_err
-                # below. Log the server's error body (truncated) — without it a
-                # silently-failing provider looks identical to a healthy one that
-                # just chose Groq, which is exactly how a bad key hid for a run.
-                try:
-                    detail = e.read().decode("utf-8", "replace")[:300]
-                except Exception:  # noqa: BLE001
-                    detail = ""
-                print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
-                      + (f" :: {detail}" if detail else ""))
+    # Split the chain into PRIMARY (strong writers) and WEAK last-resorts. The
+    # failure mode that produced "no video tonight" (run 30178275833): every
+    # strong writer returned a *per-minute* 429 ("try again in 12s" / "wait 55
+    # seconds"), so the chain immediately dropped to Groq's weak 8B model, which
+    # wrote a 6.17 draft the quality gate then aborted on — the good writer was 60
+    # seconds away, not gone. Now we WAIT that per-minute throttle out and retry
+    # the strong writers before ever falling to a weak backstop. Keeps the bar AND
+    # ships a video. On genuine daily exhaustion (no wait hint) we fall straight
+    # through to the weak backstop exactly as before, so SOMETHING renders.
+    primary_chain = [(p, m) for (p, m) in chain if not _is_weak_model(p, m)]
+    weak_chain    = [(p, m) for (p, m) in chain if _is_weak_model(p, m)]
+    max_passes = int(os.getenv("GEN_429_RETRY_PASSES", "2"))
+    max_wait   = float(os.getenv("GEN_429_MAX_WAIT", "70"))
+
+    def _walk(sub_chain, collect_waits=False):
+        """Try each (prov, model) in order. Returns (out, prov, model) on the
+        first success, else (None, None, None). Appends parsed per-minute 429
+        wait hints to `waits` (a list captured via closure) when collect_waits."""
+        nonlocal last_err
+        for prov, model in sub_chain:
+            try:
+                if prov == "gemini":
+                    out = _call_gemini(model, prompt)
+                elif prov == "openrouter":
+                    out = _call_openrouter(model, prompt)
+                elif prov == "github":
+                    out = _call_github_models(model, prompt)
+                elif prov == "together":
+                    out = _call_together(model, prompt)
+                elif prov == "fireworks":
+                    out = _call_fireworks(model, prompt)
+                elif prov == "mistral":
+                    out = _call_mistral(model, prompt)
+                elif prov == "cerebras":
+                    out = _call_cerebras(model, prompt)
+                else:
+                    out = _call_model(model, prompt)
+                return out, prov, model
+            except urllib.error.HTTPError as e:
+                if e.code in (400, 401, 402, 403, 404, 429):
+                    # THIS-provider-specific, so fall through to the next entry
+                    # instead of aborting the whole run:
+                    #   400 bad request  401 unauthorized (bad/rotated key)
+                    #   402 payment required (free credit out)  403/404 unavailable
+                    #   429 rate-limited. Log the server body (truncated) so a
+                    #   silently-failing provider isn't mistaken for a healthy one.
+                    try:
+                        detail = e.read().decode("utf-8", "replace")[:300]
+                    except Exception:  # noqa: BLE001
+                        detail = ""
+                    print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
+                          + (f" :: {detail}" if detail else ""))
+                    last_err = e
+                    if collect_waits and e.code == 429:
+                        w = _parse_retry_secs(detail)
+                        if w is not None:
+                            waits.append(w)
+                    continue
+                raise   # 5xx etc — let the outer retry loop handle it
+            except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next
+                # e.g. Gemini returned 200 but the reply was truncated/safety-
+                # blocked so ["candidates"][0]... KeyError'd. Log it so this
+                # failure mode is visible instead of silently dropping through.
+                print(f"  [model] {prov}:{model} failed ({type(e).__name__}: {str(e)[:160]}) — falling through")
                 last_err = e; continue
-            raise   # 5xx etc — let the outer retry loop handle it
-        except Exception as e:  # noqa: BLE001 - network/parse hiccup, try next provider
-            # e.g. Gemini returned 200 but the reply was truncated/safety-blocked
-            # so ["candidates"][0]... KeyError'd. Log it so this failure mode is
-            # visible instead of silently dropping to the next provider.
-            print(f"  [model] {prov}:{model} failed ({type(e).__name__}: {str(e)[:160]}) — falling through")
-            last_err = e; continue
+        return None, None, None
+
+    def _accept(out, prov, model):
+        global _WORKING_MODEL, _CONSEC_EXHAUSTIONS
+        if _WORKING_MODEL != (prov, model):
+            print(f"  [model] using {prov}:{model}")
+        _WORKING_MODEL = (prov, model)
+        _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
+        return out
+
+    # Phase 1: strong writers, waiting out per-minute 429s before giving up.
+    for _pass in range(max_passes + 1):
+        waits = []
+        out, prov, model = _walk(primary_chain, collect_waits=True)
+        if out is not None:
+            return _accept(out, prov, model)
+        # Every strong writer failed this pass. If at least one told us it was a
+        # per-minute throttle (a parseable wait hint), sleep the SHORTEST such
+        # wait and retry the strong writers — the good one is ~a minute away.
+        if _pass < max_passes and waits:
+            wait = min(min(waits) + 1.0, max_wait)
+            print(f"  [model] strong writers are per-minute throttled — waiting "
+                  f"{wait:.0f}s and retrying them (pass {_pass+2}/{max_passes+1}) "
+                  f"rather than dropping to a weak model")
+            time.sleep(wait)
+            continue
+        break   # daily exhaustion / hard errors — no point waiting
+
+    # Phase 2: strong writers genuinely unavailable — fall to the weak backstops
+    # so SOMETHING renders (the quality gate still guards what ships).
+    out, prov, model = _walk(weak_chain)
+    if out is not None:
+        return _accept(out, prov, model)
+
     # every provider failed this call
     _CONSEC_EXHAUSTIONS += 1
     if _CONSEC_EXHAUSTIONS >= 3 and not _CIRCUIT_OPEN:
