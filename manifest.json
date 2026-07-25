@@ -1,94 +1,94 @@
 {
-  "title": "The Hidden Colors We Can't Name",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "color perception",
-  "metaphor": "hidden color world",
-  "hook": "You can see ten million colors, but how many can you name?",
-  "script": "You can see ten million colors, but how many can you name? The human eye can distinguish approximately ten million different colors. So why do we only have names for about a thousand? Most people experience trichromatic vision with three types of cones. A rare few women possess a fourth type of cone, making them tetrachromats. These individuals can see up to a hundred million colors, a staggering difference. Yet, even for most of us, the shades we perceive often lack names. You would need a surface the size of the entire United States to paint every color.",
+  "title": "The Immortal Jellyfish: Nature\u2019s Reset Button",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "immortal jellyfish",
+  "metaphor": "life cycle reset",
+  "hook": "What if aging could be undone at will?",
+  "script": "What if aging could be undone at will? The Turritopsis dohrnii jellyfish can reverse its own life cycle. When injured or old, it reverts to its juvenile polyp form. This astonishing capability allows it to start anew, potentially forever. In just 24 hours, it can transform back to its younger state after stress. This challenges our understanding of aging as a linear process. The jellyfish's ability stems from transdifferentiation, a remarkable cellular transformation. Just 4.5 millimeters in diameter, it is the only known animal that is biologically immortal.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You can see ten million colors, but how many can you name?",
-      "on_screen_text": "Ten Million Colors",
-      "search_query": "color spectrum",
+      "voiceover": "What if aging could be undone at will?",
+      "on_screen_text": "Immortal Jellyfish",
+      "search_query": "jellyfish glowing ocean",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The human eye can distinguish approximately ten million different colors.",
-      "on_screen_text": "Limitless Perception",
-      "search_query": "human eye closeup",
+      "voiceover": "The Turritopsis dohrnii jellyfish can reverse its own life cycle.",
+      "on_screen_text": "Life Cycle Reversal",
+      "search_query": "translucent jellyfish underwater",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "So why do we only have names for about a thousand?",
-      "on_screen_text": "Language Limits",
-      "search_query": "colorful gradient",
+      "voiceover": "When injured or old, it reverts to its juvenile polyp form.",
+      "on_screen_text": "Juvenile Polyp",
+      "search_query": "jellyfish swimming dark",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Most people experience trichromatic vision with three types of cones.",
-      "on_screen_text": "Three Types of Cones",
-      "search_query": "color perception",
+      "voiceover": "This astonishing capability allows it to start anew, potentially forever.",
+      "on_screen_text": "Start Anew",
+      "search_query": "jellyfish underwater",
       "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "A rare few women possess a fourth type of cone, making them tetrachromats.",
-      "on_screen_text": "Tetrachromat Vision",
-      "search_query": "human eye closeup",
+      "voiceover": "In just 24 hours, it can transform back to its younger state after stress.",
+      "on_screen_text": "24 Hour Reset",
+      "search_query": "jellyfish in motion",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "These individuals can see up to a hundred million colors, a staggering difference.",
-      "on_screen_text": "Astonishing Range",
-      "search_query": "color spectrum",
+      "voiceover": "This challenges our understanding of aging as a linear process.",
+      "on_screen_text": "Aging Redefined",
+      "search_query": "jellyfish glowing ocean",
       "motion": "pan"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Yet, even for most of us, the shades we perceive often lack names.",
-      "on_screen_text": "Unnamed Shades",
-      "search_query": "colorful gradient",
+      "voiceover": "The jellyfish's ability stems from transdifferentiation, a remarkable cellular transformation.",
+      "on_screen_text": "Transdifferentiation",
+      "search_query": "jellyfish underwater closeup",
       "motion": "zoom_out"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "You would need a surface the size of the entire United States to paint every color.",
-      "on_screen_text": "Enormous Canvas",
-      "search_query": "color spectrum",
-      "motion": "pan"
+      "voiceover": "Just 4.5 millimeters in diameter, it is the only known animal that is biologically immortal.",
+      "on_screen_text": "Biologically Immortal",
+      "search_query": "close up jellyfish",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "How many colors can you name? color perception",
-    "Discover the hidden colors we can't name.",
-    "Explore the limits of our perception."
+    "Did you know about the immortal jellyfish? Yes or no?",
+    "Discover the secrets of Turritopsis dohrnii.",
+    "Aging may not be what you think."
   ],
   "hashtags": [
-    "#color",
-    "#science",
-    "#perception",
-    "#vision",
-    "#facts"
+    "#jellyfish",
+    "#biology",
+    "#immortality",
+    "#nature",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-24_the-hidden-colors-we-can-t-name",
-  "cta_style": "LOOP",
-  "domain": "body"
+  "video_id": "science_2026-07-25_the-immortal-jellyfish-nature-s-reset-bu",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "animals"
 }
