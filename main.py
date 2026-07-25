@@ -407,6 +407,15 @@ def split_audio(full_mp3, scenes, work_dir):
             word_i += len(sc["voiceover"].split())
             last = (i == len(scenes) - 1) or word_i >= len(WORD_TIMINGS)
             seg_end = total if last else WORD_TIMINGS[word_i - 1][2]
+            # Pad the cut a little PAST the last word's marked end, into the silent
+            # gap before the next scene's first word. Cutting an MP3 with -c:a copy
+            # rounds to the nearest ~26ms frame, which was shaving the tail off a
+            # trailing word (the "will" in "...undone at will" got clipped). Landing
+            # the cut in the inter-word silence means the rounding eats silence, not
+            # speech — but never go past the next word's onset, which would clip IT.
+            if not last and word_i < len(WORD_TIMINGS):
+                next_start = WORD_TIMINGS[word_i][1]
+                seg_end = min(next_start, seg_end + 0.18)
             seg = max(0.1, seg_end - cursor)
             p = os.path.join(work_dir, f"s{i+1}.mp3")
             run(["ffmpeg", "-y", "-i", full_mp3, "-ss", f"{cursor:.3f}", "-t", f"{seg:.3f}", "-c:a", "copy", p])
@@ -1862,11 +1871,20 @@ def _event(start, end, word):
     bare = re.sub(r"[^A-Z0-9]", "", clean)
     if bare and bare in _KEYWORD_TOKENS and PROFILE.get("cap_accent"):
         accent = f"\\c{PROFILE['cap_accent']}"
+    # AUTO-SHRINK over-wide words: WrapStyle 2 = no wrap, so a single long word
+    # (e.g. "TRANSDIFFERENTIATION") ran off both edges of the frame. Estimate the
+    # word's rendered width and, only when it would exceed the safe width, drop the
+    # font size for THIS word just enough to fit. Normal-length words are untouched.
+    base_fs = int(PROFILE.get("cap_size", 120))
+    est_w = len(clean) * 0.64 * base_fs
+    fs_over = ""
+    if est_w > 980:
+        fs_over = f"\\fs{max(58, int(base_fs * 980.0 / est_w))}"
     # Kinetic pop: fade in (40ms) AND scale from 88% -> 100% over 90ms so each
     # word snaps onto screen with a little life instead of hard-cutting. Alignment
     # 5 + \pos means it scales from the word's own centre, so it stays put. Purely
     # a visual-energy touch — the word still appears exactly at its spoken time.
-    tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(40,0)"
+    tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(40,0){fs_over}"
            f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100){accent}}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 

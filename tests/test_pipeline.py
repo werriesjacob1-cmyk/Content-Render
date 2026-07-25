@@ -644,6 +644,21 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_caption_autoshrink():
+    section("main._event: over-wide words auto-shrink, normal words keep full size")
+    import re as _re
+    # NB: match \fs followed by a DIGIT (the fontsize override) — not \fscx/\fscy,
+    # the pop-scale tags, which also start with "\fs".
+    normal = M._event(1.0, 2.0, "aging")
+    check(not _re.search(r"\\fs\d", normal), "short word has NO \\fs override (keeps style size)")
+    long_ev = M._event(1.0, 2.0, "transdifferentiation")
+    check(bool(_re.search(r"\\fs\d", long_ev)), "over-wide word gets a \\fs shrink so it fits the frame")
+    m = _re.search(r"\\fs(\d+)", long_ev)
+    fs = int(m.group(1)) if m else 0
+    check(0 < fs < int(M.PROFILE.get("cap_size", 120)), f"shrunk size {fs} < base {M.PROFILE.get('cap_size')}")
+    check(fs >= 58, f"shrunk size {fs} respects the readable floor (>=58)")
+
+
 def test_draft_is_weak():
     section("generate.draft_is_weak: frugal Gemini-rescue trigger")
     thr = G.QUALITY_THRESHOLD
@@ -686,6 +701,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_caption_autoshrink()
     test_draft_is_weak()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")

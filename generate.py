@@ -926,9 +926,12 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   plain words instead of just naming it — say "the point in the sky opposite the sun" rather than
   "the antisolar point"; say "spreads out" or "opens up" rather than "unfurls". BANNED: literary/purple
   verbs (unfurls, cascades, dances, whispers, beckons) and unexplained jargon (antisolar point,
-  refraction index, angular radius, rhizomorphs, mycelium, hyphae — say "underground root-like
-  threads" instead). One unfamiliar word is enough to make a viewer feel dumb and
-  swipe. Clear and concrete beats clever and ornate every time.
+  refraction index, angular radius, rhizomorphs, mycelium, hyphae, transdifferentiation, cnidarian,
+  senescence — say "underground root-like threads" / "reverses back into a baby" / "aging" instead).
+  HARD RULE: no single word may be longer than 13 letters — if the real term is longer (e.g.
+  "transdifferentiation", "photosynthesis"), you MUST replace it with a plain phrase, because a long
+  word ALSO overflows the on-screen caption and gets cut off at the edges. One unfamiliar word is
+  enough to make a viewer feel dumb and swipe. Clear and concrete beats clever and ornate every time.
 - TTS-SAFE WORDING: this is read aloud by a text-to-speech voice that mis-says some homographs. Do NOT
   use the VERB "lives" (the voice reads it like the noun "lives") — write "survives", "exists", "still
   grows", or "is alive" instead. Also avoid other noun/verb homographs where the wrong reading would
