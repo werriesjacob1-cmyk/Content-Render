@@ -456,9 +456,16 @@ def write_platform_text(resolved_files):
         "instagram_feed": _meta("instagram_feed", {"caption": insta_feed,
                                  "file": resolved_files.get("square_feed", "square.mp4")}),
     }
+    # Surface the auto-generated PINNED COMMENT right here alongside the captions
+    # (it otherwise only lived in funnel.json). Pin this as your own first comment
+    # after posting and reply to early comments — comments are the #1 reach signal.
+    out["pinned_comment"] = fnl.get("pinned_comment", "")
     with open(os.path.join(OUT, "platform_text.json"), "w") as f:
         json.dump(out, f, indent=2)
-    print("platform_text.json written — native caption/title + AI-disclosure + posting-time per platform.")
+    print("platform_text.json written — native caption/title + AI-disclosure + posting-time + pinned comment.")
+    # Also drop the pinned comment as its own one-line file for a fast copy-paste.
+    with open(os.path.join(OUT, "pinned_comment.txt"), "w") as f:
+        f.write(fnl.get("pinned_comment", ""))
 
     # funnel.json — the monetization bundle for whoever posts this video:
     # the pinned comment to drop as a first comment on every platform, the

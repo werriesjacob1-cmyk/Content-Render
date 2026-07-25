@@ -1888,6 +1888,33 @@ def _event(start, end, word):
            f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100){accent}}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
+# ON-SCREEN HOOK HEADLINE — a big, bold, curiosity-gap TITLE burned into the TOP
+# of the frame for the first few seconds. On TikTok the eye reads before the ear
+# hears, so a punchy top headline ("THIS ANIMAL CAN'T DIE") is one of the biggest
+# scroll-stoppers there is — separate zone from the eye-level karaoke captions, so
+# they never clash. Text comes from the manifest's `hook_headline` (a short ALL-
+# CAPS line the generator writes); if absent, no headline is drawn (never a bad
+# mechanical one). Tunable via HEADLINE_SECONDS / HEADLINE_Y.
+HEADLINE_SECONDS = float(os.environ.get("HEADLINE_SECONDS", "3.0"))
+HEADLINE_Y = int(os.environ.get("HEADLINE_Y", "300"))
+
+def _headline_event(text):
+    """One top-anchored ASS event: the hook headline, shown for the first
+    HEADLINE_SECONDS with a quick fade. Auto-shrinks to fit the frame width so a
+    long headline never runs off the edges. Returns the Dialogue line or None."""
+    clean = re.sub(r"[{}\\]", "", str(text or "")).upper().strip()
+    if not clean:
+        return None
+    base_fs = int(PROFILE.get("cap_size", 120))
+    hl_fs = int(base_fs * 1.15)                      # a touch bigger than captions
+    est_w = len(clean) * 0.60 * hl_fs
+    if est_w > 1000:                                 # fit within the safe width
+        hl_fs = max(50, int(1000.0 / (len(clean) * 0.60)))
+    # \an8 = top-centre anchor; bold; quick fade in/out so it doesn't hard-blink.
+    tag = (f"{{\\an8\\pos(540,{HEADLINE_Y})\\fs{hl_fs}\\b1\\fad(150,250)}}")
+    return f"Dialogue: 0,{_ass_t(0.0)},{_ass_t(max(0.5, HEADLINE_SECONDS))},Pop,,0,0,0,,{tag}{clean}"
+
+
 # Short function words that read as a weak caption frame when shown alone
 # ("OF", "THE", "A"). They ride along with an adjacent word instead — see
 # _group_function_words. NOT dropped: the word still appears, just grouped.
@@ -1941,7 +1968,7 @@ def _group_function_words(word_times, max_chars=15):
 CAPTION_DELAY_S = max(0.0, float(os.environ.get("CAPTION_DELAY_MS", "110"))) / 1000.0
 
 
-def build_ass(scenes, segments, actual_durs, path):
+def build_ass(scenes, segments, actual_durs, path, headline=""):
     """Place every word's caption at the SAME instant it is actually spoken in
     the final concatenated audio.
 
@@ -2019,6 +2046,10 @@ def build_ass(scenes, segments, actual_durs, path):
                 wd = speech_dur * wght / total
                 wt.append((w, clock, clock + wd)); clock += wd
             _emit(wt)
+    # Prepend the top-of-frame hook headline (first few seconds) if one was written.
+    hl = _headline_event(headline)
+    if hl:
+        events.insert(0, hl)
     with open(path, "w") as f:
         f.write(_ass_header() + "\n".join(events) + "\n")
 
@@ -2211,7 +2242,7 @@ def main():
                        for w in re.findall(r"[A-Za-z0-9']+", m.get("keyword", ""))
                        if len(w) > 2}
     ass = os.path.join(WORK, "captions.ass")
-    build_ass(m["scenes"], segments, actual_durs, ass)
+    build_ass(m["scenes"], segments, actual_durs, ass, headline=m.get("hook_headline", ""))
     body_dur = ffprobe_dur(body)
     fade_out_start = max(0.0, body_dur - 0.3)
     # NO separate hook title-card. It used to burn the hook text across the top

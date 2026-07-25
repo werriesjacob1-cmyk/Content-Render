@@ -644,6 +644,19 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_hook_headline_event():
+    section("main._headline_event: top-anchored hook headline, auto-fit, optional")
+    check(M._headline_event("") is None, "empty headline -> no event drawn")
+    check(M._headline_event(None) is None, "None headline -> no event drawn")
+    ev = M._headline_event("This animal can't die")
+    check(ev is not None and "THIS ANIMAL CAN'T DIE" in ev, "headline text upper-cased into the event")
+    check("\\an8" in ev, "headline anchored to the TOP of the frame (\\an8)")
+    import re as _re
+    long_ev = M._headline_event("WHAT HAPPENS IF YOU ARE THROWN INTO SPACE")
+    m = _re.search(r"\\fs(\d+)", long_ev)
+    check(bool(m) and int(m.group(1)) >= 50, "long headline auto-shrinks but stays >= readable floor")
+
+
 def test_caption_autoshrink():
     section("main._event: over-wide words auto-shrink, normal words keep full size")
     import re as _re
@@ -701,6 +714,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_hook_headline_event()
     test_caption_autoshrink()
     test_draft_is_weak()
     test_fast_fail_when_throttled()
