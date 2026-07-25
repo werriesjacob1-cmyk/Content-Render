@@ -742,11 +742,12 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
         key_terms_block = ""
         if key_terms:
             key_terms_block = (
-                f"- MANDATORY KEY TERMS: the script MUST explicitly SAY at least 2 of these exact "
-                f"specifics somewhere in the voiceover — the real proper noun(s) and/or the real "
-                f"number(s), not a vague paraphrase: {key_terms}. A script that says 'a naturally "
-                f"occurring isotope' instead of 'potassium-40' is a FAILED script. Name the thing. "
-                f"State the number.\n")
+                f"- NAME THE REAL THING (for credibility, not for stat-dumping): somewhere in the "
+                f"voiceover, use the real proper noun(s) from these specifics so the video is concrete "
+                f"and checkable, not vague: {key_terms}. Say 'potassium-40', not 'a naturally occurring "
+                f"isotope'. BUT you do NOT have to recite the numbers in this list — include a number "
+                f"ONLY if it creates wonder or a felt image; skip any number that's just a dry "
+                f"measurement. Name the thing; let the IDEA, not the digits, carry the video.\n")
         whatif_block = ""
         if whatif:
             whatif_block = (
@@ -760,9 +761,11 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
                 f"scene 2: 'So why doesn't a particle that should die in an instant ever reach you?'). "
                 f"Either the hook itself is the question, or an early scene is — but the '?' must be "
                 f"there.\n"
-                f"  Then ANSWER it for real as the MIDPOINT TWIST payoff (around scene 5-7) — the "
-                f"actual answer with the real numbers/names, not a tease or a shrug. The viewer must "
-                f"walk away knowing exactly what would really happen.\n")
+                f"  Then ANSWER it for real as the MIDPOINT TWIST payoff (around scene 5-7) — a "
+                f"genuine, concrete answer, not a tease or a shrug. But the payoff is the mind-bending "
+                f"IDEA — the 'oh, THAT'S why / that's what it means' realization that reframes the whole "
+                f"thing — NOT a recited number. The viewer must walk away thinking differently, not just "
+                f"having heard a statistic.\n")
         wow_block = ""
         if wow:
             wow_block = (
@@ -780,10 +783,11 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
                       f"mechanism instead of inventing one.\n"
                       f"- Never state two different numbers for the same thing. Accuracy over drama.\n"
                       f"{key_terms_block}{whatif_block}{wow_block}"
-                      f"- Include at least ONE absurd-but-precise felt comparison that turns a number "
-                      f"into something physically picturable (e.g. not '400 million years' alone but "
-                      f"'before Saturn even had rings', or 'you could watch human civilization rise and "
-                      f"fall 80,000 times over'). Keep it precise — no vague hand-waving.\n"
+                      f"- Include at least ONE moment that makes the viewer physically FEEL the idea — "
+                      f"a picture-able comparison or a mind-bending reframe (e.g. not '400 million years' "
+                      f"alone but 'before Saturn even had rings'; not 'Everest is tall' but 'its summit is "
+                      f"limestone full of sea creatures that died on an ancient ocean floor'). It can be a "
+                      f"felt image OR a strange implication — but it must land as wonder, not a raw stat.\n"
                       f"- For the footage search_query fields, prefer these proven matches: "
                       f"{[q for q in fact.get('queries', []) if not UNSTOCKABLE_Q.search(q)]}.\n")
     dossier_block = ""
@@ -825,13 +829,22 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   of this strangeness (this is one of many) — a resonant thought that makes them want the NEXT one.
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
   these and this page finds them.
-- SPECIFICITY IS THE BRAND, BUT WONDER IS THE PRODUCT: name the exact thing where a competitor would be
-  vague — but a number is only worth saying if it makes the viewer FEEL something. Do NOT stat-dump. A
-  dry readout ("the core is 5,700 kelvin") reads as geeky; the SAME fact grips when the number becomes a
-  felt image ("a ball of iron the size of the Moon, as hot as the Sun, frozen solid by the weight
-  above"). RULES: at most 2-3 numbers total, each made visceral with a picture-able comparison; lead
-  each scene with the wonder, not the statistic; cut any detail that doesn't make a smart adult go
-  "wait, WHAT?"; plain everyday words only — never a term you'd have to look up.
+- THE POINT IS A THOUGHT, NOT A NUMBER (this is the most important rule on the page). Every video must
+  leave a smart adult THINKING differently — "huh, I never thought about it that way", "that changes how
+  I see this", a genuine mind-bender they'll turn over in their head — NOT just observing facts and
+  numbers scroll by. You are writing a little MIND EXERCISE, not a stats readout. Test every script:
+  strip out every number — is there still a fascinating IDEA left? If nothing interesting remains once
+  the numbers are gone, the script has no soul; rewrite it around the strange idea, or it fails.
+  * A topic whose ONLY hook is a measurement (how tall Everest is, how many people did X, how fast Y
+    goes) is a WEAK, boring topic — that's trivia, not wonder. If the fact is really just "this thing is
+    big/old/fast," find the STRANGE IMPLICATION behind it (what it means, why it's impossible-sounding,
+    what it says about reality) and build on THAT. "Everest is 8,849 m" is boring; "the summit of
+    Everest is made of seashells from an ocean that no longer exists" makes you wonder.
+  * Numbers are SEASONING, never the meal. At most 1-2 numbers in the whole script, and only if the
+    number itself IS the wonder or becomes a felt image ("older than Saturn's rings", "a ball of iron
+    the size of the Moon"). A dry readout ("the core is 5,700 kelvin", "it's 8,849 metres") is geeky
+    and gets scrolled — cut it or turn it into a feeling. Lead every scene with the IDEA, never the
+    statistic. Plain everyday words only — never a term you'd have to look up.
 - SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD — never scientific/math notation ("10^27", "ten to the
   twenty-seventh power", "3.5 x 10^8"); say "more of them than stars in the whole sky", "a billion
   billion". If a huge number can't be made graspable in plain speech, drop it and describe how
@@ -1913,9 +1926,9 @@ FULL SCENE-BY-SCENE SCRIPT:
 
 Score each criterion 0-10 (integers, be strict):
 - hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
-- surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
+- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below here, no matter how accurate.
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
-- payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
+- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is a WEAK payoff; the payoff must be a thought, not a statistic.
 - rewatch: {rewatch_hint}
 - clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
 
@@ -1992,9 +2005,9 @@ Do TWO things:
 1) REDUNDANCY: list the ids of any scenes that add NO new information — everything the scene says was already conveyed, even in different words, by an EARLIER scene. Scene 1 never counts (there is no earlier scene). A scene revealing a new number, mechanism, consequence, or comparison is NOT redundant even if it's on the same topic.
 2) SCORE each criterion 0-10 (integers, be strict):
 - hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
-- surprise: would most adults genuinely react "wait, WHAT?" — not "yeah I knew that" or "sure, I guess"?
+- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below here, no matter how accurate.
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
-- payoff: does the central question get answered with a real, concrete, specific detail (not a shrug or a vague gesture)?
+- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is a WEAK payoff; the payoff must be a thought, not a statistic.
 - rewatch: {rewatch_hint}
 - clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
 
