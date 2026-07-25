@@ -695,6 +695,29 @@ def test_draft_is_weak():
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
 
 
+def test_429_wait_and_retry_helpers():
+    section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
+    # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
+    check(G._is_weak_model("groq", "llama-3.1-8b-instant") is True, "groq 8b-instant is weak")
+    check(G._is_weak_model("cerebras", "gemma-4-31b") is True, "cerebras gemma is weak")
+    check(G._is_weak_model("groq", "llama-3.3-70b-versatile") is False, "groq 70b is a primary writer")
+    check(G._is_weak_model("gemini", "gemini-flash-latest") is False, "gemini is a primary writer")
+    check(G._is_weak_model("openrouter", "meta-llama/llama-3.3-70b-instruct:free") is False,
+          "openrouter 70b is a primary writer")
+    check(G._is_weak_model("github", "gpt-4o-mini") is False, "github gpt-4o-mini is a primary writer")
+    # _parse_retry_secs: parse the per-minute wait hint each provider gives
+    check(abs(G._parse_retry_secs("Please try again in 11.83s.") - 11.83) < 1e-6,
+          "Groq 'try again in 11.83s' -> 11.83")
+    check(G._parse_retry_secs("Please wait 55 seconds before retrying.") == 55.0,
+          "GitHub 'wait 55 seconds' -> 55")
+    check(G._parse_retry_secs('{"retryDelay": "6s"}') == 6.0, "Gemini retryDelay 6s -> 6")
+    check(G._parse_retry_secs("try again in 2 minutes") == 120.0, "'2 minutes' -> 120s")
+    # a hard/daily 429 with no wait hint must NOT be treated as retryable
+    check(G._parse_retry_secs("This model is unavailable for free.") is None,
+          "no wait hint -> None (falls to weak backstop, no infinite wait)")
+    check(G._parse_retry_secs("") is None, "empty body -> None")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -717,6 +740,7 @@ def main():
     test_hook_headline_event()
     test_caption_autoshrink()
     test_draft_is_weak()
+    test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
