@@ -672,6 +672,30 @@ def test_caption_autoshrink():
     check(fs >= 58, f"shrunk size {fs} respects the readable floor (>=58)")
 
 
+def test_caption_pop_animation():
+    section("main._event: kinetic pop-in (overshoot bounce) + bigger keyword pop")
+    saved = set(M._KEYWORD_TOKENS)
+    try:
+        M._KEYWORD_TOKENS = {"VENOM"}
+        normal = M._event(1.0, 2.0, "aging")
+        # a normal word snaps on with an overshoot bounce back to 100%
+        check("\\t(0,90,\\fscx110\\fscy110)" in normal and "\\t(90,160,\\fscx100\\fscy100)" in normal,
+              "normal word: overshoot bounce (110% -> 100%)")
+        check("\\fad(30,0)" in normal, "quick fade-in on every word")
+        # a KEYWORD word pops BIGGER, settles slightly large, AND gets the accent colour
+        kw = M._event(1.0, 2.0, "venom")
+        check("\\fscx120\\fscy120" in kw, "keyword word bounces bigger (120%)")
+        check("\\fscx104\\fscy104" in kw, "keyword word settles slightly large (104%) for emphasis")
+        if M.PROFILE.get("cap_accent"):
+            check(f"\\c{M.PROFILE['cap_accent']}" in kw, "keyword word rendered in the accent colour")
+        # an over-wide (auto-shrunk) word uses a GENTLE grow, never a big overshoot
+        wide = M._event(1.0, 2.0, "transdifferentiation")
+        check("\\fscx120" not in wide and "\\fscx110" not in wide,
+              "over-wide word avoids the big overshoot (can't shove off the no-wrap frame)")
+    finally:
+        M._KEYWORD_TOKENS = saved
+
+
 def test_draft_is_weak():
     section("generate.draft_is_weak: frugal Gemini-rescue trigger")
     thr = G.QUALITY_THRESHOLD
@@ -774,6 +798,7 @@ def main():
     test_vision_call_budget()
     test_hook_headline_event()
     test_caption_autoshrink()
+    test_caption_pop_animation()
     test_draft_is_weak()
     test_cover_headline()
     test_subclip_plan()

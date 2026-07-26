@@ -2012,12 +2012,22 @@ def _event(start, end, word):
     fs_over = ""
     if est_w > 980:
         fs_over = f"\\fs{max(58, int(base_fs * 980.0 / est_w))}"
-    # Kinetic pop: fade in (40ms) AND scale from 88% -> 100% over 90ms so each
-    # word snaps onto screen with a little life instead of hard-cutting. Alignment
-    # 5 + \pos means it scales from the word's own centre, so it stays put. Purely
-    # a visual-energy touch — the word still appears exactly at its spoken time.
-    tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(40,0){fs_over}"
-           f"\\fscx88\\fscy88\\t(0,90,\\fscx100\\fscy100){accent}}}")
+    # KINETIC POP: each word SNAPS on with an overshoot bounce (small -> past 100%
+    # -> settle) instead of a hard cut, so the captions carry energy even over a
+    # calm clip (the "make it POP" ask). \an5 + \pos scales from the word's own
+    # centre so it stays put. Three tiers:
+    #   - keyword word: a bigger bounce that SETTLES slightly large (104%) + gold,
+    #     so the word that matters really pops;
+    #   - normal word: a snappy bounce back to 100%;
+    #   - over-wide word (auto-shrunk): a gentle grow only, so a big scale can't
+    #     shove it off the no-wrap frame.
+    if fs_over:
+        pop = "\\fscx82\\fscy82\\t(0,110,\\fscx100\\fscy100)"
+    elif accent:
+        pop = "\\fscx64\\fscy64\\t(0,90,\\fscx120\\fscy120)\\t(90,175,\\fscx104\\fscy104)"
+    else:
+        pop = "\\fscx58\\fscy58\\t(0,90,\\fscx110\\fscy110)\\t(90,160,\\fscx100\\fscy100)"
+    tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(30,0){fs_over}{pop}{accent}}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
 # ON-SCREEN HOOK HEADLINE — a big, bold, curiosity-gap TITLE burned into the TOP
@@ -2356,7 +2366,22 @@ def _ensure_music_bed(duration):
     CC0 track. If none exists, synthesize a warm, license-safe cinematic pad with
     ffmpeg (an open A-chord — root/fifth/octave — softly swelling, lowpassed and
     quiet). Not a jingle: it sits ~18 dB under the voice and adds warmth/tension
-    a silent track can't. Returns None only if synthesis fails (then: silence)."""
+    a silent track can't. Returns None only if synthesis fails (then: silence).
+
+    Priority: MUSIC_URL (paste a royalty-free link via the repo Variable — wins so
+    you can swap tracks without committing a file) > committed per-profile track >
+    synthesized pad."""
+    url = os.getenv("MUSIC_URL", "").strip()
+    if url:
+        dst = os.path.join(WORK, "music_url.mp3")
+        try:
+            _download(url, dst)
+            if (ffprobe_dur(dst) or 0) > 1.0:
+                print(f"[music] using MUSIC_URL track ({ffprobe_dur(dst):.0f}s): {url[:60]}")
+                return dst
+            print("[music] MUSIC_URL did not fetch usable audio — falling back")
+        except Exception as e:  # noqa: BLE001
+            print(f"[music] MUSIC_URL fetch failed ({e}) — falling back")
     if os.path.exists(MUSIC):
         return MUSIC
     bed = os.path.join(WORK, "bed.wav")
