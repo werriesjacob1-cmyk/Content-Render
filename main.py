@@ -968,6 +968,13 @@ MAX_STAT_CARDS = 2   # a designed text card is a fine RARE accent, but a wall of
                       # reads as cheap/broken. Once this many scenes have carded,
                       # every remaining weak scene takes its BEST-available real clip
                       # (fetch_clip accept_best=True) instead of carding again.
+SOFT_VIDEO_FLOOR = 3  # "more VIDEO, fewer photos" (user ask): a MOVING clip that is at
+                      # least roughly on-topic (judge >= this, just under RELEVANCE_FLOOR)
+                      # beats a STATIC archival photo or a text card for a fast-paced feed.
+                      # build_scene now prefers the best real video down to this score and
+                      # only falls to a still/card when even the best video is below it
+                      # (genuinely off-topic) — so photos become the rare exception, not a
+                      # routine fallback. Set SOFT_VIDEO_FLOOR=RELEVANCE_FLOOR to disable.
 
 FETCH_BUDGET_S = 45     # wall-clock cap for one fetch_clip() call (search + judge +
                         # requery rounds). Two rescue rounds instead of one means more
@@ -1162,12 +1169,15 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
         round_no += 1
     if best_score is not None:
         JUDGE_SCORES.append(best_score)
-    # Stat-card cap reached: use the best REAL clip we saw rather than card again.
-    if accept_best and best_cand is not None:
+    # Prefer the best REAL VIDEO over a static photo/card: if we saw a clip that
+    # was at least roughly on-topic (>= SOFT_VIDEO_FLOOR), ship it with motion
+    # rather than freeze on an archival still. Only genuinely off-topic video
+    # (below the soft floor) falls through to a still/card. This is the "more
+    # video, fewer photos" preference — a moving clip beats a frozen image.
+    if accept_best and best_cand is not None and (best_score is None or best_score >= SOFT_VIDEO_FLOOR):
         try:
             _accept(best_cand, dest, best_q, best_score)
-            print(f"  accept-best ({best_score}/10) — stat-card cap reached, "
-                  f"real footage beats another text card")
+            print(f"  accept-best ({best_score}/10) — a real moving clip beats a static photo/card")
             return True, best_score
         except Exception as e:  # noqa: BLE001 - fall through to card on download failure
             print("  accept-best download failed:", e)
@@ -1768,9 +1778,12 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
     # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
     # its best real clip instead of adding to a wall of text cards.
+    # accept_best=True ALWAYS: prefer the best real (moving) clip down to
+    # SOFT_VIDEO_FLOOR before ever falling to a static photo or text card, so the
+    # feed is video-first (user ask: "more videos, not just photos"). fetch_clip's
+    # own soft-floor guard still blocks genuinely off-topic video.
     have, score = fetch_clip(scene["search_query"], raw,
-                              intent=_footage_intent(scene),
-                              accept_best=(STAT_CARD_SCENES >= MAX_STAT_CARDS))
+                              intent=_footage_intent(scene), accept_best=True)
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, round(seg_dur * 30))
 
@@ -2335,6 +2348,36 @@ def make_cover(video, m, dest):
         return False
 
 
+# ---------- MUSIC BED ----------
+def _ensure_music_bed(duration):
+    """Path to a music bed so every video has one instead of dead silence (the
+    #1 'it doesn't POP' fix). Prefers a committed royalty-free `music.mp3` — drop
+    your own energetic track there for maximum energy, or point MUSIC_URL at a
+    CC0 track. If none exists, synthesize a warm, license-safe cinematic pad with
+    ffmpeg (an open A-chord — root/fifth/octave — softly swelling, lowpassed and
+    quiet). Not a jingle: it sits ~18 dB under the voice and adds warmth/tension
+    a silent track can't. Returns None only if synthesis fails (then: silence)."""
+    if os.path.exists(MUSIC):
+        return MUSIC
+    bed = os.path.join(WORK, "bed.wav")
+    d = max(4.0, float(duration or 40) + 1.0)
+    try:
+        run(["ffmpeg", "-y",
+             "-f", "lavfi", "-i", f"sine=frequency=110:duration={d:.2f}",       # A2 root
+             "-f", "lavfi", "-i", f"sine=frequency=164.81:duration={d:.2f}",    # E3 fifth
+             "-f", "lavfi", "-i", f"sine=frequency=220:duration={d:.2f}",       # A3 octave
+             "-filter_complex",
+             "[0:a]volume=0.5[a0];[1:a]volume=0.30[a1];[2:a]volume=0.22[a2];"
+             "[a0][a1][a2]amix=inputs=3:normalize=0,"
+             "tremolo=f=0.12:d=0.35,highpass=f=55,lowpass=f=520,"
+             "afade=t=in:d=1.8,afade=t=out:st={fo:.2f}:d=1.5[b]".format(fo=max(0.0, d - 1.6)),
+             "-map", "[b]", bed])
+        return bed
+    except Exception as e:  # noqa: BLE001 — a bed is a nice-to-have, never fatal
+        print(f"[music] procedural bed synthesis failed ({e}) — no bed this run")
+        return None
+
+
 # ---------- MAIN ----------
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
@@ -2526,13 +2569,14 @@ def main():
     _vbv_max = os.environ.get("UPLOAD_MAXRATE", "1000k")
     VBV = ["-maxrate", _vbv_max, "-bufsize", "2000k"]
     ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
-    if os.path.exists(MUSIC):
-        print("[music] mixing bed under voice...")
-        ff_inputs += ["-stream_loop", "-1", "-i", MUSIC]
+    bed_path = _ensure_music_bed(body_dur)
+    if bed_path:
+        print(f"[music] mixing bed under voice ({os.path.basename(bed_path)})")
+        ff_inputs += ["-stream_loop", "-1", "-i", bed_path]
         filt.append(f"[{idx}:a]volume={PROFILE['music_vol']}[m]")
         labels.append("[m]"); idx += 1
     else:
-        print("[music] no music.mp3 found — skipping")
+        print("[music] no bed this run — narration only")
     if sting:
         print("[sfx] mixing signature intro sting")
         ff_inputs += ["-i", sting]
