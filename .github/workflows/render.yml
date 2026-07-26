@@ -217,6 +217,10 @@ jobs:
           # burned onto the auto-generated cover thumbnail (out/cover.jpg); if the
           # repo Variable isn't set the handle line is simply omitted.
           CHANNEL_HANDLE:      ${{ vars.CHANNEL_HANDLE }}
+          # paste a royalty-free music track URL here (repo Variable) to use as the
+          # music bed for every render — overrides the bundled loop, no file commit
+          # needed. Leave unset to use the committed per-profile track.
+          MUSIC_URL:           ${{ vars.MUSIC_URL }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
