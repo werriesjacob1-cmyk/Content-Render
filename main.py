@@ -1700,8 +1700,8 @@ def _footage_intent(scene):
 # scene boundary + word timings, which don't change). Fully env-gated and
 # fail-safe: on ANY error the scene renders exactly as before (one clip).
 SCENE_MULTICLIP = os.getenv("SCENE_MULTICLIP", "1") != "0"
-CLIP_SECONDS    = float(os.getenv("CLIP_SECONDS", "2.4"))   # target on-screen time per clip
-MAX_SUBCLIPS    = int(os.getenv("MAX_SUBCLIPS", "4"))        # cap distinct clips per scene
+CLIP_SECONDS    = float(os.getenv("CLIP_SECONDS", "1.9"))   # target on-screen time per clip
+MAX_SUBCLIPS    = int(os.getenv("MAX_SUBCLIPS", "6"))        # cap distinct clips per scene
 _MULTICLIP_MOTIONS = ["zoom_in", "pan", "zoom_out"]          # cycled so no two cuts move alike
 
 
@@ -1802,15 +1802,23 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                     scene, len(plan) - 1, set(_used_video_ids),
                     os.path.join(WORK, f"s{idx}_sub"))
                 parts = []
+                _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
                 for j, d in enumerate(plan):
                     src = sources[j % len(sources)]   # cycle if we got fewer distinct clips
+                    # own brightness lift — reusing the primary's lift left dark
+                    # sub-clips (moody/black-background footage) reading as a black
+                    # screen mid-scene (the "went black at 10s" bug).
+                    if src not in _lift_cache:
+                        _savg, _ = _clip_luma(src)
+                        _lift_cache[src] = _shadow_lift_filter(_savg)
+                    slift = _lift_cache[src]
                     part = os.path.join(WORK, f"s{idx}_p{j}.mp4")
                     pf = max(1, round(d * 30))
                     pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
                                              pf, zspeed, idx=idx + j, prev_kind=None)
                     pstat = stat if j == 0 else ""   # number card once, on the first cut only
                     run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", src, "-t", f"{d:.3f}",
-                         "-filter_complex", f"[0:v]{pmotion}{lift}{grade}{pstat},setsar=1[v]",
+                         "-filter_complex", f"[0:v]{pmotion}{slift}{grade}{pstat},setsar=1[v]",
                          "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p",
                          "-an", "-c:v", "libx264", part])
                     parts.append(part)
@@ -2458,7 +2466,11 @@ def main():
                        for w in re.findall(r"[A-Za-z0-9']+", m.get("keyword", ""))
                        if len(w) > 2}
     ass = os.path.join(WORK, "captions.ass")
-    build_ass(m["scenes"], segments, actual_durs, ass, headline=m.get("hook_headline", ""))
+    # NO on-screen hook headline burned over the video: it rendered at the TOP
+    # while the karaoke captions ran in the MIDDLE = two sets of subtitles at once
+    # (user feedback — the exact "double caption" complaint). The hook_headline now
+    # lives ONLY on the cover thumbnail (make_cover), where it belongs.
+    build_ass(m["scenes"], segments, actual_durs, ass, headline="")
     body_dur = ffprobe_dur(body)
     fade_out_start = max(0.0, body_dur - 0.3)
     # NO separate hook title-card. It used to burn the hook text across the top
