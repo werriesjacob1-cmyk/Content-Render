@@ -542,24 +542,6 @@
       ]
     },
     {
-      "id": "eye_colors",
-      "domain": "body",
-      "fact": "The human eye can distinguish around ten million different colors, yet we have names for only a tiny fraction of them.",
-      "angle": "the limits of language vs perception",
-      "key_terms": [
-        "ten million colors",
-        "cones",
-        "tetrachromat"
-      ],
-      "whatif": "What if you had a fourth type of color-sensing cone? A rare few people, called tetrachromats, do, and they may see up to a hundred times more colors than everyone else.",
-      "wow": "Your ten million colors come from just three types of cones in your eye, while most of those shades have no name in any language.",
-      "queries": [
-        "human eye closeup",
-        "color spectrum",
-        "colorful gradient"
-      ]
-    },
-    {
       "id": "human_vacuum",
       "domain": "space",
       "fact": "If you were exposed to space without a suit, you would not freeze solid or explode; you'd stay conscious for about 15 seconds before the oxygen leaves your blood.",
@@ -1100,24 +1082,6 @@
       ]
     },
     {
-      "id": "phone_vs_apollo",
-      "domain": "technology",
-      "fact": "The phone in your pocket has millions of times more computing power than all of NASA possessed for the entire Apollo program that landed humans on the Moon.",
-      "angle": "scale of change hidden in an everyday object",
-      "key_terms": [
-        "computing power",
-        "Apollo guidance computer",
-        "millions of times"
-      ],
-      "whatif": "What if you handed your phone to a 1969 engineer? You'd be giving them more computing power than launched every Apollo mission combined, and they'd use it to check messages.",
-      "wow": "We carry supercomputers that dwarf the Apollo program in our pockets and mostly use them to scroll.",
-      "queries": [
-        "smartphone in hand",
-        "vintage mission control",
-        "rocket launch"
-      ]
-    },
-    {
       "id": "ocean_viruses",
       "domain": "biology",
       "fact": "There are more viruses in a single liter of seawater than there are people on Earth, and most are completely harmless to us.",
@@ -1352,24 +1316,6 @@
       ]
     },
     {
-      "id": "more_trees_than_stars",
-      "domain": "space",
-      "fact": "There are more trees on Earth than there are stars in the Milky Way.",
-      "angle": "a true number so lopsided it resets your sense of scale",
-      "key_terms": [
-        "3 trillion trees",
-        "100 billion stars",
-        "Milky Way"
-      ],
-      "whatif": "What if you tried to match every tree to a star? You would run out of stars. Earth has roughly 3 trillion trees, while the Milky Way holds somewhere around 100 to 400 billion stars.",
-      "wow": "We often say there are more stars than grains of sand, yet right here on one planet the trees already outnumber our entire galaxy's stars.",
-      "queries": [
-        "forest aerial drone",
-        "night sky stars",
-        "dense woodland canopy"
-      ]
-    },
-    {
       "id": "sharks_older_than_trees",
       "domain": "deep_time",
       "fact": "Sharks are older than trees. They have existed for about 450 million years.",
@@ -1549,26 +1495,6 @@
         "colorful coral reef",
         "peacock mantis shrimp",
         "tropical reef macro"
-      ]
-    },
-    {
-      "id": "card_shuffle_52",
-      "domain": "math",
-      "fact": "Shuffle a deck of 52 cards and you have almost certainly created an order that has never existed before in the history of the universe. The number of possible arrangements is 52 factorial, about an 8 followed by 67 zeros.",
-      "angle": "a number so large it breaks your intuition",
-      "key_terms": [
-        "52 factorial",
-        "8 followed by 67 zeros",
-        "never existed before"
-      ],
-      "whatif": "What are the odds that exact order has ever been dealt before, by anyone, anywhere? Essentially zero, because there are far more ways to arrange 52 cards than there are atoms making up the entire Earth.",
-      "wow": "If every person who ever lived shuffled one deck every second since the Big Bang, they still would not have made the tiniest dent in all the possible orders.",
-      "queries": [
-        "shuffling deck of cards",
-        "hands dealing cards",
-        "playing cards falling",
-        "casino card table",
-        "night sky stars"
       ]
     },
     {
@@ -1909,6 +1835,60 @@
         "ancient cave paintings",
         "desert oasis water",
         "dry cracked desert"
+      ]
+    },
+    {
+      "id": "wood_frog_freeze",
+      "domain": "animals",
+      "fact": "The wood frog survives winter by freezing almost solid — its heart stops, it stops breathing, and up to two-thirds of the water in its body turns to ice. In spring it thaws and hops away, alive.",
+      "angle": "an animal that comes back from the dead",
+      "key_terms": [
+        "wood frog",
+        "freeze",
+        "glucose"
+      ],
+      "whatif": "What if you froze solid — no heartbeat, no breath — for weeks, then simply came back to life? The wood frog does exactly that every winter, flooding its cells with glucose so the ice can't destroy them.",
+      "wow": "By any normal definition it is dead for weeks, yet when the ice melts its heart restarts on its own and it hops away.",
+      "queries": [
+        "wood frog",
+        "frog in snow",
+        "frog close up"
+      ]
+    },
+    {
+      "id": "stomach_self_digest",
+      "domain": "body",
+      "fact": "Your stomach acid is strong enough to dissolve metal, so to avoid digesting itself your stomach grows a brand-new lining every few days.",
+      "angle": "your body would eat itself",
+      "key_terms": [
+        "stomach acid",
+        "lining",
+        "mucus"
+      ],
+      "whatif": "What if the acid in your stomach ever touched the stomach wall directly? It would start dissolving you — so your body rebuilds the entire protective lining every three to four days.",
+      "wow": "The same acid that breaks down dinner would happily break down your stomach; the only thing saving you is a layer of mucus and cells you replace constantly.",
+      "queries": [
+        "acid bubbling beaker",
+        "human anatomy stomach",
+        "corrosion metal"
+      ]
+    },
+    {
+      "id": "cleopatra_timeline",
+      "domain": "history",
+      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid of Giza.",
+      "angle": "history is far older than it feels",
+      "key_terms": [
+        "Cleopatra",
+        "Great Pyramid",
+        "Moon landing"
+      ],
+      "whatif": "What if the pyramids were already ancient ruins when Cleopatra was alive? They were — the Great Pyramid was finished around 2,500 years before her, while the Moon landing was only about 2,000 years after.",
+      "wow": "We picture Cleopatra and the pyramid-builders together, but she lived closer to the age of spaceflight than to the workers who stacked those stones.",
+      "queries": [
+        "great pyramid giza",
+        "ancient egypt ruins",
+        "moon landing"
       ]
     }
   ]

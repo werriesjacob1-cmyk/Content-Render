@@ -16,6 +16,48 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Overnight batch — 2026-07-25/26 (POP + reliability + content quality)
+Long session driven by LIVE TikTok analytics + user feedback. All merged to main
+(PRs #23–#31+), 159 zero-quota checks. Shipped:
+- **Reliability (PR #23)**: `call_groq` waits out per-minute 429s on strong writers
+  before falling to a weak model — "always ship a video" without dropping the bar.
+- **Faster cutting**: `build_scene` cuts between 2–6 sub-clips/scene
+  (`SCENE_MULTICLIP`, `CLIP_SECONDS=1.9`, `MAX_SUBCLIPS=6`). Footage-capped on
+  narrow topics (few distinct stock clips → cycles).
+- **Video over photos**: `fetch_clip` `accept_best=True` + `SOFT_VIDEO_FLOOR=3` —
+  a real moving clip beats a static archival photo; stills are now the exception.
+- **Auto-cover**: `main.make_cover()` → `out/cover.jpg` (most colorful clean frame +
+  `hook_headline` burned on, yellow accent, `@CHANNEL_HANDLE`), attached to release.
+  Kills the "black tile on the grid" problem.
+- **No double caption**: removed the on-screen hook-headline overlay (clashed with
+  the karaoke captions). `hook_headline` is COVER-only now.
+- **No black stretch**: per-sub-clip `_shadow_lift` (dark sub-clips reused the
+  primary clip's lift → read black mid-scene).
+- **Animated captions**: per-word overshoot bounce; keyword pops bigger + gold.
+- **Music**: `_ensure_music_bed()` — `MUSIC_URL` var (paste a royalty-free link) >
+  committed per-profile track (the bundled `music_*.mp3` are weak 8s loops —
+  REPLACE) > synthesized license-safe pad. Never silent now. `music_vol` 0.10→0.14.
+- **Cut SFX**: subtle pink-noise whooshes at scene boundaries (`SFX_CUTS`,
+  `_make_cut_whooshes`) — needs the user's ears.
+- **Punchier grade**: science saturation 1.12→1.30, contrast 1.08→1.16,
+  `zoom_speed` 0.0006→0.0009.
+- **Content quality (biggest)**: "big/small is NOT interesting" — removed the
+  `SCALE_SHOCK` hook, added the WHO-CARES test, rubric scores magnitude-only ≤3.
+  Curated `topic_bank.json` (now **103**): removed card_shuffle_52,
+  more_trees_than_stars, eye_colors, phone_vs_apollo; added wood_frog_freeze,
+  stomach_self_digest, cleopatra_timeline. FRONT-LOAD-THE-SHOCK hook rule (the 0:01
+  drop-off is the #1 retention lever; banned "did you know"/wind-up openers).
+- **Analytics loop**: `perf_science.json` has 4 videos — turtle 0.206 (best, 2
+  follows) > space 0.138 > jellyfish 0.109 > color 0.061. Pattern: weird/visceral/
+  concrete + scenario hooks WIN; passive/abstract/scale LOSE.
+
+OPEN for the user: set repo Variables `CHANNEL_HANDLE=@waitwhatscience` and
+`MUSIC_URL` (a royalty-free track); confirm cut-whoosh + music by ear; add trending
+TikTok audio at upload. **NOT yet render-verified end-to-end** on a FRESH-topic
+render (the deck re-renders were replays of an old magnitude script) — a self-check
+trigger watches the 09:00 UTC cron; if this session is gone, a NEW session must
+verify that render against every bullet above.
+
 ## Architecture (one render)
 `generate.py` (LLM writes a manifest.json script) → `main.py` (TTS, footage,
 ffmpeg render → out/final.mp4) → `repackage.py` (7 platform cuts + captions +

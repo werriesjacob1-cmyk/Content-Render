@@ -2403,6 +2403,39 @@ def _ensure_music_bed(duration):
         return None
 
 
+# ---------- CUT WHOOSHES (rhythm/punch on scene changes) ----------
+SFX_CUTS = os.getenv("SFX_CUTS", "1") != "0"
+
+
+def _make_cut_whooshes(cut_times, total_dur, dest):
+    """A silent track with a short, SUBTLE whoosh at each scene-cut time, mixed
+    into the final audio so cuts have rhythm/punch (the "make it POP" ask).
+    License-safe — an ffmpeg pink-noise burst, no sample. Env-gated (SFX_CUTS)
+    and fail-safe: any build error just skips the whooshes (never breaks a
+    render). Returns dest or None."""
+    cuts = [t for t in (cut_times or []) if 0.15 < t < float(total_dur) - 0.15]
+    if not cuts:
+        return None
+    whoosh = os.path.join(WORK, "whoosh.wav")
+    try:
+        run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anoisesrc=d=0.28:c=pink:a=0.5",
+             "-af", "bandpass=f=1300:width_type=h:w=2000,afade=t=in:d=0.04,"
+             "afade=t=out:st=0.09:d=0.19,volume=0.6", whoosh])
+        inputs = ["-f", "lavfi", "-i", f"anullsrc=r=44100:cl=mono:d={float(total_dur)+0.5:.2f}"]
+        fparts, labels = [], ["[0:a]"]
+        for i, t in enumerate(cuts, start=1):
+            inputs += ["-i", whoosh]
+            ms = int(t * 1000)
+            fparts.append(f"[{i}:a]adelay={ms}|{ms}[w{i}]")
+            labels.append(f"[w{i}]")
+        fparts.append(f"{''.join(labels)}amix=inputs={len(labels)}:normalize=0[o]")
+        run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(fparts), "-map", "[o]", dest])
+        return dest
+    except Exception as e:  # noqa: BLE001
+        print(f"  [sfx] cut-whoosh build failed ({e}) — skipping")
+        return None
+
+
 # ---------- MAIN ----------
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
@@ -2527,6 +2560,11 @@ def main():
     # per-scene only for the few-ms cut rounding between the requested segment
     # length and the actually-rendered scene audio (ffprobed below).
     actual_durs = [ffprobe_dur(f) for f in scene_files]
+    # scene-cut boundaries (cumulative, excluding the final end) for the cut SFX
+    cut_times, _acc = [], 0.0
+    for _d in actual_durs[:-1]:
+        _acc += (_d or 0.0)
+        cut_times.append(_acc)
     # keyword-pop: tokenize the video's core keyword so _event can render those
     # words in the accent colour (>2 chars only, so "of"/"in" don't pop everywhere)
     global _KEYWORD_TOKENS
@@ -2606,6 +2644,14 @@ def main():
         print("[sfx] mixing signature intro sting")
         ff_inputs += ["-i", sting]
         labels.append(f"[{idx}:a]"); idx += 1
+    whoosh_track = _make_cut_whooshes(cut_times, body_dur,
+                                      os.path.join(WORK, "whooshes.wav")) if SFX_CUTS else None
+    if whoosh_track:
+        n = len([t for t in cut_times if 0.15 < t < body_dur - 0.15])
+        print(f"[sfx] mixing {n} subtle cut whooshes")
+        ff_inputs += ["-i", whoosh_track]
+        filt.append(f"[{idx}:a]volume=1.0[wf]")
+        labels.append("[wf]"); idx += 1
     # Final loudness normalization to the social-media standard (~-14 LUFS
     # integrated, -1.5 dBTP true peak). Without it, output loudness drifts with
     # the voice/music levels, so some videos land quiet and get turned UP by the

@@ -862,6 +862,13 @@ PROVEN RULES (every one is backed by 2026 TikTok performance data — follow the
 
 HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
+- FRONT-LOAD THE SHOCK (this is the #1 retention lever — analytics show most viewers drop at 0:01):
+  the single most surprising, visceral word or image MUST land in the first 3-4 words. Never wind up to
+  it. BANNED first-line openers, they waste the one second that decides everything: "Did you know",
+  "Have you ever", "Imagine", "Picture this", "What if I told you", "Here's", "This is", "There's a",
+  "Ever wonder". BAD: "Have you ever wondered what your stomach acid can do?" GOOD: "Your stomach acid
+  could dissolve a razor blade." Open COLD on the noun + the shock — a flat, confident, impossible-
+  sounding statement. (The curiosity-gap '?' still appears by scene 2, never as the very first line.)
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
