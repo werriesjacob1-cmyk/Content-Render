@@ -1,0 +1,95 @@
+{
+  "title": "The Astonishing Possibilities of a Shuffled Deck",
+  "viewer_job": "REFRAME",
+  "keyword": "shuffled deck of cards",
+  "metaphor": "incredible card arrangements",
+  "hook": "What if every shuffled deck has never existed before?",
+  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "What if every shuffled deck has never existed before?",
+      "on_screen_text": "Unique Card Order",
+      "search_query": "shuffling deck of cards",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "You create an order that has almost certainly never existed before.",
+      "on_screen_text": "Cosmic Uniqueness",
+      "search_query": "deck of cards shuffled",
+      "motion": "pan"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
+      "on_screen_text": "52 Factorial",
+      "search_query": "52 factorial explanation",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
+      "on_screen_text": "8 Followed by 67",
+      "search_query": "how many card arrangements",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
+      "on_screen_text": "Beyond Atoms",
+      "search_query": "night sky stars",
+      "motion": "pan"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
+      "on_screen_text": "Statistical Randomness",
+      "search_query": "perfect card shuffle",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
+      "on_screen_text": "Rare Odds",
+      "search_query": "identical shuffled decks",
+      "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+      "on_screen_text": "Beyond the Universe",
+      "search_query": "card arrangements distance",
+      "motion": "zoom_out"
+    }
+  ],
+  "captions": [
+    "Have you ever shuffled a deck of cards? Yes or no?",
+    "The odds are staggering!",
+    "Every shuffle is a cosmic first."
+  ],
+  "hashtags": [
+    "#science",
+    "#math",
+    "#cards",
+    "#facts",
+    "#universe"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
+  "cta_style": "COMMENT",
+  "domain": "math",
+  "hook_headline": "NEVER EXISTED BEFORE"
+}

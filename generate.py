@@ -439,10 +439,6 @@ HOOK_FRAMES = [
     ("IMPOSSIBLE_FACT",
      "Open on a flat claim so specific it sounds fake but is TRUE (e.g. 'Sharks are older than "
      "Saturn's rings'). The brain can't scroll past needing the 'how is that possible' answer."),
-    ("SCALE_SHOCK",
-     "Open by collapsing an incomprehensible scale into one felt image the viewer can picture (e.g. "
-     "'Shuffle a deck of cards and you just made an order that has never existed in all of time'). "
-     "The hook IS the wow — then the video explains how something that big is real."),
     ("COMPARISON_COLLISION",
      "Open by smashing together two things the viewer would never connect, as a plain statement of "
      "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
@@ -835,16 +831,28 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   numbers scroll by. You are writing a little MIND EXERCISE, not a stats readout. Test every script:
   strip out every number — is there still a fascinating IDEA left? If nothing interesting remains once
   the numbers are gone, the script has no soul; rewrite it around the strange idea, or it fails.
+  * BIG OR SMALL IS NOT INTERESTING BY ITSELF. "This number is unimaginably huge / tiny / old / fast"
+    is NOT a payoff — it's the weakest, most forgettable kind of science content, and it will be
+    rejected. Magnitude alone impresses no one; a smart viewer shrugs at "wow, that's a big number."
+    A pure scale/counting fact — how many ways to shuffle a deck, how many atoms in a grain, how many
+    times bigger X is than Y — is a DEAD topic unless the scale reveals something that reframes reality
+    or matters to a real person. Before writing, apply the WHO-CARES TEST: would a normal person retell
+    this at dinner? Does it overturn an assumption, expose a hidden mechanism, or change how they see
+    something they thought they understood? If the only answer is "it's really big," pick a different
+    angle or a different fact.
   * A topic whose ONLY hook is a measurement (how tall Everest is, how many people did X, how fast Y
-    goes) is a WEAK, boring topic — that's trivia, not wonder. If the fact is really just "this thing is
-    big/old/fast," find the STRANGE IMPLICATION behind it (what it means, why it's impossible-sounding,
-    what it says about reality) and build on THAT. "Everest is 8,849 m" is boring; "the summit of
-    Everest is made of seashells from an ocean that no longer exists" makes you wonder.
-  * Numbers are SEASONING, never the meal. At most 1-2 numbers in the whole script, and only if the
-    number itself IS the wonder or becomes a felt image ("older than Saturn's rings", "a ball of iron
-    the size of the Moon"). A dry readout ("the core is 5,700 kelvin", "it's 8,849 metres") is geeky
-    and gets scrolled — cut it or turn it into a feeling. Lead every scene with the IDEA, never the
-    statistic. Plain everyday words only — never a term you'd have to look up.
+    goes, how many combinations exist) is WEAK trivia, not wonder. If the fact is really just "this
+    thing is big/old/fast/numerous," find the STRANGE IMPLICATION behind it (what it means, why it's
+    impossible-sounding, what it reveals about how the world actually works) and build on THAT.
+    "Everest is 8,849 m" is boring; "the summit of Everest is made of seashells from an ocean that no
+    longer exists" makes you wonder — because it REFRAMES a mountain as an ancient seafloor, not
+    because of a number.
+  * Numbers are SEASONING, never the meal. At most 1-2 numbers in the whole script, and ONLY when a
+    number becomes a felt image that reframes something ("older than Saturn's rings", "a ball of iron
+    the size of the Moon"). Never a number as the wow by itself. A dry readout ("the core is 5,700
+    kelvin", "it's 8,849 metres") is geeky and gets scrolled — cut it or turn it into a feeling. Lead
+    every scene with the IDEA, never the statistic. Plain everyday words only — never a term you'd have
+    to look up.
 - SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD — never scientific/math notation ("10^27", "ten to the
   twenty-seventh power", "3.5 x 10^8"); say "more of them than stars in the whole sky", "a billion
   billion". If a huge number can't be made graspable in plain speech, drop it and describe how
@@ -2010,9 +2018,9 @@ FULL SCENE-BY-SCENE SCRIPT:
 
 Score each criterion 0-10 (integers, be strict):
 - hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
-- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below here, no matter how accurate.
+- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below. CRUCIAL: a pure scale or counting fact — how many ways to shuffle a deck, how many atoms/combinations exist, how many times bigger X is than Y — is NOT surprise. "That number is unimaginably big/small" makes a smart viewer shrug. Unless the scale exposes a hidden mechanism or a consequence a real person would feel, score magnitude-only scripts 3 or below.
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
-- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is a WEAK payoff; the payoff must be a thought, not a statistic.
+- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
 - clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
 
@@ -2089,9 +2097,9 @@ Do TWO things:
 1) REDUNDANCY: list the ids of any scenes that add NO new information — everything the scene says was already conveyed, even in different words, by an EARLIER scene. Scene 1 never counts (there is no earlier scene). A scene revealing a new number, mechanism, consequence, or comparison is NOT redundant even if it's on the same topic.
 2) SCORE each criterion 0-10 (integers, be strict):
 - hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
-- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below here, no matter how accurate.
+- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below. CRUCIAL: a pure scale or counting fact — how many ways to shuffle a deck, how many atoms/combinations exist, how many times bigger X is than Y — is NOT surprise. "That number is unimaginably big/small" makes a smart viewer shrug. Unless the scale exposes a hidden mechanism or a consequence a real person would feel, score magnitude-only scripts 3 or below.
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
-- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is a WEAK payoff; the payoff must be a thought, not a statistic.
+- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
 - clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
 
