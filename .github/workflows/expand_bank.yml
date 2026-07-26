@@ -1,0 +1,63 @@
+name: expand-topic-bank
+
+# Grows topic_bank.json toward ~500 genuinely-WTF facts over time. Each run adds a
+# BOUNDED number (--add) so a nightly job's LLM spend stays small and the bank
+# climbs steadily instead of one expensive blast. Strict WTF gate + dedup live in
+# expand_bank.py. Runs after the 07:00 UTC quota reset (Gemini fresh); also manual.
+on:
+  workflow_dispatch:
+    inputs:
+      add:
+        description: "max NEW facts to add this run"
+        default: "60"
+      target:
+        description: "overall bank-size target (stops here)"
+        default: "500"
+  schedule:
+    - cron: "40 7 * * *"   # 07:40 UTC — after the 07:00 quota reset + 07:20 buffer fill
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bank-expand
+  cancel-in-progress: false
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Expand the topic bank (strict WTF gate + dedup)
+        env:
+          # Gemini-first + grounded gives the most accurate, novel facts; the free
+          # chain backs it up. A bounded --add keeps the spend to pennies/run.
+          GEMINI_GENERATION: "1"
+          GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CEREBRAS_API_KEY:   ${{ secrets.CEREBRAS_API_KEY }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          GITHUB_TOKEN:        ${{ github.token }}
+        run: |
+          python expand_bank.py \
+            --add "${{ github.event.inputs.add || '40' }}" \
+            --target "${{ github.event.inputs.target || '500' }}" \
+            --batch 25
+          echo "--- bank size ---"
+          python -c "import json;print(len(json.load(open('topic_bank.json'))['facts']),'facts')"
+      - name: Commit new facts
+        run: |
+          git config user.name "bank-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add topic_bank.json
+          git commit -m "auto: expand topic bank toward 500 (WTF facts)" 2>/dev/null || echo "nothing to commit"
+          for a in 1 2 3; do
+            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+          done

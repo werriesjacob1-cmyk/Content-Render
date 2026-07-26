@@ -1890,6 +1890,258 @@
         "ancient egypt ruins",
         "moon landing"
       ]
+    },
+    {
+      "id": "wombat_cube_poop",
+      "domain": "animals",
+      "angle": "absurd but true biology",
+      "fact": "Wombats are the only animals on Earth that produce cube-shaped poop — up to a hundred little cubes a night.",
+      "key_terms": [
+        "wombat",
+        "cube",
+        "intestine"
+      ],
+      "whatif": "What if your poop came out as neat little cubes? A wombat's does, because the last stretch of its intestine has stiff and stretchy patches that mould the waste into six-sided blocks.",
+      "wow": "They stack the cubes on rocks and logs to mark territory, and the cubes don't roll away — which is likely the whole point.",
+      "queries": [
+        "wombat",
+        "wombat walking",
+        "australian wildlife"
+      ]
+    },
+    {
+      "id": "cockroach_headless",
+      "domain": "animals",
+      "angle": "disturbing but true biology",
+      "fact": "A cockroach can live for weeks without its head. It doesn't die from losing it — it dies of thirst.",
+      "key_terms": [
+        "cockroach",
+        "headless",
+        "weeks"
+      ],
+      "whatif": "What if losing your head barely slowed you down? A cockroach breathes through holes in its body, not its mouth, and its simple nervous system keeps working — so a headless one can still stand and react for weeks.",
+      "wow": "It only dies because, without a mouth, it can't drink — so it slowly dehydrates.",
+      "queries": [
+        "cockroach",
+        "insect close up",
+        "cockroach macro"
+      ]
+    },
+    {
+      "id": "pluto_no_orbit",
+      "domain": "space",
+      "angle": "time is bigger than you think",
+      "fact": "Pluto has not completed a single orbit of the Sun since humans discovered it in 1930 — and it won't until 2178.",
+      "key_terms": [
+        "Pluto",
+        "orbit",
+        "248 years"
+      ],
+      "whatif": "What if a whole planet hadn't finished one 'year' since your great-grandparents were young? Pluto takes 248 Earth years to circle the Sun, so its year that began at discovery is barely half over.",
+      "wow": "Everyone who was alive when Pluto was found will be long gone before it returns to the same spot in its orbit.",
+      "queries": [
+        "pluto planet",
+        "solar system space",
+        "dwarf planet"
+      ]
+    },
+    {
+      "id": "left_lung_smaller",
+      "domain": "body",
+      "angle": "your own body, reframed",
+      "fact": "Your left lung is smaller than your right — it has a permanent dent carved out to make room for your heart.",
+      "key_terms": [
+        "left lung",
+        "heart",
+        "cardiac notch"
+      ],
+      "whatif": "What if your two lungs were never meant to match? The left one has two lobes instead of three and a scooped-out notch, because your heart sits slightly to the left and needs the space.",
+      "wow": "You've been breathing with two mismatched lungs your entire life and never noticed.",
+      "queries": [
+        "human lungs anatomy",
+        "chest x-ray",
+        "breathing"
+      ]
+    },
+    {
+      "id": "gut_second_brain",
+      "domain": "body",
+      "angle": "your own body, reframed",
+      "fact": "Your gut has its own brain — a network of about 500 million neurons that keeps working even if it's cut off from your head.",
+      "key_terms": [
+        "gut",
+        "enteric nervous system",
+        "neurons"
+      ],
+      "whatif": "What if your stomach could think for itself? The gut's own nervous system, the size of a cat's brain, runs digestion on its own and talks to your head constantly — which is why fear gives you 'butterflies'.",
+      "wow": "Most of your body's serotonin, the 'feel-good' chemical, is made in your gut, not your brain.",
+      "queries": [
+        "human gut",
+        "intestines anatomy",
+        "nervous system"
+      ]
+    },
+    {
+      "id": "bamboo_mass_flowering",
+      "domain": "plants",
+      "angle": "nature on a hidden timer",
+      "fact": "Some bamboo plants flower only once every hundred-plus years — and then every plant of that species, all over the world, flowers and dies at the same time.",
+      "key_terms": [
+        "bamboo",
+        "mass flowering",
+        "clock"
+      ],
+      "whatif": "What if plants split across different continents somehow knew to bloom on the exact same year? Bamboo of the same species does, following an internal clock set a century ago from a single parent.",
+      "wow": "They're genetic clones running the same countdown, so they flower together, drop their seeds, and die together — an event people wait lifetimes to see.",
+      "queries": [
+        "bamboo forest",
+        "bamboo plant",
+        "green bamboo"
+      ]
+    },
+    {
+      "id": "boiling_river_amazon",
+      "domain": "geology",
+      "angle": "impossible-sounding place that's real",
+      "fact": "Deep in the Amazon there is a river so hot it boils — hot enough to cook animals that fall in.",
+      "key_terms": [
+        "boiling river",
+        "Shanay-timpishka",
+        "geothermal"
+      ],
+      "whatif": "What if a river in the middle of a rainforest, nowhere near a volcano, ran near boiling? The Shanay-timpishka does, heated by water forced up from deep underground.",
+      "wow": "Locals considered it sacred long before scientists confirmed a nearly four-kilometre stretch that steams and scalds.",
+      "queries": [
+        "amazon river steam",
+        "jungle river",
+        "hot spring steam"
+      ]
+    },
+    {
+      "id": "oxford_older_than_aztecs",
+      "domain": "history",
+      "angle": "time is bigger than you think",
+      "fact": "Oxford University was already teaching students before the Aztec Empire even existed.",
+      "key_terms": [
+        "Oxford University",
+        "Aztec Empire",
+        "1096"
+      ],
+      "whatif": "What if one of the world's famous 'ancient' civilizations was younger than a university still running today? Oxford had classes by 1096, while the Aztec capital wasn't founded until the 1300s.",
+      "wow": "Students were sitting exams at Oxford centuries before the first stone of the Aztec capital was laid.",
+      "queries": [
+        "oxford university",
+        "old university building",
+        "ancient library"
+      ]
+    },
+    {
+      "id": "cant_tickle_yourself",
+      "domain": "senses",
+      "angle": "your own body, reframed",
+      "fact": "You can't tickle yourself — and the reason reveals something strange about how your brain works.",
+      "key_terms": [
+        "tickle",
+        "cerebellum",
+        "prediction"
+      ],
+      "whatif": "What if your brain quietly erased sensations it caused itself? When you move your own hand, your cerebellum predicts the touch and cancels it out, so the surprise that makes tickling work never happens.",
+      "wow": "It's the same prediction system that lets you tell the difference between the world shaking and you shaking your own head.",
+      "queries": [
+        "hand reaching",
+        "laughing person",
+        "brain scan"
+      ]
+    },
+    {
+      "id": "zombie_ant_fungus",
+      "domain": "fungi",
+      "angle": "real-life horror biology",
+      "fact": "A fungus can hijack an ant's body, march it to the perfect spot, and force it to bite down before killing it and sprouting from its head.",
+      "key_terms": [
+        "Ophiocordyceps",
+        "zombie ant",
+        "fungus"
+      ],
+      "whatif": "What if a fungus could drive a living body like a puppet? Ophiocordyceps infects an ant, steers it to a leaf at just the right height and humidity, and makes it clamp on in a 'death grip'.",
+      "wow": "Then it kills the ant and grows a stalk out of its head to rain spores on the colony below — the real inspiration for zombie fiction.",
+      "queries": [
+        "ant macro",
+        "fungus growing",
+        "rainforest insects"
+      ]
+    },
+    {
+      "id": "catatumbo_lightning",
+      "domain": "weather",
+      "angle": "impossible-sounding place that's real",
+      "fact": "There's a place where lightning strikes almost every night of the year, for hours at a time — up to 260 nights a year.",
+      "key_terms": [
+        "Catatumbo",
+        "lightning",
+        "Venezuela"
+      ],
+      "whatif": "What if there were a spot on Earth that was basically a permanent lightning storm? Over Lake Maracaibo in Venezuela, warm air and mountain winds collide to fire near-endless lightning after dark.",
+      "wow": "It flashes so reliably that sailors once used it as a natural lighthouse to navigate.",
+      "queries": [
+        "lightning storm night",
+        "lightning over lake",
+        "thunderstorm"
+      ]
+    },
+    {
+      "id": "diamond_graphite_carbon",
+      "domain": "chemistry",
+      "angle": "same stuff, unbelievably different",
+      "fact": "A diamond and the 'lead' in your pencil are made of the exact same thing — pure carbon. The only difference is how the atoms are stacked.",
+      "key_terms": [
+        "diamond",
+        "graphite",
+        "carbon"
+      ],
+      "whatif": "What if the hardest natural material and one of the softest were secretly identical? Diamond and pencil graphite are both nothing but carbon; rearrange the bonds and one becomes the other.",
+      "wow": "With enough heat and pressure, that pencil mark could, in principle, become a diamond.",
+      "queries": [
+        "diamond close up",
+        "pencil writing",
+        "carbon crystal"
+      ]
+    },
+    {
+      "id": "slow_light_lab",
+      "domain": "light",
+      "angle": "physics that breaks intuition",
+      "fact": "Light normally races at 300 million metres a second — but scientists have slowed it to the speed of a bicycle, and even brought it to a complete stop.",
+      "key_terms": [
+        "light",
+        "slowed",
+        "bicycle speed"
+      ],
+      "whatif": "What if the fastest thing in the universe could be made to crawl? By chilling atoms to near absolute zero, physicists slowed a light beam to about the pace of a rush-hour cyclist.",
+      "wow": "They've even frozen a pulse of light in place, stored it, and released it again moments later — like catching a sunbeam in a jar.",
+      "queries": [
+        "laser beam",
+        "light rays",
+        "physics lab laser"
+      ]
+    },
+    {
+      "id": "fulgurite_lightning_glass",
+      "domain": "geology",
+      "angle": "impossible-sounding thing that's real",
+      "fact": "When lightning hits sand, it can instantly melt it into a jagged tube of glass — a frozen scar shaped like the bolt itself.",
+      "key_terms": [
+        "fulgurite",
+        "lightning",
+        "glass"
+      ],
+      "whatif": "What if you could hold the shape of a lightning strike in your hand? Where a bolt slams into sand, the heat fuses grains into a hollow glass tube called a fulgurite, tracing the path the electricity took underground.",
+      "wow": "Some of these lightning-glass tubes branch metres down into the earth, a permanent cast of a single instant.",
+      "queries": [
+        "lightning strike ground",
+        "sand dunes",
+        "glass formation"
+      ]
     }
   ]
 }
