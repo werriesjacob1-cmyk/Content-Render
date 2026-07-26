@@ -1,95 +1,87 @@
 {
-  "title": "The Astonishing Possibilities of a Shuffled Deck",
+  "title": "Pluto's Eternal Orbit",
   "viewer_job": "REFRAME",
-  "keyword": "shuffled deck of cards",
-  "metaphor": "incredible card arrangements",
-  "hook": "What if every shuffled deck has never existed before?",
-  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+  "keyword": "bending time",
+  "metaphor": "cosmic scale",
+  "hook": "Your great-grandparents saw Pluto's start, but it won't finish?",
+  "hook_headline": "PLUTO'S 248 YEAR WAIT",
+  "script": "Your great-grandparents saw Pluto's start, but it won't finish? What if a whole planet hadn't finished one 'year' since they were young? Pluto takes a long time to circle the Sun. Its highly eccentric orbit is due to Neptune's gravitational influence. The same physics that makes Pluto's orbit so long also means it overlaps with Neptune's for about 20 years. This delayed completion has real consequences for astronomers, as it means the New Horizons spacecraft will be the only one to visit Pluto until at least the 22nd century. Pluto won't complete its orbit until 2178, leaving us to wonder about the vastness of time.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if every shuffled deck has never existed before?",
-      "on_screen_text": "Unique Card Order",
-      "search_query": "shuffling deck of cards",
+      "voiceover": "Your great-grandparents saw Pluto's start, but it won't finish?",
+      "on_screen_text": "Pluto's Orbit",
+      "search_query": "pluto planet",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "You create an order that has almost certainly never existed before.",
-      "on_screen_text": "Cosmic Uniqueness",
-      "search_query": "deck of cards shuffled",
-      "motion": "pan"
+      "voiceover": "What if a whole planet hadn't finished one 'year' since they were young?",
+      "on_screen_text": "Bending Time",
+      "search_query": "dwarf planet",
+      "motion": "static"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
-      "on_screen_text": "52 Factorial",
-      "search_query": "52 factorial explanation",
-      "motion": "zoom_out"
+      "voiceover": "Pluto takes a long time to circle the Sun.",
+      "on_screen_text": "Cosmic Scale",
+      "search_query": "space orbit",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
-      "on_screen_text": "8 Followed by 67",
-      "search_query": "how many card arrangements",
-      "motion": "zoom_in"
+      "voiceover": "Its highly eccentric orbit is due to Neptune's gravitational influence.",
+      "on_screen_text": "Neptune's Pull",
+      "search_query": "neptune planet",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
-      "on_screen_text": "Beyond Atoms",
-      "search_query": "night sky stars",
-      "motion": "pan"
+      "voiceover": "The same physics that makes Pluto's orbit so long also means it overlaps with Neptune's for about 20 years.",
+      "on_screen_text": "Orbital Overlap",
+      "search_query": "pluto neptune",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
-      "on_screen_text": "Statistical Randomness",
-      "search_query": "perfect card shuffle",
-      "motion": "zoom_in"
+      "voiceover": "This delayed completion has real consequences for astronomers, as it means the New Horizons spacecraft will be the only one to visit Pluto until at least the 22nd century.",
+      "on_screen_text": "Astronomical Wait",
+      "search_query": "new horizons pluto",
+      "motion": "rotate"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
-      "on_screen_text": "Rare Odds",
-      "search_query": "identical shuffled decks",
-      "motion": "pan"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
-      "on_screen_text": "Beyond the Universe",
-      "search_query": "card arrangements distance",
+      "voiceover": "Pluto won't complete its orbit until 2178, leaving us to wonder about the vastness of time.",
+      "on_screen_text": "Vastness of Time",
+      "search_query": "pluto orbit",
       "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Have you ever shuffled a deck of cards? Yes or no?",
-    "The odds are staggering!",
-    "Every shuffle is a cosmic first."
+    "What if Pluto's orbit could teach us about time? Will you share this with someone who loves space?",
+    "Pluto's highly eccentric orbit is a reminder of the complexity of our solar system.",
+    "The next time you look up at the night sky, remember Pluto's eternal journey."
   ],
   "hashtags": [
+    "#space",
+    "#pluto",
+    "#astronomy",
     "#science",
-    "#math",
-    "#cards",
-    "#facts",
-    "#universe"
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
-  "cta_style": "COMMENT",
-  "domain": "math",
-  "hook_headline": "NEVER EXISTED BEFORE"
+  "video_id": "science_2026-07-26_pluto-s-eternal-orbit",
+  "cta_style": "LOOP",
+  "domain": "space"
 }
