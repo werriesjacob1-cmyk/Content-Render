@@ -1,94 +1,95 @@
 {
-  "title": "The Immortal Jellyfish: Nature\u2019s Reset Button",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "immortal jellyfish",
-  "metaphor": "life cycle reset",
-  "hook": "What if aging could be undone at will?",
-  "script": "What if aging could be undone at will? The Turritopsis dohrnii jellyfish can reverse its own life cycle. When injured or old, it reverts to its juvenile polyp form. This astonishing capability allows it to start anew, potentially forever. In just 24 hours, it can transform back to its younger state after stress. This challenges our understanding of aging as a linear process. The jellyfish's ability stems from transdifferentiation, a remarkable cellular transformation. Just 4.5 millimeters in diameter, it is the only known animal that is biologically immortal.",
+  "title": "The Astonishing Possibilities of a Shuffled Deck",
+  "viewer_job": "REFRAME",
+  "keyword": "shuffled deck of cards",
+  "metaphor": "incredible card arrangements",
+  "hook": "What if every shuffled deck has never existed before?",
+  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if aging could be undone at will?",
-      "on_screen_text": "Immortal Jellyfish",
-      "search_query": "jellyfish glowing ocean",
+      "voiceover": "What if every shuffled deck has never existed before?",
+      "on_screen_text": "Unique Card Order",
+      "search_query": "shuffling deck of cards",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The Turritopsis dohrnii jellyfish can reverse its own life cycle.",
-      "on_screen_text": "Life Cycle Reversal",
-      "search_query": "translucent jellyfish underwater",
+      "voiceover": "You create an order that has almost certainly never existed before.",
+      "on_screen_text": "Cosmic Uniqueness",
+      "search_query": "deck of cards shuffled",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "When injured or old, it reverts to its juvenile polyp form.",
-      "on_screen_text": "Juvenile Polyp",
-      "search_query": "jellyfish swimming dark",
+      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
+      "on_screen_text": "52 Factorial",
+      "search_query": "52 factorial explanation",
       "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "This astonishing capability allows it to start anew, potentially forever.",
-      "on_screen_text": "Start Anew",
-      "search_query": "jellyfish underwater",
-      "motion": "pan"
+      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
+      "on_screen_text": "8 Followed by 67",
+      "search_query": "how many card arrangements",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "In just 24 hours, it can transform back to its younger state after stress.",
-      "on_screen_text": "24 Hour Reset",
-      "search_query": "jellyfish in motion",
-      "motion": "zoom_in"
+      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
+      "on_screen_text": "Beyond Atoms",
+      "search_query": "night sky stars",
+      "motion": "pan"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "This challenges our understanding of aging as a linear process.",
-      "on_screen_text": "Aging Redefined",
-      "search_query": "jellyfish glowing ocean",
-      "motion": "pan"
+      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
+      "on_screen_text": "Statistical Randomness",
+      "search_query": "perfect card shuffle",
+      "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The jellyfish's ability stems from transdifferentiation, a remarkable cellular transformation.",
-      "on_screen_text": "Transdifferentiation",
-      "search_query": "jellyfish underwater closeup",
-      "motion": "zoom_out"
+      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
+      "on_screen_text": "Rare Odds",
+      "search_query": "identical shuffled decks",
+      "motion": "pan"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "Just 4.5 millimeters in diameter, it is the only known animal that is biologically immortal.",
-      "on_screen_text": "Biologically Immortal",
-      "search_query": "close up jellyfish",
-      "motion": "zoom_in"
+      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+      "on_screen_text": "Beyond the Universe",
+      "search_query": "card arrangements distance",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know about the immortal jellyfish? Yes or no?",
-    "Discover the secrets of Turritopsis dohrnii.",
-    "Aging may not be what you think."
+    "Have you ever shuffled a deck of cards? Yes or no?",
+    "The odds are staggering!",
+    "Every shuffle is a cosmic first."
   ],
   "hashtags": [
-    "#jellyfish",
-    "#biology",
-    "#immortality",
-    "#nature",
-    "#science"
+    "#science",
+    "#math",
+    "#cards",
+    "#facts",
+    "#universe"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-25_the-immortal-jellyfish-nature-s-reset-bu",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "animals"
+  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
+  "cta_style": "COMMENT",
+  "domain": "math",
+  "hook_headline": "NEVER EXISTED BEFORE"
 }
