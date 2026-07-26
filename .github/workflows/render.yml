@@ -132,6 +132,13 @@ jobs:
           # (stronger than Cerebras' free model) on a separate daily bucket.
           # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # OpenRouter WRITER MODEL. The free llama-3.3-70b overshoots the word cap
+          # and returns empty bodies (renders 161-165 aborted on it, 1 clean in 5).
+          # With paid credits we use a stronger model that follows the length/format
+          # rules and clears the quality floor reliably. Env-overridable via a repo
+          # Variable (Settings -> Variables -> OPENROUTER_MODEL) with no code change;
+          # default gpt-4o. Cheaper strong alt: deepseek/deepseek-chat.
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'openai/gpt-4o' }}
           # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
           # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
           # mistral-small on their free tiers). Optional — absent keys are simply
