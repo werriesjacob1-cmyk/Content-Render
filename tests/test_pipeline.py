@@ -760,6 +760,13 @@ def test_draft_is_weak():
     check(G.draft_is_weak(8.0, None) is False, "quality None -> not weak")
     # the force flag exists and defaults off so normal runs stay free-first
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
+    # COHERENCE is a hard floor now (render-160 fix): a script that scores high on
+    # everything but is INCOHERENT must be flagged weak (and, in main(), aborted) —
+    # a confusing script can no longer hide behind a high overall.
+    check("coherence" in floors, "coherence is a per-criterion floor")
+    incoherent = {**strong, "coherence": floors["coherence"] - 1}
+    check(G.draft_is_weak(thr + 1.0, incoherent) is True,
+          "high overall but coherence below floor -> weak (the 9.33-on-nonsense bug)")
 
 
 def test_cover_headline():

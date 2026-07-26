@@ -271,6 +271,13 @@ QUALITY_CRITERION_FLOORS = {
     "hook": 6,
     "escalation": 6,
     "payoff": 6,
+    # COHERENCE (added after render 160 "Pluto's Eternal Orbit" scored 9.33 while
+    # being literally incoherent — "your great-grandparents saw Pluto's start, but
+    # it won't finish": start/finish of WHAT?). The old rubric's "clarity" only
+    # checked whether the WORDS were simple, so a simple-sounding but MUDDLED script
+    # sailed through. A script whose premise doesn't hold together must ABORT, not
+    # ship at a fake-high score — this is the honest-grading fix.
+    "coherence": 6,
 }
 # HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
 # The quality loop keeps the best attempt and, if none clear QUALITY_THRESHOLD,
@@ -303,7 +310,7 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
 # well under this (each LLM call is seconds, not minutes), so it never trips
 # normal operation — it only bites a fully-throttled run. Env-overridable.
 GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
-QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
+QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity", "coherence"]
 
 
 def draft_is_weak(overall, quality):
@@ -861,6 +868,11 @@ HOOK (first 2 seconds decide 70% of retention):
   "Imagine", "What if I told you", "Here's", "This is", "Ever wonder". BAD: "Have you ever wondered what
   your stomach acid can do?" GOOD: "Your stomach acid could dissolve a razor blade." Open cold on the
   shock. (A curiosity '?' still appears by scene 2, never as the very first line.)
+- MAKE LITERAL SENSE (non-negotiable): every line must be TRUE and have clear referents — no vague
+  pronoun a listener can't resolve. State the actual fact PLAINLY. BAD: "your great-grandparents saw
+  Pluto's start, but it won't finish" (start of WHAT? finish WHAT? — meaningless). GOOD: "Pluto takes
+  248 years to circle the Sun — it hasn't finished a single lap since we discovered it in 1930." If a
+  smart listener could ask "wait, what does that even mean?", it is BROKEN — rewrite it.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
@@ -2024,10 +2036,11 @@ Score each criterion 0-10 (integers, be strict):
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
-- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+- clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
-{{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+{{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
         raw = call_groq(prompt)
         data = json.loads(raw)
         # Robust coercion: the model frequently returns a score as a STRING
@@ -2103,10 +2116,11 @@ Do TWO things:
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
-- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+- clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
-{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
         raw = call_groq(prompt)
         data = json.loads(raw)
     except Exception as e:  # noqa: BLE001 - both halves fail open together

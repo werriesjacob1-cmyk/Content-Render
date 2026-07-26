@@ -1928,11 +1928,19 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # ANY failure falls straight through to the single-clip render below — a
         # render can never break because of this.
         plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if (SCENE_MULTICLIP and not fal_filled) else [seg_dur]
-        if len(plan) > 1:
+        # Gather the DISTINCT extra clips first. Multi-cut ONLY if we actually got a
+        # second distinct clip — cutting between sub-clips of the SAME source is just
+        # the one photo panned three different ways (user: "at 25s it pans left, zooms
+        # out, zooms in, fades right on the same Moon photo — that's not a cut"). With
+        # a single source, hold it under ONE smooth motion instead of faking cuts.
+        try:
+            extra = _extra_scene_clips(scene, max(0, len(plan) - 1),
+                                       set(_used_video_ids), os.path.join(WORK, f"s{idx}_sub"))
+        except Exception:  # noqa: BLE001 — never let footage gathering break a render
+            extra = []
+        sources = [raw] + extra
+        if len(plan) > 1 and len(sources) >= 2:
             try:
-                sources = [raw] + _extra_scene_clips(
-                    scene, len(plan) - 1, set(_used_video_ids),
-                    os.path.join(WORK, f"s{idx}_sub"))
                 parts = []
                 _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
                 for j, d in enumerate(plan):
@@ -2523,7 +2531,10 @@ def _ensure_music_bed(duration):
 
 
 # ---------- CUT WHOOSHES (rhythm/punch on scene changes) ----------
-SFX_CUTS = os.getenv("SFX_CUTS", "1") != "0"
+# Cut whooshes OFF by default — the user found them distracting ("not sure I like
+# it") and, with the same-photo fake-cuts removed, there are far fewer real cuts to
+# punctuate anyway. Opt back in per-render with SFX_CUTS=1.
+SFX_CUTS = os.getenv("SFX_CUTS", "0") != "0"
 
 
 def _make_cut_whooshes(cut_times, total_dur, dest):
