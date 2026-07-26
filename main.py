@@ -1691,6 +1691,78 @@ def _footage_intent(scene):
     return subject or vo
 
 
+# ---------- MULTI-CLIP SCENES (cut between several clips inside one beat) ----------
+# The "more clips / more movement / constant flashing of different scenes"
+# feedback: a scene used to hold ONE looped clip for its whole 5-7s, which reads
+# as static. Now a long scene is split into 2-4 sub-clips that hard-cut on beat,
+# each with its own Ken-Burns move, while the narration audio stays one
+# continuous, word-synced take (captions are unaffected — they anchor to the
+# scene boundary + word timings, which don't change). Fully env-gated and
+# fail-safe: on ANY error the scene renders exactly as before (one clip).
+SCENE_MULTICLIP = os.getenv("SCENE_MULTICLIP", "1") != "0"
+CLIP_SECONDS    = float(os.getenv("CLIP_SECONDS", "2.4"))   # target on-screen time per clip
+MAX_SUBCLIPS    = int(os.getenv("MAX_SUBCLIPS", "4"))        # cap distinct clips per scene
+_MULTICLIP_MOTIONS = ["zoom_in", "pan", "zoom_out"]          # cycled so no two cuts move alike
+
+
+def _subclip_plan(seg_dur, target_secs, max_subclips):
+    """Split a scene of `seg_dur` seconds into as-even-as-possible sub-clip
+    durations so the video CUTS between different clips instead of holding one.
+    Count = clamp(round(seg_dur / target_secs), 1, max_subclips); durations sum
+    EXACTLY to seg_dur (rounding slack lands on the last piece). A single-element
+    list means 'no sub-cutting' (short scene) — the caller renders as before.
+    Pure/fail-safe: bad inputs return a single full-length segment."""
+    try:
+        seg_dur = float(seg_dur); target_secs = float(target_secs)
+    except (TypeError, ValueError):
+        return [seg_dur]
+    if seg_dur <= 0 or target_secs <= 0 or int(max_subclips) < 1:
+        return [max(0.0, seg_dur)]
+    n = max(1, min(int(round(seg_dur / target_secs)), int(max_subclips)))
+    if n <= 1:
+        return [round(seg_dur, 3)]
+    base = round(seg_dur / n, 3)
+    return [base] * (n - 1) + [round(seg_dur - base * (n - 1), 3)]
+
+
+def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
+    """Download up to `need` ADDITIONAL distinct, non-dark clips for a scene so
+    build_scene can cut between several clips. Cheap: reuses the already-gathered
+    stock candidates by the source's own ranking — NO extra LLM judge calls — and
+    keeps them on-topic by requiring a shared subject word with the scene query.
+    Returns a list of local file paths (may be shorter than `need`, or empty;
+    the caller then just reuses the primary clip for the remaining slots). Fully
+    fail-safe: any error yields whatever was gathered so far."""
+    paths = []
+    if need <= 0:
+        return paths
+    q = scene.get("search_query", "") or scene.get("voiceover", "")
+    try:
+        cands = _gather_candidates(q)
+    except Exception:  # noqa: BLE001
+        return paths
+    seen = set(exclude_ids)
+    qw = _relevance_words(q)
+    for c in cands or []:
+        if len(paths) >= need:
+            break
+        cid = c.get("id")
+        if cid in seen:
+            continue
+        if len(qw) >= 2 and not (qw & _relevance_words(c.get("desc", ""))):
+            continue  # keep sub-clips on-subject
+        p = f"{dest_prefix}_{len(paths)}.mp4"
+        try:
+            _download(c["url"], p)
+            if _clip_too_dark(p):
+                continue
+            seen.add(cid); _used_video_ids.add(cid); _used_history.append(cid)
+            paths.append(p)
+        except Exception:  # noqa: BLE001 — skip a bad clip, keep going
+            continue
+    return paths
+
+
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
@@ -1718,6 +1790,45 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         lift = _shadow_lift_filter(_avg)
         if lift:
             print(f"  [grade] lifting dim clip (avg luma {_avg:.0f}) for legibility")
+
+        # MULTI-CLIP: on a long scene, cut between several different clips instead
+        # of holding one (the "more clips / constant flashing" note). Wrapped so
+        # ANY failure falls straight through to the single-clip render below — a
+        # render can never break because of this.
+        plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if SCENE_MULTICLIP else [seg_dur]
+        if len(plan) > 1:
+            try:
+                sources = [raw] + _extra_scene_clips(
+                    scene, len(plan) - 1, set(_used_video_ids),
+                    os.path.join(WORK, f"s{idx}_sub"))
+                parts = []
+                for j, d in enumerate(plan):
+                    src = sources[j % len(sources)]   # cycle if we got fewer distinct clips
+                    part = os.path.join(WORK, f"s{idx}_p{j}.mp4")
+                    pf = max(1, round(d * 30))
+                    pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
+                                             pf, zspeed, idx=idx + j, prev_kind=None)
+                    pstat = stat if j == 0 else ""   # number card once, on the first cut only
+                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", src, "-t", f"{d:.3f}",
+                         "-filter_complex", f"[0:v]{pmotion}{lift}{grade}{pstat},setsar=1[v]",
+                         "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p",
+                         "-an", "-c:v", "libx264", part])
+                    parts.append(part)
+                listf = os.path.join(WORK, f"s{idx}_concat.txt")
+                with open(listf, "w") as f:
+                    for p in parts:
+                        f.write(f"file '{os.path.abspath(p)}'\n")
+                sv = os.path.join(WORK, f"s{idx}_v.mp4")
+                run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listf, "-c", "copy", sv])
+                run(["ffmpeg", "-y", "-i", sv, "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
+                     "-t", f"{seg_dur:.3f}", "-r", "30", "-pix_fmt", "yuv420p",
+                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                print(f"  multi-clip scene: {len(parts)} cuts across {seg_dur:.1f}s "
+                      f"({len(sources)} distinct clip(s))")
+                return out
+            except Exception as e:  # noqa: BLE001 — never break a render
+                print(f"  multi-clip render failed ({e}) — falling back to single clip")
+
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
              "-filter_complex", f"[0:v]{motion}{lift}{grade}{stat},setsar=1[v]",

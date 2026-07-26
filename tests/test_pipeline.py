@@ -695,6 +695,26 @@ def test_draft_is_weak():
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
 
 
+def test_subclip_plan():
+    section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
+    # a short scene stays a single clip (no sub-cutting)
+    check(M._subclip_plan(2.0, 2.4, 4) == [round(2.0, 3)], "short scene (2.0s) -> 1 clip")
+    # a ~6s scene at 2.4s target -> round(6/2.4)=round(2.5)=2 (banker's rounding) or 3;
+    # whichever, it must be >1 and sum exactly to seg_dur
+    for seg in (5.0, 6.0, 7.2, 9.6):
+        plan = M._subclip_plan(seg, 2.4, 4)
+        check(len(plan) > 1, f"{seg}s scene -> multiple clips ({len(plan)})")
+        check(abs(sum(plan) - seg) < 1e-6, f"{seg}s sub-durations sum to seg_dur exactly")
+        check(len(plan) <= 4, f"{seg}s scene respects MAX_SUBCLIPS cap (<=4)")
+    # the cap is honored even for a very long scene
+    check(len(M._subclip_plan(30.0, 2.4, 4)) == 4, "30s scene capped at 4 clips")
+    # fail-safe: bad inputs collapse to a single segment, never crash
+    check(M._subclip_plan(0, 2.4, 4) == [0.0], "zero-duration -> single empty segment")
+    check(M._subclip_plan(6.0, 0, 4) == [6.0], "zero target -> single full segment")
+    check(M._subclip_plan(6.0, 2.4, 0) == [6.0], "max_subclips 0 -> single full segment")
+    check(M._extra_scene_clips({}, 0, set(), "/tmp/x") == [], "need<=0 -> no extra clips (no network)")
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -740,6 +760,7 @@ def main():
     test_hook_headline_event()
     test_caption_autoshrink()
     test_draft_is_weak()
+    test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
