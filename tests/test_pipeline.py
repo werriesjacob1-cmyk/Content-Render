@@ -34,6 +34,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import main as M
 import generate as G
+import expand_bank as E
+import json as _json
 
 # --------------------------------------------------------------------------
 # tiny test harness
@@ -672,6 +674,47 @@ def test_caption_autoshrink():
     check(fs >= 58, f"shrunk size {fs} respects the readable floor (>=58)")
 
 
+def test_bank_expander():
+    section("expand_bank: strict WTF gate + dedup (scaling the bank to ~500)")
+    have_ids = {"turtle_breathing"}
+    have_norms = [E._norm("some turtles breathe through their rear ends underwater")]
+    good = {"id":"New-Fact!","domain":"animals","fact":"A mushroom in Oregon is one single organism spread across four square miles.",
+            "angle":"x","key_terms":["mushroom","Oregon"],"whatif":"What if the biggest living thing were a fungus?",
+            "wow":"it is mostly underground","queries":["forest","mushroom","oregon woods"]}
+    ok = E.accept_fact(good, have_ids, have_norms)
+    check(ok is not None, "a strong novel fact is accepted")
+    check(ok and ok["id"] == "new_fact", "id is sanitized to snake_case")
+    # magnitude/scale facts are rejected
+    mag = {**good, "id":"m1", "fact":"There are 10 times more bacteria than human cells in your body."}
+    check(E.accept_fact(mag, have_ids, have_norms) is None, "'N times more' magnitude fact rejected")
+    mag2 = {**good, "id":"m2", "fact":"A shuffled deck has more combinations than atoms on Earth."}
+    check(E.accept_fact(mag2, have_ids, have_norms) is None, "combinations/atoms magnitude fact rejected")
+    # dup id + near-duplicate text rejected
+    check(E.accept_fact({**good, "id":"turtle_breathing"}, have_ids, have_norms) is None, "duplicate id rejected")
+    dupish = {**good, "id":"d1", "fact":"Some turtles breathe through their rear ends underwater."}
+    check(E.accept_fact(dupish, have_ids, have_norms) is None, "near-duplicate fact text rejected")
+    # missing keys / empty lists rejected
+    check(E.accept_fact({"id":"x","domain":"y","fact":"a long enough claim about the world here"}, set(), []) is None,
+          "schema-incomplete fact rejected")
+    # JSON array extraction tolerates surrounding prose
+    arr = E._extract_json_array('Sure! Here you go:\n[{"a":1}]\nHope that helps')
+    check(_json.loads(arr) == [{"a":1}], "_extract_json_array pulls the array out of prose")
+
+
+def test_topic_bank_integrity():
+    section("topic_bank.json: every fact is schema-complete (regression guard)")
+    bank = _json.load(open(os.path.join(os.path.dirname(M.__file__), "topic_bank.json")))
+    facts = bank["facts"]
+    check(len(facts) >= 115, f"bank has grown ({len(facts)} facts)")
+    ids = [f.get("id") for f in facts]
+    check(len(ids) == len(set(ids)), "no duplicate fact ids")
+    req = {"id","domain","fact","angle","key_terms","whatif","wow","queries"}
+    bad = [f.get("id") for f in facts if not req <= set(f)]
+    check(not bad, f"all facts have the full schema (missing: {bad[:3]})")
+    listy = [f.get("id") for f in facts if not (isinstance(f.get("key_terms"),list) and isinstance(f.get("queries"),list))]
+    check(not listy, f"key_terms + queries are lists everywhere (bad: {listy[:3]})")
+
+
 def test_caption_pop_animation():
     section("main._event: kinetic pop-in (overshoot bounce) + bigger keyword pop")
     saved = set(M._KEYWORD_TOKENS)
@@ -799,6 +842,8 @@ def main():
     test_hook_headline_event()
     test_caption_autoshrink()
     test_caption_pop_animation()
+    test_bank_expander()
+    test_topic_bank_integrity()
     test_draft_is_weak()
     test_cover_headline()
     test_subclip_plan()
