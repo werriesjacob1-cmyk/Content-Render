@@ -28,8 +28,8 @@ PROFILES = {
                                        # the important word. Set "" to disable.
         "cap_outline": 4,
         # look
-        "grade": "eq=contrast=1.08:saturation=1.12:brightness=-0.02,curves=preset=medium_contrast,vignette=PI/6",
-        "zoom_speed": 0.0006,         # slow cinematic
+        "grade": "eq=contrast=1.16:saturation=1.30:brightness=-0.02,curves=preset=medium_contrast,vignette=PI/6",
+        "zoom_speed": 0.0009,         # punchier drift (POP) — was 0.0006 slow-cinematic
         # Number overlay DISABLED (was True): the floating "3.8" / "80,000 times"
         # card popped at the top of the frame and lingered — read as clutter
         # (user feedback on the Cosmic Coincidence video). The figure is already
@@ -39,7 +39,7 @@ PROFILES = {
         "motion_graphics": False,     # animated number card when a scene has a stat
         # audio
         "music": "music_science.mp3",
-        "music_vol": 0.10,   # ~-20dB under the (loudness-normalized) music bed;
+        "music_vol": 0.14,   # a touch more present (POP) — still well under the voice;
                               # see MUSIC_CREDITS.md for source + license + mix table
         # posting
         "post_window": "evening (7-10pm) — reflective, lean-back learning",
