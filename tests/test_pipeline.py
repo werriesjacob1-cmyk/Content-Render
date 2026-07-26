@@ -788,6 +788,31 @@ def test_variant_queries():
     check(M._variant_queries("the a of") == ["the a of"], "all-stopword query -> just the phrase")
 
 
+def test_fal_gap_fill_gating():
+    section("main: fal AI-video gap-fill — subject-anchored prompt + cost gating (no network)")
+    # prompt anchors on the literal SUBJECT (search_query), never the metaphor, and
+    # guards against burned-in text/watermark — the render-160 relevance fix.
+    sc = {"search_query": "pluto dwarf planet space",
+          "voiceover": "Your great-grandparents saw its journey begin."}
+    p = M._fal_prompt(sc)
+    check(p.startswith("pluto dwarf planet space"), f"fal prompt leads with the subject ({p[:40]!r})")
+    check("no text" in p and "no watermark" in p, "fal prompt guards against burned-in text/watermark")
+    check(M._fal_prompt({"search_query": "", "voiceover": "just this"}).startswith("just this"),
+          "falls back to the voiceover when there is no subject")
+    # cost gate: the ONLY thing that lets fal spend. No key => never spends (free
+    # tier byte-for-byte unchanged); at the per-video cap => stops.
+    _k, _n, _cap = M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS
+    try:
+        M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = "", 0, 2
+        check(M._fal_can_spend() is False, "no FAL_KEY -> never spends (feature is a no-op)")
+        M.FAL_KEY = "x"
+        check(M._fal_can_spend() is True, "key present and under cap -> may spend")
+        M.FAL_VIDEO_SCENES = 2
+        check(M._fal_can_spend() is False, "at the per-video cap -> stops spending")
+    finally:
+        M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -861,6 +886,7 @@ def main():
     test_draft_is_weak()
     test_cover_headline()
     test_variant_queries()
+    test_fal_gap_fill_gating()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

@@ -221,6 +221,15 @@ jobs:
           # music bed for every render — overrides the bundled loop, no file commit
           # needed. Leave unset to use the committed per-profile track.
           MUSIC_URL:           ${{ vars.MUSIC_URL }}
+          # AI-VIDEO GAP-FILL (fal.ai): when a scene's stock footage is off-topic or
+          # missing, generate an ON-TOPIC AI video clip instead. Fires ONLY on weak
+          # scenes and is capped at FAL_MAX_CLIPS/video, so cost is a few cents on the
+          # occasional abstract topic and $0 on topics with good stock. No secret set
+          # => the feature is a no-op (free-tier behaviour unchanged).
+          FAL_KEY:             ${{ secrets.FAL_KEY }}
+          # optional overrides (no code edit): swap the t2v model or the per-video cap.
+          FAL_VIDEO_MODEL:     ${{ vars.FAL_VIDEO_MODEL }}
+          FAL_MAX_CLIPS:       ${{ vars.FAL_MAX_CLIPS }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
