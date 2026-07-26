@@ -815,8 +815,11 @@ def test_429_wait_and_retry_helpers():
     check(G._is_weak_model("cerebras", "gemma-4-31b") is True, "cerebras gemma is weak")
     check(G._is_weak_model("groq", "llama-3.3-70b-versatile") is False, "groq 70b is a primary writer")
     check(G._is_weak_model("gemini", "gemini-flash-latest") is False, "gemini is a primary writer")
-    check(G._is_weak_model("openrouter", "meta-llama/llama-3.3-70b-instruct:free") is False,
+    check(G._is_weak_model("openrouter", "meta-llama/llama-3.3-70b-instruct") is False,
           "openrouter 70b is a primary writer")
+    # the discontinued free slug must NOT be the default any more (paid credits now)
+    check(all(":free" not in m for m in G.OPENROUTER_MODELS),
+          "openrouter default slug is the PAID llama-3.3-70b (no dead :free slug)")
     check(G._is_weak_model("github", "gpt-4o-mini") is False, "github gpt-4o-mini is a primary writer")
     # _parse_retry_secs: parse the per-minute wait hint each provider gives
     check(abs(G._parse_retry_secs("Please try again in 11.83s.") - 11.83) < 1e-6,

@@ -192,10 +192,17 @@ def cerebras_models():
 # endpoint, so it reuses _call_openai_compat. Optional/env-gated (no key = skip).
 # Free key (no card): https://openrouter.ai/keys . Add as OPENROUTER_API_KEY.
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-# deepseek-chat-v3-0324:free was dropped — OpenRouter now 404s it ("no longer
-# free"). llama-3.3-70b:free is the reliable strong free model (a 429 from it is
-# a transient upstream rate-limit, not a dead slug, so it stays).
-OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
+# The FREE llama-3.3-70b slug ("...:free") was discontinued — OpenRouter 404s it
+# ("This model is unavailable for free. The paid version is available now - use
+# this slug instead: meta-llama/llama-3.3-70b-instruct"). With paid credits on the
+# key we use that PAID slug (drop ":free"): a strong, NON-rate-limited writer — a
+# few cents per render — that catches the nights Gemini's quota 429s. This is the
+# reliability fix for the aborted renders (every strong free writer was exhausted).
+# Env-overridable (OPENROUTER_MODEL, comma-separated) so the model can change with
+# NO code edit — e.g. set it to deepseek/deepseek-chat-v3 for a stronger writer.
+_OR_RAW = os.environ.get("OPENROUTER_MODEL", "").strip()
+OPENROUTER_MODELS = [m.strip() for m in _OR_RAW.split(",") if m.strip()] or \
+    ["meta-llama/llama-3.3-70b-instruct"]
 # More free/separate-bucket providers, all OpenAI-compatible and ENV-GATED (no
 # key = skipped, zero behaviour change). Each is its own daily bucket, so adding
 # any one key gives a whole extra pool of strong-model generation on free tier —
