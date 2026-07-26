@@ -214,6 +214,9 @@ jobs:
           GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
           CEREBRAS_API_KEY:    ${{ secrets.CEREBRAS_API_KEY }}
           OPENROUTER_API_KEY:  ${{ secrets.OPENROUTER_API_KEY }}
+          # burned onto the auto-generated cover thumbnail (out/cover.jpg); if the
+          # repo Variable isn't set the handle line is simply omitted.
+          CHANNEL_HANDLE:      ${{ vars.CHANNEL_HANDLE }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
@@ -264,6 +267,7 @@ jobs:
             out/square.mp4
             out/landscape.mp4
             out/final.mp4
+            out/cover.jpg
             out/post.json
             out/platforms.json
             out/platform_text.json
@@ -292,6 +296,9 @@ jobs:
           for f in post platforms platform_text funnel; do
             [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
           done
+          # the designed cover thumbnail (bold hook on the best clean frame) so
+          # whoever posts has a ready cover instead of TikTok's black default
+          [ -f "out/cover.jpg" ] && FILES="$FILES out/cover.jpg"
           # release body = the CLEAN universal caption + hashtags (repackage.py
           # writes it). It is the post caption verbatim: the Zap maps Publer's Text
           # field straight to the GitHub {{Body}} field, so NOTHING else may go in

@@ -695,6 +695,21 @@ def test_draft_is_weak():
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
 
 
+def test_cover_headline():
+    section("main._cover_headline: cover thumbnail hook text")
+    # uses the manifest's short hook_headline when present, uppercased
+    check(M._cover_headline({"hook_headline": "Breathes How?!", "title": "X"}) == "BREATHES HOW?!",
+          "hook_headline wins, uppercased")
+    # falls back to the title when no hook_headline
+    check(M._cover_headline({"title": "The Immortal Jellyfish"}) == "THE IMMORTAL JELLYFISH",
+          "title fallback when no hook_headline")
+    check(M._cover_headline({"hook_headline": "  ", "title": "Turtles"}) == "TURTLES",
+          "blank hook_headline falls back to title")
+    # never crashes on an empty manifest; long text is capped
+    check(M._cover_headline({}) == "SCIENCE", "empty manifest -> safe default")
+    check(len(M._cover_headline({"title": "z" * 200})) <= 60, "headline capped at 60 chars")
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -760,6 +775,7 @@ def main():
     test_hook_headline_event()
     test_caption_autoshrink()
     test_draft_is_weak()
+    test_cover_headline()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

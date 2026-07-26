@@ -2222,6 +2222,111 @@ def build_body_xfade(scene_files, out_path, xf=None, style=None):
          "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", out_path])
 
 
+# ---------- COVER / THUMBNAIL ----------
+# Every finished video ships with a designed cover so the profile grid never
+# shows a black frame (the "no one clicks a black tile" problem). Built off the
+# CLEAN pre-caption body video with ffmpeg drawtext (no new dependency, same
+# path as the stat-cards), so it can't clash with the burned-in captions. Fully
+# fail-safe: any error just skips the cover and the video still ships.
+
+def _cover_headline(m):
+    """Short ALL-CAPS hook for the cover: the manifest's hook_headline if the
+    generator wrote one, else a trimmed uppercase title. Pure/testable."""
+    h = (m.get("hook_headline") or "").strip()
+    if not h:
+        h = (m.get("title") or "SCIENCE").strip()
+    return h.upper()[:60]
+
+
+def _frame_stats(png):
+    """(mean luma, mean saturation) of an image via ffmpeg signalstats, 0-255
+    each, or (None, None). Saturation is a cheap proxy for 'visually interesting'
+    — a vivid subject scores far above a flat gray texture."""
+    try:
+        out = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-i", png, "-vf",
+             "signalstats,metadata=print", "-frames:v", "1", "-f", "null", "-"],
+            capture_output=True, text=True, timeout=20).stderr
+        y = re.search(r"YAVG=([0-9.]+)", out)
+        s = re.search(r"SATAVG=([0-9.]+)", out)
+        return (float(y.group(1)) if y else None,
+                float(s.group(1)) if s else None)
+    except Exception:  # noqa: BLE001
+        return (None, None)
+
+
+def _pick_cover_frame(video, dest):
+    """Extract the best-looking frame from the clean body video: sample across
+    the middle of the clip and, among frames bright enough to pop on the grid
+    (not near-black, not blown out), take the most COLORFUL one — a vivid subject
+    beats a flat gray texture. Falls back to the brightest if none qualify.
+    Returns dest or None."""
+    dur = ffprobe_dur(video) or 0
+    if dur <= 0:
+        return None
+    bright, colorful = None, None   # (score, path)
+    for frac in (0.16, 0.26, 0.36, 0.46, 0.56, 0.66, 0.76, 0.86):
+        cand = os.path.join(WORK, f"cover_cand_{int(frac*100)}.png")
+        try:
+            run(["ffmpeg", "-y", "-ss", f"{dur*frac:.2f}", "-i", video,
+                 "-frames:v", "1", cand])
+        except Exception:  # noqa: BLE001
+            continue
+        y, sat = _frame_stats(cand)
+        if y is None:
+            continue
+        if bright is None or -abs(y - 125) > bright[0]:
+            bright = (-abs(y - 125), cand)
+        if 55 <= y <= 205 and sat is not None:        # well-exposed → rank by colorfulness
+            if colorful is None or sat > colorful[0]:
+                colorful = (sat, cand)
+    pick = colorful or bright
+    if pick is None:
+        return None
+    shutil.copyfile(pick[1], dest)
+    return dest
+
+
+def make_cover(video, m, dest):
+    """Write a designed cover JPG (best clean frame + the hook headline burned
+    on, yellow accent on the last line, channel handle at the bottom). Never
+    raises — returns True on success, False (and skips) on any problem."""
+    try:
+        src = _pick_cover_frame(video, os.path.join(WORK, "cover_src.png"))
+        if not src:
+            print("  [cover] no usable frame — skipping"); return False
+        fs, lines = _fit_text_block(_cover_headline(m), int(W * 0.88), int(H * 0.30),
+                                    max_fs=118, min_fs=60)
+        line_h = fs * 1.26
+        top = int(H * 0.13)
+        band_h = int(top + line_h * len(lines) + 70)
+        filters = [f"drawbox=x=0:y=0:w=iw:h={band_h}:color=black@0.45:t=fill"]
+        for i, l in enumerate(lines):
+            lf = os.path.join(WORK, f"cover_l{i}.txt")
+            with open(lf, "w") as f:
+                f.write(l)
+            color = "#FFD400" if (len(lines) > 1 and i == len(lines) - 1) else "white"
+            filters.append(
+                f"drawtext=textfile='{lf}':fontfile='{FONT}':fontsize={fs}:"
+                f"fontcolor={color}:borderw=9:bordercolor=black:"
+                f"x=(w-tw)/2:y={int(top + i*line_h)}")
+        handle = os.getenv("CHANNEL_HANDLE", "").strip()
+        if handle:
+            hf = os.path.join(WORK, "cover_handle.txt")
+            with open(hf, "w") as f:
+                f.write(handle)
+            filters.append(
+                f"drawtext=textfile='{hf}':fontfile='{FONT}':fontsize=46:"
+                f"fontcolor=white:borderw=6:bordercolor=black:x=(w-tw)/2:y=h-130")
+        run(["ffmpeg", "-y", "-i", src, "-vf", ",".join(filters),
+             "-frames:v", "1", "-q:v", "3", dest])
+        print(f"  [cover] wrote {dest} ({len(lines)} line(s), fs {fs})")
+        return True
+    except Exception as e:  # noqa: BLE001 — a cover is a nice-to-have, never fatal
+        print(f"  [cover] generation failed ({e}) — skipping (video still ships)")
+        return False
+
+
 # ---------- MAIN ----------
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
@@ -2453,6 +2558,9 @@ def main():
                    # hook + domain feed funnel.py (topic-matched affiliate angle,
                    # pinned comment, newsletter blurb — see repackage.py).
                    "hook": m.get("hook", ""), "domain": m.get("domain", "")}, f, indent=2)
+    # COVER: designed thumbnail off the CLEAN body video (no burned captions) so
+    # the profile grid shows a bold hook, never a black tile. Never fatal.
+    make_cover(body, m, os.path.join(OUT, "cover.jpg"))
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 
