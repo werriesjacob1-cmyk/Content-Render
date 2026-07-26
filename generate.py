@@ -831,28 +831,15 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
   numbers scroll by. You are writing a little MIND EXERCISE, not a stats readout. Test every script:
   strip out every number — is there still a fascinating IDEA left? If nothing interesting remains once
   the numbers are gone, the script has no soul; rewrite it around the strange idea, or it fails.
-  * BIG OR SMALL IS NOT INTERESTING BY ITSELF. "This number is unimaginably huge / tiny / old / fast"
-    is NOT a payoff — it's the weakest, most forgettable kind of science content, and it will be
-    rejected. Magnitude alone impresses no one; a smart viewer shrugs at "wow, that's a big number."
-    A pure scale/counting fact — how many ways to shuffle a deck, how many atoms in a grain, how many
-    times bigger X is than Y — is a DEAD topic unless the scale reveals something that reframes reality
-    or matters to a real person. Before writing, apply the WHO-CARES TEST: would a normal person retell
-    this at dinner? Does it overturn an assumption, expose a hidden mechanism, or change how they see
-    something they thought they understood? If the only answer is "it's really big," pick a different
-    angle or a different fact.
-  * A topic whose ONLY hook is a measurement (how tall Everest is, how many people did X, how fast Y
-    goes, how many combinations exist) is WEAK trivia, not wonder. If the fact is really just "this
-    thing is big/old/fast/numerous," find the STRANGE IMPLICATION behind it (what it means, why it's
-    impossible-sounding, what it reveals about how the world actually works) and build on THAT.
-    "Everest is 8,849 m" is boring; "the summit of Everest is made of seashells from an ocean that no
-    longer exists" makes you wonder — because it REFRAMES a mountain as an ancient seafloor, not
-    because of a number.
-  * Numbers are SEASONING, never the meal. At most 1-2 numbers in the whole script, and ONLY when a
-    number becomes a felt image that reframes something ("older than Saturn's rings", "a ball of iron
-    the size of the Moon"). Never a number as the wow by itself. A dry readout ("the core is 5,700
-    kelvin", "it's 8,849 metres") is geeky and gets scrolled — cut it or turn it into a feeling. Lead
-    every scene with the IDEA, never the statistic. Plain everyday words only — never a term you'd have
-    to look up.
+  * BIG/SMALL IS NOT INTERESTING BY ITSELF — magnitude alone (how many, how tall/fast/old, how many
+    combinations, how many times bigger) is DEAD trivia and will be rejected. A number earns its place
+    ONLY if it reframes reality or matters to a real person. WHO-CARES TEST: would someone retell this at
+    dinner? Does it overturn an assumption or expose a hidden mechanism? "Everest is 8,849 m" is boring;
+    "Everest's summit is seashells from a vanished ocean" makes you wonder — because it REFRAMES, not
+    because it's big.
+  * Numbers are seasoning, not the meal: at most 1-2, and only when a number becomes a felt image
+    ("older than Saturn's rings"). Never a number as the wow by itself. Lead every scene with the IDEA,
+    never the statistic. Plain everyday words only — never a term you'd have to look up.
 - SAY NUMBERS THE WAY A PERSON WOULD OUT LOUD — never scientific/math notation ("10^27", "ten to the
   twenty-seventh power", "3.5 x 10^8"); say "more of them than stars in the whole sky", "a billion
   billion". If a huge number can't be made graspable in plain speech, drop it and describe how
@@ -862,13 +849,11 @@ PROVEN RULES (every one is backed by 2026 TikTok performance data — follow the
 
 HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
-- FRONT-LOAD THE SHOCK (this is the #1 retention lever — analytics show most viewers drop at 0:01):
-  the single most surprising, visceral word or image MUST land in the first 3-4 words. Never wind up to
-  it. BANNED first-line openers, they waste the one second that decides everything: "Did you know",
-  "Have you ever", "Imagine", "Picture this", "What if I told you", "Here's", "This is", "There's a",
-  "Ever wonder". BAD: "Have you ever wondered what your stomach acid can do?" GOOD: "Your stomach acid
-  could dissolve a razor blade." Open COLD on the noun + the shock — a flat, confident, impossible-
-  sounding statement. (The curiosity-gap '?' still appears by scene 2, never as the very first line.)
+- FRONT-LOAD THE SHOCK (#1 retention lever — most viewers drop at 0:01): the most surprising word lands
+  in the FIRST 3-4 words, no wind-up. BANNED first-line openers: "Did you know", "Have you ever",
+  "Imagine", "What if I told you", "Here's", "This is", "Ever wonder". BAD: "Have you ever wondered what
+  your stomach acid can do?" GOOD: "Your stomach acid could dissolve a razor blade." Open cold on the
+  shock. (A curiosity '?' still appears by scene 2, never as the very first line.)
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
@@ -1377,11 +1362,14 @@ def call_groq(prompt):
                     out = _call_model(model, prompt)
                 return out, prov, model
             except urllib.error.HTTPError as e:
-                if e.code in (400, 401, 402, 403, 404, 429):
+                if e.code in (400, 401, 402, 403, 404, 413, 429):
                     # THIS-provider-specific, so fall through to the next entry
                     # instead of aborting the whole run:
                     #   400 bad request  401 unauthorized (bad/rotated key)
                     #   402 payment required (free credit out)  403/404 unavailable
+                    #   413 payload too large (GitHub Models' ~8k-token input cap —
+                    #       MUST fall through to Groq/Cerebras' big context, not abort;
+                    #       this was aborting whole renders when Gemini was down)
                     #   429 rate-limited. Log the server body (truncated) so a
                     #   silently-failing provider isn't mistaken for a healthy one.
                     try:

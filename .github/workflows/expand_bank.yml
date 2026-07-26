@@ -14,7 +14,9 @@ on:
         description: "overall bank-size target (stops here)"
         default: "500"
   schedule:
-    - cron: "40 7 * * *"   # 07:40 UTC — after the 07:00 quota reset + 07:20 buffer fill
+    # 21:00 UTC — AFTER both daily renders (09:00 + 19:00), so bank expansion uses
+    # only LEFTOVER Gemini quota and never steals the render's fresh morning quota.
+    - cron: "0 21 * * *"
 
 permissions:
   contents: write
