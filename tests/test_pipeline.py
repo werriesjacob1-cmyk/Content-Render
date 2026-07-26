@@ -777,6 +777,17 @@ def test_cover_headline():
     check(len(M._cover_headline({"title": "z" * 200})) <= 60, "headline capped at 60 chars")
 
 
+def test_variant_queries():
+    section("main._variant_queries: widen the free footage pool (more video/scene)")
+    v = M._variant_queries("pond turtle swimming")
+    check(v[0] == "pond turtle swimming", "full phrase comes first")
+    check("turtle" in v or "swimming" in v or "pond" in v, "broader single words included")
+    check(len(v) == len(set(x.lower() for x in v)), "no duplicate variants")
+    check(len(v) <= 4, "capped at 4 variants (bounded network work)")
+    check(M._variant_queries("") == [], "empty query -> no variants")
+    check(M._variant_queries("the a of") == ["the a of"], "all-stopword query -> just the phrase")
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -846,6 +857,7 @@ def main():
     test_topic_bank_integrity()
     test_draft_is_weak()
     test_cover_headline()
+    test_variant_queries()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

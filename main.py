@@ -1735,38 +1735,67 @@ def _subclip_plan(seg_dur, target_secs, max_subclips):
     return [base] * (n - 1) + [round(seg_dur - base * (n - 1), 3)]
 
 
+def _variant_queries(q):
+    """A few FREE query variants of a scene's search query, to widen the distinct-
+    clip pool (more real VIDEO packed into each scene). The full phrase first, then
+    its broader single content words — a broad noun ('turtle') returns many more
+    stock clips than a 3-word phrase ('pond turtle swimming'), so pooling across
+    them multiplies how many distinct clips the multi-clip cutter can find, at zero
+    cost. Pure/testable."""
+    q = (q or "").strip()
+    if not q:
+        return []
+    words = list(_relevance_words(q))                    # content words, >2 chars, non-stopword
+    variants = [q] + sorted(words, key=len, reverse=True)  # phrase, then broadest words
+    seen, out = set(), []
+    for v in variants:
+        vl = v.lower().strip()
+        if vl and vl not in seen:
+            seen.add(vl); out.append(v)
+    return out[:4]
+
+
 def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
     """Download up to `need` ADDITIONAL distinct, non-dark clips for a scene so
-    build_scene can cut between several clips. Cheap: reuses the already-gathered
-    stock candidates by the source's own ranking — NO extra LLM judge calls — and
-    keeps them on-topic by requiring a shared subject word with the scene query.
-    Returns a list of local file paths (may be shorter than `need`, or empty;
-    the caller then just reuses the primary clip for the remaining slots). Fully
-    fail-safe: any error yields whatever was gathered so far."""
+    build_scene can cut between several clips. Now pools candidates across a few
+    FREE query VARIANTS (full phrase + broader words) instead of a single query —
+    so narrow topics that used to run out of distinct clips (and recycle or fall to
+    stills) now find many more real clips to pack in. NO extra LLM judge calls;
+    on-topic via a shared subject word with the scene query. Returns local file
+    paths (may be short/empty; caller reuses the primary clip for empty slots).
+    Fully fail-safe: any error yields whatever was gathered so far."""
     paths = []
     if need <= 0:
         return paths
     q = scene.get("search_query", "") or scene.get("voiceover", "")
-    try:
-        cands = _gather_candidates(q)
-    except Exception:  # noqa: BLE001
-        return paths
-    seen = set(exclude_ids)
     qw = _relevance_words(q)
-    for c in cands or []:
+    seen = set(exclude_ids)
+    # Build a pooled, de-duplicated candidate list across the query variants. Stop
+    # early once we have plenty to choose from (need*4) to bound network work.
+    pool = []
+    for vq in _variant_queries(q):
+        try:
+            for c in (_gather_candidates(vq) or []):
+                cid = c.get("id")
+                if cid is None or cid in seen:
+                    continue
+                if len(qw) >= 2 and not (qw & _relevance_words(c.get("desc", ""))):
+                    continue  # keep sub-clips on-subject
+                seen.add(cid)          # provisional: don't pool the same id twice
+                pool.append(c)
+        except Exception:  # noqa: BLE001 — a bad query/source, try the next variant
+            continue
+        if len(pool) >= need * 4:
+            break
+    for c in pool:
         if len(paths) >= need:
             break
-        cid = c.get("id")
-        if cid in seen:
-            continue
-        if len(qw) >= 2 and not (qw & _relevance_words(c.get("desc", ""))):
-            continue  # keep sub-clips on-subject
         p = f"{dest_prefix}_{len(paths)}.mp4"
         try:
             _download(c["url"], p)
             if _clip_too_dark(p):
                 continue
-            seen.add(cid); _used_video_ids.add(cid); _used_history.append(cid)
+            _used_video_ids.add(c["id"]); _used_history.append(c["id"])
             paths.append(p)
         except Exception:  # noqa: BLE001 — skip a bad clip, keep going
             continue
