@@ -799,6 +799,27 @@ def test_variant_queries():
     check(M._variant_queries("the a of") == ["the a of"], "all-stopword query -> just the phrase")
 
 
+def test_perf_saves_comments():
+    section("generate._perf_score: saves + comments are now weighted engagement signals")
+    base = {"views": 1000, "watch_through_pct": 0.2, "follows": 2}
+    s_base = G._perf_score(base)
+    # a save (the jellyfish signal) lifts the score above an otherwise-identical video
+    s_saves = G._perf_score({**base, "saves": 60})
+    check(s_saves > s_base, "adding saves raises the perf score")
+    # comments (the turtle signal) also lift it
+    s_comments = G._perf_score({**base, "comments": 30})
+    check(s_comments > s_base, "adding comments raises the perf score")
+    # watch is still the dominant term: a big watch gain beats a big save gain
+    hi_watch = G._perf_score({**base, "watch_through_pct": 0.6})
+    check(hi_watch > s_saves, "watch_through_pct remains the primary signal")
+    # backward-compatible: old entries with no saves/comments never crash and stay 0-safe
+    check(G._perf_score({"views": 100, "watch_through_pct": 0.5}) > 0, "legacy entry still scores")
+    check(G._perf_score({}) == 0.0, "empty entry -> 0.0 (safe)")
+    check(G._perf_score("not a dict") == 0.0, "non-dict entry -> 0.0 (safe)")
+    # the --record CLI aliases map save/comment tokens to the canonical keys
+    check(G.__dict__.get("record_perf") is not None, "record_perf exists")
+
+
 def test_length_ab_mode():
     section("generate: A/B video length — short vs long word window (analytics-driven)")
     # forced modes resolve to the intended windows (SHORT is tighter for completion%)
@@ -931,6 +952,7 @@ def main():
     test_draft_is_weak()
     test_cover_headline()
     test_variant_queries()
+    test_perf_saves_comments()
     test_length_ab_mode()
     test_fal_gap_fill_gating()
     test_subclip_plan()

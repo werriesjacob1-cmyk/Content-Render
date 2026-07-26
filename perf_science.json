@@ -15,12 +15,18 @@
     "views": 285,
     "watch_through_pct": 0.205,
     "follows": 2,
-    "shares": 1
+    "shares": 1,
+    "saves": 6,
+    "comments": 1,
+    "likes": 16
   },
   "science_2026-07-22_turtles-breathe-through-their-rear-ends": {
     "views": 248,
     "watch_through_pct": 0.226,
     "follows": 2,
-    "shares": 1
+    "shares": 1,
+    "saves": 1,
+    "comments": 3,
+    "likes": 13
   }
 }

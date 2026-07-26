@@ -332,10 +332,16 @@ def _resolve_length_mode():
 
 LENGTH_MODE = _resolve_length_mode()
 if LENGTH_MODE == "short":
-    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 58, 74, 50, 80    # ~28-32s
-    WORDS_PER_SCENE = "~8-9 words (7 scenes x ~9 words = ~63 total)"
+    # SHORT needs FEWER scenes, not terser ones: a 7-scene floor at a 74-word cap
+    # forces ~9 words/scene, which the models overshoot every time → endless
+    # near-miss trims and regenerations (the render-163 grind). 5-6 natural-length
+    # scenes hit ~65 words comfortably, so a clean draft passes on the first try.
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 55, 74, 45, 82    # ~26-32s
+    SCENE_MIN, SCENE_MAX = 5, 8
+    WORDS_PER_SCENE = "~11-13 words (5-6 scenes x ~12 words = ~65 total)"
 else:
     WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 95, 110, 85, 115  # ~40-46s
+    SCENE_MIN, SCENE_MAX = 7, 10
     WORDS_PER_SCENE = "~12-14 words (8 scenes x ~13 words = ~104 total)"
 
 
@@ -363,7 +369,9 @@ def draft_is_weak(overall, quality):
 #       "views": 18400,
 #       "watch_through_pct": 0.63,
 #       "follows": 41,
-#       "shares": 210
+#       "saves": 320,
+#       "shares": 210,
+#       "comments": 88
 #     },
 #     "science_2026-07-12_the-void-within": {
 #       "views": 2100,
@@ -380,7 +388,9 @@ def draft_is_weak(overall, quality):
 #   views                total plays
 #   watch_through_pct    average fraction of the video watched, 0..1 (63% -> 0.63)
 #   follows              follows attributed to this video
+#   saves                bookmark/save count  (strong "keep this" intent signal)
 #   shares                share count
+#   comments             comment count        (drives reach)
 # Any subset of keys is fine; missing keys count as 0. A missing, empty, or
 # malformed perf_<page>.json is completely safe: with no usable data,
 # generation is byte-for-byte identical to today's plain random.choice()
@@ -936,7 +946,7 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   define, or give background. Plant the payoff question early and keep it OPEN, and give a concrete
   reason to stay in EVERY scene. Scene 2 is make-or-break: make it your SECOND-most-surprising line,
   not setup — the video is lost in the first 8 seconds or not at all.
-- 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
+- {SCENE_MIN}-{SCENE_MAX} SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
 - Total narration MUST be {WORD_LO}-{WORD_HI} words — this is the HARDEST constraint; under {WORD_HARD_LO} or over
   {WORD_HARD_HI} words is REJECTED outright, so budget it deliberately. Do the math as you write. If you're past
   {WORD_HI}, TIGHTEN wording (never DELETE a whole scene — every scene is a distinct escalation beat and losing
@@ -1737,8 +1747,8 @@ def validate(m, job_name, fact=None):
     # aerial for 8s (run 105). 7-9 scenes = ~4.5-5.5s each = more distinct clips,
     # less lingering, more visual variety — "use more videos" for free. Ceiling
     # stays 10 (a 12-scene/166-word Sun video read as "never stops talking").
-    if not isinstance(m["scenes"], list) or not (7 <= len(m["scenes"]) <= 10):
-        return f"scene count {len(m.get('scenes', []))} out of range"
+    if not isinstance(m["scenes"], list) or not (SCENE_MIN <= len(m["scenes"]) <= SCENE_MAX):
+        return f"scene count {len(m.get('scenes', []))} out of range ({SCENE_MIN}-{SCENE_MAX}, mode {LENGTH_MODE})"
 
     # clean top-level text
     m["title"] = _clean(m["title"])[:90]
@@ -2221,18 +2231,28 @@ def load_perf():
 def _perf_score(entry):
     """Collapse one video's raw engagement metrics into a single 0..1-ish
     score used to weight future selection. watch_through_pct is the primary
-    quality signal; follows/shares are rarer, higher-value actions scaled up
-    relative to views so one viral outlier can't own the whole score."""
+    quality signal; follows/saves/shares/comments are rarer, higher-value actions
+    scaled up relative to views so one viral outlier can't own the whole score.
+
+    SAVES and COMMENTS added 2026-07-26: live TikTok analytics showed they're this
+    page's real differentiators (jellyfish earned 6 saves; turtle drew 3 comments)
+    yet were invisible to generation. A save = "I want to keep this"; a comment
+    drives reach. Old entries lacking these keys simply score them 0 (safe)."""
     if not isinstance(entry, dict):
         return 0.0
     views = max(0.0, float(entry.get("views", 0) or 0))
     watch = max(0.0, min(1.0, float(entry.get("watch_through_pct", 0) or 0)))
     follows = max(0.0, float(entry.get("follows", 0) or 0))
+    saves = max(0.0, float(entry.get("saves", 0) or 0))
     shares = max(0.0, float(entry.get("shares", 0) or 0))
+    comments = max(0.0, float(entry.get("comments", 0) or 0))
     denom = max(views, 1.0)
     follow_rate = min(1.0, (follows / denom) * 20)
+    save_rate = min(1.0, (saves / denom) * 12)
     share_rate = min(1.0, (shares / denom) * 10)
-    return 0.5 * watch + 0.3 * follow_rate + 0.2 * share_rate
+    comment_rate = min(1.0, (comments / denom) * 15)
+    return (0.45 * watch + 0.22 * follow_rate + 0.15 * save_rate
+            + 0.10 * share_rate + 0.08 * comment_rate)
 
 
 def score_by_key(history, perf, key_field):
@@ -2497,9 +2517,9 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # model dumped a long, repetitive script) — abandon it so the run aborts
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
-        NEARMISS_MAX_SCENES = 9
+        NEARMISS_MAX_SCENES = SCENE_MAX
         NEARMISS_MAX_WORDS = WORD_HARD_HI    # tracks validate()'s hard cap (length-mode aware)
-        NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
+        NEARMISS_MIN_SCENES = SCENE_MIN      # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):
             return sum(len(s.get("voiceover", "").split()) for s in scs)
@@ -2924,7 +2944,9 @@ def record_perf(argv):
     vid = argv[0]
     alias = {"watch": "watch_through_pct", "watch_pct": "watch_through_pct",
              "wtp": "watch_through_pct", "view": "views", "follow": "follows",
-             "share": "shares"}
+             "share": "shares", "save": "saves", "bookmark": "saves",
+             "bookmarks": "saves", "comment": "comments", "like": "likes",
+             "likes": "likes"}
     metrics = {}
     for tok in argv[1:]:
         if "=" not in tok:
