@@ -339,10 +339,21 @@ if LENGTH_MODE == "short":
     WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 55, 74, 45, 82    # ~26-32s
     SCENE_MIN, SCENE_MAX = 5, 8
     WORDS_PER_SCENE = "~11-13 words (5-6 scenes x ~12 words = ~65 total)"
+    # SHORT's failure mode (render 164): drafts overshoot to ~99 words, the near-miss
+    # trims MIDDLE scenes to fit, and the trimmed-out scenes were carrying the payoff
+    # build → payoff scores 5 and the run aborts. Fix = write to budget NATIVELY and
+    # protect the payoff: the LAST scene must be the reframe, reached fast.
+    LENGTH_HINT = ("THIS IS A SHORT ~30s video. Structure: hook (scene 1) → 3-4 escalating fact "
+                   "beats → PAYOFF (final scene, the reframe that recontextualises everything). "
+                   "Land the payoff HARD and FAST — with only 5-6 scenes there is no room to wander, "
+                   "so every scene earns its place and the last one must reframe, not summarise. COUNT "
+                   "your words as you write and STAY at 55-74 total; do NOT overshoot and rely on trimming.")
 else:
     WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 95, 110, 85, 115  # ~40-46s
     SCENE_MIN, SCENE_MAX = 7, 10
     WORDS_PER_SCENE = "~12-14 words (8 scenes x ~13 words = ~104 total)"
+    LENGTH_HINT = ("THIS IS A ~42s video: 7-9 scenes that ESCALATE to a genuine payoff — the final "
+                   "scene must reframe, never just restate the premise.")
 
 
 def draft_is_weak(overall, quality):
@@ -941,6 +952,7 @@ HOOK (first 2 seconds decide 70% of retention):
   reads as skippable in the feed. Prefer a bright, punchy, in-motion image on the very first scene.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
+- {LENGTH_HINT}
 - HOLD SECONDS 3-8 (THIS channel's analytics: average watch is ~8 seconds — most viewers leave during
   scene 2 or 3, right after the hook). So scene 2 must ESCALATE the hook, never slow down to explain,
   define, or give background. Plant the payoff question early and keep it OPEN, and give a concrete
