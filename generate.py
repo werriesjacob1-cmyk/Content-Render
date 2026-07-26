@@ -312,6 +312,32 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
 GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
 QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity", "coherence"]
 
+# ---- A/B VIDEO LENGTH (analytics-driven) --------------------------------------
+# TikTok analytics (2026-07-26): avg watch ~8s on ~40s videos — almost nobody sees
+# the back half, and completion is ~7%. So we A/B two lengths and let perf_<page>.json
+# reveal which retains better on THIS page: SHORT (~28-32s: higher completion% and
+# watch-ratio) vs LONG (~40-46s: full escalation arc). Scene COUNT stays 7-9 either
+# way (escalation is sacred) — SHORT just uses fewer words per scene. LENGTH_MODE=
+# short|long forces one; the default "auto" ALTERNATES per render off the memory
+# history length (one entry per render), so consecutive videos flip with no new state.
+def _resolve_length_mode():
+    mode = os.getenv("LENGTH_MODE", "auto").strip().lower()
+    if mode in ("short", "long"):
+        return mode
+    try:
+        hist = json.load(open(MEMORY)).get("history", [])
+        return "short" if (len(hist) % 2 == 0) else "long"
+    except Exception:  # noqa: BLE001 — no/broken memory => default to the proven long
+        return "long"
+
+LENGTH_MODE = _resolve_length_mode()
+if LENGTH_MODE == "short":
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 58, 74, 50, 80    # ~28-32s
+    WORDS_PER_SCENE = "~8-9 words (7 scenes x ~9 words = ~63 total)"
+else:
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 95, 110, 85, 115  # ~40-46s
+    WORDS_PER_SCENE = "~12-14 words (8 scenes x ~13 words = ~104 total)"
+
 
 def draft_is_weak(overall, quality):
     """True when a scored draft is genuinely weak — below the clean threshold OR
@@ -905,17 +931,19 @@ HOOK (first 2 seconds decide 70% of retention):
   reads as skippable in the feed. Prefer a bright, punchy, in-motion image on the very first scene.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
+- HOLD SECONDS 3-8 (THIS channel's analytics: average watch is ~8 seconds — most viewers leave during
+  scene 2 or 3, right after the hook). So scene 2 must ESCALATE the hook, never slow down to explain,
+  define, or give background. Plant the payoff question early and keep it OPEN, and give a concrete
+  reason to stay in EVERY scene. Scene 2 is make-or-break: make it your SECOND-most-surprising line,
+  not setup — the video is lost in the first 8 seconds or not at all.
 - 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 95-110 words — this is the HARDEST constraint; under 85 or over 115 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~13 words each
-  is ~104 words, right in range. If you're past 110, TIGHTEN wording (never DELETE a whole scene — every
-  scene is a distinct escalation beat and losing one flattens the payoff); if under 95, you're too
-  thin — add one more real fact from the research, never filler. At this channel's narration speed
-  95-110 words renders to ~40-46 seconds — the sweet spot for completion (too short feels stubby and
-  un-satisfying; past ~120 words drags toward 50s+). Under 85 = rejected; over 115 = rejected.
-  A tight ~42s video beats a padded 55s one: competitors win on completion, so cut every non-essential
-  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~12-14 words (8 scenes x ~13 words = your ~104 total). NEVER exceed 22 words
+- Total narration MUST be {WORD_LO}-{WORD_HI} words — this is the HARDEST constraint; under {WORD_HARD_LO} or over
+  {WORD_HARD_HI} words is REJECTED outright, so budget it deliberately. Do the math as you write. If you're past
+  {WORD_HI}, TIGHTEN wording (never DELETE a whole scene — every scene is a distinct escalation beat and losing
+  one flattens the payoff); if under {WORD_LO}, you're too thin — add one more real fact from the research,
+  never filler. A tighter video beats a padded one: competitors win on COMPLETION, so cut every non-essential
+  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of words.
+- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1776,8 +1804,9 @@ def validate(m, job_name, fact=None):
     # instead of being trimmed to mush. 95-110 renders ~40-46s on the neural voices
     # (edge-tts/Piper), the completion sweet spot; 115 is the hard ceiling.
     wc = len(_clean(m["script"]).split())
-    if not (85 <= wc <= 115):
-        return f"script word count {wc} out of range (target 95-110, hard cap 115)"
+    if not (WORD_HARD_LO <= wc <= WORD_HARD_HI):
+        return (f"script word count {wc} out of range "
+                f"(target {WORD_LO}-{WORD_HI}, hard {WORD_HARD_LO}-{WORD_HARD_HI}, mode {LENGTH_MODE})")
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2469,7 +2498,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
         NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 115    # keep in lockstep with validate()'s hard cap
+        NEARMISS_MAX_WORDS = WORD_HARD_HI    # tracks validate()'s hard cap (length-mode aware)
         NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):

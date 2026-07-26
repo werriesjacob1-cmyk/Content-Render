@@ -30,6 +30,10 @@ Exit code is non-zero if any assertion fails.
 import os, sys, re, time, tempfile
 
 os.environ.setdefault("GROQ_API_KEY", "x")          # let generate.py import
+# Pin the A/B video length to LONG so validate() uses the 85-115 word window the
+# ~104-word fixtures below were written for — otherwise 'auto' mode reads the repo's
+# memory history (its parity flips the window) and the fixtures fail nondeterministically.
+os.environ.setdefault("LENGTH_MODE", "long")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import main as M
@@ -795,6 +799,40 @@ def test_variant_queries():
     check(M._variant_queries("the a of") == ["the a of"], "all-stopword query -> just the phrase")
 
 
+def test_length_ab_mode():
+    section("generate: A/B video length — short vs long word window (analytics-driven)")
+    # forced modes resolve to the intended windows (SHORT is tighter for completion%)
+    check(G._resolve_length_mode.__call__() in ("short", "long"), "auto resolves to a valid mode")
+    _saved = os.environ.get("LENGTH_MODE")
+    try:
+        os.environ["LENGTH_MODE"] = "short"
+        check(G._resolve_length_mode() == "short", "LENGTH_MODE=short forces short")
+        os.environ["LENGTH_MODE"] = "long"
+        check(G._resolve_length_mode() == "long", "LENGTH_MODE=long forces long")
+    finally:
+        if _saved is None:
+            os.environ.pop("LENGTH_MODE", None)
+        else:
+            os.environ["LENGTH_MODE"] = _saved
+    # the window this test run pinned (long) must be the proven 85-115 completion band
+    check((G.WORD_HARD_LO, G.WORD_HARD_HI) == (85, 115), "long hard window is 85-115")
+    check(G.WORD_LO < G.WORD_HI <= G.WORD_HARD_HI and G.WORD_HARD_LO <= G.WORD_LO,
+          "word bounds are ordered (hard_lo <= target_lo < target_hi <= hard_hi)")
+    # a SHORT-length script (~63 words) must PASS a short-window validate and be
+    # REJECTED by the long window — proving the A/B actually changes the gate.
+    short_scenes = [{"id": i, "voiceover": "Here is one genuinely surprising true fact about it."}
+                    for i in range(1, 8)]  # 7 scenes x 9 words = 63 words
+    _bak = (G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI)
+    try:
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = 58, 74, 50, 80
+        wc = sum(len(s["voiceover"].split()) for s in short_scenes)
+        check(G.WORD_HARD_LO <= wc <= G.WORD_HARD_HI, f"a ~{wc}-word script fits the SHORT window")
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = 95, 110, 85, 115
+        check(not (G.WORD_HARD_LO <= wc <= G.WORD_HARD_HI), f"the same ~{wc}-word script is too short for LONG")
+    finally:
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = _bak
+
+
 def test_fal_gap_fill_gating():
     section("main: fal AI-video gap-fill — subject-anchored prompt + cost gating (no network)")
     # prompt anchors on the literal SUBJECT (search_query), never the metaphor, and
@@ -893,6 +931,7 @@ def main():
     test_draft_is_weak()
     test_cover_headline()
     test_variant_queries()
+    test_length_ab_mode()
     test_fal_gap_fill_gating()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
