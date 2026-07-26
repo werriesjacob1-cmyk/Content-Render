@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [render]
   workflow_dispatch:
+    inputs:
+      length_mode:
+        description: "video length: auto (A/B alternate) | long (~40-46s) | short (~28-32s)"
+        default: "auto"
   schedule:
     # Once a day, 13:00 UTC. The "science" profile's intended posting window
     # is evening (7-10pm) in its audience's local time (see profiles.py
@@ -161,6 +165,12 @@ jobs:
           # generation (usually transient Groq rate-limit/quota) must instead
           # retry once, then ABORT the whole run: no render, no release, no
           # duplicate. The daily cron simply tries again next time.
+          # A/B video length: a manual dispatch can force long/short via the
+          # length_mode input; cron/repository_dispatch send no input so this is
+          # empty → generate.py defaults to "auto" (alternate per render). SHORT
+          # currently scores weaker payoffs, so verification renders force "long".
+          export LENGTH_MODE="${{ github.event.inputs.length_mode || 'auto' }}"
+          echo "[length] LENGTH_MODE=$LENGTH_MODE"
           if python generate.py --dequeue manifest.json; then
             echo "rendering a pre-generated manifest from the buffer (no LLM used)"
           else

@@ -2456,9 +2456,17 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 break
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
-            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
-                                          avoid_openers=avoid_openers, cta_style=cta_style,
-                                          dossier=dossier, hook_frame=hook_frame))
+            _bp = build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
+                               avoid_openers=avoid_openers, cta_style=cta_style,
+                               dossier=dossier, hook_frame=hook_frame)
+            raw = call_groq(_bp)
+            if not (raw or "").strip():
+                # a strong writer occasionally returns an EMPTY body (OpenRouter
+                # hiccup — twice in render 163: "Expecting value: line 1 column 1").
+                # One immediate re-call recovers it instead of spending the whole
+                # (of only 2) attempt on a blank response.
+                print(f"  attempt {attempt+1}: empty model response — one immediate retry")
+                raw = call_groq(_bp)
             m = json.loads(raw)
             if not isinstance(m, dict):
                 # some models (esp. gemma) occasionally return a bare JSON array
