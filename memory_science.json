@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-22_the-radioactive-fruit-in-your-kitchen",
-      "metaphor": "everyday natural radioactivity",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "hook_frame": "IMPOSSIBLE_FACT",
-      "title": "The Radioactive Fruit in Your Kitchen",
-      "fact_id": "banana_radioactive",
-      "domain": "physics",
-      "hook": "A single banana releases a burst of pure antimatter every ninety minutes.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 9.0,
-        "payoff": 9.0,
-        "rewatch": 5.0,
-        "clarity": 6.0,
-        "overall": 7.17
-      }
-    },
-    {
       "video_id": "science_2026-07-22_the-solid-made-of-air",
       "metaphor": "solid trapped air material",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -334,6 +310,30 @@
         "rewatch": 6.0,
         "clarity": 8.0,
         "overall": 7.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-27_the-secret-intelligence-of-plants",
+      "metaphor": "Nature's Hidden Minds",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Secret Intelligence of Plants",
+      "fact_id": "plant_nervous_systems",
+      "domain": "botany",
+      "hook": "Plants can make decisions just like animals do.",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 5.0,
+        "escalation": 7.0,
+        "payoff": 6.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "overall": 6.83
       }
     }
   ]

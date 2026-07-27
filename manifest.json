@@ -1,95 +1,94 @@
 {
-  "title": "The Astonishing Possibilities of a Shuffled Deck",
+  "title": "The Secret Intelligence of Plants",
   "viewer_job": "REFRAME",
-  "keyword": "shuffled deck of cards",
-  "metaphor": "incredible card arrangements",
-  "hook": "What if every shuffled deck has never existed before?",
-  "script": "What if every shuffled deck has never existed before? You create an order that has almost certainly never existed before. This is due to the sheer scale of possibilities, known as 52 factorial. 52 factorial equals about 8 followed by 67 zeros. There are more possible arrangements than atoms in the observable universe. Even after seven shuffles, most decks are statistically unique. The odds of two shuffled decks being identical is nearly one in 80 quintillion. Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
+  "keyword": "plant intelligence",
+  "metaphor": "Nature's Hidden Minds",
+  "hook": "Plants can make decisions just like animals do.",
+  "hook_headline": "PLANTS HAVE BRAINS?",
+  "script": "Plants can make decisions just like animals do. Their complex nervous systems allow them to respond to their environment. The Mimosa pudica reacts to touch within seconds, folding its leaves. Some plants communicate through a network of fungi, sharing vital information. Plants like Arabidopsis thaliana can remember past drought conditions. The Venus flytrap can snap shut faster than the blink of an eye. Certain plants can detect sounds and respond to vibrations. Next time you see a plant, consider the hidden complexity within.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if every shuffled deck has never existed before?",
-      "on_screen_text": "Unique Card Order",
-      "search_query": "shuffling deck of cards",
+      "voiceover": "Plants can make decisions just like animals do.",
+      "on_screen_text": "PLANTS HAVE BRAINS?",
+      "search_query": "close up of plants",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "You create an order that has almost certainly never existed before.",
-      "on_screen_text": "Cosmic Uniqueness",
-      "search_query": "deck of cards shuffled",
+      "voiceover": "Their complex nervous systems allow them to respond to their environment.",
+      "on_screen_text": "COMPLEX SYSTEMS",
+      "search_query": "plant nervous systems",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This is due to the sheer scale of possibilities, known as 52 factorial.",
-      "on_screen_text": "52 Factorial",
-      "search_query": "52 factorial explanation",
-      "motion": "zoom_out"
+      "voiceover": "The Mimosa pudica reacts to touch within seconds, folding its leaves.",
+      "on_screen_text": "FAST REACTIONS",
+      "search_query": "Mimosa pudica reaction",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "52 factorial equals about 8 followed by 67 zeros.",
-      "on_screen_text": "8 Followed by 67",
-      "search_query": "how many card arrangements",
-      "motion": "zoom_in"
+      "voiceover": "Some plants communicate through a network of fungi, sharing vital information.",
+      "on_screen_text": "WOOD WIDE WEB",
+      "search_query": "mycorrhizal network",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "There are more possible arrangements than atoms in the observable universe.",
-      "on_screen_text": "Beyond Atoms",
-      "search_query": "night sky stars",
-      "motion": "pan"
+      "voiceover": "Plants like Arabidopsis thaliana can remember past drought conditions.",
+      "on_screen_text": "MEMORY IN PLANTS",
+      "search_query": "Arabidopsis thaliana",
+      "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Even after seven shuffles, most decks are statistically unique.",
-      "on_screen_text": "Statistical Randomness",
-      "search_query": "perfect card shuffle",
+      "voiceover": "The Venus flytrap can snap shut faster than the blink of an eye.",
+      "on_screen_text": "INSTANT DECISIONS",
+      "search_query": "Venus flytrap snap",
       "motion": "zoom_in"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "The odds of two shuffled decks being identical is nearly one in 80 quintillion.",
-      "on_screen_text": "Rare Odds",
-      "search_query": "identical shuffled decks",
+      "voiceover": "Certain plants can detect sounds and respond to vibrations.",
+      "on_screen_text": "SOUND DETECTION",
+      "search_query": "plants responding to sound",
       "motion": "pan"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "Imagine laying out all arrangements; it would stretch over 10 billion light-years.",
-      "on_screen_text": "Beyond the Universe",
-      "search_query": "card arrangements distance",
-      "motion": "zoom_out"
+      "voiceover": "Next time you see a plant, consider the hidden complexity within.",
+      "on_screen_text": "HIDDEN COMPLEXITY",
+      "search_query": "plant behavior",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "Have you ever shuffled a deck of cards? Yes or no?",
-    "The odds are staggering!",
-    "Every shuffle is a cosmic first."
+    "What do you think about plant intelligence?",
+    "Plants can communicate!",
+    "Nature is full of surprises."
   ],
   "hashtags": [
-    "#science",
-    "#math",
-    "#cards",
-    "#facts",
-    "#universe"
+    "#plants",
+    "#intelligence",
+    "#nature",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
-  "cta_style": "COMMENT",
-  "domain": "math",
-  "hook_headline": "NEVER EXISTED BEFORE"
+  "video_id": "science_2026-07-27_the-secret-intelligence-of-plants",
+  "cta_style": "LOOP",
+  "domain": "botany"
 }
