@@ -2844,6 +2844,726 @@
         "space time visualizations",
         "cosmic event simulations"
       ]
+    },
+    {
+      "id": "starling_mururations",
+      "domain": "nature",
+      "fact": "Starlings are known to form massive murmurations, which are intricate patterns in the sky created by thousands of birds flying together. These patterns can be so complex that they resemble a single, living entity.",
+      "angle": "Flocking",
+      "key_terms": [
+        "starlings",
+        "mururations",
+        "flocking"
+      ],
+      "whatif": "What if the principles behind these murmurations could be applied to human transportation systems to create more efficient and coordinated movements?",
+      "wow": "Some murmurations can consist of over a million individual birds.",
+      "queries": [
+        "starling murmuration",
+        "bird flocking patterns",
+        "aerial displays"
+      ]
+    },
+    {
+      "id": "slime_mold_intelligence",
+      "domain": "biology",
+      "fact": "Slime molds are single-celled organisms that can solve complex problems, such as finding the shortest path through a maze. They can even adapt to changing environments and learn from experience.",
+      "angle": "Intelligent",
+      "key_terms": [
+        "slime mold",
+        "intelligence",
+        "problem-solving"
+      ],
+      "whatif": "What if the unique problem-solving abilities of slime molds could be applied to human fields like logistics or urban planning?",
+      "wow": "Slime molds can grow and change shape rapidly, allowing them to navigate through tight spaces and overcome obstacles.",
+      "queries": [
+        "slime mold in maze",
+        "intelligent slime",
+        "single-celled problem-solving"
+      ]
+    },
+    {
+      "id": "singing_sand_dunes",
+      "domain": "geology",
+      "fact": "Certain sand dunes around the world can produce a singing or whistling sound when the wind blows over them. This phenomenon is due to the unique shape and size of the sand grains.",
+      "angle": "Singing",
+      "key_terms": [
+        "singing sand",
+        "dunes",
+        "acoustics"
+      ],
+      "whatif": "What if the principles behind the singing sand dunes could be used to create new, sustainable musical instruments?",
+      "wow": "The singing sound can be loud enough to be heard from miles away.",
+      "queries": [
+        "singing sand dunes",
+        "whistling sand",
+        "musical dunes"
+      ]
+    },
+    {
+      "id": "ice_circles",
+      "domain": "physics",
+      "fact": "In certain rivers and lakes, circular patches of ice can form due to the rotation of the water beneath the surface. These ice circles can be several feet in diameter and are often perfectly round.",
+      "angle": "Frozen",
+      "key_terms": [
+        "ice circles",
+        "river ice",
+        "rotation"
+      ],
+      "whatif": "What if the study of ice circles could reveal new insights into the behavior of fluids and rotational motion?",
+      "wow": "Ice circles can be found in both cold and warm climates, and their formation is still not fully understood.",
+      "queries": [
+        "ice circles in river",
+        "frozen rotation",
+        "circular ice patches"
+      ]
+    },
+    {
+      "id": "lightning_balls",
+      "domain": "atmosphere",
+      "fact": "Lightning balls, also known as ball lightning, are rare and poorly understood phenomena in which a glowing, floating ball of light is seen during thunderstorms. The exact cause of these events is still unknown.",
+      "angle": "Electrifying",
+      "key_terms": [
+        "lightning balls",
+        "ball lightning",
+        "thunderstorms"
+      ],
+      "whatif": "What if the study of lightning balls could lead to a better understanding of the underlying physics of lightning and electricity?",
+      "wow": "Some reports of lightning balls describe them as being able to pass through solid objects without causing damage.",
+      "queries": [
+        "lightning ball video",
+        "ball lightning footage",
+        "glowing storm orbs"
+      ]
+    },
+    {
+      "id": "seismic_sounds",
+      "domain": "geology",
+      "fact": "Earthquakes and volcanic eruptions can produce unique sounds that can be heard from great distances. These seismic sounds are caused by the movement of the Earth's crust and can be used to study the internal structure of the planet.",
+      "angle": "Rumbling",
+      "key_terms": [
+        "seismic sounds",
+        "earthquakes",
+        "volcanic eruptions"
+      ],
+      "whatif": "What if the analysis of seismic sounds could provide early warnings for natural disasters and help us better understand the Earth's internal dynamics?",
+      "wow": "Some seismic sounds can be loud enough to be heard from space.",
+      "queries": [
+        "seismic sounds video",
+        "earthquake rumble",
+        "volcanic eruption audio"
+      ]
+    },
+    {
+      "id": "rainbow_eucalyptus",
+      "domain": "botany",
+      "fact": "The rainbow eucalyptus tree has a unique, multi-colored bark that can change colors over time due to the shedding of its outer layers. This phenomenon is caused by the presence of different pigments in the tree's bark.",
+      "angle": "Colorful",
+      "key_terms": [
+        "rainbow eucalyptus",
+        "bark",
+        "pigments"
+      ],
+      "whatif": "What if the unique properties of the rainbow eucalyptus could be used to develop new, sustainable materials with dynamic color-changing properties?",
+      "wow": "The rainbow eucalyptus is one of the fastest-growing trees in the world, with some species growing up to 8 feet per year.",
+      "queries": [
+        "rainbow eucalyptus tree",
+        "color-changing bark",
+        "multi-colored trunk"
+      ]
+    },
+    {
+      "id": "morning_glory_clouds",
+      "domain": "atmosphere",
+      "fact": "Morning glory clouds are rare, tubular clouds that can form in the morning hours, often associated with severe thunderstorms. They can stretch for hundreds of miles and are considered a rare and spectacular sight.",
+      "angle": "Tubular",
+      "key_terms": [
+        "morning glory clouds",
+        "tubular clouds",
+        "severe thunderstorms"
+      ],
+      "whatif": "What if the study of morning glory clouds could reveal new insights into the formation of severe thunderstorms and the behavior of atmospheric waves?",
+      "wow": "Morning glory clouds can be so long that they can stretch across entire states or even countries.",
+      "queries": [
+        "morning glory cloud video",
+        "tubular cloud formation",
+        "severe thunderstorm footage"
+      ]
+    },
+    {
+      "id": "bioluminescent_forests",
+      "domain": "ecology",
+      "fact": "Certain forests around the world have bioluminescent properties, where the trees and plants emit a glowing light due to the presence of certain fungi or microorganisms. This phenomenon can create a magical and enchanting environment.",
+      "angle": "Glowing",
+      "key_terms": [
+        "bioluminescent forests",
+        "glowing trees",
+        "fungal symbiosis"
+      ],
+      "whatif": "What if the study of bioluminescent forests could lead to a better understanding of the complex relationships between organisms in ecosystems and the development of new, sustainable lighting solutions?",
+      "wow": "Some bioluminescent forests are so bright that they can be seen from space.",
+      "queries": [
+        "bioluminescent forest video",
+        "glowing trees",
+        "fungal forest"
+      ]
+    },
+    {
+      "id": "ice_discs",
+      "domain": "physics",
+      "fact": "Ice discs, also known as ice circles, are rare and mysterious formations of ice that can appear in rivers and lakes. They are thought to be caused by the rotation of the water beneath the surface, which creates a circular motion that freezes into a disc shape.",
+      "angle": "Frozen",
+      "key_terms": [
+        "ice discs",
+        "ice circles",
+        "rotational motion"
+      ],
+      "whatif": "What if the study of ice discs could reveal new insights into the behavior of fluids and rotational motion in natural systems?",
+      "wow": "Ice discs can be several feet in diameter and are often perfectly round.",
+      "queries": [
+        "ice disc video",
+        "ice circle formation",
+        "rotational ice"
+      ]
+    },
+    {
+      "id": "dolphin_sleep",
+      "domain": "nature",
+      "fact": "Dolphins sleep with only half of their brain at a time, allowing them to remain alert and aware of their surroundings. This unique sleep pattern is crucial for their survival.",
+      "angle": "animal",
+      "key_terms": [
+        "dolphin",
+        "sleep",
+        "brain"
+      ],
+      "whatif": "What if humans could sleep like dolphins, with only half of our brain at a time? How would this affect our daily lives and productivity?",
+      "wow": "Dolphins can sleep with only half of their brain and still swim and hunt for food, making them one of the most efficient sleepers in the animal kingdom.",
+      "queries": [
+        "dolphin sleeping",
+        "dolphin brain",
+        "animal sleep patterns"
+      ]
+    },
+    {
+      "id": "glowing_waves",
+      "domain": "atmosphere",
+      "fact": "Certain types of waves can glow in the dark due to a phenomenon called bioluminescence. This occurs when tiny organisms in the water emit light as a defense mechanism.",
+      "angle": "ocean",
+      "key_terms": [
+        "bioluminescence",
+        "waves",
+        "ocean"
+      ],
+      "whatif": "What if we could harness the power of bioluminescence to create sustainable lighting solutions for our cities and homes?",
+      "wow": "Glowing waves can be seen in certain parts of the world, creating a mesmerizing display of natural light and color.",
+      "queries": [
+        "glowing waves",
+        "bioluminescence",
+        "ocean lighting"
+      ]
+    },
+    {
+      "id": "forest_ecosystem",
+      "domain": "nature",
+      "fact": "Forests are complex ecosystems that rely on a delicate balance of relationships between trees, plants, and animals. This balance is crucial for the health and survival of the forest.",
+      "angle": "ecosystem",
+      "key_terms": [
+        "forest",
+        "ecosystem",
+        "balance"
+      ],
+      "whatif": "What if we could replicate the balance of a forest ecosystem in our cities, creating a more sustainable and harmonious relationship between humans and nature?",
+      "wow": "Forests are home to some of the most diverse and complex ecosystems on the planet, with thousands of species interacting and relying on each other for survival.",
+      "queries": [
+        "forest ecosystem",
+        "tree relationships",
+        "animal habitats"
+      ]
+    },
+    {
+      "id": "deep_sea_vent",
+      "domain": "atmosphere",
+      "fact": "Deep sea vents are underwater springs that release hot water and minerals from the Earth's crust, supporting a unique community of organisms that can survive in extreme conditions.",
+      "angle": "ocean",
+      "key_terms": [
+        "deep sea vent",
+        "hot water",
+        "minerals"
+      ],
+      "whatif": "What if we could harness the energy and resources of deep sea vents to create sustainable power sources and new industries?",
+      "wow": "Deep sea vents can reach temperatures of up to 400 degrees Celsius, making them one of the most extreme environments on the planet.",
+      "queries": [
+        "deep sea vent",
+        "underwater spring",
+        "extreme organisms"
+      ]
+    },
+    {
+      "id": "lightning_storm",
+      "domain": "atmosphere",
+      "fact": "Lightning storms can create massive electrical discharges that can be seen from space, releasing enormous amounts of energy and heat.",
+      "angle": "weather",
+      "key_terms": [
+        "lightning",
+        "storm",
+        "electrical discharge"
+      ],
+      "whatif": "What if we could harness the energy of lightning storms to create sustainable power sources and new technologies?",
+      "wow": "Lightning storms can reach temperatures of up to 30,000 degrees Celsius, making them five times hotter than the surface of the Sun.",
+      "queries": [
+        "lightning storm",
+        "electrical discharge",
+        "weather phenomena"
+      ]
+    },
+    {
+      "id": "antarctic_ice",
+      "domain": "nature",
+      "fact": "The Antarctic ice sheet is the largest single mass of ice on Earth, covering an area of over 14 million square kilometers and containing about 70% of the world's fresh water.",
+      "angle": "climate",
+      "key_terms": [
+        "Antarctic",
+        "ice sheet",
+        "fresh water"
+      ],
+      "whatif": "What if the Antarctic ice sheet were to melt completely, how would this affect global sea levels and the environment?",
+      "wow": "The Antarctic ice sheet is so massive that it depresses the Earth's crust beneath it, creating a unique geological feature.",
+      "queries": [
+        "Antarctic ice sheet",
+        "fresh water",
+        "climate change"
+      ]
+    },
+    {
+      "id": "space_debris",
+      "domain": "atmosphere",
+      "fact": "There are thousands of pieces of space debris orbiting the Earth, including old satellites, rocket parts, and other human-made objects that can pose a hazard to spacecraft and astronauts.",
+      "angle": "space",
+      "key_terms": [
+        "space debris",
+        "satellites",
+        "rocket parts"
+      ],
+      "whatif": "What if we could create a system to remove or recycle space debris, reducing the risk of collisions and improving space safety?",
+      "wow": "The amount of space debris in orbit around the Earth is so large that it can be seen as a ring of trash surrounding the planet.",
+      "queries": [
+        "space debris",
+        "satellite collision",
+        "space safety"
+      ]
+    },
+    {
+      "id": "tree_communication",
+      "domain": "nature",
+      "fact": "Trees are able to communicate with each other through complex networks of fungi and roots, sharing nutrients and warning each other of potential threats.",
+      "angle": "ecosystem",
+      "key_terms": [
+        "tree communication",
+        "fungi",
+        "roots"
+      ],
+      "whatif": "What if we could learn from the communication systems of trees and apply this knowledge to human networks and technologies?",
+      "wow": "Trees are able to communicate with each other over vast distances, creating a complex web of relationships that are essential for their survival.",
+      "queries": [
+        "tree communication",
+        "fungi networks",
+        "root systems"
+      ]
+    },
+    {
+      "id": "ocean_currents",
+      "domain": "atmosphere",
+      "fact": "Ocean currents play a crucial role in regulating the Earth's climate, transporting heat and nutrients across the globe and supporting a vast array of marine ecosystems.",
+      "angle": "ocean",
+      "key_terms": [
+        "ocean currents",
+        "climate",
+        "marine ecosystems"
+      ],
+      "whatif": "What if we could harness the power of ocean currents to create sustainable energy sources and reduce our reliance on fossil fuels?",
+      "wow": "Ocean currents can reach speeds of up to 5 meters per second, making them some of the fastest and most powerful forces on the planet.",
+      "queries": [
+        "ocean currents",
+        "climate regulation",
+        "marine ecosystems"
+      ]
+    },
+    {
+      "id": "butterfly_migration",
+      "domain": "nature",
+      "fact": "The monarch butterfly migration is one of the most incredible insect migrations on the planet, with millions of butterflies traveling thousands of miles each year to reach their wintering grounds.",
+      "angle": "animal",
+      "key_terms": [
+        "monarch butterfly",
+        "migration",
+        "wintering grounds"
+      ],
+      "whatif": "What if we could learn from the navigational systems of monarch butterflies and apply this knowledge to human technologies and transportation systems?",
+      "wow": "Monarch butterflies are able to migrate thousands of miles each year, crossing entire countries and ecosystems, and returning to the exact same trees where their ancestors wintered.",
+      "queries": [
+        "monarch butterfly migration",
+        "insect navigation",
+        "wintering grounds"
+      ]
+    },
+    {
+      "id": "coral_reef",
+      "domain": "atmosphere",
+      "fact": "Coral reefs are some of the most diverse and complex ecosystems on the planet, supporting a vast array of marine life and providing important ecosystem services such as shoreline protection and water filtration.",
+      "angle": "ocean",
+      "key_terms": [
+        "coral reef",
+        "diversity",
+        "ecosystem services"
+      ],
+      "whatif": "What if we could create artificial coral reefs to support marine biodiversity and provide ecosystem services in areas where natural reefs have been damaged or destroyed?",
+      "wow": "Coral reefs are able to support an incredible array of marine life, with some reefs containing over 1,000 different species of fish, invertebrates, and algae.",
+      "queries": [
+        "coral reef",
+        "marine biodiversity",
+        "ecosystem services"
+      ]
+    },
+    {
+      "id": "frozen_methane",
+      "domain": "geology",
+      "fact": "There are large deposits of frozen methane under the ocean floor, which can be released as the climate warms. This methane can have a significant impact on the environment.",
+      "angle": "methane",
+      "key_terms": [
+        "frozen methane",
+        "ocean floor",
+        "climate change"
+      ],
+      "whatif": "What if these methane deposits were to be released all at once, what would be the consequences for our planet? Could it accelerate climate change?",
+      "wow": "The amount of frozen methane under the ocean floor is estimated to be over 10 times the amount of carbon dioxide in the atmosphere.",
+      "queries": [
+        "frozen methane bubbles",
+        "methane hydrate",
+        "ocean floor methane"
+      ]
+    },
+    {
+      "id": "space_weathering",
+      "domain": "space",
+      "fact": "The surface of asteroids and comets can be altered by space weathering, a process that involves the bombardment of particles from the sun. This process can change the color and composition of the surface.",
+      "angle": "weathering",
+      "key_terms": [
+        "space weathering",
+        "asteroids",
+        "comets"
+      ],
+      "whatif": "What if we could study the effects of space weathering on Earth's surface, could we learn more about the history of our planet? What secrets would it reveal?",
+      "wow": "The process of space weathering can create a layer of glass on the surface of asteroids, making them look like they have been melted.",
+      "queries": [
+        "asteroid surface",
+        "comet tail",
+        "space weathering effects"
+      ]
+    },
+    {
+      "id": "seafloor_spreading",
+      "domain": "geology",
+      "fact": "The seafloor is constantly moving due to the process of seafloor spreading, where new oceanic crust is created at mid-ocean ridges. This process can create new landforms and change the shape of the ocean floor.",
+      "angle": "seafloor",
+      "key_terms": [
+        "seafloor spreading",
+        "mid-ocean ridges",
+        "oceanic crust"
+      ],
+      "whatif": "What if we could study the process of seafloor spreading to better understand the Earth's geology and the creation of new landforms? What would it reveal about the Earth's history?",
+      "wow": "The process of seafloor spreading can create new mountains and volcanoes, making it a key factor in shaping the Earth's surface.",
+      "queries": [
+        "seafloor spreading video",
+        "mid-ocean ridge",
+        "oceanic crust formation"
+      ]
+    },
+    {
+      "id": "mantis_shrimp_vision",
+      "domain": "light",
+      "fact": "The mantis shrimp has 12 to 16 kinds of color receptor in its eyes, allowing it to see colors that are invisible to humans, and even perceive polarized light.",
+      "angle": "vision",
+      "key_terms": [
+        "color",
+        "vision",
+        "mantis shrimp"
+      ],
+      "whatif": "What if we could develop eyes that see the world in the same way as a mantis shrimp?",
+      "wow": "But what if we could even see beyond the visible spectrum, into the realm of ultraviolet or infrared light?",
+      "queries": [
+        "mantis shrimp color vision",
+        "polarized light",
+        "infrared vision"
+      ]
+    },
+    {
+      "id": "gallium_melting",
+      "domain": "matter",
+      "fact": "Gallium is a metal that melts in your hand because its melting point is just 29.76 degrees Celsius, making it one of the most fragile metals known.",
+      "angle": "melting",
+      "key_terms": [
+        "gallium",
+        "melting point",
+        "metal"
+      ],
+      "whatif": "What if we could create a metal that melts at even lower temperatures?",
+      "wow": "But what if we could even create a metal that melts at a temperature of just a few degrees Celsius above room temperature?",
+      "queries": [
+        "gallium melting point",
+        "fragile metals",
+        "low melting point"
+      ]
+    },
+    {
+      "id": "asteroid_weathering",
+      "domain": "astronomy",
+      "fact": "The surface of asteroids and comets can be altered by space weathering, which can create unique and fascinating landscapes.",
+      "angle": "astronomy",
+      "key_terms": [
+        "asteroid weathering",
+        "astronomy",
+        "space weathering"
+      ],
+      "whatif": "What if we could study the surface of asteroids in more detail?",
+      "wow": "But what if we could even create a device that could simulate the effects of space weathering?",
+      "queries": [
+        "asteroid weathering",
+        "astronomy",
+        "space weathering"
+      ]
+    },
+    {
+      "id": "fungal_maze_solving",
+      "domain": "mycology",
+      "fact": "Fungi can solve mazes and make decisions based on their environment, using complex networks of chemical signals.",
+      "angle": "mycology",
+      "key_terms": [
+        "fungal maze solving",
+        "mycology",
+        "decision making"
+      ],
+      "whatif": "What if we could develop a way to harness the problem-solving abilities of fungi?",
+      "wow": "But what if we could even use fungi to create a global network of interconnected organisms?",
+      "queries": [
+        "fungal maze solving",
+        "mycology",
+        "problem solving"
+      ]
+    },
+    {
+      "id": "fungal_nutrient_sharing",
+      "domain": "mycology",
+      "fact": "Fungi have complex mechanisms for sharing nutrients with other organisms, using networks of chemical signals and fungal hyphae.",
+      "angle": "mycology",
+      "key_terms": [
+        "fungal nutrient sharing",
+        "mycology",
+        "nutrient exchange"
+      ],
+      "whatif": "What if we could develop a way to harness the nutrient-sharing abilities of fungi?",
+      "wow": "But what if we could even use fungi to create a global network of interconnected organisms?",
+      "queries": [
+        "fungal nutrient sharing",
+        "mycology",
+        "nutrient exchange"
+      ]
+    },
+    {
+      "id": "plant_root_networks",
+      "domain": "botany",
+      "fact": "Plant root networks can connect with other organisms and even influence their behavior, using complex mechanisms that involve changes in gene expression and hormone signaling.",
+      "angle": "botany",
+      "key_terms": [
+        "plant root networks",
+        "botany",
+        "behavioral influence"
+      ],
+      "whatif": "What if we could develop a way to communicate with plants in a more direct way?",
+      "wow": "But what if we could even use plants to transmit information between different parts of the world?",
+      "queries": [
+        "plant root networks",
+        "botany",
+        "behavioral influence"
+      ]
+    },
+    {
+      "id": "starling_murmurations",
+      "domain": "astronomy",
+      "fact": "Starlings are known to form massive murmurations, which are intricate patterns that can be seen from space, and are influenced by the gravitational pull of the Earth and the position of the stars.",
+      "angle": "Cosmic Dance",
+      "key_terms": [
+        "starlings",
+        "mururations",
+        "astronomy"
+      ],
+      "whatif": "What if we could use the patterns of starling murmurations to better understand the movement of celestial bodies?",
+      "wow": "These murmurations can be so large that they can be seen from the International Space Station, and are a wonder of modern astronomy.",
+      "queries": [
+        "starling murmurations from space",
+        "bird patterns in astronomy",
+        "cosmic dance of starlings"
+      ]
+    },
+    {
+      "id": "wave_glow",
+      "domain": "light",
+      "fact": "Certain types of waves can glow in the dark due to a phenomenon called bioluminescence, where the movement of the waves disturbs and excites the molecules of certain organisms.",
+      "angle": "Glowing Waves",
+      "key_terms": [
+        "wave glow",
+        "bioluminescence",
+        "ocean"
+      ],
+      "whatif": "What if we could harness the power of bioluminescent waves to create sustainable and eco-friendly lighting solutions for our coastal communities?",
+      "wow": "These glowing waves can be so bright that they can be seen from space, and are a popular destination for surfers and scientists alike.",
+      "queries": [
+        "glowing waves at night",
+        "bioluminescent ocean",
+        "wave glow phenomena"
+      ]
+    },
+    {
+      "id": "gallium_properties",
+      "domain": "chemistry",
+      "fact": "Gallium is a metal that melts in your hand because its melting point is below human body temperature. This unique property makes gallium a useful material for a range of applications, from thermometers to semiconductors.",
+      "angle": "materials",
+      "key_terms": [
+        "gallium",
+        "melting point",
+        "semiconductors"
+      ],
+      "whatif": "What if the unique properties of gallium could be used to create new types of thermometers or temperature-sensing devices? Could this lead to a new era of advanced temperature control and measurement?",
+      "wow": "Gallium is also a highly corrosive metal, which can react with other materials to form a range of interesting and complex compounds.",
+      "queries": [
+        "gallium melting point",
+        "gallium uses",
+        "semiconductor materials"
+      ]
+    },
+    {
+      "id": "magnetic_moon",
+      "domain": "astronomy",
+      "fact": "The Moon has a mysterious magnetic field that is not generated by its core, but rather by its crust. This field is thought to be a remnant of an ancient magnetic field that was present when the Moon was formed.",
+      "angle": "space",
+      "key_terms": [
+        "magnetic field",
+        "Moon",
+        "crust"
+      ],
+      "whatif": "What if the Moon's magnetic field is not just a remnant of the past, but is still active today? What would this mean for our understanding of the Moon's internal dynamics?",
+      "wow": "The Moon's magnetic field is so strong that it can affect the Earth's magnetic field, causing changes in the Earth's magnetosphere.",
+      "queries": [
+        "magnetic field of the Moon",
+        "lunar crust",
+        "Earth's magnetosphere"
+      ]
+    },
+    {
+      "id": "fungal_highways",
+      "domain": "mycology",
+      "fact": "Fungi have vast networks of tiny, branching tendrils that allow them to connect with other organisms and even influence the behavior of plants. These networks can span entire ecosystems, allowing fungi to play a key role in shaping the environment.",
+      "angle": "nature",
+      "key_terms": [
+        "fungal networks",
+        "mycorrhizal fungi",
+        "plant behavior"
+      ],
+      "whatif": "What if these fungal networks are not just limited to individual ecosystems, but are actually connected across the entire planet? What would this mean for our understanding of the global ecosystem?",
+      "wow": "Some fungi can even use these networks to steal nutrients from other organisms, or to warn other plants of potential threats.",
+      "queries": [
+        "fungal networks",
+        "mycorrhizal fungi",
+        "plant-fungus interactions"
+      ]
+    },
+    {
+      "id": "deep_time_clock",
+      "domain": "deep_time",
+      "fact": "The Earth's geological clock is not just a simple measure of time, but is actually influenced by the planet's internal dynamics. The Earth's core is thought to be responsible for the planet's magnetic field, which in turn affects the geological clock.",
+      "angle": "geology",
+      "key_terms": [
+        "geological clock",
+        "Earth's core",
+        "magnetic field"
+      ],
+      "whatif": "What if the Earth's geological clock is not just a one-way process, but is actually influenced by the planet's internal dynamics? What would this mean for our understanding of the Earth's history?",
+      "wow": "The Earth's core is so hot that it can melt the surrounding rock, creating a layer of liquid metal that generates the planet's magnetic field.",
+      "queries": [
+        "geological clock",
+        "Earth's core",
+        "magnetic field generation"
+      ]
+    },
+    {
+      "id": "starlight_serendipity",
+      "domain": "astronomy",
+      "fact": "The light from distant stars is not just a random collection of photons, but is actually influenced by the interstellar medium. This medium can cause the light to be scattered, polarized, or even absorbed, affecting our ability to observe the stars.",
+      "angle": "space",
+      "key_terms": [
+        "interstellar medium",
+        "starlight",
+        "polarization"
+      ],
+      "whatif": "What if the interstellar medium is not just a passive observer of the universe, but is actually an active participant in shaping the light that we see? What would this mean for our understanding of the cosmos?",
+      "wow": "The interstellar medium can even create complex patterns of light and shadow, allowing us to study the properties of the medium itself.",
+      "queries": [
+        "interstellar medium",
+        "starlight polarization",
+        "light scattering"
+      ]
+    },
+    {
+      "id": "microbial_masters",
+      "domain": "mycology",
+      "fact": "Microbes are not just simple organisms, but are actually capable of complex behaviors such as communication, cooperation, and even warfare. These behaviors are often mediated by complex networks of chemical signals.",
+      "angle": "biology",
+      "key_terms": [
+        "microbial behavior",
+        "chemical signals",
+        "cooperation"
+      ],
+      "whatif": "What if microbes are not just individual organisms, but are actually part of a larger, interconnected network of life? What would this mean for our understanding of the natural world?",
+      "wow": "Some microbes can even form symbiotic relationships with other organisms, allowing them to access new sources of nutrients and energy.",
+      "queries": [
+        "microbial behavior",
+        "chemical signaling",
+        "symbiotic relationships"
+      ]
+    },
+    {
+      "id": "matter_mystery",
+      "domain": "matter",
+      "fact": "The properties of matter are not just determined by the atoms that make it up, but are also influenced by the way that those atoms are arranged. This arrangement can affect the material's strength, conductivity, and even its optical properties.",
+      "angle": "physics",
+      "key_terms": [
+        "material properties",
+        "atomic arrangement",
+        "optical properties"
+      ],
+      "whatif": "What if the arrangement of atoms is not just a static property of a material, but is actually dynamic and can change over time? What would this mean for our understanding of the material world?",
+      "wow": "Some materials can even exhibit exotic properties such as superconductivity or superfluidity, allowing them to behave in ways that seem to defy the laws of physics.",
+      "queries": [
+        "material properties",
+        "atomic arrangement",
+        "exotic materials"
+      ]
+    },
+    {
+      "id": "time_travelers",
+      "domain": "deep_time",
+      "fact": "The passage of time is not just a one-way process, but is actually influenced by the Earth's internal dynamics. The planet's core is thought to be responsible for the Earth's magnetic field, which in turn affects the geological clock.",
+      "angle": "geology",
+      "key_terms": [
+        "geological clock",
+        "Earth's core",
+        "magnetic field"
+      ],
+      "whatif": "What if the Earth's geological clock is not just a passive observer of the universe, but is actually an active participant in shaping the passage of time? What would this mean for our understanding of the Earth's history?",
+      "wow": "The Earth's core is so hot that it can melt the surrounding rock, creating a layer of liquid metal that generates the planet's magnetic field.",
+      "queries": [
+        "geological clock",
+        "Earth's core",
+        "magnetic field generation"
+      ]
     }
   ]
 }
