@@ -3564,6 +3564,384 @@
         "Earth's core",
         "magnetic field generation"
       ]
+    },
+    {
+      "id": "lightning_storms",
+      "domain": "astronomy",
+      "fact": "Lightning storms can create massive electrical discharges that can be seen from space. These discharges can be so powerful that they can affect the Earth's magnetic field and influence the formation of clouds.",
+      "angle": "Electrical Displays",
+      "key_terms": [
+        "lightning storms",
+        "electrical discharges",
+        "magnetic field"
+      ],
+      "whatif": "What if we could better understand and predict the behavior of lightning storms to improve weather forecasting and reduce the risk of damage to infrastructure?",
+      "wow": "Some lightning storms can produce over 1,000 lightning bolts per hour, making them one of the most intense and awe-inspiring displays of electrical energy on the planet.",
+      "queries": [
+        "lightning storms",
+        "electrical discharges",
+        "magnetic field"
+      ]
+    },
+    {
+      "id": "coral_reefs",
+      "domain": "matter",
+      "fact": "Coral reefs are some of the most diverse and complex ecosystems on the planet, supporting over 25% of all marine species. These ecosystems can be influenced by factors such as climate change, pollution, and overfishing.",
+      "angle": "Marine Ecosystems",
+      "key_terms": [
+        "coral reefs",
+        "marine ecosystems",
+        "biodiversity"
+      ],
+      "whatif": "What if we could better understand and protect these ecosystems to preserve the health of the oceans and the planet as a whole?",
+      "wow": "Some coral reefs can be over 2,000 years old, making them one of the longest-living structures on the planet.",
+      "queries": [
+        "coral reefs",
+        "marine ecosystems",
+        "biodiversity"
+      ]
+    },
+    {
+      "id": "microbe_metabolism",
+      "domain": "mycology",
+      "fact": "Certain microbes can survive in extreme environments by slowing down their metabolism to a near-halt, entering a state of dormancy. This allows them to conserve energy and wait for more favorable conditions.",
+      "angle": "extreme",
+      "key_terms": [
+        "microbes",
+        "metabolism",
+        "dormancy"
+      ],
+      "whatif": "What if these microbes could teach us how to put humans in stasis for long periods of time? Could we use this to preserve people for long space journeys?",
+      "wow": "Some of these microbes can remain in this state for thousands of years, only to spring back to life when conditions improve.",
+      "queries": [
+        "microbes in frozen tundra",
+        "dormant microbes in desert soil",
+        "microbe metabolism experiments"
+      ]
+    },
+    {
+      "id": "starlight_refraction",
+      "domain": "astronomy",
+      "fact": "The light from distant stars can be bent and distorted by the gravitational pull of nearby galaxies, creating a phenomenon known as gravitational lensing. This can actually allow us to see more of the universe than would be possible otherwise.",
+      "angle": "cosmic",
+      "key_terms": [
+        "starlight",
+        "refraction",
+        "gravitational lensing"
+      ],
+      "whatif": "What if we could use this effect to create a kind of cosmic telescope, allowing us to study distant galaxies in unprecedented detail? Could we use this to discover new forms of life?",
+      "wow": "In some cases, gravitational lensing can even create multiple images of the same star or galaxy, allowing us to see it from different angles and learn more about its structure.",
+      "queries": [
+        "gravitational lensing examples",
+        "starlight refraction through galaxies",
+        "cosmic telescope concept"
+      ]
+    },
+    {
+      "id": "fungal_electricity",
+      "domain": "mycology",
+      "fact": "Fungi can generate electricity through their mycelium, creating complex networks of electrical activity that can be used to monitor and respond to environmental changes.",
+      "angle": "fungal_futures",
+      "key_terms": [
+        "fungal",
+        "electricity",
+        "mycelium"
+      ],
+      "whatif": "What if fungal electricity could be harnessed to create sustainable energy solutions? What if it could be used to develop new technologies for environmental monitoring and remediation?",
+      "wow": "Some fungi can even use their electrical activity to communicate with other organisms and coordinate their behavior, creating complex and dynamic ecosystems.",
+      "queries": [
+        "fungal electricity",
+        "mycelium",
+        "sustainable energy"
+      ]
+    },
+    {
+      "id": "fungal_farming",
+      "domain": "mycology",
+      "fact": "Fungi can be used to farm and cultivate other organisms, creating complex and dynamic ecosystems that can be used to produce food, medicine, and other valuable products.",
+      "angle": "fungal_futures",
+      "key_terms": [
+        "fungal",
+        "farming",
+        "mycelium"
+      ],
+      "whatif": "What if fungal farming could be used to develop more sustainable and efficient solutions for human problems? What if it could be used to produce new and innovative products?",
+      "wow": "Some fungi can even be used to cultivate and produce complex organic compounds, like antibiotics and vaccines, making them a valuable resource for human health and medicine.",
+      "queries": [
+        "fungal farming",
+        "mycelium",
+        "sustainable agriculture"
+      ]
+    },
+    {
+      "id": "underwater_rivers",
+      "domain": "oceanography",
+      "fact": "There are underwater rivers that exist beneath the ocean's surface, with their own unique chemistry and ecosystems. These underwater rivers can be found in places like the Gulf of Mexico and the Mediterranean Sea.",
+      "angle": "ocean_secrets",
+      "key_terms": [
+        "underwater",
+        "rivers",
+        "oceanography"
+      ],
+      "whatif": "What if these underwater rivers could provide insights into the Earth's geological history and the formation of oceanic crust? What if they could be used to discover new species and ecosystems?",
+      "wow": "Some of these underwater rivers are so large that they have their own waves and tides, creating complex and dynamic ecosystems that are still poorly understood.",
+      "queries": [
+        "underwater river",
+        "oceanography",
+        "marine science"
+      ]
+    },
+    {
+      "id": "fungal_computing",
+      "domain": "mycology",
+      "fact": "Fungi can be used to create complex computing systems, using their mycelium to process and store information.",
+      "angle": "fungal_futures",
+      "key_terms": [
+        "fungal",
+        "computing",
+        "mycelium"
+      ],
+      "whatif": "What if fungal computing could be used to develop more sustainable and efficient solutions for human problems? What if it could be used to create new and innovative technologies?",
+      "wow": "Some fungi can even be used to create complex networks and patterns, making them a valuable resource for fields like computer science and engineering.",
+      "queries": [
+        "fungal computing",
+        "mycelium",
+        "sustainable technology"
+      ]
+    },
+    {
+      "id": "material_transitions",
+      "domain": "matter",
+      "fact": "Certain materials can change their properties dramatically when exposed to specific conditions, such as temperature or pressure. This can lead to materials that are seemingly 'alive'.",
+      "angle": "Technology",
+      "key_terms": [
+        "materials",
+        "properties",
+        "transitions"
+      ],
+      "whatif": "What if we could create materials that adapt to their environment like living organisms?",
+      "wow": "These materials can change from solid to liquid and back again in a matter of seconds, making them ideal for advanced applications.",
+      "queries": [
+        "phase transition materials",
+        "smart materials",
+        "material science experiments"
+      ]
+    },
+    {
+      "id": "underwater_landscape",
+      "domain": "oceanography",
+      "fact": "The ocean floor is home to landscapes that rival those on land, including mountains, valleys, and even 'lakes' within the ocean itself. These underwater landscapes are still largely unexplored.",
+      "angle": "Exploration",
+      "key_terms": [
+        "ocean",
+        "landscape",
+        "exploration"
+      ],
+      "whatif": "What if we were to discover a new species or ecosystem in one of these unexplored underwater landscapes?",
+      "wow": "Some of these underwater mountains are taller than those on land, and their peaks can be covered in unique ecosystems.",
+      "queries": [
+        "ocean floor landscape",
+        "underwater mountains",
+        "deep sea exploration"
+      ]
+    },
+    {
+      "id": "microbial_intelligence",
+      "domain": "matter",
+      "fact": "Microbes can solve complex problems and even exhibit a form of intelligence when acting together. This collective behavior can lead to remarkable achievements.",
+      "angle": "Biology",
+      "key_terms": [
+        "microbes",
+        "intelligence",
+        "collective"
+      ],
+      "whatif": "What if microbes could be harnessed to solve human problems, such as cleaning pollutants from the environment?",
+      "wow": "Some microbes can work together to build complex structures that are strong enough to withstand significant forces.",
+      "queries": [
+        "microbial collective behavior",
+        "biological intelligence",
+        "microbe experiments"
+      ]
+    },
+    {
+      "id": "ocean_plastic",
+      "domain": "oceanography",
+      "fact": "Plastic waste in the ocean is not just harmful to marine life but also affects the entire food chain, including humans. The impact of plastic pollution is still being discovered.",
+      "angle": "Conservation",
+      "key_terms": [
+        "ocean",
+        "plastic",
+        "pollution"
+      ],
+      "whatif": "What if the amount of plastic in the ocean continues to grow, what would be the long-term effects on marine ecosystems?",
+      "wow": "It's estimated that if we don't change our ways, there will be more plastic than fish in the ocean by weight in a few decades.",
+      "queries": [
+        "ocean plastic pollution",
+        "marine conservation",
+        "plastic impact on wildlife"
+      ]
+    },
+    {
+      "id": "superconducting_materials",
+      "domain": "matter",
+      "fact": "Certain materials can conduct electricity with zero resistance when cooled to extremely low temperatures. These superconducting materials have the potential to revolutionize energy transmission.",
+      "angle": "Technology",
+      "key_terms": [
+        "superconductors",
+        "materials",
+        "energy"
+      ],
+      "whatif": "What if superconducting materials could be used to create more efficient power grids, reducing energy loss?",
+      "wow": "These materials can carry electrical current with perfect efficiency, meaning no energy is lost as heat, making them incredibly valuable for future technologies.",
+      "queries": [
+        "superconducting materials",
+        "energy efficiency",
+        "superconductor experiments"
+      ]
+    },
+    {
+      "id": "nanomaterials",
+      "domain": "matter",
+      "fact": "Materials at the nanoscale can exhibit properties that are significantly different from their bulk counterparts, leading to potential breakthroughs in various fields.",
+      "angle": "Technology",
+      "key_terms": [
+        "nanomaterials",
+        "properties",
+        "innovation"
+      ],
+      "whatif": "What if nanomaterials could be used to create ultra-strong, lightweight materials for aerospace applications?",
+      "wow": "Nanomaterials can be thousands of times stronger than steel, yet be incredibly light, making them ideal for future technologies.",
+      "queries": [
+        "nanomaterial properties",
+        "nanotechnology",
+        "nanoscale materials"
+      ]
+    },
+    {
+      "id": "ocean_acidification",
+      "domain": "oceanography",
+      "fact": "The ocean's pH level is decreasing due to increased CO2 absorption, leading to acidification that can have devastating effects on marine life, especially shellfish and corals.",
+      "angle": "Conservation",
+      "key_terms": [
+        "ocean",
+        "acidification",
+        "climate"
+      ],
+      "whatif": "What if the acidification of the oceans continues unabated, what would be the impact on global food security and ecosystems?",
+      "wow": "Ocean acidification is happening at a rate not seen in millions of years, posing a significant threat to marine biodiversity.",
+      "queries": [
+        "ocean acidification",
+        "climate change",
+        "marine ecosystems"
+      ]
+    },
+    {
+      "id": "bioluminescent_marine_life",
+      "domain": "oceanography",
+      "fact": "Many marine organisms have the ability to produce their own light, a phenomenon known as bioluminescence. This can be used for communication, defense, or attracting prey.",
+      "angle": "Biology",
+      "key_terms": [
+        "bioluminescence",
+        "marine life",
+        "light"
+      ],
+      "whatif": "What if the secrets of bioluminescence could be unlocked to create sustainable, eco-friendly lighting solutions?",
+      "wow": "Some deep-sea creatures can produce light that is bright enough to be seen from miles away, despite the darkness of their surroundings.",
+      "queries": [
+        "bioluminescent marine life",
+        "deep sea creatures",
+        "bioluminescence"
+      ]
+    },
+    {
+      "id": "superfluids",
+      "domain": "matter",
+      "fact": "At extremely low temperatures, certain materials can become superfluid, exhibiting zero viscosity and the ability to flow without resistance. This property has fascinating implications for quantum mechanics.",
+      "angle": "Physics",
+      "key_terms": [
+        "superfluids",
+        "quantum mechanics",
+        "temperature"
+      ],
+      "whatif": "What if superfluids could be used to create ultra-efficient cooling systems or to explore the properties of matter at the quantum level?",
+      "wow": "Superfluids can climb up walls and escape containers, seemingly defying gravity, due to their unique properties.",
+      "queries": [
+        "superfluid properties",
+        "quantum physics",
+        "low temperature experiments"
+      ]
+    },
+    {
+      "id": "ocean_current_patterns",
+      "domain": "oceanography",
+      "fact": "Ocean currents follow complex patterns that are influenced by wind, tides, and the Earth's rotation. Understanding these patterns is crucial for predicting weather and climate changes.",
+      "angle": "Meteorology",
+      "key_terms": [
+        "ocean currents",
+        "patterns",
+        "climate"
+      ],
+      "whatif": "What if understanding ocean current patterns could help predict and mitigate the effects of hurricanes or tsunamis?",
+      "wow": "The Gulf Stream, a major ocean current, keeps Western Europe relatively warm compared to other regions at the same latitude.",
+      "queries": [
+        "ocean current patterns",
+        "gulf stream",
+        "oceanography"
+      ]
+    },
+    {
+      "id": "butterfly_effect",
+      "domain": "weather",
+      "fact": "The flapping of a butterfly's wings can cause a hurricane on the other side of the world. This phenomenon is known as the butterfly effect.",
+      "angle": "chaos",
+      "key_terms": [
+        "butterfly",
+        "hurricane",
+        "chaos"
+      ],
+      "whatif": "What if a single butterfly could change the course of a hurricane? What would happen if we could harness this power?",
+      "wow": "The butterfly effect is so powerful that it can even affect the formation of tornadoes and cyclones.",
+      "queries": [
+        "butterfly flying slow motion",
+        "hurricane forming in ocean",
+        "tornado touching down"
+      ]
+    },
+    {
+      "id": "microbe_intelligence",
+      "domain": "biology",
+      "fact": "Microbes are not just simple organisms, but are actually capable of complex behaviors and problem-solving. They can even communicate with each other and adapt to their environments in sophisticated ways.",
+      "angle": "microbiology",
+      "key_terms": [
+        "microbes",
+        "intelligence",
+        "problem-solving"
+      ],
+      "whatif": "What if we could harness the intelligence of microbes to create new technologies and solutions? What would happen if we could understand the secrets behind their complex behaviors?",
+      "wow": "The intelligence of microbes is so advanced that they can even outsmart human immune systems and develop resistance to antibiotics.",
+      "queries": [
+        "microbe intelligence",
+        "microbial communication",
+        "problem-solving"
+      ]
+    },
+    {
+      "id": "frozen_carbonite",
+      "domain": "chemistry",
+      "fact": "There is a type of frozen carbonite that can preserve objects for millions of years, maintaining their original structure and composition. This phenomenon occurs in extreme environments, such as the coldest regions of the Earth.",
+      "angle": "preservation",
+      "key_terms": [
+        "frozen",
+        "carbonite",
+        "preservation"
+      ],
+      "whatif": "What if we could use this type of frozen carbonite to preserve historical artifacts or even human bodies for an extended period?",
+      "wow": "The frozen carbonite can withstand temperatures as low as -200 degrees Celsius, making it an ideal medium for preserving sensitive materials.",
+      "queries": [
+        "frozen carbonite formation",
+        "preservation techniques",
+        "extreme cold environments"
+      ]
     }
   ]
 }
