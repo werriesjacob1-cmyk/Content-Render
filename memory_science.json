@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-22_the-solid-made-of-air",
-      "metaphor": "solid trapped air material",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "COMPARISON_COLLISION",
-      "title": "The Solid Made of Air",
-      "fact_id": "aerogel_frozen_smoke",
-      "domain": "materials",
-      "hook": "A piece of frozen smoke can stop a blowtorch flame from burning your hand.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 9.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 8.17
-      }
-    },
-    {
       "video_id": "science_2026-07-22_the-plant-that-grows-at-visible-speed",
       "metaphor": "visible plant speed",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -334,6 +310,30 @@
         "rewatch": 8.0,
         "clarity": 9.0,
         "overall": 6.83
+      }
+    },
+    {
+      "video_id": "science_2026-07-28_hidden-connections-in-nature",
+      "metaphor": "underground connections",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "COMMENT",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "Hidden Connections in Nature",
+      "fact_id": "mushroom_networks",
+      "domain": "biology",
+      "hook": "What if trees could talk to each other underground?",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "overall": 7.0
       }
     }
   ]

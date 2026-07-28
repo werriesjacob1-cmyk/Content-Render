@@ -1,94 +1,95 @@
 {
-  "title": "The Secret Intelligence of Plants",
-  "viewer_job": "REFRAME",
-  "keyword": "plant intelligence",
-  "metaphor": "Nature's Hidden Minds",
-  "hook": "Plants can make decisions just like animals do.",
-  "hook_headline": "PLANTS HAVE BRAINS?",
-  "script": "Plants can make decisions just like animals do. Their complex nervous systems allow them to respond to their environment. The Mimosa pudica reacts to touch within seconds, folding its leaves. Some plants communicate through a network of fungi, sharing vital information. Plants like Arabidopsis thaliana can remember past drought conditions. The Venus flytrap can snap shut faster than the blink of an eye. Certain plants can detect sounds and respond to vibrations. Next time you see a plant, consider the hidden complexity within.",
+  "title": "Hidden Connections in Nature",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "plant networks",
+  "metaphor": "underground connections",
+  "hook": "What if trees could talk to each other underground?",
+  "hook_headline": "TREES ARE TALKING",
+  "script": "What if trees could talk to each other underground? Mushrooms connect trees and plants through hidden underground networks. These mycorrhizal connections allow them to share nutrients and even information. Can plants warn each other of threats? Research shows trees can send distress signals through these networks when attacked. They help nearby trees boost their defenses, effectively communicating in silence. Some of these networks can extend over three miles, making them among the largest living organisms on the planet. Imagine a single fungus connecting thousands of trees beneath your feet.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Plants can make decisions just like animals do.",
-      "on_screen_text": "PLANTS HAVE BRAINS?",
-      "search_query": "close up of plants",
+      "voiceover": "What if trees could talk to each other underground?",
+      "on_screen_text": "TREES ARE TALKING",
+      "search_query": "forest fungi network",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Their complex nervous systems allow them to respond to their environment.",
-      "on_screen_text": "COMPLEX SYSTEMS",
-      "search_query": "plant nervous systems",
+      "voiceover": "Mushrooms connect trees and plants through hidden underground networks.",
+      "on_screen_text": "HIDDEN NETWORKS",
+      "search_query": "mycorrhizal fungi",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The Mimosa pudica reacts to touch within seconds, folding its leaves.",
-      "on_screen_text": "FAST REACTIONS",
-      "search_query": "Mimosa pudica reaction",
-      "motion": "zoom_in"
+      "voiceover": "These mycorrhizal connections allow them to share nutrients and even information.",
+      "on_screen_text": "SHARING NUTRIENTS",
+      "search_query": "nutrient exchange",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Some plants communicate through a network of fungi, sharing vital information.",
-      "on_screen_text": "WOOD WIDE WEB",
-      "search_query": "mycorrhizal network",
-      "motion": "pan"
+      "voiceover": "Can plants warn each other of threats?",
+      "on_screen_text": "WARN EACH OTHER",
+      "search_query": "plant communication",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Plants like Arabidopsis thaliana can remember past drought conditions.",
-      "on_screen_text": "MEMORY IN PLANTS",
-      "search_query": "Arabidopsis thaliana",
-      "motion": "zoom_in"
+      "voiceover": "Research shows trees can send distress signals through these networks when attacked.",
+      "on_screen_text": "DISTRESS SIGNALS",
+      "search_query": "tree distress signals",
+      "motion": "static"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "The Venus flytrap can snap shut faster than the blink of an eye.",
-      "on_screen_text": "INSTANT DECISIONS",
-      "search_query": "Venus flytrap snap",
-      "motion": "zoom_in"
+      "voiceover": "They help nearby trees boost their defenses, effectively communicating in silence.",
+      "on_screen_text": "BOOST DEFENSES",
+      "search_query": "tree defense mechanisms",
+      "motion": "zoom_out"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Certain plants can detect sounds and respond to vibrations.",
-      "on_screen_text": "SOUND DETECTION",
-      "search_query": "plants responding to sound",
+      "voiceover": "Some of these networks can extend over three miles, making them among the largest living organisms on the planet.",
+      "on_screen_text": "LARGEST ORGANISMS",
+      "search_query": "largest living organisms",
       "motion": "pan"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "Next time you see a plant, consider the hidden complexity within.",
-      "on_screen_text": "HIDDEN COMPLEXITY",
-      "search_query": "plant behavior",
-      "motion": "pan"
+      "voiceover": "Imagine a single fungus connecting thousands of trees beneath your feet.",
+      "on_screen_text": "FUNGUS CONNECTION",
+      "search_query": "fungal connections",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What do you think about plant intelligence?",
-    "Plants can communicate!",
-    "Nature is full of surprises."
+    "Did you know about plant networks? Yes or no?",
+    "Trees communicate underground.",
+    "Nature's hidden connections."
   ],
   "hashtags": [
     "#plants",
-    "#intelligence",
+    "#fungi",
     "#nature",
-    "#science"
+    "#ecosystems",
+    "#connections"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-27_the-secret-intelligence-of-plants",
-  "cta_style": "LOOP",
-  "domain": "botany"
+  "video_id": "science_2026-07-28_hidden-connections-in-nature",
+  "cta_style": "COMMENT",
+  "domain": "biology"
 }
