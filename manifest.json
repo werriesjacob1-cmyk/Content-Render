@@ -1,87 +1,94 @@
 {
-  "title": "Chess: More Games Than Atoms",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "chess games",
-  "metaphor": "Chess vs. Universe",
-  "hook": "There are more possible chess games than atoms in the universe?",
-  "hook_headline": "ENDLESS CHESS POSSIBILITIES",
-  "script": "A chessboard has only 64 squares, yet it can host a staggering number of games. After just four moves by each player, there are nearly 85 billion legal variations. This branching factor of 35 moves per turn leads to a staggering $10^{120}$ potential sequences. To put that in perspective, the observable universe contains only about $10^{80}$ atoms. A computer could never list all possible chess games because there isn't enough matter in existence to store the complete list. Thus, the complexity of chess dwarfs even the vastness of the cosmos. You may think of chess as a simple game, but it encapsulates an unfathomable depth of possibility and strategy.",
+  "title": "The Hidden Truth of House Dust",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "house dust",
+  "metaphor": "unsettling reality",
+  "hook": "You might be living in a home made of you.",
+  "hook_headline": "DUST IS YOU",
+  "script": "You might be living in a home made of you. Every minute, you shed tens of thousands of dead skin cells. What if you tracked where all that skin actually ends up? Surprisingly, much of the dust in your home is made up of you. Studies reveal that about 80% of household dust consists of human skin cells. If you gathered all the skin cells you lose in a day, it would weigh about the same as a slice of bread. You replace your entire outer layer of skin every two to four weeks. Next time you see dust in your home, remember it\u2019s not just dust\u2014it\u2019s a part of you.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A chessboard has only 64 squares, yet it can host a staggering number of games.",
-      "on_screen_text": "64 SQUARES, COUNTLESS GAMES",
-      "search_query": "chess board pieces",
+      "voiceover": "You might be living in a home made of you.",
+      "on_screen_text": "DUST IS YOU",
+      "search_query": "dust floating in sunlight",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "After just four moves by each player, there are nearly 85 billion legal variations.",
-      "on_screen_text": "85 BILLION VARIATIONS",
-      "search_query": "chess game close up",
+      "voiceover": "Every minute, you shed tens of thousands of dead skin cells.",
+      "on_screen_text": "SHEDDING SKIN",
+      "search_query": "close up of shedding skin",
       "motion": "zoom_in"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "This branching factor of 35 moves per turn leads to a staggering $10^{120}$ potential sequences.",
-      "on_screen_text": "UNIMAGINABLE SEQUENCES",
-      "search_query": "chess pieces macro",
-      "motion": "zoom_in"
+      "voiceover": "What if you tracked where all that skin actually ends up?",
+      "on_screen_text": "WHERE DOES IT GO?",
+      "search_query": "dust particles in air",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "To put that in perspective, the observable universe contains only about $10^{80}$ atoms.",
-      "on_screen_text": "UNIVERSE VS. CHESS",
-      "search_query": "galaxy stars space",
-      "motion": "zoom_in"
+      "voiceover": "Surprisingly, much of the dust in your home is made up of you.",
+      "on_screen_text": "YOU IN DUST",
+      "search_query": "house dust close-up",
+      "motion": "pan"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "A computer could never list all possible chess games because there isn't enough matter in existence to store the complete list.",
-      "on_screen_text": "LIMITLESS COMPLEXITY",
-      "search_query": "chess player thinking",
+      "voiceover": "Studies reveal that about 80% of household dust consists of human skin cells.",
+      "on_screen_text": "80% IS SKIN",
+      "search_query": "scientist analyzing dust",
       "motion": "zoom_in"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Thus, the complexity of chess dwarfs even the vastness of the cosmos.",
-      "on_screen_text": "COSMIC COMPLEXITY",
-      "search_query": "chess game close up",
-      "motion": "zoom_in"
+      "voiceover": "If you gathered all the skin cells you lose in a day, it would weigh about the same as a slice of bread.",
+      "on_screen_text": "DAILY SKIN LOSS",
+      "search_query": "slice of bread close-up",
+      "motion": "close_up"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "You may think of chess as a simple game, but it encapsulates an unfathomable depth of possibility and strategy.",
-      "on_screen_text": "A GAME OF DEPTH",
-      "search_query": "chess pieces macro",
-      "motion": "zoom_in"
+      "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
+      "on_screen_text": "NEW SKIN",
+      "search_query": "skin regeneration process",
+      "motion": "pan"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "Next time you see dust in your home, remember it\u2019s not just dust\u2014it\u2019s a part of you.",
+      "on_screen_text": "PART OF YOU",
+      "search_query": "dust settling on surface",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know there are more chess games than atoms? Yes or no?",
-    "Chess holds an unfathomable number of possibilities.",
-    "How will you see chess differently?"
+    "Did you know house dust is mostly you? Yes or no?",
+    "How often do you clean your home?",
+    "What do you think about this fact?"
   ],
   "hashtags": [
-    "#chess",
     "#science",
+    "#dust",
     "#facts",
-    "#universe",
-    "#games"
+    "#home"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-29_chess-more-games-than-atoms",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "math"
+  "video_id": "science_2026-07-29_the-hidden-truth-of-house-dust",
+  "cta_style": "LOOP",
+  "domain": "body"
 }
