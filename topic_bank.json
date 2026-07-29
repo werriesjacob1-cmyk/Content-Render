@@ -3942,6 +3942,672 @@
         "preservation techniques",
         "extreme cold environments"
       ]
+    },
+    {
+      "id": "sound_shockwave",
+      "domain": "physics",
+      "fact": "When a plane breaks the sound barrier, it creates a shockwave that can shatter windows. This shockwave is so powerful that it can be seen as a visible disturbance in the air.",
+      "angle": "sonic",
+      "key_terms": [
+        "sound",
+        "barrier",
+        "shockwave"
+      ],
+      "whatif": "What if we could harness this energy to create a new form of propulsion?",
+      "wow": "The shockwave can reach temperatures of up to 20,000 degrees Celsius, hotter than the surface of the Sun.",
+      "queries": [
+        "plane breaking sound barrier",
+        "shockwave visualization",
+        "sonic boom footage"
+      ]
+    },
+    {
+      "id": "space_time_ripples",
+      "domain": "astronomy",
+      "fact": "Gravity waves are ripples in the fabric of space and time that can be detected from billions of light-years away. These ripples can provide insights into the most violent and energetic events in the universe.",
+      "angle": "cosmological",
+      "key_terms": [
+        "gravity",
+        "waves",
+        "space-time"
+      ],
+      "whatif": "What if we could use gravity waves to study the early universe and uncover its secrets?",
+      "wow": "The detection of gravity waves has confirmed a key prediction made by Einstein a century ago, revolutionizing our understanding of the universe.",
+      "queries": [
+        "gravity wave detection",
+        "space-time ripples",
+        "cosmological events"
+      ]
+    },
+    {
+      "id": "synchronous_fireflies",
+      "domain": "biology",
+      "fact": "Fireflies can synchronize their flashes to create a stunning display of light, with some species able to flash in perfect unison. This phenomenon is known as synchrony.",
+      "angle": "Nature's Light Show",
+      "key_terms": [
+        "fireflies",
+        "synchrony",
+        "bioluminescence"
+      ],
+      "whatif": "What if we could harness the power of firefly synchrony to create more efficient lighting systems? Could we use this phenomenon to develop new technologies for communication and coordination?",
+      "wow": "Some species of fireflies can flash their lights in such perfect synchrony that it creates a dazzling display of light that can be seen from miles away.",
+      "queries": [
+        "fireflies flashing in unison",
+        "synchronized bioluminescence",
+        "firefly light show"
+      ]
+    },
+    {
+      "id": "underwater_brain",
+      "domain": "neurology",
+      "fact": "The sea cucumber has a unique nervous system that allows it to detach its internal organs, including its brain, and regrow them. This process is called evisceration.",
+      "angle": "Regrowing the Brain",
+      "key_terms": [
+        "sea cucumber",
+        "evisceration",
+        "neuroregeneration"
+      ],
+      "whatif": "What if humans could regrow their brains like sea cucumbers? Could this ability hold the key to treating neurodegenerative diseases and injuries?",
+      "wow": "The sea cucumber's ability to regrow its brain is so efficient that it can even regrow an entire new body from a small piece of tissue.",
+      "queries": [
+        "sea cucumber regrowing brain",
+        "evisceration in sea cucumbers",
+        "neuroregeneration in marine animals"
+      ]
+    },
+    {
+      "id": "neural_networks",
+      "domain": "neurology",
+      "fact": "Our brains have a unique ability to reorganize themselves in response to new experiences, a process known as neuroplasticity. This allows us to learn and adapt throughout our lives.",
+      "angle": "Brain",
+      "key_terms": [
+        "neuroplasticity",
+        "brain",
+        "learning"
+      ],
+      "whatif": "What if we could harness the power of neuroplasticity to improve our memory and cognitive abilities? Could we potentially 'rewire' our brains to become more efficient and effective?",
+      "wow": "Research has shown that London taxi drivers, who must memorize complex maps and navigate through the city, have a larger hippocampus, a region of the brain associated with spatial memory, than the general population.",
+      "queries": [
+        "brain scan",
+        "neuroplasticity experiment",
+        "London taxi driver navigation"
+      ]
+    },
+    {
+      "id": "sleep_paralysis",
+      "domain": "psychology",
+      "fact": "Sleep paralysis is a condition that causes people to temporarily lose control of their muscles and experience hallucinations while falling asleep or waking up. During these episodes, people are unable to move or speak.",
+      "angle": "Sleep",
+      "key_terms": [
+        "sleep paralysis",
+        "hallucinations",
+        "muscle control"
+      ],
+      "whatif": "What if sleep paralysis is more common than we think, and what if it's linked to other mental health conditions? Could understanding sleep paralysis help us develop new treatments for related disorders?",
+      "wow": "Some people experience 'shadow people' or dark figures during sleep paralysis episodes, which can be extremely frightening and disorienting.",
+      "queries": [
+        "sleep paralysis episode",
+        "shadow people hallucination",
+        "muscle control loss"
+      ]
+    },
+    {
+      "id": "brain_computer_interfaces",
+      "domain": "neurology",
+      "fact": "Brain-computer interfaces (BCIs) are systems that allow people to control technology with their thoughts. BCIs use electroencephalography (EEG) or other techniques to detect brain activity and translate it into commands for devices like computers or robots.",
+      "angle": "Technology",
+      "key_terms": [
+        "brain-computer interface",
+        "EEG",
+        "thought control"
+      ],
+      "whatif": "What if BCIs could be used to help people with paralysis or other motor disorders communicate and interact with the world? Could BCIs potentially revolutionize the way we interact with technology?",
+      "wow": "Some BCIs can detect brain activity with high accuracy, allowing people to control devices with remarkable precision and speed.",
+      "queries": [
+        "brain-computer interface demo",
+        "EEG headset",
+        "thought-controlled robot"
+      ]
+    },
+    {
+      "id": "glowing_mushrooms",
+      "domain": "mycology",
+      "fact": "Certain species of mushrooms, like the jack o' lantern mushroom, have a unique ability to glow in the dark due to a chemical reaction that produces light. This phenomenon is called bioluminescence.",
+      "angle": "Fungi",
+      "key_terms": [
+        "bioluminescent mushrooms",
+        "glowing fungi",
+        "chemical reaction"
+      ],
+      "whatif": "What if the bioluminescent properties of these mushrooms could be harnessed to create sustainable and eco-friendly lighting solutions? Could glowing mushrooms be used to reduce our reliance on artificial lighting?",
+      "wow": "The glowing mushrooms can be so bright that they can illuminate entire forests, creating an otherworldly atmosphere.",
+      "queries": [
+        "glowing mushroom forest",
+        "bioluminescent fungi",
+        "chemical reaction light"
+      ]
+    },
+    {
+      "id": "neural_rejuvenation",
+      "domain": "neurology",
+      "fact": "Neural rejuvenation is the process by which the brain regenerates and reorganizes itself in response to injury or disease. This process can involve the growth of new neurons, the formation of new connections between neurons, and the improvement of cognitive function.",
+      "angle": "Brain",
+      "key_terms": [
+        "neural rejuvenation",
+        "brain regeneration",
+        "cognitive function"
+      ],
+      "whatif": "What if neural rejuvenation could be induced in people with neurodegenerative diseases, allowing them to regain lost cognitive and motor abilities? Could neural rejuvenation be used to treat conditions like Alzheimer's or Parkinson's?",
+      "wow": "Research has shown that certain nutrients and lifestyle factors, such as exercise and meditation, can promote neural rejuvenation and improve cognitive function.",
+      "queries": [
+        "neural rejuvenation techniques",
+        "brain regeneration exercises",
+        "cognitive function improvement"
+      ]
+    },
+    {
+      "id": "memory_transference",
+      "domain": "psychology",
+      "fact": "Memory transference is the process by which memories can be transferred from one person to another through various means, such as smell, touch, or social learning. This phenomenon has been observed in both humans and animals.",
+      "angle": "Memory",
+      "key_terms": [
+        "memory transference",
+        "social learning",
+        "smell"
+      ],
+      "whatif": "What if memories could be transferred from one person to another through a direct brain-to-brain interface? Could this technology be used to preserve memories and experiences for future generations?",
+      "wow": "Research has shown that certain smells can evoke powerful memories and emotions, and that these memories can be transferred from one person to another through smell alone.",
+      "queries": [
+        "memory transference experiment",
+        "smell-induced memory",
+        "brain-to-brain interface"
+      ]
+    },
+    {
+      "id": "electroreception",
+      "domain": "biology",
+      "fact": "Electroreception is the ability of certain animals, like sharks and rays, to detect and navigate through the electromagnetic fields that surround all living creatures. This ability is made possible by specialized electroreceptors called ampullae of Lorenzini.",
+      "angle": "Ocean",
+      "key_terms": [
+        "electroreception",
+        "ampullae of Lorenzini",
+        "electromagnetic fields"
+      ],
+      "whatif": "What if humans could develop electroreception abilities, allowing us to navigate and interact with the world in new and innovative ways? Could electroreception be used to improve our sense of spatial awareness or balance?",
+      "wow": "Some animals can detect the electromagnetic fields of other animals, allowing them to track prey or avoid predators with remarkable accuracy.",
+      "queries": [
+        "electroreception demo",
+        "ampullae of Lorenzini",
+        "electromagnetic field navigation"
+      ]
+    },
+    {
+      "id": "dream_incubation",
+      "domain": "psychology",
+      "fact": "Dream incubation is the process of focusing one's attention on a specific topic or problem before sleep, with the intention of having a dream that provides insight or solution. This technique has been used by artists, writers, and scientists to stimulate creativity and innovation.",
+      "angle": "Sleep",
+      "key_terms": [
+        "dream incubation",
+        "creativity",
+        "problem-solving"
+      ],
+      "whatif": "What if dream incubation could be used to solve complex problems or create new works of art? Could this technique be used to tap into the subconscious mind and unlock hidden potential?",
+      "wow": "Some people report that dream incubation has allowed them to access hidden memories or knowledge, and that their dreams have provided them with innovative solutions to real-world problems.",
+      "queries": [
+        "dream incubation techniques",
+        "creativity exercises",
+        "problem-solving sleep"
+      ]
+    },
+    {
+      "id": "brain_plasticity",
+      "domain": "psychology",
+      "fact": "Our brains can rewire themselves in response to new experiences, even in old age. This process is called neuroplasticity.",
+      "angle": "mindblowing",
+      "key_terms": [
+        "brain",
+        "neuroplasticity",
+        "rewire"
+      ],
+      "whatif": "What if our brains could adapt to new situations at any age?",
+      "wow": "Some people have even learned to 'rewire' their brains to compensate for damaged areas.",
+      "queries": [
+        "brain rewire",
+        "neuroplasticity examples",
+        "rewire brain"
+      ]
+    },
+    {
+      "id": "emotional_contagion",
+      "domain": "psychology",
+      "fact": "We can 'catch' emotions from others, just like we catch a cold. This is called emotional contagion.",
+      "angle": "fascinating",
+      "key_terms": [
+        "emotions",
+        "contagion",
+        "catch"
+      ],
+      "whatif": "What if we could 'infect' others with positive emotions?",
+      "wow": "Research has shown that emotional contagion can even spread through social media.",
+      "queries": [
+        "emotional contagion examples",
+        "catching emotions",
+        "emotional infection"
+      ]
+    },
+    {
+      "id": "neural_synchrony",
+      "domain": "neurology",
+      "fact": "Our brains can synchronize with others, creating a shared neural experience. This is called neural synchrony.",
+      "angle": "fascinating",
+      "key_terms": [
+        "brain",
+        "synchronize",
+        "shared"
+      ],
+      "whatif": "What if we could harness neural synchrony to enhance teamwork?",
+      "wow": "Neural synchrony has been observed in people who are in love or have strong social bonds.",
+      "queries": [
+        "neural synchrony examples",
+        "brain synchronization",
+        "shared experience"
+      ]
+    },
+    {
+      "id": "synesthesia",
+      "domain": "psychology",
+      "fact": "Some people experience a blending of senses, where they see numbers or words in specific colors, a condition called synesthesia.",
+      "angle": "amazing",
+      "key_terms": [
+        "senses",
+        "blend",
+        "synesthesia"
+      ],
+      "whatif": "What if we could all experience the world in multiple ways at once?",
+      "wow": "Synesthesia can enhance creativity and memory.",
+      "queries": [
+        "synesthesia examples",
+        "blended senses",
+        "colorful numbers"
+      ]
+    },
+    {
+      "id": "placebo_effect",
+      "domain": "psychology",
+      "fact": "Our brains can respond to fake treatments or medications, a phenomenon called the placebo effect.",
+      "angle": "mindblowing",
+      "key_terms": [
+        "brain",
+        "placebo",
+        "respond"
+      ],
+      "whatif": "What if we could harness the placebo effect to improve health?",
+      "wow": "The placebo effect can be so powerful that it can even influence the outcome of medical treatments.",
+      "queries": [
+        "placebo effect examples",
+        "brain response",
+        "fake treatment"
+      ]
+    },
+    {
+      "id": "mirror_neurons",
+      "domain": "neurology",
+      "fact": "We have special brain cells called mirror neurons that help us understand and mimic others' actions and emotions.",
+      "angle": "jaw_dropping",
+      "key_terms": [
+        "brain",
+        "mirror",
+        "mimic"
+      ],
+      "whatif": "What if we could use mirror neurons to improve empathy?",
+      "wow": "Mirror neurons are active when we observe and imitate others, and even when we read about others' experiences.",
+      "queries": [
+        "mirror neurons examples",
+        "brain mimicry",
+        "empathy"
+      ]
+    },
+    {
+      "id": "neural_darwinism",
+      "domain": "neurology",
+      "fact": "Our brains have a process called neural Darwinism, where neurons compete for survival and the strongest ones win.",
+      "angle": "fascinating",
+      "key_terms": [
+        "brain",
+        "neurons",
+        "compete"
+      ],
+      "whatif": "What if we could harness neural Darwinism to improve brain function?",
+      "wow": "Neural Darwinism is thought to be involved in learning and memory.",
+      "queries": [
+        "neural Darwinism examples",
+        "neuron competition",
+        "brain function"
+      ]
+    },
+    {
+      "id": "emotional_intelligence",
+      "domain": "psychology",
+      "fact": "Our ability to understand and manage emotions, called emotional intelligence, is just as important as IQ.",
+      "angle": "amazing",
+      "key_terms": [
+        "emotions",
+        "intelligence",
+        "manage"
+      ],
+      "whatif": "What if we could teach emotional intelligence in schools?",
+      "wow": "Emotional intelligence can predict success and well-being better than IQ.",
+      "queries": [
+        "emotional intelligence examples",
+        "emotion management",
+        "IQ"
+      ]
+    },
+    {
+      "id": "social_learning",
+      "domain": "psychology",
+      "fact": "We learn new behaviors and attitudes by observing and imitating others, a process called social learning.",
+      "angle": "fascinating",
+      "key_terms": [
+        "learn",
+        "observe",
+        "imitate"
+      ],
+      "whatif": "What if we could use social learning to promote positive behaviors?",
+      "wow": "Social learning can occur through observation of others, even if we don't directly interact with them.",
+      "queries": [
+        "social learning examples",
+        "observe and imitate",
+        "behavioral change"
+      ]
+    },
+    {
+      "id": "brain_default_mode",
+      "domain": "neurology",
+      "fact": "Our brains have a default mode network that is active when we're not focused on the outside world, and it's involved in self-reflection and mind-wandering.",
+      "angle": "jaw_dropping",
+      "key_terms": [
+        "brain",
+        "default mode",
+        "self-reflection"
+      ],
+      "whatif": "What if we could harness the default mode network to improve creativity?",
+      "wow": "The default mode network is active when we're daydreaming or recalling memories.",
+      "queries": [
+        "brain default mode examples",
+        "self-reflection",
+        "mind-wandering"
+      ]
+    },
+    {
+      "id": "bacteria_electrical",
+      "domain": "biology",
+      "fact": "Certain bacteria can generate electricity, allowing them to power small devices. This is done through a process called extracellular electron transfer.",
+      "angle": "electricity",
+      "key_terms": [
+        "bacteria",
+        "electricity",
+        "electron transfer"
+      ],
+      "whatif": "What if we could harness this ability to create sustainable energy sources? Could we use bacteria to power our homes and devices?",
+      "wow": "Some species of bacteria can produce up to 500 millivolts of electricity, which is enough to power a small LED light.",
+      "queries": [
+        "bacteria generating electricity",
+        "extracellular electron transfer",
+        "biological electricity production"
+      ]
+    },
+    {
+      "id": "geological_oscillations",
+      "domain": "geology",
+      "fact": "The Earth's geological processes are not always linear, but can oscillate between different states. This is due to the complex interactions between the Earth's crust, mantle, and core.",
+      "angle": "geological oscillations",
+      "key_terms": [
+        "geological oscillations",
+        "Earth's crust",
+        "mantle-core interactions"
+      ],
+      "whatif": "What if we could understand and predict these oscillations to better prepare for natural disasters? Could we use this knowledge to develop more effective early warning systems?",
+      "wow": "The Earth's geological processes can oscillate on timescales of millions of years, leading to dramatic changes in the planet's climate and geography.",
+      "queries": [
+        "geological oscillations",
+        "Earth's crust dynamics",
+        "mantle-core interactions"
+      ]
+    },
+    {
+      "id": "geomagnetic_reversals",
+      "domain": "geophysics",
+      "fact": "The Earth's magnetic field has reversed many times throughout its history, with the most recent reversal occurring around 780,000 years ago. These reversals can have significant effects on the planet's climate and ecosystems.",
+      "angle": "geomagnetic reversals",
+      "key_terms": [
+        "geomagnetic reversals",
+        "magnetic field",
+        "climate effects"
+      ],
+      "whatif": "What if we could better understand and predict the effects of geomagnetic reversals on the Earth's climate and ecosystems? Could we use this knowledge to develop more effective strategies for mitigating the impacts of climate change?",
+      "wow": "The Earth's magnetic field is weakening at a rate of around 5% per century, which could indicate that we are due for another geomagnetic reversal.",
+      "queries": [
+        "geomagnetic reversals",
+        "magnetic field",
+        "climate effects"
+      ]
+    },
+    {
+      "id": "geological_time",
+      "domain": "geology",
+      "fact": "The Earth's geological clock is not just a simple measure of time, but is actually influenced by the planet's magnetic field and the movement of tectonic plates. This means that time can appear to speed up or slow down in different parts of the planet.",
+      "angle": "Time",
+      "key_terms": [
+        "geological",
+        "time",
+        "magnetic field"
+      ],
+      "whatif": "What if the Earth's magnetic field were to suddenly reverse, how would it affect our perception of time? Would it slow down or speed up the passage of time?",
+      "wow": "The Earth's magnetic field has reversed many times throughout its history, with the most recent reversal occurring around 780,000 years ago.",
+      "queries": [
+        "earth magnetic field reversal",
+        "geological time scale",
+        "tectonic plate movement"
+      ]
+    },
+    {
+      "id": "seismic_activity",
+      "domain": "geophysics",
+      "fact": "The Earth's seismic activity is not just limited to earthquakes, but also includes the movement of tectonic plates and the eruption of volcanoes. This activity can create complex patterns of seismic waves that can be used to study the Earth's interior.",
+      "angle": "Earthquakes",
+      "key_terms": [
+        "seismic",
+        "activity",
+        "tectonic plates"
+      ],
+      "whatif": "What if scientists were able to predict seismic activity with greater accuracy, how would it impact our ability to prepare for natural disasters?",
+      "wow": "The Earth's seismic activity is so powerful that it can create seismic waves that can travel all the way around the world, allowing scientists to study the Earth's interior in great detail.",
+      "queries": [
+        "seismic activity",
+        "earthquakes",
+        "tectonic plate movement"
+      ]
+    },
+    {
+      "id": "atmospheric_phenomena",
+      "domain": "atmosphere",
+      "fact": "The Earth's atmosphere is home to a wide range of phenomena, including clouds, storms, and aurorae. These phenomena can create complex patterns of light and color that can be seen from space.",
+      "angle": "Clouds",
+      "key_terms": [
+        "atmospheric",
+        "phenomena",
+        "clouds"
+      ],
+      "whatif": "What if scientists were able to create artificial clouds or storms, how would it impact the Earth's climate and weather patterns?",
+      "wow": "The Earth's atmosphere is so dynamic that it can create massive storms that can be seen from space, with some storms being so large that they can cover entire continents.",
+      "queries": [
+        "atmospheric phenomena",
+        "cloud formations",
+        "storm systems"
+      ]
+    },
+    {
+      "id": "glacier_calving",
+      "domain": "glaciology",
+      "fact": "Glaciers are not just slow-moving rivers of ice, but can also experience sudden and dramatic events such as calving, where large chunks of ice break off into the ocean. This process can create massive waves and disrupt marine ecosystems.",
+      "angle": "Ice",
+      "key_terms": [
+        "glacier",
+        "calving",
+        "ice"
+      ],
+      "whatif": "What if glacier calving were to increase due to climate change, how would it impact sea levels and coastal communities?",
+      "wow": "The largest glacier calving event ever recorded was so massive that it created a tsunami wave that traveled over 100 miles, affecting several coastal towns and villages.",
+      "queries": [
+        "glacier calving",
+        "icebergs",
+        "ocean waves"
+      ]
+    },
+    {
+      "id": "atmospheric_circulation",
+      "domain": "atmosphere",
+      "fact": "The Earth's atmospheric circulation is not just driven by wind and weather patterns, but also by the movement of the Earth's magnetic field and the rotation of the planet. This creates complex patterns of air movement that can be used to study the Earth's climate and weather patterns.",
+      "angle": "Wind",
+      "key_terms": [
+        "atmospheric",
+        "circulation",
+        "magnetic field"
+      ],
+      "whatif": "What if scientists were able to predict atmospheric circulation patterns with greater accuracy, how would it impact our ability to forecast weather and climate change?",
+      "wow": "The Earth's atmospheric circulation is so powerful that it can create massive storm systems that can be seen from space, with some storms being so large that they can cover entire continents.",
+      "queries": [
+        "atmospheric circulation",
+        "weather patterns",
+        "earth magnetic field"
+      ]
+    },
+    {
+      "id": "marine_ecosystems",
+      "domain": "marine",
+      "fact": "The Earth's marine ecosystems are not just limited to coral reefs and kelp forests, but also include deep-sea vents and hydrothermal systems. These ecosystems can support unique and diverse marine life that can be found nowhere else on the planet.",
+      "angle": "Ecosystems",
+      "key_terms": [
+        "marine",
+        "ecosystems",
+        "deep-sea vents"
+      ],
+      "whatif": "What if scientists were able to study marine ecosystems in greater detail, how would it impact our understanding of the Earth's biodiversity and conservation efforts?",
+      "wow": "The Earth's marine ecosystems are so diverse that they can support entire cities of marine life, with some ecosystems being so unique that they can be found nowhere else on the planet.",
+      "queries": [
+        "marine ecosystems",
+        "deep-sea vents",
+        "hydrothermal systems"
+      ]
+    },
+    {
+      "id": "geological_history",
+      "domain": "geology",
+      "fact": "The Earth's geological history is not just a simple record of rock formations and fossils, but also includes the movement of tectonic plates and the eruption of volcanoes. This history can be used to study the Earth's climate and weather patterns.",
+      "angle": "History",
+      "key_terms": [
+        "geological",
+        "history",
+        "tectonic plates"
+      ],
+      "whatif": "What if scientists were able to study the Earth's geological history in greater detail, how would it impact our understanding of the planet's evolution and conservation efforts?",
+      "wow": "The Earth's geological history is so complex that it can include entire periods of time where the planet was covered in ice, with some periods being so extreme that they can be seen as 'snowball Earth' events.",
+      "queries": [
+        "geological history",
+        "rock formations",
+        "fossil record"
+      ]
+    },
+    {
+      "id": "glacier_singing",
+      "domain": "geophysics",
+      "fact": "Glaciers can produce a singing or whistling sound as they move, due to the stress and friction within the ice. This sound can be heard for miles and is a result of the glacier's unique properties.",
+      "angle": "sonic",
+      "key_terms": [
+        "glacier",
+        "singing",
+        "ice"
+      ],
+      "whatif": "What if the singing of glaciers could be used to monitor their movement and predict potential disasters? Could this unique phenomenon be the key to understanding glacier behavior?",
+      "wow": "Some glaciers can produce sounds so loud that they can be heard from space, making them one of the most vocal natural wonders on Earth",
+      "queries": [
+        "glacier calving sounds",
+        "singing glacier footage",
+        "ice whistle recording"
+      ]
+    },
+    {
+      "id": "ocean_twilight",
+      "domain": "marine",
+      "fact": "There is a twilight zone in the ocean where the last remnants of sunlight barely penetrate, creating an ethereal landscape of glowing creatures and faintly lit seafloor. This zone is home to a unique array of bioluminescent organisms that light up the darkness.",
+      "angle": "bioluminescent",
+      "key_terms": [
+        "twilight",
+        "ocean",
+        "bioluminescent"
+      ],
+      "whatif": "What if the bioluminescent creatures of the twilight zone could be used to develop new sustainable lighting technologies? Could their ability to produce light be harnessed to create innovative solutions for human needs?",
+      "wow": "The twilight zone is home to giant squid that can grow up to 20 feet long and have the largest eyes of any animal, allowing them to detect the faint glow of their prey in the dark",
+      "queries": [
+        "deep sea bioluminescence",
+        "twilight zone creatures",
+        "glowing squid footage"
+      ]
+    },
+    {
+      "id": "earthquake_harmonics",
+      "domain": "geophysics",
+      "fact": "Earthquakes can produce unique harmonic vibrations that can be used to predict the likelihood of future earthquakes. These vibrations can be detected using specialized equipment and can provide valuable insights into the Earth's internal structure.",
+      "angle": "seismic",
+      "key_terms": [
+        "earthquake",
+        "harmonics",
+        "prediction"
+      ],
+      "whatif": "What if the harmonic vibrations of earthquakes could be used to develop a system for early warning detection? Could this technology be used to save lives and prevent devastation?",
+      "wow": "The harmonic vibrations of earthquakes can be so powerful that they can be detected on the other side of the world, allowing scientists to study the Earth's internal structure in unprecedented detail",
+      "queries": [
+        "earthquake harmonic detection",
+        "seismic vibration recording",
+        "earthquake prediction technology"
+      ]
+    },
+    {
+      "id": "ice_disc_formation",
+      "domain": "glaciology",
+      "fact": "Ice discs are rare and mysterious formations that can appear on the surface of rivers and lakes, creating a circular patch of ice that can rotate slowly. The exact mechanism behind their formation is still not fully understood, but it is thought to be related to temperature and water flow.",
+      "angle": "cryospheric",
+      "key_terms": [
+        "ice disc",
+        "formation",
+        "rotation"
+      ],
+      "whatif": "What if the formation of ice discs could be used to study the properties of water and ice in extreme conditions? Could this phenomenon be used to develop new technologies for ice formation and manipulation?",
+      "wow": "Ice discs can grow up to 15 feet in diameter and rotate at a speed of up to 1 revolution per minute, creating a mesmerizing display of natural beauty",
+      "queries": [
+        "ice disc formation footage",
+        "rotating ice disc video",
+        "cryospheric research"
+      ]
+    },
+    {
+      "id": "sea_floor_spreading",
+      "domain": "geophysics",
+      "fact": "The sea floor is constantly moving due to the process of sea floor spreading, where new oceanic crust is created at mid-ocean ridges and pushed apart by magma. This process is responsible for the creation of new oceanic crust and the movement of tectonic plates.",
+      "angle": "tectonic",
+      "key_terms": [
+        "sea floor",
+        "spreading",
+        "tectonic"
+      ],
+      "whatif": "What if the process of sea floor spreading could be used to develop new technologies for geological exploration and resource extraction? Could this phenomenon be used to unlock new sources of energy and minerals?",
+      "wow": "The sea floor is moving at a rate of up to 2 inches per year, which is faster than the growth rate of human hair, and is responsible for the creation of new mountain ranges and volcanoes",
+      "queries": [
+        "sea floor spreading animation",
+        "mid-ocean ridge footage",
+        "tectonic plate movement video"
+      ]
     }
   ]
 }
