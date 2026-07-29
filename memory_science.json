@@ -1,54 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-22_the-solid-made-of-air",
-      "metaphor": "solid trapped air material",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "COMPARISON_COLLISION",
-      "title": "The Solid Made of Air",
-      "fact_id": "aerogel_frozen_smoke",
-      "domain": "materials",
-      "hook": "A piece of frozen smoke can stop a blowtorch flame from burning your hand.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 9.0,
-        "payoff": 9.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 8.17
-      }
-    },
-    {
-      "video_id": "science_2026-07-22_the-plant-that-grows-at-visible-speed",
-      "metaphor": "visible plant speed",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "The Plant That Grows at Visible Speed",
-      "fact_id": "bamboo_growth",
-      "domain": "plants",
-      "hook": "Right now, somewhere in a quiet forest, a green stalk is outrunning you.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 6.0,
-        "escalation": 6.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 7.0,
-        "overall": 7.0
-      }
-    },
-    {
       "video_id": "science_2026-07-23_the-ground-beneath-your-feet-is-moving",
       "metaphor": "Earth's Hidden Changes",
       "viewer_job": "REFRAME",
@@ -334,6 +286,56 @@
         "rewatch": 10.0,
         "clarity": 10.0,
         "overall": 9.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-29_time-s-hidden-gap",
+      "metaphor": "dinosaur timeline",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Time's Hidden Gap",
+      "fact_id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "hook": "Tyrannosaurus rex is closer to you",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-29_the-truth-about-old-windows",
+      "metaphor": "Glass Mystery",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Truth About Old Windows",
+      "fact_id": "glass_solid",
+      "domain": "physics",
+      "hook": "Old windows thicken over time, but why?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 4.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.43
       }
     }
   ]

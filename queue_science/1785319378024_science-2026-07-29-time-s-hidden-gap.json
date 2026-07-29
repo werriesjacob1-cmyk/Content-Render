@@ -1,0 +1,70 @@
+{
+  "title": "Time's Hidden Gap",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "deep time",
+  "metaphor": "dinosaur timeline",
+  "hook": "Tyrannosaurus rex is closer to you",
+  "hook_headline": "DINOSAURS OUT OF TIME",
+  "script": "Tyrannosaurus rex is closer to you What if a T. rex met a Stegosaurus? Stegosaurus lived around 155 million years ago The time gap between them is roughly the same as from the first flowers to now Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Tyrannosaurus rex is closer to you",
+      "on_screen_text": "Deep Time",
+      "search_query": "T rex fossil",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "What if a T. rex met a Stegosaurus?",
+      "on_screen_text": "Dino Meet",
+      "search_query": "Stegosaurus illustration",
+      "motion": "pan"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "Stegosaurus lived around 155 million years ago",
+      "on_screen_text": "Ancient Era",
+      "search_query": "prehistoric landscape art",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "The time gap between them is roughly the same as from the first flowers to now",
+      "on_screen_text": "Time Gap",
+      "search_query": "flowering plants evolution",
+      "motion": "static"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
+      "on_screen_text": "Dino Clock",
+      "search_query": "dinosaur skeleton museum",
+      "motion": "zoom_in"
+    }
+  ],
+  "captions": [
+    "Did you know T. rex is closer to you than Stegosaurus? #deeptime",
+    "The hidden gap in time",
+    "Mind-bending dinosaur facts"
+  ],
+  "hashtags": [
+    "#science",
+    "#dinosaurs",
+    "#deeptime",
+    "#paleontology"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-07-29_time-s-hidden-gap",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "deep_time"
+}
