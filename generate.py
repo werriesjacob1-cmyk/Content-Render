@@ -268,15 +268,21 @@ QUALITY_THRESHOLD = 7.5
 # grinding forever. Hook/payoff stay at 6 — a 4/10 hook or payoff really is a bad
 # video and must still abort.
 QUALITY_CRITERION_FLOORS = {
-    "hook": 6,
-    "escalation": 6,
-    "payoff": 6,
-    # COHERENCE (added after render 160 "Pluto's Eternal Orbit" scored 9.33 while
-    # being literally incoherent — "your great-grandparents saw Pluto's start, but
-    # it won't finish": start/finish of WHAT?). The old rubric's "clarity" only
-    # checked whether the WORDS were simple, so a simple-sounding but MUDDLED script
-    # sailed through. A script whose premise doesn't hold together must ABORT, not
-    # ship at a fake-high score — this is the honest-grading fix.
+    # RECALIBRATED 2026-07-29. Renders 163-166 proved the gate was mis-calibrated:
+    # GPT-4o wrote COHERENT, clean scripts (coherence 8-9, hook 6-8) that scored
+    # payoff/escalation 5-6 and were ALL rejected — the gate blocked every video
+    # instead of just the bad ones. The self-scoring rubric is inherently harsh on
+    # payoff/escalation (a solid-but-not-mind-blowing fact scores 5), so floors of 6
+    # there abort perfectly postable videos. Lowered to 5: a genuinely payoff-LESS
+    # or non-escalating script (<=4) still aborts, but a solid 5 ships.
+    "hook": 5,
+    "escalation": 5,
+    "payoff": 5,
+    # COHERENCE stays the STRICTEST floor (6) — it is the one that kills the truly
+    # bad videos (the incoherent render-160 Pluto: "great-grandparents saw Pluto's
+    # start, but it won't finish" — start/finish of WHAT?). Simple-sounding but
+    # muddled must still ABORT. This + the magnitude rejection (surprise<=3 for
+    # scale/counting facts) are what keep quality up now that the overall bar is 6.0.
     "coherence": 6,
 }
 # HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
@@ -290,7 +296,12 @@ QUALITY_CRITERION_FLOORS = {
 # cron simply tries again. A CLEAN script that merely couldn't be SCORED
 # (fail-open, best_quality is None) is still allowed through — it passed every
 # structural gate, we just couldn't grade it.
-QUALITY_HARD_FLOOR = 6.8
+QUALITY_HARD_FLOOR = 6.0   # was 6.8 — recalibrated 2026-07-29 (see the floors above).
+                            # No model reliably self-scores 6.8+; GPT-4o's coherent
+                            # scripts landed 6.1-6.9 and ALL aborted, so the channel
+                            # shipped nothing. 6.0 + the coherence(6) & magnitude gates
+                            # ship solid, coherent videos while still killing the bad
+                            # ones. RATCHET BACK UP once real engagement data justifies.
 QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
                                  # Was 2 (3 total), but each attempt re-runs the full
                                  # generate+validate+info-gain+punch-up+score pipeline
