@@ -268,22 +268,22 @@ QUALITY_THRESHOLD = 7.5
 # grinding forever. Hook/payoff stay at 6 — a 4/10 hook or payoff really is a bad
 # video and must still abort.
 QUALITY_CRITERION_FLOORS = {
-    # RECALIBRATED 2026-07-29. Renders 163-166 proved the gate was mis-calibrated:
-    # GPT-4o wrote COHERENT, clean scripts (coherence 8-9, hook 6-8) that scored
-    # payoff/escalation 5-6 and were ALL rejected — the gate blocked every video
-    # instead of just the bad ones. The self-scoring rubric is inherently harsh on
-    # payoff/escalation (a solid-but-not-mind-blowing fact scores 5), so floors of 6
-    # there abort perfectly postable videos. Lowered to 5: a genuinely payoff-LESS
-    # or non-escalating script (<=4) still aborts, but a solid 5 ships.
-    "hook": 5,
-    "escalation": 5,
-    "payoff": 5,
-    # COHERENCE stays the STRICTEST floor (6) — it is the one that kills the truly
-    # bad videos (the incoherent render-160 Pluto: "great-grandparents saw Pluto's
-    # start, but it won't finish" — start/finish of WHAT?). Simple-sounding but
-    # muddled must still ABORT. This + the magnitude rejection (surprise<=3 for
-    # scale/counting facts) are what keep quality up now that the overall bar is 6.0.
-    "coherence": 6,
+    # RE-RAISED 2026-07-30 (render 173 "T. rex is closer to you" — a DANGLING
+    # comparative with no "than ___", shipped and confused the user). That script
+    # passed the OLD, STRICTER gate below (hook/escalation/payoff>=6, hard floor
+    # 6.8) from BEFORE the 2026-07-29 loosening — proof the loosening was never
+    # what let it through, and that self-scored 6-7s are not a reliable coherence
+    # signal on their own. Raising the floors back up is the honest fix, paired
+    # with a MECHANICAL, zero-LLM dangling-comparative check in validate()
+    # (DANGLING_COMPARATIVE_RE) that catches this exact pattern regardless of how
+    # the self-grader scores it — self-scoring is now a second layer, not the only one.
+    "hook": 6,
+    "escalation": 6,
+    "payoff": 6,
+    # COHERENCE raised 6 -> 7: the single highest-value floor (kills the render-160
+    # Pluto AND render-173 T. rex classes of bug). Simple-sounding but muddled must
+    # still ABORT even at a 6/10 self-score.
+    "coherence": 7,
 }
 # HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
 # The quality loop keeps the best attempt and, if none clear QUALITY_THRESHOLD,
@@ -296,12 +296,15 @@ QUALITY_CRITERION_FLOORS = {
 # cron simply tries again. A CLEAN script that merely couldn't be SCORED
 # (fail-open, best_quality is None) is still allowed through — it passed every
 # structural gate, we just couldn't grade it.
-QUALITY_HARD_FLOOR = 6.0   # was 6.8 — recalibrated 2026-07-29 (see the floors above).
-                            # No model reliably self-scores 6.8+; GPT-4o's coherent
-                            # scripts landed 6.1-6.9 and ALL aborted, so the channel
-                            # shipped nothing. 6.0 + the coherence(6) & magnitude gates
-                            # ship solid, coherent videos while still killing the bad
-                            # ones. RATCHET BACK UP once real engagement data justifies.
+QUALITY_HARD_FLOOR = 6.8   # RESTORED 2026-07-30 (was briefly 6.0 2026-07-29). The
+                            # loosening was based on believing GPT-4o's 6.1-6.9 drafts
+                            # were "coherent, just harshly scored on payoff/escalation"
+                            # — but render 173 proved a script that cleared the ORIGINAL
+                            # 6.8 floor (from before any loosening) still had a real,
+                            # user-visible coherence break. The self-scorer in the 6-7
+                            # range is not trustworthy enough to lower the bar for; 6.8
+                            # + the new coherence floor (7) + the mechanical dangling-
+                            # comparative check are the actual quality backstop now.
 QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
                                  # Was 2 (3 total), but each attempt re-runs the full
                                  # generate+validate+info-gain+punch-up+score pipeline
@@ -641,6 +644,20 @@ ABSTRACT_HOOK_RE = re.compile(
     r"|\breality isn'?t what it seems\b",
     re.I)
 
+# DANGLING COMPARATIVE — the render-173 "T. rex is closer to you" bug: a hook
+# self-graded coherence 8+/10 (and cleared the OLD, stricter 6.8-hard-floor gate
+# before any recalibration) yet is objectively broken — "closer to you" than
+# WHAT? A comparative word with no completing "than ___" in the SAME sentence
+# is meaningless standing alone as an opener; the viewer has nothing to compare
+# against. This is a MECHANICAL, zero-LLM check — self-scored "coherence" missed
+# this exact pattern, so it can't be the only backstop. Narrow by design (only
+# fires on true comparatives), so it can't false-positive on a normal hook.
+_COMPARATIVE_WORD = (r"closer|farther|further|nearer|longer|shorter|bigger|smaller|"
+                      r"faster|slower|older|younger|earlier|later|more|less|heavier|"
+                      r"lighter|higher|lower|deeper|hotter|colder|stronger|weaker")
+DANGLING_COMPARATIVE_RE = re.compile(
+    rf"\b({_COMPARATIVE_WORD})\b(?!.*?\bthan\b)", re.I)
+
 
 # ---------- TOPIC NOVELTY / DEDUP ----------
 # Concepts we never want to repeat regardless of what memory currently holds --
@@ -931,6 +948,10 @@ HOOK (first 2 seconds decide 70% of retention):
   Pluto's start, but it won't finish" (start of WHAT? finish WHAT? — meaningless). GOOD: "Pluto takes
   248 years to circle the Sun — it hasn't finished a single lap since we discovered it in 1930." If a
   smart listener could ask "wait, what does that even mean?", it is BROKEN — rewrite it.
+- NEVER a DANGLING comparative: any word like closer/farther/faster/older/bigger/more/less MUST
+  complete "...than ___" in the SAME sentence, especially in the hook. BAD: "T. rex is closer to you"
+  (closer than what? — meaningless on its own). GOOD: "T. rex is closer to you in time than to
+  Stegosaurus." A comparison with no stated other side of the comparison is not a fact, it's a fragment.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
@@ -1789,6 +1810,12 @@ def validate(m, job_name, fact=None):
         return (f"hook '{m['hook']}' is too abstract/vague — a viewer can't picture anything "
                 f"concrete from it alone; open with a self-contained, concrete image or claim "
                 f"instead (see the good/bad hook examples in the prompt)")
+    dc = DANGLING_COMPARATIVE_RE.search(m["hook"])
+    if dc:
+        return (f"hook '{m['hook']}' has a DANGLING comparative ({dc.group(0)!r}) with no "
+                f"'than ___' completion — meaningless as an opener (the render-173 bug: "
+                f"'T. rex is closer to you' — closer than WHAT?); either finish the comparison "
+                f"in the same line or rewrite without one")
 
     # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
@@ -2099,7 +2126,7 @@ Score each criterion 0-10 (integers, be strict):
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
 - clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
-- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a DANGLING comparative with no completion — e.g. "T. rex is closer to you" (closer than WHAT? — needs "...than Stegosaurus") — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
 {{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
@@ -2179,7 +2206,7 @@ Do TWO things:
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
 - clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
-- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a DANGLING comparative with no completion — e.g. "T. rex is closer to you" (closer than WHAT? — needs "...than Stegosaurus") — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
 {{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""

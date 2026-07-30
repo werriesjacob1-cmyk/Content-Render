@@ -222,6 +222,15 @@ def test_validate_rejections():
     m["hook"] = "You are seeing it as it was, not as it is."
     check(G.validate(m, "EXPLAIN") is not None, "abstract 'as it was not as it is' hook rejected")
 
+    # DANGLING comparative hook (render-173: "T. rex is closer to you" — closer
+    # than WHAT? — self-scored coherence missed it; this is the mechanical backstop)
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "Tyrannosaurus rex is closer to you than you think it should be."
+    check(G.validate(m, "EXPLAIN") is None, "comparative WITH a 'than' completion is fine")
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "Tyrannosaurus rex is somehow closer to you."
+    check(G.validate(m, "EXPLAIN") is not None, "dangling comparative with no 'than ___' rejected")
+
     # command ending: "send this to a friend" (the render-67 Krakatoa flaw). The
     # rubric bans command endings; SHARE is out of the rotation and the guard now
     # rejects the phrasing outright.
@@ -743,6 +752,20 @@ def test_caption_pop_animation():
         M._KEYWORD_TOKENS = saved
 
 
+def test_quality_floors_restored():
+    section("generate: quality floors RE-RAISED after render-173 (dangling-comparative bug)")
+    # 2026-07-29 loosened these floors believing GPT-4o's 6.1-6.9 drafts were being
+    # unfairly rejected; render 173 then shipped a real coherence break ("T. rex is
+    # closer to you" — closer than WHAT?) from a script that had cleared the OLD,
+    # STRICTER floors, proving self-scored 6-7s aren't trustworthy enough to loosen
+    # for. Locking the restored values in so they can't silently drift back down.
+    check(G.QUALITY_HARD_FLOOR == 6.8, "hard floor restored to 6.8")
+    check(G.QUALITY_CRITERION_FLOORS["hook"] == 6, "hook floor restored to 6")
+    check(G.QUALITY_CRITERION_FLOORS["escalation"] == 6, "escalation floor restored to 6")
+    check(G.QUALITY_CRITERION_FLOORS["payoff"] == 6, "payoff floor restored to 6")
+    check(G.QUALITY_CRITERION_FLOORS["coherence"] == 7, "coherence floor RAISED to 7 (was 6)")
+
+
 def test_draft_is_weak():
     section("generate.draft_is_weak: frugal Gemini-rescue trigger")
     thr = G.QUALITY_THRESHOLD
@@ -950,6 +973,7 @@ def main():
     test_bank_expander()
     test_topic_bank_integrity()
     test_draft_is_weak()
+    test_quality_floors_restored()
     test_cover_headline()
     test_variant_queries()
     test_perf_saves_comments()
