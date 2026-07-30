@@ -1,71 +1,103 @@
 {
-  "title": "Birthday Probability",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "shared birthday",
-  "metaphor": "birthday surprise",
-  "hook": "What if you bet on a shared birthday?",
-  "hook_headline": "YOU'D WIN WITH 23",
-  "script": "What if you bet on a shared birthday? In a room of just 23 people, there's a better than even chance two share a birthday. It's based on complementary probability. The math only needs a couple of dozen because it counts every possible pair. Your intuition says hundreds, but 23 is enough.",
+  "title": "Continents in Motion",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "continental drift",
+  "metaphor": "moving continents mystery",
+  "hook": "The Atlantic Ocean is growing as fast as your fingernails.",
+  "hook_headline": "GROWING OCEAN",
+  "script": "The Atlantic Ocean is growing as fast as your fingernails. But is the distance between New York and London fixed? No. The seafloor between them splits open a little more each year. This widening is caused by seafloor spreading at the Mid-Atlantic Ridge. There, tectonic plates are pulled apart by mantle convection currents. As a result, magma rises to form new oceanic crust. Over 100 million years, this has added about 2,500 kilometers to the ocean's width. Iceland sits right on this crack, where you can stand on two continents. This silent drift hints at Earth's restless nature, shifting slowly beneath our feet.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "What if you bet on a shared birthday?",
-      "on_screen_text": "Birthday Bet",
-      "search_query": "crowd of people",
+      "voiceover": "The Atlantic Ocean is growing as fast as your fingernails.",
+      "on_screen_text": "Growing Ocean",
+      "search_query": "ocean waves aerial",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "In a room of just 23 people, there's a better than even chance two share a birthday.",
-      "on_screen_text": "23 People",
-      "search_query": "classroom students",
+      "duration": 6,
+      "voiceover": "But is the distance between New York and London fixed?",
+      "on_screen_text": "Distance Changing?",
+      "search_query": "mid atlantic ridge",
       "motion": "pan"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "It's based on complementary probability.",
-      "on_screen_text": "Complementary Probability",
-      "search_query": "math problem",
+      "duration": 6,
+      "voiceover": "No. The seafloor between them splits open a little more each year.",
+      "on_screen_text": "Seafloor Splitting",
+      "search_query": "tectonic rift landscape",
       "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "The math only needs a couple of dozen because it counts every possible pair.",
-      "on_screen_text": "Pair Counts",
-      "search_query": "people shaking hands",
-      "motion": "zoom_in"
+      "duration": 6,
+      "voiceover": "This widening is caused by seafloor spreading at the Mid-Atlantic Ridge.",
+      "on_screen_text": "Seafloor Spreading",
+      "search_query": "mid atlantic ridge",
+      "motion": "pan"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Your intuition says hundreds, but 23 is enough.",
-      "on_screen_text": "Enough People",
-      "search_query": "birthday candles cake",
-      "motion": "pan"
+      "duration": 6,
+      "voiceover": "There, tectonic plates are pulled apart by mantle convection currents.",
+      "on_screen_text": "Tectonic Plates",
+      "search_query": "cracked earth ground",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 6,
+      "duration": 6,
+      "voiceover": "As a result, magma rises to form new oceanic crust.",
+      "on_screen_text": "New Crust Forms",
+      "search_query": "volcanic lava flow",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 7,
+      "duration": 6,
+      "voiceover": "Over 100 million years, this has added about 2,500 kilometers to the ocean's width.",
+      "on_screen_text": "Ocean Expands",
+      "search_query": "ocean waves aerial",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 8,
+      "duration": 6,
+      "voiceover": "Iceland sits right on this crack, where you can stand on two continents.",
+      "on_screen_text": "Iceland Rift",
+      "search_query": "iceland rift valley",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 9,
+      "duration": 6,
+      "voiceover": "This silent drift hints at Earth's restless nature, shifting slowly beneath our feet.",
+      "on_screen_text": "Earth's Movement",
+      "search_query": "earth landscape aerial",
+      "motion": "static"
     }
   ],
   "captions": [
-    "Can 23 people have a shared birthday? Yes or no?",
-    "The birthday problem explained",
-    "Shared birthdays are more common than you think"
+    "Continental drift at fingernail speed \u2014 did you know?",
+    "Iceland straddles two continents!",
+    "Seafloor spreading changes the world."
   ],
   "hashtags": [
-    "#math",
-    "#probability",
-    "#birthday",
-    "#science",
-    "#learnontiktok"
+    "#earth",
+    "#geology",
+    "#ocean",
+    "#sciencefacts",
+    "#tectonics"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-30_birthday-probability",
-  "cta_style": "COMMENT",
-  "domain": "math"
+  "video_id": "science_2026-07-30_continents-in-motion",
+  "cta_style": "LOOP",
+  "domain": "geology"
 }
