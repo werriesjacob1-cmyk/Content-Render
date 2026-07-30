@@ -345,6 +345,20 @@ jobs:
             || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || echo "release publish skipped"
 
+      - name: Push draft to Publer (direct API, optional)
+        # DIRECT replacement for the "Release -> Zapier -> Publer" hop, which stalls
+        # whenever Zapier's free task cap or Publer OAuth expires. Dormant unless the
+        # PUBLER_* secrets are set (publish_publer.py exits 0 as a no-op), so nothing
+        # changes for anyone not on Publer's Business plan. Never fails the run — the
+        # video is already on the Release regardless.
+        if: success()
+        env:
+          PUBLER_API_KEY:      ${{ secrets.PUBLER_API_KEY }}
+          PUBLER_WORKSPACE_ID: ${{ secrets.PUBLER_WORKSPACE_ID }}
+          PUBLER_ACCOUNT_IDS:  ${{ vars.PUBLER_ACCOUNT_IDS }}
+          PUBLER_STATE:        ${{ vars.PUBLER_STATE }}
+        run: python publish_publer.py out/final.mp4 out/release_body.md || true
+
       - name: Notify n8n (optional)
         if: always()
         env:
