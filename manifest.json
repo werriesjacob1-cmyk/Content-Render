@@ -1,70 +1,79 @@
 {
-  "title": "Time's Hidden Gap",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "deep time",
-  "metaphor": "dinosaur timeline",
-  "hook": "Tyrannosaurus rex is closer to you",
-  "hook_headline": "DINOSAURS OUT OF TIME",
-  "script": "Tyrannosaurus rex is closer to you What if a T. rex met a Stegosaurus? Stegosaurus lived around 155 million years ago The time gap between them is roughly the same as from the first flowers to now Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
+  "title": "The Truth About Old Windows",
+  "viewer_job": "REFRAME",
+  "keyword": "old windows",
+  "metaphor": "Glass Mystery",
+  "hook": "Old windows thicken over time, but why?",
+  "hook_headline": "WINDOWS DON'T FLOW",
+  "script": "Old windows thicken over time, but why? The answer lies in their creation. They were made by hand and installed heavy-side-down. The unevenness is not due to glass flowing, but rather the result of a manufacturing process. This process, known as 'crown glass', involves spinning a circular piece of glass to create a flat, circular sheet. The thicker edge at the bottom is a result of gravity, not the flow of glass.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Tyrannosaurus rex is closer to you",
-      "on_screen_text": "Deep Time",
-      "search_query": "T rex fossil",
+      "voiceover": "Old windows thicken over time, but why?",
+      "on_screen_text": "Old Windows",
+      "search_query": "old window glass",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if a T. rex met a Stegosaurus?",
-      "on_screen_text": "Dino Meet",
-      "search_query": "Stegosaurus illustration",
+      "voiceover": "The answer lies in their creation.",
+      "on_screen_text": "Glass Making",
+      "search_query": "glass manufacturing",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Stegosaurus lived around 155 million years ago",
-      "on_screen_text": "Ancient Era",
-      "search_query": "prehistoric landscape art",
-      "motion": "zoom_out"
+      "voiceover": "They were made by hand and installed heavy-side-down.",
+      "on_screen_text": "Handmade Glass",
+      "search_query": "stained glass",
+      "motion": "pan"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The time gap between them is roughly the same as from the first flowers to now",
-      "on_screen_text": "Time Gap",
-      "search_query": "flowering plants evolution",
-      "motion": "static"
+      "voiceover": "The unevenness is not due to glass flowing, but rather the result of a manufacturing process.",
+      "on_screen_text": "Crown Glass",
+      "search_query": "crown glass technique",
+      "motion": "zoom_out"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
-      "on_screen_text": "Dino Clock",
-      "search_query": "dinosaur skeleton museum",
+      "voiceover": "This process, known as 'crown glass', involves spinning a circular piece of glass to create a flat, circular sheet.",
+      "on_screen_text": "Glass Spinning",
+      "search_query": "glass spinning",
       "motion": "zoom_in"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "The thicker edge at the bottom is a result of gravity, not the flow of glass.",
+      "on_screen_text": "Gravity's Effect",
+      "search_query": "glass texture light",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know T. rex is closer to you than Stegosaurus? #deeptime",
-    "The hidden gap in time",
-    "Mind-bending dinosaur facts"
+    "What's the secret behind old windows? #oldwindows #glassmystery",
+    "The truth about old windows will surprise you!",
+    "Share your thoughts on this glass mystery!"
   ],
   "hashtags": [
     "#science",
-    "#dinosaurs",
-    "#deeptime",
-    "#paleontology"
+    "#glass",
+    "#windows",
+    "#mystery",
+    "#facts"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-29_time-s-hidden-gap",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "deep_time"
+  "video_id": "science_2026-07-29_the-truth-about-old-windows",
+  "cta_style": "LOOP",
+  "domain": "physics"
 }
