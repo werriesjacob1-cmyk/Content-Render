@@ -1,79 +1,71 @@
 {
-  "title": "The Truth About Old Windows",
-  "viewer_job": "REFRAME",
-  "keyword": "old windows",
-  "metaphor": "Glass Mystery",
-  "hook": "Old windows thicken over time, but why?",
-  "hook_headline": "WINDOWS DON'T FLOW",
-  "script": "Old windows thicken over time, but why? The answer lies in their creation. They were made by hand and installed heavy-side-down. The unevenness is not due to glass flowing, but rather the result of a manufacturing process. This process, known as 'crown glass', involves spinning a circular piece of glass to create a flat, circular sheet. The thicker edge at the bottom is a result of gravity, not the flow of glass.",
+  "title": "Birthday Probability",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "shared birthday",
+  "metaphor": "birthday surprise",
+  "hook": "What if you bet on a shared birthday?",
+  "hook_headline": "YOU'D WIN WITH 23",
+  "script": "What if you bet on a shared birthday? In a room of just 23 people, there's a better than even chance two share a birthday. It's based on complementary probability. The math only needs a couple of dozen because it counts every possible pair. Your intuition says hundreds, but 23 is enough.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Old windows thicken over time, but why?",
-      "on_screen_text": "Old Windows",
-      "search_query": "old window glass",
+      "voiceover": "What if you bet on a shared birthday?",
+      "on_screen_text": "Birthday Bet",
+      "search_query": "crowd of people",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "The answer lies in their creation.",
-      "on_screen_text": "Glass Making",
-      "search_query": "glass manufacturing",
+      "voiceover": "In a room of just 23 people, there's a better than even chance two share a birthday.",
+      "on_screen_text": "23 People",
+      "search_query": "classroom students",
       "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "They were made by hand and installed heavy-side-down.",
-      "on_screen_text": "Handmade Glass",
-      "search_query": "stained glass",
-      "motion": "pan"
+      "voiceover": "It's based on complementary probability.",
+      "on_screen_text": "Complementary Probability",
+      "search_query": "math problem",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The unevenness is not due to glass flowing, but rather the result of a manufacturing process.",
-      "on_screen_text": "Crown Glass",
-      "search_query": "crown glass technique",
-      "motion": "zoom_out"
+      "voiceover": "The math only needs a couple of dozen because it counts every possible pair.",
+      "on_screen_text": "Pair Counts",
+      "search_query": "people shaking hands",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "This process, known as 'crown glass', involves spinning a circular piece of glass to create a flat, circular sheet.",
-      "on_screen_text": "Glass Spinning",
-      "search_query": "glass spinning",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 6,
-      "duration": 4,
-      "voiceover": "The thicker edge at the bottom is a result of gravity, not the flow of glass.",
-      "on_screen_text": "Gravity's Effect",
-      "search_query": "glass texture light",
-      "motion": "zoom_out"
+      "voiceover": "Your intuition says hundreds, but 23 is enough.",
+      "on_screen_text": "Enough People",
+      "search_query": "birthday candles cake",
+      "motion": "pan"
     }
   ],
   "captions": [
-    "What's the secret behind old windows? #oldwindows #glassmystery",
-    "The truth about old windows will surprise you!",
-    "Share your thoughts on this glass mystery!"
+    "Can 23 people have a shared birthday? Yes or no?",
+    "The birthday problem explained",
+    "Shared birthdays are more common than you think"
   ],
   "hashtags": [
+    "#math",
+    "#probability",
+    "#birthday",
     "#science",
-    "#glass",
-    "#windows",
-    "#mystery",
-    "#facts"
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-29_the-truth-about-old-windows",
-  "cta_style": "LOOP",
-  "domain": "physics"
+  "video_id": "science_2026-07-30_birthday-probability",
+  "cta_style": "COMMENT",
+  "domain": "math"
 }
