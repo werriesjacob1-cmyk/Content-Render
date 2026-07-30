@@ -1,0 +1,71 @@
+{
+  "title": "Birthday Probability",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "shared birthday",
+  "metaphor": "birthday surprise",
+  "hook": "What if you bet on a shared birthday?",
+  "hook_headline": "YOU'D WIN WITH 23",
+  "script": "What if you bet on a shared birthday? In a room of just 23 people, there's a better than even chance two share a birthday. It's based on complementary probability. The math only needs a couple of dozen because it counts every possible pair. Your intuition says hundreds, but 23 is enough.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "What if you bet on a shared birthday?",
+      "on_screen_text": "Birthday Bet",
+      "search_query": "crowd of people",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "In a room of just 23 people, there's a better than even chance two share a birthday.",
+      "on_screen_text": "23 People",
+      "search_query": "classroom students",
+      "motion": "pan"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "It's based on complementary probability.",
+      "on_screen_text": "Complementary Probability",
+      "search_query": "math problem",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "The math only needs a couple of dozen because it counts every possible pair.",
+      "on_screen_text": "Pair Counts",
+      "search_query": "people shaking hands",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Your intuition says hundreds, but 23 is enough.",
+      "on_screen_text": "Enough People",
+      "search_query": "birthday candles cake",
+      "motion": "pan"
+    }
+  ],
+  "captions": [
+    "Can 23 people have a shared birthday? Yes or no?",
+    "The birthday problem explained",
+    "Shared birthdays are more common than you think"
+  ],
+  "hashtags": [
+    "#math",
+    "#probability",
+    "#birthday",
+    "#science",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-07-30_birthday-probability",
+  "cta_style": "COMMENT",
+  "domain": "math"
+}
