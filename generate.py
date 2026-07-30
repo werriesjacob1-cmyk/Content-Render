@@ -658,6 +658,26 @@ _COMPARATIVE_WORD = (r"closer|farther|further|nearer|longer|shorter|bigger|small
 DANGLING_COMPARATIVE_RE = re.compile(
     rf"\b({_COMPARATIVE_WORD})\b(?!.*?\bthan\b)", re.I)
 
+# TOO-FORMAL / "SOUNDS LIKE A TEXTBOOK" — user feedback on 'Continents in Motion':
+# every word can be plain (no jargon) and the script can still sound too smart,
+# because the SENTENCE CONSTRUCTION is stiff, not the vocabulary. Three MECHANICAL,
+# zero-LLM patterns from the exact shipped lines that read wrong out loud:
+# 1) a formal INVERTED question with a long subject crammed between the verb and
+#    the predicate ("But is the distance between New York and London fixed?") —
+#    nobody talks like this; a real person says "That distance isn't fixed" or
+#    "Is that gap staying the same?" (short subject, not a locked-in inversion).
+FORMAL_INVERSION_RE = re.compile(
+    r"\b(but|and|so|yet)\s+(is|are|was|were|does|do|has|have)\s+(the|this|that|these|those)\b"
+    r"[^?]{15,}\?",
+    re.I)
+# 2) a lone "No."/"Yes."/"Wrong." as an ENTIRE scene's voiceover — reads as a
+#    scripted dramatic beat, not natural speech, when a TTS voice speaks it alone.
+LONE_YES_NO_RE = re.compile(r"^(no|nope|yes|yep|wrong|correct)[.!]?$", re.I)
+# 3) academic connector words — none of these are how anyone talks out loud.
+FORMAL_CONNECTOR_RE = re.compile(
+    r"\b(however|nevertheless|furthermore|consequently|notably|essentially|"
+    r"arguably|thus|hence|moreover|whereas)\b", re.I)
+
 
 # ---------- TOPIC NOVELTY / DEDUP ----------
 # Concepts we never want to repeat regardless of what memory currently holds --
@@ -1046,6 +1066,18 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   "transdifferentiation", "photosynthesis"), you MUST replace it with a plain phrase, because a long
   word ALSO overflows the on-screen caption and gets cut off at the edges. One unfamiliar word is
   enough to make a viewer feel dumb and swipe. Clear and concrete beats clever and ornate every time.
+- TALK, DON'T WRITE (user feedback on 'Continents in Motion'): even with zero jargon words, a sentence
+  can still sound like a textbook exam question, not a person talking. BAD (a real shipped line):
+  "But is the distance between New York and London fixed?" — a long, formal subject crammed between
+  "is" and the adjective reads stiff and academic, and the flat "No." that follows sounds like a scripted
+  dramatic beat, not speech. GOOD: "You'd think that distance stays the same. It doesn't." or "That gap
+  isn't fixed — it's growing." Read every line OUT LOUD before finalizing: if it sounds like something
+  a textbook would print rather than something a friend would say across a table, rewrite it as a short,
+  plain STATEMENT. Avoid the inverted "is/are/does/do/was/were/has/have + [long noun phrase] + [adjective]?"
+  question shape entirely — ask short, direct questions ("Why?" "How?" "What changed?") or just state the
+  fact. NEVER a lone "No." / "Yes." / "Wrong." as an entire scene by itself — fold the answer into the
+  next sentence instead. BANNED formal connector words: however, nevertheless, furthermore, consequently,
+  notably, essentially, arguably, thus, hence, moreover, whereas — none of these are how people talk.
 - TTS-SAFE WORDING: this is read aloud by a text-to-speech voice that mis-says some homographs. Do NOT
   use the VERB "lives" (the voice reads it like the noun "lives") — write "survives", "exists", "still
   grows", or "is alive" instead. Also avoid other noun/verb homographs where the wrong reading would
@@ -1831,6 +1863,23 @@ def validate(m, job_name, fact=None):
         # varied. Prompt targets 6-16 words/scene; 22 is the hard ceiling.
         if len(s["voiceover"].split()) > 22:
             return f"scene {i} voiceover too long ({len(s['voiceover'].split())} words, cap is 22)"
+        # TOO-FORMAL / "sounds like a textbook" — user feedback on 'Continents in
+        # Motion': "But is the distance between New York and London fixed?" then a
+        # flat "No." Every word was plain, but the SENTENCE SHAPE was stiff, not
+        # how a person talks. Three mechanical checks (see the regexes' own
+        # docstring-comments above for the exact bad lines they were built from).
+        fi = FORMAL_INVERSION_RE.search(s["voiceover"])
+        if fi:
+            return (f"scene {i} voiceover '{s['voiceover']}' is a stiff, textbook-style inverted "
+                     f"question ({fi.group(0)!r}) — nobody talks like this out loud; rewrite as a "
+                     f"short plain statement or a short direct question (see the TALK-DONT-WRITE rule)")
+        if LONE_YES_NO_RE.match(s["voiceover"].strip()):
+            return (f"scene {i} voiceover is a lone {s['voiceover'].strip()!r} — reads as a scripted "
+                     f"dramatic beat, not natural speech; fold the answer into the next sentence")
+        fc = FORMAL_CONNECTOR_RE.search(s["voiceover"])
+        if fc:
+            return (f"scene {i} voiceover uses the formal connector {fc.group(0)!r} — nobody talks "
+                     f"like this out loud; rewrite in plain conversational language")
         # stock libraries return junk (flesh closeups, random labs) for these:
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):

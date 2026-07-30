@@ -231,6 +231,23 @@ def test_validate_rejections():
     m["hook"] = "Tyrannosaurus rex is somehow closer to you."
     check(G.validate(m, "EXPLAIN") is not None, "dangling comparative with no 'than ___' rejected")
 
+    # TOO-FORMAL / "sounds like a textbook" (render-177 'Continents in Motion':
+    # "But is the distance between New York and London fixed?" then a flat "No.")
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "But is the distance between the two cities fixed?"
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "stiff inverted textbook question rejected")
+
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "No."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "lone 'No.' as an entire scene rejected")
+
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "However, the water still freezes eventually."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "formal connector word ('however') rejected")
+
     # command ending: "send this to a friend" (the render-67 Krakatoa flaw). The
     # rubric bans command endings; SHARE is out of the rotation and the guard now
     # rejects the phrasing outright.
