@@ -58,6 +58,56 @@ render (the deck re-renders were replays of an old magnitude script) — a self-
 trigger watches the 09:00 UTC cron; if this session is gone, a NEW session must
 verify that render against every bullet above.
 
+## Session 2026-07-26 (afternoon) — PAID tier, reliability, analytics loop
+Driven by live TikTok analytics + user watching each render. Branch
+`claude/epic-edison-jybjd1`; all test-verified (**200 zero-quota checks**). The
+user funded OpenRouter (~$5) + fal (~$11-23) and wants **2-3 postable videos/day**.
+Shipped:
+- **Paid OpenRouter primary writer** (see provider #2 above) — the fix for the
+  string of aborted renders (157-159). Render 160 verified at 9.33.
+- **COHERENCE hard-gate** (`generate.py`): render 160 ("Pluto's Eternal Orbit")
+  scored 9.33 but was INCOHERENT ("your great-grandparents saw Pluto's start, but
+  it won't finish" — start/finish of WHAT?). The old rubric's `clarity` only checked
+  simple WORDS, not sense. Added a scored `coherence` criterion WITH A FLOOR (6) →
+  a confusing script now ABORTS. Writer prompt gains a MAKE-LITERAL-SENSE rule using
+  that exact Pluto line as the banned example.
+- **fal.ai AI-video gap-fill** (`main.py`, `FAL_KEY` secret set): when a scene's
+  stock clip is off-topic (judge < `FAL_RELEVANCE_FLOOR`=5) or missing, generate an
+  on-topic AI VIDEO (`fal-ai/ltx-video`, env `FAL_VIDEO_MODEL`) instead of the
+  render-160 "girl+rabbit / ocean-waves on a Pluto video". Capped `FAL_MAX_CLIPS`=2/
+  video, fires only on weak scenes ($0 on good-stock topics). No key = no-op.
+  **NOT yet render-verified** (renders 161/163 aborted before the render step).
+- **On-topic cover** (`main.py`): cover now comes from scene 1 (the hook = the
+  primary subject), not the most-colorful frame across the whole video (which put an
+  OCEAN thumbnail on a Pluto video). Falls back to full body if scene 1 unusable.
+- **No fake cuts** (`main.py`): multi-clip only when ≥2 DISTINCT clips exist; a
+  single source gets ONE smooth motion (was panning the same Moon photo 3 ways).
+- **Cut whooshes OFF by default** (`SFX_CUTS=0`; user disliked them).
+- **A/B video length** (`generate.py`, user chose "A/B both"): SHORT (~28-32s, 55-74
+  words, 5-8 scenes) vs LONG (~40-46s, 95-110 words, 7-10 scenes), alternating per
+  render off memory-history parity (`LENGTH_MODE=short|long|auto`). Word/scene bounds
+  are ONE source of truth (build_prompt + validate + near-miss). NOTE render 163
+  aborted because SHORT was first shipped with the LONG 7-scene floor (models
+  overshot the word cap); fixed to 5-8 scenes for SHORT.
+- **8-second retention rule** (writer prompt): analytics show avg watch ~8s on ~40s
+  videos — scene 2 must ESCALATE, never explain; "the video is lost in the first 8
+  seconds or not at all."
+- **Saves + comments in perf memory** (`generate.py` `_perf_score`): jellyfish's 6
+  saves + turtle's 3 comments were invisible to generation; now weighted (watch .45/
+  follows .22/saves .15/shares .10/comments .08). `--record` aliases save/comment/like.
+- **Empty-response retry** (`generate.py`): OpenRouter occasionally returns an empty
+  body (twice in render 163) — one immediate re-call before spending the attempt.
+
+**Live analytics recorded** (`perf_science.json`): turtle 0.226 watch / 2 follows /
+3 comments (visceral → comments); jellyfish 0.205 / 2 follows / 6 saves (mesmerizing
+→ saves); space 0.275 watch / 0 follows (thrill retains but doesn't convert); color
+0.122 (abstract = worst). Pattern: **wonder/visceral converts followers; abstract/
+passive loses; the 8s cliff is the #1 lever.**
+
+**OPEN**: render-verify SHORT length + fal firing + coherence gate end-to-end (in
+progress). Cross-render git contention: do NOT push to the branch while a render runs
+on it (concurrent pushes stalled render 161's memory-commit in a push-retry loop).
+
 ## Architecture (one render)
 `generate.py` (LLM writes a manifest.json script) → `main.py` (TTS, footage,
 ffmpeg render → out/final.mp4) → `repackage.py` (7 platform cuts + captions +
@@ -79,14 +129,17 @@ funnel) → GitHub Release → Zapier → Buffer (Draft). Driven by
    live Google Search (`_call_gemini(..., ground=True)`), and the footage judge
    has a **vision** path (`_gemini_vision_pick`) that looks at Pexels thumbnails.
    Resets **midnight Pacific = 2:00 AM CT / 07:00 UTC**.
-2. **OpenRouter** (`OPENROUTER_API_KEY`): `meta-llama/llama-3.3-70b-instruct:free`
-   — WAS the strongest free model, but as of **2026-07-22 it returns HTTP 404
-   "This model is unavailable for free. The paid version is available now"** —
-   OpenRouter discontinued the free tier for it. The chain falls straight through
-   to `github:gpt-4o-mini` (weak — overshoots word count then trims to mush;
-   shipped the 6.83/surprise-4 near-miss in render 130). Until a strong free
-   replacement is found, the **Gemini quality-rescue** (below) is what keeps
-   quality up.
+2. **OpenRouter** (`OPENROUTER_API_KEY`): **NOW PAID + PRIMARY WRITER (2026-07-26)**.
+   The free `...:free` slug was discontinued (404). The user funded OpenRouter (~$5),
+   so `generate.py` now uses the **paid** slug `meta-llama/llama-3.3-70b-instruct`
+   (env-overridable via `OPENROUTER_MODEL`). This is THE reliability fix: Gemini's
+   free quota 429s on every model most of the day, and OpenRouter-paid catches it
+   with a strong, non-rate-limited writer for a few cents/render. **Render 160
+   verified**: OpenRouter carried it, script scored **9.33** on the first attempt
+   (vs the 4.67-6.5 the free chain produced before aborting). A 429 from Gemini now
+   falls through in ~3 log lines to OpenRouter — Gemini is NOT the bottleneck.
+   NOTE: 160 also exposed that a high self-score can hide an INCOHERENT script — see
+   the coherence gate in the 2026-07-26 session notes below.
 3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`.
    Only `gemma-4-31b` returns clean JSON; `gpt-oss-*` and `zai-glm-*` reply with
    non-JSON reasoning and are excluded (`cerebras_models()` denylist). RPM-limited

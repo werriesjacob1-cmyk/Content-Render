@@ -1,94 +1,71 @@
 {
-  "title": "The Hidden Truth of House Dust",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "house dust",
-  "metaphor": "unsettling reality",
-  "hook": "You might be living in a home made of you.",
-  "hook_headline": "DUST IS YOU",
-  "script": "You might be living in a home made of you. Every minute, you shed tens of thousands of dead skin cells. What if you tracked where all that skin actually ends up? Surprisingly, much of the dust in your home is made up of you. Studies reveal that about 80% of household dust consists of human skin cells. If you gathered all the skin cells you lose in a day, it would weigh about the same as a slice of bread. You replace your entire outer layer of skin every two to four weeks. Next time you see dust in your home, remember it\u2019s not just dust\u2014it\u2019s a part of you.",
+  "title": "Birthday Probability",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "shared birthday",
+  "metaphor": "birthday surprise",
+  "hook": "What if you bet on a shared birthday?",
+  "hook_headline": "YOU'D WIN WITH 23",
+  "script": "What if you bet on a shared birthday? In a room of just 23 people, there's a better than even chance two share a birthday. It's based on complementary probability. The math only needs a couple of dozen because it counts every possible pair. Your intuition says hundreds, but 23 is enough.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You might be living in a home made of you.",
-      "on_screen_text": "DUST IS YOU",
-      "search_query": "dust floating in sunlight",
+      "voiceover": "What if you bet on a shared birthday?",
+      "on_screen_text": "Birthday Bet",
+      "search_query": "crowd of people",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Every minute, you shed tens of thousands of dead skin cells.",
-      "on_screen_text": "SHEDDING SKIN",
-      "search_query": "close up of shedding skin",
-      "motion": "zoom_in"
+      "voiceover": "In a room of just 23 people, there's a better than even chance two share a birthday.",
+      "on_screen_text": "23 People",
+      "search_query": "classroom students",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "What if you tracked where all that skin actually ends up?",
-      "on_screen_text": "WHERE DOES IT GO?",
-      "search_query": "dust particles in air",
-      "motion": "pan"
+      "voiceover": "It's based on complementary probability.",
+      "on_screen_text": "Complementary Probability",
+      "search_query": "math problem",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Surprisingly, much of the dust in your home is made up of you.",
-      "on_screen_text": "YOU IN DUST",
-      "search_query": "house dust close-up",
-      "motion": "pan"
+      "voiceover": "The math only needs a couple of dozen because it counts every possible pair.",
+      "on_screen_text": "Pair Counts",
+      "search_query": "people shaking hands",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "Studies reveal that about 80% of household dust consists of human skin cells.",
-      "on_screen_text": "80% IS SKIN",
-      "search_query": "scientist analyzing dust",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 6,
-      "duration": 4,
-      "voiceover": "If you gathered all the skin cells you lose in a day, it would weigh about the same as a slice of bread.",
-      "on_screen_text": "DAILY SKIN LOSS",
-      "search_query": "slice of bread close-up",
-      "motion": "close_up"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
-      "on_screen_text": "NEW SKIN",
-      "search_query": "skin regeneration process",
+      "voiceover": "Your intuition says hundreds, but 23 is enough.",
+      "on_screen_text": "Enough People",
+      "search_query": "birthday candles cake",
       "motion": "pan"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "Next time you see dust in your home, remember it\u2019s not just dust\u2014it\u2019s a part of you.",
-      "on_screen_text": "PART OF YOU",
-      "search_query": "dust settling on surface",
-      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "Did you know house dust is mostly you? Yes or no?",
-    "How often do you clean your home?",
-    "What do you think about this fact?"
+    "Can 23 people have a shared birthday? Yes or no?",
+    "The birthday problem explained",
+    "Shared birthdays are more common than you think"
   ],
   "hashtags": [
+    "#math",
+    "#probability",
+    "#birthday",
     "#science",
-    "#dust",
-    "#facts",
-    "#home"
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-29_the-hidden-truth-of-house-dust",
-  "cta_style": "LOOP",
-  "domain": "body"
+  "video_id": "science_2026-07-30_birthday-probability",
+  "cta_style": "COMMENT",
+  "domain": "math"
 }

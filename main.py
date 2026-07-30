@@ -1685,6 +1685,82 @@ def _gemini_image(scene, dest):
         return False
 
 
+# ---------- AI VIDEO GAP-FILL (fal.ai) ----------
+# The footage-RELEVANCE safety net. When a scene's best stock clip is off-topic
+# (judge score below FAL_RELEVANCE_FLOOR) or nothing was found at all, generate an
+# ON-TOPIC AI *video* clip instead of showing a generic/irrelevant stock clip —
+# the render-160 "girl petting a rabbit / ocean waves for a Pluto video" bug. A
+# moving AI clip that MATCHES the narration beats a real clip that doesn't, and
+# beats a still. Strictly cost-bounded: fires ONLY on weak scenes (topics with
+# good stock spend $0) and is capped at FAL_MAX_CLIPS per video. No FAL_KEY => the
+# whole feature is a no-op, so free-tier behaviour is byte-for-byte unchanged.
+FAL_KEY = os.environ.get("FAL_KEY", "") or os.environ.get("FAL_API_KEY", "")
+# cheap/fast text-to-video default; env-overridable so the model can change with
+# no code edit (fal slugs move). Body is just {"prompt":...} so it stays
+# model-agnostic — the render scales/crops the clip to 9:16 like any stock clip.
+# `or default` (not get-default) so an UNSET GitHub Variable — which arrives as an
+# empty string "", not as absent — falls back instead of crashing int("") at import.
+FAL_VIDEO_MODEL = os.environ.get("FAL_VIDEO_MODEL") or "fal-ai/ltx-video"
+FAL_MAX_CLIPS = int(os.environ.get("FAL_MAX_CLIPS") or "2")            # per-video hard cost cap
+FAL_RELEVANCE_FLOOR = int(os.environ.get("FAL_RELEVANCE_FLOOR") or "5")  # stock score < this = replace
+FAL_VIDEO_SCENES = 0
+
+
+def _fal_can_spend():
+    """True iff a paid fal key exists AND we're still under the per-video clip cap.
+    Pure/testable (no network) — the single gate that bounds fal spend."""
+    return bool(FAL_KEY) and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
+
+
+def _fal_prompt(scene):
+    """Cinematic text-to-video prompt built from the scene's literal SUBJECT
+    (search_query, NOT the metaphorical voiceover — the same anchoring rule that
+    keeps stock footage on-topic), with explicit no-text/no-watermark guards.
+    Pure/testable."""
+    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
+    return (f"{subject}. Realistic cinematic footage, smooth camera motion, natural "
+            f"lighting, high detail, no text, no words, no captions, no watermark, no logo.")
+
+
+def _fal_video(scene, dest):
+    """Generate an on-topic AI video clip for a scene via fal.ai. Returns True on
+    success (a playable clip written to dest), False on any failure so the caller
+    keeps its stock/still/card fallback. Cost-capped by _fal_can_spend()."""
+    global FAL_VIDEO_SCENES
+    if not _fal_can_spend():
+        return False
+    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
+    if not subject:
+        return False
+    body = json.dumps({"prompt": _fal_prompt(scene)}).encode()
+    try:
+        req = urllib.request.Request(
+            f"https://fal.run/{FAL_VIDEO_MODEL}", data=body,
+            headers={"Authorization": f"Key {FAL_KEY}",
+                     "Content-Type": "application/json", "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(req, timeout=240) as r:
+            data = json.loads(r.read().decode())
+        # fal t2v models return {"video":{"url":...}} or {"videos":[{"url":...}]}
+        vid = data.get("video") if isinstance(data.get("video"), dict) else None
+        url = vid.get("url") if vid else None
+        if not url:
+            vids = data.get("videos") or []
+            url = vids[0].get("url") if vids and isinstance(vids[0], dict) else None
+        if not url:
+            print("  [fal] reply had no video url — falling back")
+            return False
+        _download(url, dest)
+        if (ffprobe_dur(dest) or 0) < 0.5:
+            return False
+        FAL_VIDEO_SCENES += 1
+        print(f"  [fal] AI video clip {FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} for "
+              f"'{subject[:40]}' via {FAL_VIDEO_MODEL}")
+        return True
+    except Exception as e:  # noqa: BLE001 — best-effort; keep the stock/still fallback
+        print(f"  [fal] AI video unavailable ({e}) — falling back")
+        return False
+
+
 def _footage_intent(scene):
     """What the footage judge + rescue requery match candidates against. LEADS
     with the scene's search_query (the literal, filmable subject the generator
@@ -1813,6 +1889,20 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # own soft-floor guard still blocks genuinely off-topic video.
     have, score = fetch_clip(scene["search_query"], raw,
                               intent=_footage_intent(scene), accept_best=True)
+
+    # AI-VIDEO GAP-FILL (fal.ai): the relevance safety net. If the best stock clip
+    # is off-topic (weak judge score) OR nothing was found, and a paid fal key is
+    # available under the per-video cap, replace it with an ON-TOPIC AI video clip
+    # (render-160 fix: no more girl-and-rabbit / ocean-waves on a Pluto video). A
+    # fal-filled scene renders as ONE strong on-topic clip (no multi-clip mixing
+    # with off-topic stock sub-clips). Falls straight through if fal is off/fails.
+    fal_filled = False
+    if ((not have) or (score is not None and score < FAL_RELEVANCE_FLOOR)) and _fal_can_spend():
+        fal_raw = os.path.join(WORK, f"s{idx}_fal.mp4")
+        if _fal_video(scene, fal_raw):
+            raw, have, score, fal_filled = fal_raw, True, 10, True
+            print("  [fal] using on-topic AI video in place of weak/absent stock footage")
+
     out = os.path.join(WORK, f"s{idx}.mp4")
     frames = max(1, round(seg_dur * 30))
 
@@ -1837,12 +1927,20 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # of holding one (the "more clips / constant flashing" note). Wrapped so
         # ANY failure falls straight through to the single-clip render below — a
         # render can never break because of this.
-        plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if SCENE_MULTICLIP else [seg_dur]
-        if len(plan) > 1:
+        plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if (SCENE_MULTICLIP and not fal_filled) else [seg_dur]
+        # Gather the DISTINCT extra clips first. Multi-cut ONLY if we actually got a
+        # second distinct clip — cutting between sub-clips of the SAME source is just
+        # the one photo panned three different ways (user: "at 25s it pans left, zooms
+        # out, zooms in, fades right on the same Moon photo — that's not a cut"). With
+        # a single source, hold it under ONE smooth motion instead of faking cuts.
+        try:
+            extra = _extra_scene_clips(scene, max(0, len(plan) - 1),
+                                       set(_used_video_ids), os.path.join(WORK, f"s{idx}_sub"))
+        except Exception:  # noqa: BLE001 — never let footage gathering break a render
+            extra = []
+        sources = [raw] + extra
+        if len(plan) > 1 and len(sources) >= 2:
             try:
-                sources = [raw] + _extra_scene_clips(
-                    scene, len(plan) - 1, set(_used_video_ids),
-                    os.path.join(WORK, f"s{idx}_sub"))
                 parts = []
                 _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
                 for j, d in enumerate(plan):
@@ -2433,7 +2531,10 @@ def _ensure_music_bed(duration):
 
 
 # ---------- CUT WHOOSHES (rhythm/punch on scene changes) ----------
-SFX_CUTS = os.getenv("SFX_CUTS", "1") != "0"
+# Cut whooshes OFF by default — the user found them distracting ("not sure I like
+# it") and, with the same-photo fake-cuts removed, there are far fewer real cuts to
+# punctuate anyway. Opt back in per-render with SFX_CUTS=1.
+SFX_CUTS = os.getenv("SFX_CUTS", "0") != "0"
 
 
 def _make_cut_whooshes(cut_times, total_dur, dest):
@@ -2714,9 +2815,15 @@ def main():
                    # hook + domain feed funnel.py (topic-matched affiliate angle,
                    # pinned comment, newsletter blurb — see repackage.py).
                    "hook": m.get("hook", ""), "domain": m.get("domain", "")}, f, indent=2)
-    # COVER: designed thumbnail off the CLEAN body video (no burned captions) so
-    # the profile grid shows a bold hook, never a black tile. Never fatal.
-    make_cover(body, m, os.path.join(OUT, "cover.jpg"))
+    # COVER: designed thumbnail off the CLEAN video (no burned captions) so the
+    # profile grid shows a bold hook, never a black tile. Prefer the FIRST scene's
+    # footage — the hook is always anchored to the video's primary SUBJECT, so the
+    # cover is on-topic (render-160 fix: the old picker scanned the whole video and
+    # chose the most colorful frame, landing a vivid OCEAN clip on a PLUTO video).
+    # Falls back to the full body if scene 1 yields no usable frame. Never fatal.
+    cover_src = scene_files[0] if scene_files else body
+    if not make_cover(cover_src, m, os.path.join(OUT, "cover.jpg")) and cover_src is not body:
+        make_cover(body, m, os.path.join(OUT, "cover.jpg"))
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 

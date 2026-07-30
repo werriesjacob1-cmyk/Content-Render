@@ -192,10 +192,17 @@ def cerebras_models():
 # endpoint, so it reuses _call_openai_compat. Optional/env-gated (no key = skip).
 # Free key (no card): https://openrouter.ai/keys . Add as OPENROUTER_API_KEY.
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-# deepseek-chat-v3-0324:free was dropped — OpenRouter now 404s it ("no longer
-# free"). llama-3.3-70b:free is the reliable strong free model (a 429 from it is
-# a transient upstream rate-limit, not a dead slug, so it stays).
-OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct:free"]
+# The FREE llama-3.3-70b slug ("...:free") was discontinued — OpenRouter 404s it
+# ("This model is unavailable for free. The paid version is available now - use
+# this slug instead: meta-llama/llama-3.3-70b-instruct"). With paid credits on the
+# key we use that PAID slug (drop ":free"): a strong, NON-rate-limited writer — a
+# few cents per render — that catches the nights Gemini's quota 429s. This is the
+# reliability fix for the aborted renders (every strong free writer was exhausted).
+# Env-overridable (OPENROUTER_MODEL, comma-separated) so the model can change with
+# NO code edit — e.g. set it to deepseek/deepseek-chat-v3 for a stronger writer.
+_OR_RAW = os.environ.get("OPENROUTER_MODEL", "").strip()
+OPENROUTER_MODELS = [m.strip() for m in _OR_RAW.split(",") if m.strip()] or \
+    ["meta-llama/llama-3.3-70b-instruct"]
 # More free/separate-bucket providers, all OpenAI-compatible and ENV-GATED (no
 # key = skipped, zero behaviour change). Each is its own daily bucket, so adding
 # any one key gives a whole extra pool of strong-model generation on free tier —
@@ -261,9 +268,22 @@ QUALITY_THRESHOLD = 7.5
 # grinding forever. Hook/payoff stay at 6 — a 4/10 hook or payoff really is a bad
 # video and must still abort.
 QUALITY_CRITERION_FLOORS = {
-    "hook": 6,
-    "escalation": 6,
-    "payoff": 6,
+    # RECALIBRATED 2026-07-29. Renders 163-166 proved the gate was mis-calibrated:
+    # GPT-4o wrote COHERENT, clean scripts (coherence 8-9, hook 6-8) that scored
+    # payoff/escalation 5-6 and were ALL rejected — the gate blocked every video
+    # instead of just the bad ones. The self-scoring rubric is inherently harsh on
+    # payoff/escalation (a solid-but-not-mind-blowing fact scores 5), so floors of 6
+    # there abort perfectly postable videos. Lowered to 5: a genuinely payoff-LESS
+    # or non-escalating script (<=4) still aborts, but a solid 5 ships.
+    "hook": 5,
+    "escalation": 5,
+    "payoff": 5,
+    # COHERENCE stays the STRICTEST floor (6) — it is the one that kills the truly
+    # bad videos (the incoherent render-160 Pluto: "great-grandparents saw Pluto's
+    # start, but it won't finish" — start/finish of WHAT?). Simple-sounding but
+    # muddled must still ABORT. This + the magnitude rejection (surprise<=3 for
+    # scale/counting facts) are what keep quality up now that the overall bar is 6.0.
+    "coherence": 6,
 }
 # HARD FLOOR — the line below which we publish NOTHING rather than a weak video.
 # The quality loop keeps the best attempt and, if none clear QUALITY_THRESHOLD,
@@ -276,7 +296,12 @@ QUALITY_CRITERION_FLOORS = {
 # cron simply tries again. A CLEAN script that merely couldn't be SCORED
 # (fail-open, best_quality is None) is still allowed through — it passed every
 # structural gate, we just couldn't grade it.
-QUALITY_HARD_FLOOR = 6.8
+QUALITY_HARD_FLOOR = 6.0   # was 6.8 — recalibrated 2026-07-29 (see the floors above).
+                            # No model reliably self-scores 6.8+; GPT-4o's coherent
+                            # scripts landed 6.1-6.9 and ALL aborted, so the channel
+                            # shipped nothing. 6.0 + the coherence(6) & magnitude gates
+                            # ship solid, coherent videos while still killing the bad
+                            # ones. RATCHET BACK UP once real engagement data justifies.
 QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
                                  # Was 2 (3 total), but each attempt re-runs the full
                                  # generate+validate+info-gain+punch-up+score pipeline
@@ -296,7 +321,50 @@ QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
 # well under this (each LLM call is seconds, not minutes), so it never trips
 # normal operation — it only bites a fully-throttled run. Env-overridable.
 GEN_WALL_BUDGET_S = int(os.getenv("GEN_WALL_BUDGET_S", "420"))
-QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity"]
+QUALITY_RUBRIC_CRITERIA = ["hook", "surprise", "escalation", "payoff", "rewatch", "clarity", "coherence"]
+
+# ---- A/B VIDEO LENGTH (analytics-driven) --------------------------------------
+# TikTok analytics (2026-07-26): avg watch ~8s on ~40s videos — almost nobody sees
+# the back half, and completion is ~7%. So we A/B two lengths and let perf_<page>.json
+# reveal which retains better on THIS page: SHORT (~28-32s: higher completion% and
+# watch-ratio) vs LONG (~40-46s: full escalation arc). Scene COUNT stays 7-9 either
+# way (escalation is sacred) — SHORT just uses fewer words per scene. LENGTH_MODE=
+# short|long forces one; the default "auto" ALTERNATES per render off the memory
+# history length (one entry per render), so consecutive videos flip with no new state.
+def _resolve_length_mode():
+    mode = os.getenv("LENGTH_MODE", "auto").strip().lower()
+    if mode in ("short", "long"):
+        return mode
+    try:
+        hist = json.load(open(MEMORY)).get("history", [])
+        return "short" if (len(hist) % 2 == 0) else "long"
+    except Exception:  # noqa: BLE001 — no/broken memory => default to the proven long
+        return "long"
+
+LENGTH_MODE = _resolve_length_mode()
+if LENGTH_MODE == "short":
+    # SHORT needs FEWER scenes, not terser ones: a 7-scene floor at a 74-word cap
+    # forces ~9 words/scene, which the models overshoot every time → endless
+    # near-miss trims and regenerations (the render-163 grind). 5-6 natural-length
+    # scenes hit ~65 words comfortably, so a clean draft passes on the first try.
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 55, 74, 45, 82    # ~26-32s
+    SCENE_MIN, SCENE_MAX = 5, 8
+    WORDS_PER_SCENE = "~11-13 words (5-6 scenes x ~12 words = ~65 total)"
+    # SHORT's failure mode (render 164): drafts overshoot to ~99 words, the near-miss
+    # trims MIDDLE scenes to fit, and the trimmed-out scenes were carrying the payoff
+    # build → payoff scores 5 and the run aborts. Fix = write to budget NATIVELY and
+    # protect the payoff: the LAST scene must be the reframe, reached fast.
+    LENGTH_HINT = ("THIS IS A SHORT ~30s video. Structure: hook (scene 1) → 3-4 escalating fact "
+                   "beats → PAYOFF (final scene, the reframe that recontextualises everything). "
+                   "Land the payoff HARD and FAST — with only 5-6 scenes there is no room to wander, "
+                   "so every scene earns its place and the last one must reframe, not summarise. COUNT "
+                   "your words as you write and STAY at 55-74 total; do NOT overshoot and rely on trimming.")
+else:
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 95, 110, 85, 115  # ~40-46s
+    SCENE_MIN, SCENE_MAX = 7, 10
+    WORDS_PER_SCENE = "~12-14 words (8 scenes x ~13 words = ~104 total)"
+    LENGTH_HINT = ("THIS IS A ~42s video: 7-9 scenes that ESCALATE to a genuine payoff — the final "
+                   "scene must reframe, never just restate the premise.")
 
 
 def draft_is_weak(overall, quality):
@@ -323,7 +391,9 @@ def draft_is_weak(overall, quality):
 #       "views": 18400,
 #       "watch_through_pct": 0.63,
 #       "follows": 41,
-#       "shares": 210
+#       "saves": 320,
+#       "shares": 210,
+#       "comments": 88
 #     },
 #     "science_2026-07-12_the-void-within": {
 #       "views": 2100,
@@ -340,7 +410,9 @@ def draft_is_weak(overall, quality):
 #   views                total plays
 #   watch_through_pct    average fraction of the video watched, 0..1 (63% -> 0.63)
 #   follows              follows attributed to this video
+#   saves                bookmark/save count  (strong "keep this" intent signal)
 #   shares                share count
+#   comments             comment count        (drives reach)
 # Any subset of keys is fine; missing keys count as 0. A missing, empty, or
 # malformed perf_<page>.json is completely safe: with no usable data,
 # generation is byte-for-byte identical to today's plain random.choice()
@@ -854,6 +926,11 @@ HOOK (first 2 seconds decide 70% of retention):
   "Imagine", "What if I told you", "Here's", "This is", "Ever wonder". BAD: "Have you ever wondered what
   your stomach acid can do?" GOOD: "Your stomach acid could dissolve a razor blade." Open cold on the
   shock. (A curiosity '?' still appears by scene 2, never as the very first line.)
+- MAKE LITERAL SENSE (non-negotiable): every line must be TRUE and have clear referents — no vague
+  pronoun a listener can't resolve. State the actual fact PLAINLY. BAD: "your great-grandparents saw
+  Pluto's start, but it won't finish" (start of WHAT? finish WHAT? — meaningless). GOOD: "Pluto takes
+  248 years to circle the Sun — it hasn't finished a single lap since we discovered it in 1930." If a
+  smart listener could ask "wait, what does that even mean?", it is BROKEN — rewrite it.
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
@@ -886,17 +963,20 @@ HOOK (first 2 seconds decide 70% of retention):
   reads as skippable in the feed. Prefer a bright, punchy, in-motion image on the very first scene.
 
 STORY ENGINE (the #1 ranking signal is completion — earn every second):
-- 7-9 SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
-- Total narration MUST be 95-110 words — this is the HARDEST constraint; under 85 or over 115 words is
-  REJECTED outright, so budget it deliberately. Do the math as you write: 8 scenes at ~13 words each
-  is ~104 words, right in range. If you're past 110, TIGHTEN wording (never DELETE a whole scene — every
-  scene is a distinct escalation beat and losing one flattens the payoff); if under 95, you're too
-  thin — add one more real fact from the research, never filler. At this channel's narration speed
-  95-110 words renders to ~40-46 seconds — the sweet spot for completion (too short feels stubby and
-  un-satisfying; past ~120 words drags toward 50s+). Under 85 = rejected; over 115 = rejected.
-  A tight ~42s video beats a padded 55s one: competitors win on completion, so cut every non-essential
-  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of scenes.
-- PER-SCENE LENGTH: aim ~12-14 words (8 scenes x ~13 words = your ~104 total). NEVER exceed 22 words
+- {LENGTH_HINT}
+- HOLD SECONDS 3-8 (THIS channel's analytics: average watch is ~8 seconds — most viewers leave during
+  scene 2 or 3, right after the hook). So scene 2 must ESCALATE the hook, never slow down to explain,
+  define, or give background. Plant the payoff question early and keep it OPEN, and give a concrete
+  reason to stay in EVERY scene. Scene 2 is make-or-break: make it your SECOND-most-surprising line,
+  not setup — the video is lost in the first 8 seconds or not at all.
+- {SCENE_MIN}-{SCENE_MAX} SHORT scenes. Each scene's voiceover is ONE punchy sentence (fast pacing = +34% retention).
+- Total narration MUST be {WORD_LO}-{WORD_HI} words — this is the HARDEST constraint; under {WORD_HARD_LO} or over
+  {WORD_HARD_HI} words is REJECTED outright, so budget it deliberately. Do the math as you write. If you're past
+  {WORD_HI}, TIGHTEN wording (never DELETE a whole scene — every scene is a distinct escalation beat and losing
+  one flattens the payoff); if under {WORD_LO}, you're too thin — add one more real fact from the research,
+  never filler. A tighter video beats a padded one: competitors win on COMPLETION, so cut every non-essential
+  line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of words.
+- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed 22 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1690,8 +1770,8 @@ def validate(m, job_name, fact=None):
     # aerial for 8s (run 105). 7-9 scenes = ~4.5-5.5s each = more distinct clips,
     # less lingering, more visual variety — "use more videos" for free. Ceiling
     # stays 10 (a 12-scene/166-word Sun video read as "never stops talking").
-    if not isinstance(m["scenes"], list) or not (7 <= len(m["scenes"]) <= 10):
-        return f"scene count {len(m.get('scenes', []))} out of range"
+    if not isinstance(m["scenes"], list) or not (SCENE_MIN <= len(m["scenes"]) <= SCENE_MAX):
+        return f"scene count {len(m.get('scenes', []))} out of range ({SCENE_MIN}-{SCENE_MAX}, mode {LENGTH_MODE})"
 
     # clean top-level text
     m["title"] = _clean(m["title"])[:90]
@@ -1757,8 +1837,9 @@ def validate(m, job_name, fact=None):
     # instead of being trimmed to mush. 95-110 renders ~40-46s on the neural voices
     # (edge-tts/Piper), the completion sweet spot; 115 is the hard ceiling.
     wc = len(_clean(m["script"]).split())
-    if not (85 <= wc <= 115):
-        return f"script word count {wc} out of range (target 95-110, hard cap 115)"
+    if not (WORD_HARD_LO <= wc <= WORD_HARD_HI):
+        return (f"script word count {wc} out of range "
+                f"(target {WORD_LO}-{WORD_HI}, hard {WORD_HARD_LO}-{WORD_HARD_HI}, mode {LENGTH_MODE})")
     m["script"] = _clean(m["script"])
 
     # CTA overhaul guard 1: the exact production failure this whole rework
@@ -2017,10 +2098,11 @@ Score each criterion 0-10 (integers, be strict):
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
-- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+- clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
-{{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+{{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
         raw = call_groq(prompt)
         data = json.loads(raw)
         # Robust coercion: the model frequently returns a score as a STRING
@@ -2096,10 +2178,11 @@ Do TWO things:
 - escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
 - payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
 - rewatch: {rewatch_hint}
-- clarity: could a 12-year-old follow every sentence on one listen, with no confusing jumps?
+- clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
+- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
 
 Return ONLY valid JSON, exactly:
-{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0}}"""
+{{"no_new_info_scene_ids": [], "hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
         raw = call_groq(prompt)
         data = json.loads(raw)
     except Exception as e:  # noqa: BLE001 - both halves fail open together
@@ -2171,18 +2254,28 @@ def load_perf():
 def _perf_score(entry):
     """Collapse one video's raw engagement metrics into a single 0..1-ish
     score used to weight future selection. watch_through_pct is the primary
-    quality signal; follows/shares are rarer, higher-value actions scaled up
-    relative to views so one viral outlier can't own the whole score."""
+    quality signal; follows/saves/shares/comments are rarer, higher-value actions
+    scaled up relative to views so one viral outlier can't own the whole score.
+
+    SAVES and COMMENTS added 2026-07-26: live TikTok analytics showed they're this
+    page's real differentiators (jellyfish earned 6 saves; turtle drew 3 comments)
+    yet were invisible to generation. A save = "I want to keep this"; a comment
+    drives reach. Old entries lacking these keys simply score them 0 (safe)."""
     if not isinstance(entry, dict):
         return 0.0
     views = max(0.0, float(entry.get("views", 0) or 0))
     watch = max(0.0, min(1.0, float(entry.get("watch_through_pct", 0) or 0)))
     follows = max(0.0, float(entry.get("follows", 0) or 0))
+    saves = max(0.0, float(entry.get("saves", 0) or 0))
     shares = max(0.0, float(entry.get("shares", 0) or 0))
+    comments = max(0.0, float(entry.get("comments", 0) or 0))
     denom = max(views, 1.0)
     follow_rate = min(1.0, (follows / denom) * 20)
+    save_rate = min(1.0, (saves / denom) * 12)
     share_rate = min(1.0, (shares / denom) * 10)
-    return 0.5 * watch + 0.3 * follow_rate + 0.2 * share_rate
+    comment_rate = min(1.0, (comments / denom) * 15)
+    return (0.45 * watch + 0.22 * follow_rate + 0.15 * save_rate
+            + 0.10 * share_rate + 0.08 * comment_rate)
 
 
 def score_by_key(history, perf, key_field):
@@ -2386,9 +2479,17 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 break
             if attempt > 0:
                 time.sleep(8 * attempt)  # escalating cushion — a flat 8s wasn't enough to outlast a 429
-            raw = call_groq(build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
-                                          avoid_openers=avoid_openers, cta_style=cta_style,
-                                          dossier=dossier, hook_frame=hook_frame))
+            _bp = build_prompt(job_name, job_desc, avoid, fact=chosen_fact,
+                               avoid_openers=avoid_openers, cta_style=cta_style,
+                               dossier=dossier, hook_frame=hook_frame)
+            raw = call_groq(_bp)
+            if not (raw or "").strip():
+                # a strong writer occasionally returns an EMPTY body (OpenRouter
+                # hiccup — twice in render 163: "Expecting value: line 1 column 1").
+                # One immediate re-call recovers it instead of spending the whole
+                # (of only 2) attempt on a blank response.
+                print(f"  attempt {attempt+1}: empty model response — one immediate retry")
+                raw = call_groq(_bp)
             m = json.loads(raw)
             if not isinstance(m, dict):
                 # some models (esp. gemma) occasionally return a bare JSON array
@@ -2447,9 +2548,9 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # model dumped a long, repetitive script) — abandon it so the run aborts
         # rather than shipping a weak video (consistency over cadence).
         import difflib as _dl
-        NEARMISS_MAX_SCENES = 9
-        NEARMISS_MAX_WORDS = 115    # keep in lockstep with validate()'s hard cap
-        NEARMISS_MIN_SCENES = 7     # validate()'s floor — never trim below it
+        NEARMISS_MAX_SCENES = SCENE_MAX
+        NEARMISS_MAX_WORDS = WORD_HARD_HI    # tracks validate()'s hard cap (length-mode aware)
+        NEARMISS_MIN_SCENES = SCENE_MIN      # validate()'s floor — never trim below it
         _scenes = nm.get("scenes", [])
         def _wc(scs):
             return sum(len(s.get("voiceover", "").split()) for s in scs)
@@ -2874,7 +2975,9 @@ def record_perf(argv):
     vid = argv[0]
     alias = {"watch": "watch_through_pct", "watch_pct": "watch_through_pct",
              "wtp": "watch_through_pct", "view": "views", "follow": "follows",
-             "share": "shares"}
+             "share": "shares", "save": "saves", "bookmark": "saves",
+             "bookmarks": "saves", "comment": "comments", "like": "likes",
+             "likes": "likes"}
     metrics = {}
     for tok in argv[1:]:
         if "=" not in tok:

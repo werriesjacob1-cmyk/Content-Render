@@ -335,6 +335,105 @@
         "clarity": 9.0,
         "overall": 6.83
       }
+    },
+    {
+      "video_id": "science_2026-07-26_pluto-s-eternal-orbit",
+      "metaphor": "cosmic scale",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "Pluto's Eternal Orbit",
+      "fact_id": "pluto_no_orbit",
+      "domain": "space",
+      "hook": "Your great-grandparents saw Pluto's start, but it won't finish?",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 10.0,
+        "payoff": 9.0,
+        "rewatch": 10.0,
+        "clarity": 10.0,
+        "overall": 9.33
+      }
+    },
+    {
+      "video_id": "science_2026-07-29_time-s-hidden-gap",
+      "metaphor": "dinosaur timeline",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Time's Hidden Gap",
+      "fact_id": "trex_stegosaurus_time",
+      "domain": "deep_time",
+      "hook": "Tyrannosaurus rex is closer to you",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.0
+      }
+    },
+    {
+      "video_id": "science_2026-07-29_the-truth-about-old-windows",
+      "metaphor": "Glass Mystery",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Truth About Old Windows",
+      "fact_id": "glass_solid",
+      "domain": "physics",
+      "hook": "Old windows thicken over time, but why?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 4.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.43
+      }
+    },
+    {
+      "video_id": "science_2026-07-30_birthday-probability",
+      "metaphor": "birthday surprise",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "Birthday Probability",
+      "fact_id": "birthday_paradox",
+      "domain": "math",
+      "hook": "What if you bet on a shared birthday?",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 5.0,
+        "payoff": 6.0,
+        "rewatch": 4.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 6.86
+      }
     }
   ]
 }

@@ -30,6 +30,10 @@ Exit code is non-zero if any assertion fails.
 import os, sys, re, time, tempfile
 
 os.environ.setdefault("GROQ_API_KEY", "x")          # let generate.py import
+# Pin the A/B video length to LONG so validate() uses the 85-115 word window the
+# ~104-word fixtures below were written for — otherwise 'auto' mode reads the repo's
+# memory history (its parity flips the window) and the fixtures fail nondeterministically.
+os.environ.setdefault("LENGTH_MODE", "long")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import main as M
@@ -760,6 +764,13 @@ def test_draft_is_weak():
     check(G.draft_is_weak(8.0, None) is False, "quality None -> not weak")
     # the force flag exists and defaults off so normal runs stay free-first
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
+    # COHERENCE is a hard floor now (render-160 fix): a script that scores high on
+    # everything but is INCOHERENT must be flagged weak (and, in main(), aborted) —
+    # a confusing script can no longer hide behind a high overall.
+    check("coherence" in floors, "coherence is a per-criterion floor")
+    incoherent = {**strong, "coherence": floors["coherence"] - 1}
+    check(G.draft_is_weak(thr + 1.0, incoherent) is True,
+          "high overall but coherence below floor -> weak (the 9.33-on-nonsense bug)")
 
 
 def test_cover_headline():
@@ -786,6 +797,86 @@ def test_variant_queries():
     check(len(v) <= 4, "capped at 4 variants (bounded network work)")
     check(M._variant_queries("") == [], "empty query -> no variants")
     check(M._variant_queries("the a of") == ["the a of"], "all-stopword query -> just the phrase")
+
+
+def test_perf_saves_comments():
+    section("generate._perf_score: saves + comments are now weighted engagement signals")
+    base = {"views": 1000, "watch_through_pct": 0.2, "follows": 2}
+    s_base = G._perf_score(base)
+    # a save (the jellyfish signal) lifts the score above an otherwise-identical video
+    s_saves = G._perf_score({**base, "saves": 60})
+    check(s_saves > s_base, "adding saves raises the perf score")
+    # comments (the turtle signal) also lift it
+    s_comments = G._perf_score({**base, "comments": 30})
+    check(s_comments > s_base, "adding comments raises the perf score")
+    # watch is still the dominant term: a big watch gain beats a big save gain
+    hi_watch = G._perf_score({**base, "watch_through_pct": 0.6})
+    check(hi_watch > s_saves, "watch_through_pct remains the primary signal")
+    # backward-compatible: old entries with no saves/comments never crash and stay 0-safe
+    check(G._perf_score({"views": 100, "watch_through_pct": 0.5}) > 0, "legacy entry still scores")
+    check(G._perf_score({}) == 0.0, "empty entry -> 0.0 (safe)")
+    check(G._perf_score("not a dict") == 0.0, "non-dict entry -> 0.0 (safe)")
+    # the --record CLI aliases map save/comment tokens to the canonical keys
+    check(G.__dict__.get("record_perf") is not None, "record_perf exists")
+
+
+def test_length_ab_mode():
+    section("generate: A/B video length — short vs long word window (analytics-driven)")
+    # forced modes resolve to the intended windows (SHORT is tighter for completion%)
+    check(G._resolve_length_mode.__call__() in ("short", "long"), "auto resolves to a valid mode")
+    _saved = os.environ.get("LENGTH_MODE")
+    try:
+        os.environ["LENGTH_MODE"] = "short"
+        check(G._resolve_length_mode() == "short", "LENGTH_MODE=short forces short")
+        os.environ["LENGTH_MODE"] = "long"
+        check(G._resolve_length_mode() == "long", "LENGTH_MODE=long forces long")
+    finally:
+        if _saved is None:
+            os.environ.pop("LENGTH_MODE", None)
+        else:
+            os.environ["LENGTH_MODE"] = _saved
+    # the window this test run pinned (long) must be the proven 85-115 completion band
+    check((G.WORD_HARD_LO, G.WORD_HARD_HI) == (85, 115), "long hard window is 85-115")
+    check(G.WORD_LO < G.WORD_HI <= G.WORD_HARD_HI and G.WORD_HARD_LO <= G.WORD_LO,
+          "word bounds are ordered (hard_lo <= target_lo < target_hi <= hard_hi)")
+    # a SHORT-length script (~63 words) must PASS a short-window validate and be
+    # REJECTED by the long window — proving the A/B actually changes the gate.
+    short_scenes = [{"id": i, "voiceover": "Here is one genuinely surprising true fact about it."}
+                    for i in range(1, 8)]  # 7 scenes x 9 words = 63 words
+    _bak = (G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI)
+    try:
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = 58, 74, 50, 80
+        wc = sum(len(s["voiceover"].split()) for s in short_scenes)
+        check(G.WORD_HARD_LO <= wc <= G.WORD_HARD_HI, f"a ~{wc}-word script fits the SHORT window")
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = 95, 110, 85, 115
+        check(not (G.WORD_HARD_LO <= wc <= G.WORD_HARD_HI), f"the same ~{wc}-word script is too short for LONG")
+    finally:
+        G.WORD_LO, G.WORD_HI, G.WORD_HARD_LO, G.WORD_HARD_HI = _bak
+
+
+def test_fal_gap_fill_gating():
+    section("main: fal AI-video gap-fill — subject-anchored prompt + cost gating (no network)")
+    # prompt anchors on the literal SUBJECT (search_query), never the metaphor, and
+    # guards against burned-in text/watermark — the render-160 relevance fix.
+    sc = {"search_query": "pluto dwarf planet space",
+          "voiceover": "Your great-grandparents saw its journey begin."}
+    p = M._fal_prompt(sc)
+    check(p.startswith("pluto dwarf planet space"), f"fal prompt leads with the subject ({p[:40]!r})")
+    check("no text" in p and "no watermark" in p, "fal prompt guards against burned-in text/watermark")
+    check(M._fal_prompt({"search_query": "", "voiceover": "just this"}).startswith("just this"),
+          "falls back to the voiceover when there is no subject")
+    # cost gate: the ONLY thing that lets fal spend. No key => never spends (free
+    # tier byte-for-byte unchanged); at the per-video cap => stops.
+    _k, _n, _cap = M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS
+    try:
+        M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = "", 0, 2
+        check(M._fal_can_spend() is False, "no FAL_KEY -> never spends (feature is a no-op)")
+        M.FAL_KEY = "x"
+        check(M._fal_can_spend() is True, "key present and under cap -> may spend")
+        M.FAL_VIDEO_SCENES = 2
+        check(M._fal_can_spend() is False, "at the per-video cap -> stops spending")
+    finally:
+        M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
 
 
 def test_subclip_plan():
@@ -815,8 +906,11 @@ def test_429_wait_and_retry_helpers():
     check(G._is_weak_model("cerebras", "gemma-4-31b") is True, "cerebras gemma is weak")
     check(G._is_weak_model("groq", "llama-3.3-70b-versatile") is False, "groq 70b is a primary writer")
     check(G._is_weak_model("gemini", "gemini-flash-latest") is False, "gemini is a primary writer")
-    check(G._is_weak_model("openrouter", "meta-llama/llama-3.3-70b-instruct:free") is False,
+    check(G._is_weak_model("openrouter", "meta-llama/llama-3.3-70b-instruct") is False,
           "openrouter 70b is a primary writer")
+    # the discontinued free slug must NOT be the default any more (paid credits now)
+    check(all(":free" not in m for m in G.OPENROUTER_MODELS),
+          "openrouter default slug is the PAID llama-3.3-70b (no dead :free slug)")
     check(G._is_weak_model("github", "gpt-4o-mini") is False, "github gpt-4o-mini is a primary writer")
     # _parse_retry_secs: parse the per-minute wait hint each provider gives
     check(abs(G._parse_retry_secs("Please try again in 11.83s.") - 11.83) < 1e-6,
@@ -858,6 +952,9 @@ def main():
     test_draft_is_weak()
     test_cover_headline()
     test_variant_queries()
+    test_perf_saves_comments()
+    test_length_ab_mode()
+    test_fal_gap_fill_gating()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [render]
   workflow_dispatch:
+    inputs:
+      length_mode:
+        description: "video length: auto (A/B alternate) | long (~40-46s) | short (~28-32s)"
+        default: "auto"
   schedule:
     # Once a day, 13:00 UTC. The "science" profile's intended posting window
     # is evening (7-10pm) in its audience's local time (see profiles.py
@@ -128,6 +132,13 @@ jobs:
           # (stronger than Cerebras' free model) on a separate daily bucket.
           # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # OpenRouter WRITER MODEL. The free llama-3.3-70b overshoots the word cap
+          # and returns empty bodies (renders 161-165 aborted on it, 1 clean in 5).
+          # With paid credits we use a stronger model that follows the length/format
+          # rules and clears the quality floor reliably. Env-overridable via a repo
+          # Variable (Settings -> Variables -> OPENROUTER_MODEL) with no code change;
+          # default gpt-4o. Cheaper strong alt: deepseek/deepseek-chat.
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'openai/gpt-4o' }}
           # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
           # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
           # mistral-small on their free tiers). Optional — absent keys are simply
@@ -161,6 +172,12 @@ jobs:
           # generation (usually transient Groq rate-limit/quota) must instead
           # retry once, then ABORT the whole run: no render, no release, no
           # duplicate. The daily cron simply tries again next time.
+          # A/B video length: a manual dispatch can force long/short via the
+          # length_mode input; cron/repository_dispatch send no input so this is
+          # empty → generate.py defaults to "auto" (alternate per render). SHORT
+          # currently scores weaker payoffs, so verification renders force "long".
+          export LENGTH_MODE="${{ github.event.inputs.length_mode || 'auto' }}"
+          echo "[length] LENGTH_MODE=$LENGTH_MODE"
           if python generate.py --dequeue manifest.json; then
             echo "rendering a pre-generated manifest from the buffer (no LLM used)"
           else
@@ -221,6 +238,15 @@ jobs:
           # music bed for every render — overrides the bundled loop, no file commit
           # needed. Leave unset to use the committed per-profile track.
           MUSIC_URL:           ${{ vars.MUSIC_URL }}
+          # AI-VIDEO GAP-FILL (fal.ai): when a scene's stock footage is off-topic or
+          # missing, generate an ON-TOPIC AI video clip instead. Fires ONLY on weak
+          # scenes and is capped at FAL_MAX_CLIPS/video, so cost is a few cents on the
+          # occasional abstract topic and $0 on topics with good stock. No secret set
+          # => the feature is a no-op (free-tier behaviour unchanged).
+          FAL_KEY:             ${{ secrets.FAL_KEY }}
+          # optional overrides (no code edit): swap the t2v model or the per-video cap.
+          FAL_VIDEO_MODEL:     ${{ vars.FAL_VIDEO_MODEL }}
+          FAL_MAX_CLIPS:       ${{ vars.FAL_MAX_CLIPS }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
@@ -318,6 +344,20 @@ jobs:
           gh release create "$VID" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || echo "release publish skipped"
+
+      - name: Push draft to Publer (direct API, optional)
+        # DIRECT replacement for the "Release -> Zapier -> Publer" hop, which stalls
+        # whenever Zapier's free task cap or Publer OAuth expires. Dormant unless the
+        # PUBLER_* secrets are set (publish_publer.py exits 0 as a no-op), so nothing
+        # changes for anyone not on Publer's Business plan. Never fails the run — the
+        # video is already on the Release regardless.
+        if: success()
+        env:
+          PUBLER_API_KEY:      ${{ secrets.PUBLER_API_KEY }}
+          PUBLER_WORKSPACE_ID: ${{ secrets.PUBLER_WORKSPACE_ID }}
+          PUBLER_ACCOUNT_IDS:  ${{ vars.PUBLER_ACCOUNT_IDS }}
+          PUBLER_STATE:        ${{ vars.PUBLER_STATE }}
+        run: python publish_publer.py out/final.mp4 out/release_body.md || true
 
       - name: Notify n8n (optional)
         if: always()
