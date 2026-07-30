@@ -1,87 +1,70 @@
 {
-  "title": "Pluto's Eternal Orbit",
-  "viewer_job": "REFRAME",
-  "keyword": "bending time",
-  "metaphor": "cosmic scale",
-  "hook": "Your great-grandparents saw Pluto's start, but it won't finish?",
-  "hook_headline": "PLUTO'S 248 YEAR WAIT",
-  "script": "Your great-grandparents saw Pluto's start, but it won't finish? What if a whole planet hadn't finished one 'year' since they were young? Pluto takes a long time to circle the Sun. Its highly eccentric orbit is due to Neptune's gravitational influence. The same physics that makes Pluto's orbit so long also means it overlaps with Neptune's for about 20 years. This delayed completion has real consequences for astronomers, as it means the New Horizons spacecraft will be the only one to visit Pluto until at least the 22nd century. Pluto won't complete its orbit until 2178, leaving us to wonder about the vastness of time.",
+  "title": "Time's Hidden Gap",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "deep time",
+  "metaphor": "dinosaur timeline",
+  "hook": "Tyrannosaurus rex is closer to you",
+  "hook_headline": "DINOSAURS OUT OF TIME",
+  "script": "Tyrannosaurus rex is closer to you What if a T. rex met a Stegosaurus? Stegosaurus lived around 155 million years ago The time gap between them is roughly the same as from the first flowers to now Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Your great-grandparents saw Pluto's start, but it won't finish?",
-      "on_screen_text": "Pluto's Orbit",
-      "search_query": "pluto planet",
+      "voiceover": "Tyrannosaurus rex is closer to you",
+      "on_screen_text": "Deep Time",
+      "search_query": "T rex fossil",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if a whole planet hadn't finished one 'year' since they were young?",
-      "on_screen_text": "Bending Time",
-      "search_query": "dwarf planet",
-      "motion": "static"
+      "voiceover": "What if a T. rex met a Stegosaurus?",
+      "on_screen_text": "Dino Meet",
+      "search_query": "Stegosaurus illustration",
+      "motion": "pan"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Pluto takes a long time to circle the Sun.",
-      "on_screen_text": "Cosmic Scale",
-      "search_query": "space orbit",
-      "motion": "zoom_in"
+      "voiceover": "Stegosaurus lived around 155 million years ago",
+      "on_screen_text": "Ancient Era",
+      "search_query": "prehistoric landscape art",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Its highly eccentric orbit is due to Neptune's gravitational influence.",
-      "on_screen_text": "Neptune's Pull",
-      "search_query": "neptune planet",
-      "motion": "zoom_out"
+      "voiceover": "The time gap between them is roughly the same as from the first flowers to now",
+      "on_screen_text": "Time Gap",
+      "search_query": "flowering plants evolution",
+      "motion": "static"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The same physics that makes Pluto's orbit so long also means it overlaps with Neptune's for about 20 years.",
-      "on_screen_text": "Orbital Overlap",
-      "search_query": "pluto neptune",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 6,
-      "duration": 4,
-      "voiceover": "This delayed completion has real consequences for astronomers, as it means the New Horizons spacecraft will be the only one to visit Pluto until at least the 22nd century.",
-      "on_screen_text": "Astronomical Wait",
-      "search_query": "new horizons pluto",
-      "motion": "rotate"
-    },
-    {
-      "id": 7,
-      "duration": 4,
-      "voiceover": "Pluto won't complete its orbit until 2178, leaving us to wonder about the vastness of time.",
-      "on_screen_text": "Vastness of Time",
-      "search_query": "pluto orbit",
-      "motion": "zoom_out"
+      "voiceover": "Tyrannosaurus rex lived 66 million years ago, and if Earth's history were a 24-hour clock, T. rex would have lived at 11:55 PM",
+      "on_screen_text": "Dino Clock",
+      "search_query": "dinosaur skeleton museum",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "What if Pluto's orbit could teach us about time? Will you share this with someone who loves space?",
-    "Pluto's highly eccentric orbit is a reminder of the complexity of our solar system.",
-    "The next time you look up at the night sky, remember Pluto's eternal journey."
+    "Did you know T. rex is closer to you than Stegosaurus? #deeptime",
+    "The hidden gap in time",
+    "Mind-bending dinosaur facts"
   ],
   "hashtags": [
-    "#space",
-    "#pluto",
-    "#astronomy",
     "#science",
-    "#facts"
+    "#dinosaurs",
+    "#deeptime",
+    "#paleontology"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-26_pluto-s-eternal-orbit",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-07-29_time-s-hidden-gap",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "deep_time"
 }
