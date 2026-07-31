@@ -1086,6 +1086,17 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   For a rainbow, "this is why a rainbow has no bottom — and why you can never reach the end of one"
   beats "everyone sees their own private rainbow". Ask: does the payoff give the viewer a crisp new
   thing they can repeat to a friend? If it's a vague feeling, replace it with the concrete fact behind it.
+- PAYOFF IS AN IDEA, NOT A NUMBER (the #1 reason scripts get rejected — most rejected drafts fail HERE,
+  not on hook or clarity): a raw statistic is NOT a payoff, even an impressive one. WEAK payoff: "Mount
+  Everest is 8,849 meters tall." / "That's 37 trillion cells." / "It happens 100,000 times a day." Those
+  are facts, and a smart viewer just shrugs at a number. The payoff must be the REFRAME — what that fact
+  changes about how the viewer sees the thing. STRONG payoff (same topic): "the rock at Everest's summit
+  is limestone packed with fossil seashells — the highest point on Earth used to be the floor of an
+  ocean." Before writing the final scene, run this test: strip out every number — is there still a
+  mind-bending IDEA left standing on its own? If the answer is no, you don't have a payoff yet; find the
+  mechanism or implication behind the number and end on THAT instead. This applies with extra force in a
+  SHORT ~30s video — do not let a tight word budget push you toward closing on a stat because it's the
+  fastest way to end the scene.
 - The ending must LAND on this video's assigned ending style (see ENDING section below). Do NOT
   trail off, restate the premise, or stack two different endings together.
 
