@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-23_what-happens-if-you-re-thrown-into-space",
-      "metaphor": "science fiction reality",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "What Happens If You're Thrown Into Space?",
-      "fact_id": "human_vacuum",
-      "domain": "space",
-      "hook": "If an airlock burst, what would happen to you?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-23_the-metal-that-melts-in-your-hand",
       "metaphor": "strange reality",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -338,6 +314,31 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.14
+      }
+    },
+    {
+      "video_id": "science_2026-07-31_the-secret-language-of-trees",
+      "metaphor": "hidden tree networks",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "The Secret Language of Trees",
+      "fact_id": "tree_communication",
+      "domain": "nature",
+      "hook": "Your backyard trees are secretly talking to each other.",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.29
       }
     }
   ]

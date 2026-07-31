@@ -1,103 +1,79 @@
 {
-  "title": "Continents in Motion",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "continental drift",
-  "metaphor": "moving continents mystery",
-  "hook": "The Atlantic Ocean is growing as fast as your fingernails.",
-  "hook_headline": "GROWING OCEAN",
-  "script": "The Atlantic Ocean is growing as fast as your fingernails. But is the distance between New York and London fixed? No. The seafloor between them splits open a little more each year. This widening is caused by seafloor spreading at the Mid-Atlantic Ridge. There, tectonic plates are pulled apart by mantle convection currents. As a result, magma rises to form new oceanic crust. Over 100 million years, this has added about 2,500 kilometers to the ocean's width. Iceland sits right on this crack, where you can stand on two continents. This silent drift hints at Earth's restless nature, shifting slowly beneath our feet.",
+  "title": "The Secret Language of Trees",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "tree communication",
+  "metaphor": "hidden tree networks",
+  "hook": "Your backyard trees are secretly talking to each other.",
+  "hook_headline": "TREES ARE TALKING",
+  "script": "Your backyard trees are secretly talking to each other. An underground network of fungi, called mycorrhizal networks, links them up. This network can stretch 500 kilometers in just a cubic meter of soil. Older 'Mother Trees' act as hubs, feeding their young saplings up to 30 meters away. Trees even warn each other of threats, like insect attacks, through chemical signals. Could our communication systems become as resilient as a forest's? What would you choose, a world with tree-like networks or without?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "The Atlantic Ocean is growing as fast as your fingernails.",
-      "on_screen_text": "Growing Ocean",
-      "search_query": "ocean waves aerial",
+      "voiceover": "Your backyard trees are secretly talking to each other.",
+      "on_screen_text": "Trees are talking",
+      "search_query": "tree communication",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 6,
-      "voiceover": "But is the distance between New York and London fixed?",
-      "on_screen_text": "Distance Changing?",
-      "search_query": "mid atlantic ridge",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "An underground network of fungi, called mycorrhizal networks, links them up.",
+      "on_screen_text": "Fungi networks",
+      "search_query": "fungi networks",
+      "motion": "zoom_in"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "No. The seafloor between them splits open a little more each year.",
-      "on_screen_text": "Seafloor Splitting",
-      "search_query": "tectonic rift landscape",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "This network can stretch 500 kilometers in just a cubic meter of soil.",
+      "on_screen_text": "500 km span",
+      "search_query": "root systems",
+      "motion": "static"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "This widening is caused by seafloor spreading at the Mid-Atlantic Ridge.",
-      "on_screen_text": "Seafloor Spreading",
-      "search_query": "mid atlantic ridge",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "Older 'Mother Trees' act as hubs, feeding their young saplings up to 30 meters away.",
+      "on_screen_text": "Mother Trees",
+      "search_query": "mother tree",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "There, tectonic plates are pulled apart by mantle convection currents.",
-      "on_screen_text": "Tectonic Plates",
-      "search_query": "cracked earth ground",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 6,
-      "duration": 6,
-      "voiceover": "As a result, magma rises to form new oceanic crust.",
-      "on_screen_text": "New Crust Forms",
-      "search_query": "volcanic lava flow",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 7,
-      "duration": 6,
-      "voiceover": "Over 100 million years, this has added about 2,500 kilometers to the ocean's width.",
-      "on_screen_text": "Ocean Expands",
-      "search_query": "ocean waves aerial",
-      "motion": "zoom_in"
-    },
-    {
-      "id": 8,
-      "duration": 6,
-      "voiceover": "Iceland sits right on this crack, where you can stand on two continents.",
-      "on_screen_text": "Iceland Rift",
-      "search_query": "iceland rift valley",
+      "duration": 5,
+      "voiceover": "Trees even warn each other of threats, like insect attacks, through chemical signals.",
+      "on_screen_text": "Chemical warnings",
+      "search_query": "chemical signals trees",
       "motion": "zoom_out"
     },
     {
-      "id": 9,
-      "duration": 6,
-      "voiceover": "This silent drift hints at Earth's restless nature, shifting slowly beneath our feet.",
-      "on_screen_text": "Earth's Movement",
-      "search_query": "earth landscape aerial",
-      "motion": "static"
+      "id": 6,
+      "duration": 5,
+      "voiceover": "Could our communication systems become as resilient as a forest's? What would you choose, a world with tree-like networks or without?",
+      "on_screen_text": "Your choice?",
+      "search_query": "resilient communication systems",
+      "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Continental drift at fingernail speed \u2014 did you know?",
-    "Iceland straddles two continents!",
-    "Seafloor spreading changes the world."
+    "Did you know trees communicate? Yes or no?",
+    "How would tree-like networks change our world?",
+    "Could nature's networks inspire new technology?"
   ],
   "hashtags": [
-    "#earth",
-    "#geology",
-    "#ocean",
-    "#sciencefacts",
-    "#tectonics"
+    "#nature",
+    "#fungi",
+    "#forests",
+    "#ecology",
+    "#trees"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-30_continents-in-motion",
-  "cta_style": "LOOP",
-  "domain": "geology"
+  "video_id": "science_2026-07-31_the-secret-language-of-trees",
+  "cta_style": "COMMENT",
+  "domain": "nature"
 }
