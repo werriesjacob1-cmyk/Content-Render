@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-23_the-metal-that-melts-in-your-hand",
-      "metaphor": "strange reality",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "COMMENT",
-      "hook_frame": "SCALE_SHOCK",
-      "title": "The Metal That Melts in Your Hand",
-      "fact_id": "gallium_melts_hand",
-      "domain": "materials",
-      "hook": "Imagine holding a metal that melts in your hand.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 7.0,
-        "rewatch": 5.0,
-        "clarity": 8.0,
-        "overall": 6.83
-      }
-    },
-    {
       "video_id": "science_2026-07-24_the-tallest-mountain-a-surprising-perspe",
       "metaphor": "mountain height mystery",
       "viewer_job": "REFRAME",
@@ -339,6 +315,31 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.29
+      }
+    },
+    {
+      "video_id": "science_2026-07-31_the-alien-anatomy-of-octopuses",
+      "metaphor": "alien ocean creatures",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "The Alien Anatomy of Octopuses",
+      "fact_id": "octopus_three_hearts",
+      "domain": "animals",
+      "hook": "An octopus' heart stops every time it swims. How?",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.71
       }
     }
   ]
