@@ -1880,6 +1880,36 @@ CURRENT_VIBE = "awe"   # set by _apply_vibe() at the top of main(); read here, n
 CAPTION_INTENSITY = {"chaotic": 1.4, "tense": 1.15, "visceral": 1.2,
                       "eerie": 0.75, "peaceful": 0.65, "awe": 1.0}
 
+# The 5th and final vibe-matched piece: the music bed itself. Deliberately
+# NOT a new track library (none exists to draw from tonight) -- this tunes the
+# mix filter applied to whatever track is already playing (committed
+# music_science.mp3, MUSIC_URL, or the synthesized pad), the same way a real
+# mix engineer rides EQ/level per scene mood. Kept conservative on purpose:
+# only volume + a single highpass/lowpass, no reverb/echo effects that could
+# sound bad without a human ear tuning them live.
+VIBE_MUSIC_FX = {
+    "chaotic":  {"vol_mult": 1.15, "extra": "highpass=f=90"},
+    "tense":    {"vol_mult": 1.05, "extra": "highpass=f=60"},
+    "visceral": {"vol_mult": 1.05, "extra": ""},
+    "eerie":    {"vol_mult": 0.88, "extra": "lowpass=f=3200"},
+    "peaceful": {"vol_mult": 0.85, "extra": "lowpass=f=4200"},
+    "awe":      {"vol_mult": 1.0,  "extra": ""},
+}
+
+
+def _vibe_music_filter():
+    """ffmpeg audio-filter fragment (no brackets/labels — caller wraps it) for
+    the music bed, scaled by CURRENT_VIBE: chaotic/tense brighten and sit a
+    touch louder; peaceful/eerie warm (lowpass) and sit a touch quieter, so the
+    MIX itself carries the mood, not just footage/grade/captions. 'awe' is
+    volume-only, functionally identical to the pre-vibe behavior (same value,
+    just always explicitly formatted). Pure/testable."""
+    fx = VIBE_MUSIC_FX.get(CURRENT_VIBE, VIBE_MUSIC_FX["awe"])
+    parts = [f"volume={PROFILE['music_vol'] * fx['vol_mult']:.4f}"]
+    if fx["extra"]:
+        parts.append(fx["extra"])
+    return ",".join(parts)
+
 
 def _fal_prompt(scene):
     """Cinematic text-to-video prompt built from the scene's literal SUBJECT
@@ -3033,9 +3063,9 @@ def main():
     ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
     bed_path = _ensure_music_bed(body_dur)
     if bed_path:
-        print(f"[music] mixing bed under voice ({os.path.basename(bed_path)})")
+        print(f"[music] mixing bed under voice ({os.path.basename(bed_path)}, vibe={CURRENT_VIBE})")
         ff_inputs += ["-stream_loop", "-1", "-i", bed_path]
-        filt.append(f"[{idx}:a]volume={PROFILE['music_vol']}[m]")
+        filt.append(f"[{idx}:a]{_vibe_music_filter()}[m]")
         labels.append("[m]"); idx += 1
     else:
         print("[music] no bed this run — narration only")

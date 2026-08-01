@@ -1147,6 +1147,40 @@ def test_vibe_matched_captions():
         M._KEYWORD_TOKENS = _kw_bak
 
 
+def test_vibe_music_filter():
+    section("main._vibe_music_filter: music mix (volume/EQ) follows CURRENT_VIBE")
+    _vibe_bak, _profile_bak = M.CURRENT_VIBE, dict(M.PROFILE)
+    try:
+        check(set(M.VIBE_MUSIC_FX.keys()) == set(M.VIBE_TWEAKS.keys()),
+              "every vibe has a music-mix entry")
+        M.PROFILE["music_vol"] = 0.14
+
+        M.CURRENT_VIBE = "awe"
+        awe_mix = M._vibe_music_filter()
+        check(awe_mix == "volume=0.1400", "'awe' (vol_mult 1.0, no extra) is volume-only -- "
+              "functionally identical to the pre-vibe hardcoded filter, no regression")
+
+        M.CURRENT_VIBE = "chaotic"
+        chaotic_mix = M._vibe_music_filter()
+        check(chaotic_mix != awe_mix, "chaotic produces a DIFFERENT music mix than awe")
+        check(chaotic_mix == "volume=0.1610,highpass=f=90",
+              "chaotic sits louder (0.14*1.15=0.161) and brighter (highpass)")
+
+        M.CURRENT_VIBE = "peaceful"
+        peaceful_mix = M._vibe_music_filter()
+        check(peaceful_mix != awe_mix, "peaceful produces a DIFFERENT music mix than awe")
+        check(peaceful_mix == "volume=0.1190,lowpass=f=4200",
+              "peaceful sits quieter (0.14*0.85=0.119) and warmer (lowpass)")
+
+        # unknown/missing vibe must never crash the mix -- falls back to 'awe'
+        M.CURRENT_VIBE = "not_a_real_vibe"
+        check(M._vibe_music_filter() == awe_mix, "unknown CURRENT_VIBE falls back to 'awe' mix, no crash")
+    finally:
+        M.CURRENT_VIBE = _vibe_bak
+        M.PROFILE.clear()
+        M.PROFILE.update(_profile_bak)
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1228,6 +1262,7 @@ def main():
     test_fal_gap_fill_gating()
     test_apply_vibe()
     test_vibe_matched_captions()
+    test_vibe_music_filter()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
