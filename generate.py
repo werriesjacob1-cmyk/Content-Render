@@ -1187,6 +1187,13 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
   close up"; "Saturn rings", not "planet space") — a generic groundhog in a naked-mole-rat video is a miss
   viewers catch instantly. The hook scene and payoff scene MUST name the specific subject; only fall back to
   a generic category/metaphor when it genuinely can't be filmed.
+- LEAD WITH THE FILMABLE NOUN, not a modifier (render 181/184 bugs): "mother tree" and "sea cucumber"
+  put the modifier BEFORE the subject, and a search on just the leading word ("mother", "sea") pulled a
+  human mother-and-child clip and a literal kitchen VEGETABLE instead of the tree/animal. Reorder so the
+  concrete filmable subject comes FIRST: "tree, old growth" not "mother tree"; "sea cucumber animal
+  seafloor" not "sea cucumber" alone (the extra word "animal" breaks the tie with the vegetable). Same
+  fix for any name that doubles as an unrelated common word or object (a "crane" bird vs. a crane; a
+  "ram" the animal vs. to ram) — add a disambiguating word.
 - ONE EXCEPTION — a MANUFACTURED MODEL used only as a COMPARISON PROP (a specific plane, car, ship, phone
   that is NOT the video's real subject): stock can't match an exact model, so a "Boeing 747" line playing
   over a generic Airbus clip breaks trust. For such incidental props, say the GENERIC type in BOTH the
