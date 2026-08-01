@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-25_the-immortal-jellyfish-nature-s-reset-bu",
-      "metaphor": "life cycle reset",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "IMPOSSIBLE_FACT",
-      "title": "The Immortal Jellyfish: Nature\u2019s Reset Button",
-      "fact_id": "immortal_jellyfish",
-      "domain": "animals",
-      "hook": "What if aging could be undone at will?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 6.0,
-        "clarity": 8.0,
-        "overall": 7.33
-      }
-    },
-    {
       "video_id": "science_2026-07-27_the-secret-intelligence-of-plants",
       "metaphor": "Nature's Hidden Minds",
       "viewer_job": "REFRAME",
@@ -342,6 +318,31 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_the-hidden-circle-of-rainbows",
+      "metaphor": "hidden beauty of light",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "The Hidden Circle of Rainbows",
+      "fact_id": "rainbow_circle",
+      "domain": "light",
+      "hook": "A rainbow is a full circle you never see.",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 7.0,
+        "escalation": 6.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.0
       }
     }
   ]

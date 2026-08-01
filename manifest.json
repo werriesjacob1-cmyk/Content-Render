@@ -1,80 +1,79 @@
 {
-  "title": "Cosmic Origins of Gold",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "gold's cosmic birth",
-  "metaphor": "stellar collisions",
-  "hook": "Every gold atom in your ring was born in a cosmic explosion.",
-  "hook_headline": "GOLD'S VIOLENT BIRTH",
-  "script": "Every atom of gold in your jewelry was born from a cosmic collision! Ever wondered if you could trace its roots to the stars? Neutron star collisions unleash energy equal to 1,000 supernovae, forming gold instantly! Picture squeezing all humanity into a sugar cube; that's a neutron star's density! GW170817, the first collision witnessed, confirmed these events forge elements heavier than iron! This gold predates the Sun, born when the fabric of space-time rippled!",
+  "title": "The Hidden Circle of Rainbows",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "full circle rainbow",
+  "metaphor": "hidden beauty of light",
+  "hook": "A rainbow is a full circle you never see.",
+  "hook_headline": "RAINBOW FULL CIRCLE",
+  "script": "A rainbow is a full circle you never see. But what if you could get high enough to see it all? The phenomenon forms at 42 degrees from the antisolar point, directly opposite the sun. Pilots have captured this complete circle from planes flying high above the Atlantic Ocean. It's not just rainbows; fogbows, formed in mist, also reveal hidden beauty. But here's the real twist: every rainbow is a private view, an angle that exists only for you.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Every atom of gold in your jewelry was born from a cosmic collision!",
-      "on_screen_text": "Cosmic Gold",
-      "search_query": "gold jewelry closeup",
+      "voiceover": "A rainbow is a full circle you never see.",
+      "on_screen_text": "full circle",
+      "search_query": "rainbow sky",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "Ever wondered if you could trace its roots to the stars?",
-      "on_screen_text": "Trace Its Origin?",
-      "search_query": "galaxy collision space",
+      "duration": 4,
+      "voiceover": "But what if you could get high enough to see it all?",
+      "on_screen_text": "see it all?",
+      "search_query": "airplane window clouds",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "Neutron star collisions unleash energy equal to 1,000 supernovae, forming gold instantly!",
-      "on_screen_text": "1,000 Supernovae",
-      "search_query": "supernova explosion",
-      "motion": "zoom_in"
+      "duration": 4,
+      "voiceover": "The phenomenon forms at 42 degrees from the antisolar point, directly opposite the sun.",
+      "on_screen_text": "42 degrees",
+      "search_query": "sunset horizon",
+      "motion": "pan_left"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "Picture squeezing all humanity into a sugar cube; that's a neutron star's density!",
-      "on_screen_text": "Star Density",
-      "search_query": "dense star",
+      "duration": 4,
+      "voiceover": "Pilots have captured this complete circle from planes flying high above the Atlantic Ocean.",
+      "on_screen_text": "plane view",
+      "search_query": "pilot cockpit view",
       "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "GW170817, the first collision witnessed, confirmed these events forge elements heavier than iron!",
-      "on_screen_text": "GW170817",
-      "search_query": "neutron star collision",
-      "motion": "zoom_out"
+      "duration": 4,
+      "voiceover": "It's not just rainbows; fogbows, formed in mist, also reveal hidden beauty.",
+      "on_screen_text": "hidden beauty",
+      "search_query": "misty fogbow",
+      "motion": "pan_down"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "This gold predates the Sun, born when the fabric of space-time rippled!",
-      "on_screen_text": "Older Than Sun",
-      "search_query": "molten gold pour",
-      "motion": "static"
+      "duration": 4,
+      "voiceover": "But here's the real twist: every rainbow is a private view, an angle that exists only for you.",
+      "on_screen_text": "private view",
+      "search_query": "personal rainbow",
+      "motion": "zoom_out"
     }
   ],
   "captions": [
-    "gold's cosmic birth? Did you know?",
-    "What if gold is older than the Sun?",
-    "How dense are neutron stars?"
+    "Have you ever seen a complete rainbow circle?",
+    "Would you fly high enough to see it?",
+    "Every rainbow is just for you."
   ],
   "hashtags": [
-    "#science",
-    "#space",
-    "#facts",
-    "#cosmos",
-    "#gold",
-    "#learnontiktok"
+    "#rainbow",
+    "#nature",
+    "#optics",
+    "#weather",
+    "#wonder"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-01_cosmic-origins-of-gold",
-  "cta_style": "LOOP",
-  "domain": "chemistry"
+  "video_id": "science_2026-08-01_the-hidden-circle-of-rainbows",
+  "cta_style": "COMMENT",
+  "domain": "light"
 }
