@@ -543,7 +543,12 @@ CTA_ENDING_RULES = {
     "LOOP": (
         "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line should echo the FEELING or "
         "central image of the hook so a replay feels seamless — but do NOT simply restate the hook's "
-        "fact or repeat its exact words/number. Repeating the opening claim verbatim reads as the "
+        "fact or repeat its exact words/number. Do NOT bolt on an unrelated NEW fact either (a real "
+        "shipped failure: hook was 'an octopus' heart stops every time it swims — how?' and the video "
+        "ended on 'blood chemistry so strange it can cause allergies in humans' — a random trivia "
+        "tidbit with zero connection back to the heart-stopping hook, so the loop never closes). The "
+        "last line must gesture back at the SAME image/question the hook opened, not introduce a "
+        "fresh one. Repeating the opening claim verbatim reads as the "
         "video repeating itself (e.g. a hook about fingernail-growth speed must NOT end by saying "
         "'at the same speed your fingernails grow' again). Instead, land a NEW resonant thought that "
         "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
@@ -1113,7 +1118,11 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   SHORT ~30s video — do not let a tight word budget push you toward closing on a stat because it's the
   fastest way to end the scene.
 - The ending must LAND on this video's assigned ending style (see ENDING section below). Do NOT
-  trail off, restate the premise, or stack two different endings together.
+  trail off, restate the premise, or stack two different endings together. A real shipped failure:
+  "Could our communication systems become as resilient as a forest's? What would you choose, a world
+  with tree-like networks or without?" -- two separate questions back to back (a musing rhetorical one,
+  then a second, different binary one) reads as indecisive, not a clean landing. Pick ONE final line
+  that does the ending style's job and stop there.
 
 SEARCH DISCOVERY (now as important as hashtags):
 - Pick ONE core keyword phrase (what someone would type to find this). It must be PLAIN, everyday
