@@ -1086,10 +1086,28 @@ def test_apply_vibe():
         M._apply_vibe("peaceful")
         check(M.CLIP_SECONDS >= 0.9, "clip seconds floor respected even after a slow-down multiplier")
         check(M.MAX_SUBCLIPS >= 2, "subclip count floor respected even after a negative bonus")
+
+        # CURRENT_VIBE drives the AI hero-shot prompt style (_fal_prompt) --
+        # this is where vibe should be MOST visible, since a hero shot is
+        # bespoke already. Confirm the style descriptor actually changes.
+        check(set(M.VIBE_PROMPT_STYLE.keys()) == set(M.VIBE_TWEAKS.keys()),
+              "every vibe has a matching AI-prompt camera/lighting style")
+        M._apply_vibe("chaotic")
+        p_chaotic = M._fal_prompt({"search_query": "volcano eruption"})
+        M._apply_vibe("peaceful")
+        p_peaceful = M._fal_prompt({"search_query": "volcano eruption"})
+        check("volcano eruption" in p_chaotic and "volcano eruption" in p_peaceful,
+              "the literal subject is preserved regardless of vibe")
+        check(p_chaotic != p_peaceful, "chaotic vs peaceful produce DIFFERENT AI-video prompts")
+        check("erratic" in p_chaotic or "energy" in p_chaotic, "chaotic prompt reads energetic")
+        check("gentle" in p_peaceful or "calm" in p_peaceful, "peaceful prompt reads calm")
+        check("no watermark" in p_chaotic and "no watermark" in p_peaceful,
+              "the no-text/watermark guard survives vibe styling on both")
     finally:
         M.PROFILE.clear()
         M.PROFILE.update(_profile_bak)
         M.CLIP_SECONDS, M.MAX_SUBCLIPS = _clip_bak, _sub_bak
+        M.CURRENT_VIBE = "awe"
 
 
 def test_subclip_plan():

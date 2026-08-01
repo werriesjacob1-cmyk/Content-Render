@@ -1853,14 +1853,34 @@ def _fal_can_spend():
     return bool(FAL_KEY) and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
 
 
+# Camera/lighting descriptors per VIBE (see VIBE_TWEAKS above) so the AI hero
+# shots — the two clips in every video actually made FOR that video, not found
+# on a stock site — visibly carry the topic's mood instead of defaulting to
+# one generic "cinematic footage" look regardless of subject. This is where
+# vibe should show up most: a hero shot is bespoke already, so it's the
+# cheapest place to make the mood-match land.
+VIBE_PROMPT_STYLE = {
+    "chaotic":  "fast erratic handheld camera motion, high energy, intense saturated lighting",
+    "tense":    "slow creeping camera push-in, tight framing, dim moody lighting, suspenseful atmosphere",
+    "visceral": "extreme close-up detail, raw tactile texture, slightly unsettling intimate framing",
+    "eerie":    "slow drifting camera, desaturated cold light, misty atmosphere, quiet unsettling stillness",
+    "peaceful": "slow gentle drift, soft warm natural light, calm serene atmosphere",
+    "awe":      "sweeping majestic camera movement, epic scale, golden dramatic lighting",
+}
+CURRENT_VIBE = "awe"   # set by _apply_vibe() at the top of main(); read here, not threaded
+                        # through every function signature (same pattern as _last_motion_kind).
+
+
 def _fal_prompt(scene):
     """Cinematic text-to-video prompt built from the scene's literal SUBJECT
     (search_query, NOT the metaphorical voiceover — the same anchoring rule that
-    keeps stock footage on-topic), with explicit no-text/no-watermark guards.
-    Pure/testable."""
+    keeps stock footage on-topic), styled by the video's CURRENT_VIBE so the
+    two AI hero shots carry the topic's mood, with explicit no-text/no-watermark
+    guards. Pure/testable."""
     subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
-    return (f"{subject}. Realistic cinematic footage, smooth camera motion, natural "
-            f"lighting, high detail, no text, no words, no captions, no watermark, no logo.")
+    style = VIBE_PROMPT_STYLE.get(CURRENT_VIBE, VIBE_PROMPT_STYLE["awe"])
+    return (f"{subject}. Realistic cinematic footage, {style}, natural lighting, high detail, "
+            f"no text, no words, no captions, no watermark, no logo.")
 
 
 def _fal_video(scene, dest):
@@ -1893,7 +1913,20 @@ def _fal_video(scene, dest):
         _download(url, dest)
         if (ffprobe_dur(dest) or 0) < 0.5:
             return False
+        # SANITY CHECK before shipping a paid clip: a generation can succeed at
+        # the API level (a playable file comes back) yet be garbage -- a black/
+        # near-blank frame from a glitched or safety-filtered generation. Reuse
+        # the same luma probe that already guards stock footage rather than a
+        # new vision call (cheap, already proven, no extra latency/cost). The
+        # spend still counts against FAL_MAX_CLIPS either way (the API call
+        # already happened — money was spent) so a run of bad generations can't
+        # retry past the per-video budget; it just falls back to real stock
+        # instead of shipping something broken.
         FAL_VIDEO_SCENES += 1
+        if _clip_too_dark(dest):
+            print(f"  [fal] clip for '{subject[:40]}' came back too dark/broken "
+                  f"({FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} spent) — falling back to stock")
+            return False
         print(f"  [fal] AI video clip {FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} for "
               f"'{subject[:40]}' via {FAL_VIDEO_MODEL}")
         return True
@@ -1966,7 +1999,8 @@ def _apply_vibe(vibe):
     nudged. Unknown/missing vibe -> the 'awe' entry, all deltas zero (identical
     to pre-vibe behavior). Returns (clip_seconds, max_subclips) for easy
     testing without needing to re-read the mutated globals."""
-    global CLIP_SECONDS, MAX_SUBCLIPS
+    global CLIP_SECONDS, MAX_SUBCLIPS, CURRENT_VIBE
+    CURRENT_VIBE = vibe if vibe in VIBE_TWEAKS else "awe"
     t = VIBE_TWEAKS.get(vibe, VIBE_TWEAKS["awe"])
     PROFILE["grade"] = PROFILE["grade"] + (
         f",eq=contrast={1 + t['contrast']:.3f}:saturation={1 + t['saturation']:.3f}:"
@@ -3030,7 +3064,11 @@ def main():
                    "cta_style": m.get("cta_style", ""),
                    # hook + domain feed funnel.py (topic-matched affiliate angle,
                    # pinned comment, newsletter blurb — see repackage.py).
-                   "hook": m.get("hook", ""), "domain": m.get("domain", "")}, f, indent=2)
+                   "hook": m.get("hook", ""), "domain": m.get("domain", ""),
+                   # vibe carried through so record_perf can log it alongside real
+                   # engagement in perf_<page>.json — without this, "does the vibe
+                   # system actually help" is unanswerable once data comes in.
+                   "vibe": m.get("vibe", "")}, f, indent=2)
     # COVER: designed thumbnail off the CLEAN video (no burned captions) so the
     # profile grid shows a bold hook, never a black tile. Prefer the FIRST scene's
     # footage — the hook is always anchored to the video's primary SUBJECT, so the

@@ -3160,6 +3160,7 @@ def main():
         "fact_id": chosen_fact["id"] if chosen_fact else None,
         "domain": chosen_fact.get("domain") if chosen_fact else None,
         "hook": manifest.get("hook", ""),
+        "vibe": manifest.get("vibe", ""),
         "structure": {
             "scene_count": len(manifest.get("scenes", [])),
             "used_whatif": bool(chosen_fact and chosen_fact.get("whatif")),
