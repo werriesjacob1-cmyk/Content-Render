@@ -2144,24 +2144,6 @@
       ]
     },
     {
-      "id": "mushroom_networks",
-      "domain": "biology",
-      "fact": "Mushrooms can connect trees and plants through underground networks, allowing them to share nutrients and information. This network can even help plants warn each other of potential threats.",
-      "angle": "Hidden connections",
-      "key_terms": [
-        "mushroom",
-        "networks",
-        "plants"
-      ],
-      "whatif": "What if these networks could be used to create more resilient ecosystems? Could we use them to help plants adapt to changing environments?",
-      "wow": "Some of these networks can cover hundreds of acres, making them some of the largest living organisms on the planet.",
-      "queries": [
-        "mushroom mycelium",
-        "plant networks",
-        "forest fungi"
-      ]
-    },
-    {
       "id": "forgotten_senses",
       "domain": "senses",
       "fact": "Humans have a forgotten sense that allows us to detect the Earth's magnetic field. This sense is thought to be linked to the way some animals migrate.",
@@ -2213,24 +2195,6 @@
         "tree branching patterns",
         "mathematical modeling",
         "forest growth"
-      ]
-    },
-    {
-      "id": "fungal_intelligence",
-      "domain": "biology",
-      "fact": "Fungi can solve mazes and make decisions based on their environment. This intelligence is thought to be linked to the way they grow and adapt to their surroundings.",
-      "angle": "Unconventional intelligence",
-      "key_terms": [
-        "fungal intelligence",
-        "maze solving",
-        "adaptation"
-      ],
-      "whatif": "What if this intelligence could be harnessed to develop new technologies for problem-solving? Could it help us create more efficient and adaptive systems?",
-      "wow": "Some fungi can even infect and control the behavior of insects, using them to help spread their own spores.",
-      "queries": [
-        "fungal intelligence",
-        "maze solving",
-        "insect control"
       ]
     },
     {
@@ -2378,24 +2342,6 @@
       ]
     },
     {
-      "id": "fungal_networks",
-      "domain": "fungi",
-      "fact": "Fungi have vast networks of tiny, branching tendrils that allow them to break down organic matter and absorb nutrients. These networks can cover huge areas and are a key part of many ecosystems.",
-      "angle": "ecology",
-      "key_terms": [
-        "fungal networks",
-        "ecosystems",
-        "nutrient cycling"
-      ],
-      "whatif": "What if we could harness the power of fungal networks to clean up pollutants and restore damaged ecosystems? Could we use them to create more sustainable systems?",
-      "wow": "Some fungal networks are so large that they cover hundreds of acres and are thousands of years old, making them one of the oldest and most extensive living organisms on the planet.",
-      "queries": [
-        "fungal networks",
-        "mycorrhizal fungi",
-        "ecosystem engineering"
-      ]
-    },
-    {
       "id": "deep_time",
       "domain": "geology",
       "fact": "The Earth's history is divided into eons, eras, periods, and epochs, with each unit of time representing a distinct chapter in the planet's development. The Earth is approximately 4.5 billion years old.",
@@ -2411,24 +2357,6 @@
         "geologic time scale",
         "Earth's history",
         "fossil record"
-      ]
-    },
-    {
-      "id": "plant_intelligence",
-      "domain": "botany",
-      "fact": "Plants are capable of complex behaviors such as photosynthesis, growth, and response to stimuli. They can even communicate with each other through underground networks of fungi.",
-      "angle": "botany",
-      "key_terms": [
-        "plant intelligence",
-        "photosynthesis",
-        "fungal networks"
-      ],
-      "whatif": "What if plants are more intelligent than we think, and they have their own way of communicating and interacting with their environment? Could we learn from them and develop new technologies?",
-      "wow": "Some plants can even move their leaves to maximize their exposure to sunlight, and they can release chemical signals to attract pollinators or repel herbivores.",
-      "queries": [
-        "plant intelligence",
-        "photosynthesis",
-        "fungal networks"
       ]
     },
     {
@@ -2468,60 +2396,6 @@
       ]
     },
     {
-      "id": "ecological_balance",
-      "domain": "ecology",
-      "fact": "Ecosystems are complex networks of relationships between species and their environment, and they are essential for maintaining the balance of nature. Human activities can disrupt these ecosystems and have far-reaching consequences.",
-      "angle": "ecology",
-      "key_terms": [
-        "ecological balance",
-        "ecosystems",
-        "conservation"
-      ],
-      "whatif": "What if we could restore damaged ecosystems and maintain the balance of nature? Could we use ecological principles to create sustainable systems and mitigate the effects of climate change?",
-      "wow": "The loss of biodiversity and ecosystem disruption can have devastating consequences, including the collapse of food chains and the spread of diseases.",
-      "queries": [
-        "ecological balance",
-        "ecosystems",
-        "conservation biology"
-      ]
-    },
-    {
-      "id": "microbial_communities",
-      "domain": "ecology",
-      "fact": "Microbes in soil can communicate with each other through complex networks of fungi, allowing them to share nutrients and coordinate behaviors. This network can even connect multiple plants, creating a sort of underground internet.",
-      "angle": "Microbe Internet",
-      "key_terms": [
-        "microbes",
-        "soil",
-        "networks"
-      ],
-      "whatif": "What if these microbial networks could be harnessed to improve crop yields or clean up environmental pollutants? Could we use them to create more sustainable ecosystems?",
-      "wow": "Some of these networks can cover acres of land, making them some of the largest biological networks on the planet.",
-      "queries": [
-        "microbes in soil",
-        "fungal networks",
-        "underground internet"
-      ]
-    },
-    {
-      "id": "bioluminescent_bays",
-      "domain": "botany",
-      "fact": "Certain types of phytoplankton can produce light when disturbed, creating breathtaking displays of bioluminescence in the ocean. This phenomenon can be seen in specific bays around the world, where the water glows like a sea of stars.",
-      "angle": "Glowing Oceans",
-      "key_terms": [
-        "phytoplankton",
-        "bioluminescence",
-        "ocean"
-      ],
-      "whatif": "What if we could harness this bioluminescence to create sustainable lighting solutions for coastal communities? Could it also help us monitor ocean health?",
-      "wow": "Some of these bioluminescent bays can be so bright that they can be seen from space.",
-      "queries": [
-        "bioluminescent bays",
-        "phytoplankton",
-        "glowing oceans"
-      ]
-    },
-    {
       "id": "mycoremediation",
       "domain": "fungi",
       "fact": "Certain species of fungi can be used to clean up environmental pollutants, such as heavy metals and pesticides, through a process called mycoremediation. These fungi can break down toxic substances into harmless compounds.",
@@ -2537,24 +2411,6 @@
         "mycoremediation",
         "fungal remediation",
         "environmental cleanup"
-      ]
-    },
-    {
-      "id": "plant_neurobiology",
-      "domain": "botany",
-      "fact": "Plants have complex nervous systems that allow them to respond to their environment, communicate with other plants, and even exhibit intelligent behavior. This field of study is known as plant neurobiology.",
-      "angle": "Plant Intelligence",
-      "key_terms": [
-        "plant neurobiology",
-        "nervous systems",
-        "intelligence"
-      ],
-      "whatif": "What if we could learn from plant intelligence to develop more sustainable and efficient agricultural practices? Could it also inspire new approaches to artificial intelligence?",
-      "wow": "Some plants can even exhibit a form of 'memory', allowing them to recall and respond to past experiences.",
-      "queries": [
-        "plant neurobiology",
-        "plant intelligence",
-        "nervous systems in plants"
       ]
     },
     {
@@ -2576,24 +2432,6 @@
       ]
     },
     {
-      "id": "ecological_connectivity",
-      "domain": "ecology",
-      "fact": "Ecosystems are complex networks of relationships between species and their environment, with each component playing a vital role in the functioning of the whole. Maintaining ecological connectivity is crucial for preserving biodiversity and ecosystem health.",
-      "angle": "Ecological Networks",
-      "key_terms": [
-        "ecological connectivity",
-        "networks",
-        "biodiversity"
-      ],
-      "whatif": "What if we could restore and maintain ecological connectivity in damaged ecosystems? Could it help us preserve biodiversity and ensure the long-term health of the planet?",
-      "wow": "Some ecosystems can exhibit a form of 'resilience', where they can recover from disturbances and maintain their function, even in the face of climate change.",
-      "queries": [
-        "ecological connectivity",
-        "networks",
-        "biodiversity conservation"
-      ]
-    },
-    {
       "id": "history_of_science",
       "domain": "history",
       "fact": "The history of science is filled with fascinating stories of discovery and innovation, from the ancient Greeks to modern-day breakthroughs. Understanding the history of science can provide valuable insights into the development of scientific thought and practice.",
@@ -2609,168 +2447,6 @@
         "history of science",
         "scientific discovery",
         "innovation"
-      ]
-    },
-    {
-      "id": "botanical_intelligence",
-      "domain": "botany",
-      "fact": "Plants have evolved complex strategies to adapt to their environments, from photosynthesis to defense mechanisms. Studying plant intelligence can provide new insights into the natural world and inspire innovative solutions.",
-      "angle": "Plant Intelligence",
-      "key_terms": [
-        "botanical intelligence",
-        "plant adaptations",
-        "innovation"
-      ],
-      "whatif": "What if we could learn from plant intelligence to develop more sustainable and efficient technologies, such as advanced solar cells or climate-resilient crops?",
-      "wow": "Some plants can even exhibit a form of 'behavior', such as moving their leaves to track the sun or responding to environmental stimuli.",
-      "queries": [
-        "botanical intelligence",
-        "plant adaptations",
-        "innovation"
-      ]
-    },
-    {
-      "id": "phytoplankton_light_producers",
-      "domain": "botany",
-      "fact": "Certain species of phytoplankton can produce light when disturbed, creating a magical glow in the water. This phenomenon is known as bioluminescence and can be used to study the behavior of these microorganisms.",
-      "angle": "Glowing Oceans",
-      "key_terms": [
-        "phytoplankton",
-        "bioluminescence",
-        "ocean glow"
-      ],
-      "whatif": "What if we could harness the power of bioluminescence to create sustainable and eco-friendly lighting systems? Could we use these organisms to monitor and study the health of our oceans?",
-      "wow": "Some phytoplankton can produce light that is visible from space, creating a glowing effect that can be seen by satellites.",
-      "queries": [
-        "phytoplankton bioluminescence",
-        "glowing oceans",
-        "bioluminescent organisms"
-      ]
-    },
-    {
-      "id": "plant_nervous_systems",
-      "domain": "botany",
-      "fact": "Plants have complex nervous systems that allow them to respond to their environment and make decisions. These systems are made up of specialized cells and tissues that can detect and respond to stimuli.",
-      "angle": "Plant Intelligence",
-      "key_terms": [
-        "plant nervous systems",
-        "plant intelligence",
-        "plant behavior"
-      ],
-      "whatif": "What if we could learn from the strategies of plant nervous systems to create more efficient and adaptable technologies? Could we apply these principles to other fields, such as robotics or artificial intelligence?",
-      "wow": "Some plants can detect and respond to sounds, such as the sound of running water or the vibrations of insect wings.",
-      "queries": [
-        "plant nervous systems",
-        "plant intelligence",
-        "plant behavior"
-      ]
-    },
-    {
-      "id": "ecosystem_complexity",
-      "domain": "ecology",
-      "fact": "Ecosystems are complex networks of relationships between species and their environment, with each component interacting and influencing the others. These interactions can create emergent properties and behaviors that are not predictable from the individual components alone.",
-      "angle": "The Web of Life",
-      "key_terms": [
-        "ecosystem complexity",
-        "networks",
-        "emergence"
-      ],
-      "whatif": "What if we could understand and predict the behavior of ecosystems, allowing us to manage and conserve them more effectively? Could we apply these principles to other fields, such as economics or social sciences?",
-      "wow": "Some ecosystems can have over 1 million different species, each playing a unique role in the functioning of the ecosystem.",
-      "queries": [
-        "ecosystem complexity",
-        "networks",
-        "emergence"
-      ]
-    },
-    {
-      "id": "microbe_communication",
-      "domain": "ecology",
-      "fact": "Microbes in soil can communicate with each other through complex networks of chemical signals, allowing them to coordinate their behavior and work together to achieve common goals. This communication can also involve other organisms, such as plants and fungi.",
-      "angle": "The Secret Language of Microbes",
-      "key_terms": [
-        "microbe communication",
-        "soil networks",
-        "chemical signals"
-      ],
-      "whatif": "What if we could learn from the strategies of microbe communication to create more efficient and cooperative systems? Could we apply these principles to other fields, such as agriculture or biotechnology?",
-      "wow": "Some microbes can produce signals that can be detected by plants, allowing them to coordinate their behavior and work together to achieve common goals.",
-      "queries": [
-        "microbe communication",
-        "soil networks",
-        "chemical signals"
-      ]
-    },
-    {
-      "id": "fungi_maze_solvers",
-      "domain": "fungi",
-      "fact": "Fungi can solve mazes and make decisions based on their environment, using a network of tiny, branching tendrils to explore and navigate their surroundings. This ability allows them to optimize their growth and find the most efficient paths to nutrients and resources.",
-      "angle": "The Intelligent Fungus",
-      "key_terms": [
-        "fungal intelligence",
-        "maze-solving",
-        "optimization"
-      ],
-      "whatif": "What if we could learn from the strategies of fungal maze-solving to create more efficient and adaptable algorithms? Could we apply these principles to other fields, such as robotics or computer science?",
-      "wow": "Some fungi can solve mazes in just a few hours, using a network of tiny, branching tendrils to explore and navigate their surroundings.",
-      "queries": [
-        "fungal intelligence",
-        "maze-solving",
-        "optimization"
-      ]
-    },
-    {
-      "id": "plant_memory",
-      "domain": "ecology",
-      "fact": "Plants can remember past experiences and adapt to their environment, allowing them to adjust their growth and behavior accordingly. This is made possible by complex signaling pathways within the plant.",
-      "angle": "plant_intelligence",
-      "key_terms": [
-        "plant",
-        "memory",
-        "adaptation"
-      ],
-      "whatif": "What if plants could teach us new strategies for adapting to our own environments? Could we learn to respond to challenges in a more plant-like way?",
-      "wow": "Some plants can even remember and respond to specific sounds, such as the sound of running water, which can trigger them to grow towards it.",
-      "queries": [
-        "plants growing towards sound",
-        "plant adaptation to environment",
-        "plant intelligence experiments"
-      ]
-    },
-    {
-      "id": "underwater_lakes",
-      "domain": "deep_time",
-      "fact": "There are underwater lakes and rivers that exist beneath the ocean's surface, with their own unique ecosystems and chemistry. These underwater bodies are often filled with saltwater or other fluids that are denser than the surrounding seawater.",
-      "angle": "ocean_secrets",
-      "key_terms": [
-        "underwater",
-        "lakes",
-        "ocean"
-      ],
-      "whatif": "What if these underwater lakes held the key to understanding the origins of life on Earth? Could they provide a window into the planet's ancient past?",
-      "wow": "Some of these underwater lakes are so large that they have their own tides and currents, which can be just as powerful as those found on the surface.",
-      "queries": [
-        "underwater lake footage",
-        "ocean floor lakes",
-        "underwater river systems"
-      ]
-    },
-    {
-      "id": "glowing_forest",
-      "domain": "fungi",
-      "fact": "Certain types of fungi can make forests glow in the dark, due to a process called bioluminescence. This can create an otherworldly atmosphere, with glowing mushrooms and trees lighting up the forest floor.",
-      "angle": "fungi_light",
-      "key_terms": [
-        "fungi",
-        "bioluminescence",
-        "forest"
-      ],
-      "whatif": "What if we could harness the power of bioluminescent fungi to create sustainable lighting solutions for our cities and homes?",
-      "wow": "Some species of bioluminescent fungi can grow in such large quantities that they can illuminate an entire forest, creating a dazzling display of light and color.",
-      "queries": [
-        "glowing forest footage",
-        "bioluminescent fungi",
-        "fungi lighting solutions"
       ]
     },
     {
@@ -2792,42 +2468,6 @@
       ]
     },
     {
-      "id": "plant_communication",
-      "domain": "plants",
-      "fact": "Plants are capable of complex behaviors such as communication, cooperation, and even manipulation of other organisms, despite their lack of a central nervous system. This is made possible by complex signaling pathways and networks within the plant.",
-      "angle": "plant_intelligence",
-      "key_terms": [
-        "plant",
-        "communication",
-        "behavior"
-      ],
-      "whatif": "What if we could learn to communicate with plants in a more effective way, and harness their intelligence to create more sustainable and resilient systems for human society?",
-      "wow": "Some plants can even manipulate the behavior of other organisms, such as attracting pollinators or repelling herbivores, through the release of specific chemical signals.",
-      "queries": [
-        "plant communication experiments",
-        "plant behavior",
-        "plant intelligence research"
-      ]
-    },
-    {
-      "id": "deep_time_fossils",
-      "domain": "deep_time",
-      "fact": "Fossils of ancient creatures can be found in the most unexpected places, including in rocks that are over a billion years old. These fossils provide a window into the past, allowing us to learn about the evolution of life on Earth.",
-      "angle": "ancient",
-      "key_terms": [
-        "fossils",
-        "ancient creatures",
-        "evolution"
-      ],
-      "whatif": "What if we could use these fossils to learn about the conditions on Earth billions of years ago? Could we use them to predict the future of our planet?",
-      "wow": "Some fossils are so well-preserved that they still contain the original organic material from the creature, allowing scientists to study the chemistry of ancient life forms.",
-      "queries": [
-        "fossils in rocks",
-        "ancient creature fossils",
-        "billion year old fossils"
-      ]
-    },
-    {
       "id": "gravity_waves",
       "domain": "math",
       "fact": "Gravity waves are ripples in the fabric of space and time that can be detected on Earth, allowing us to study cosmic events in ways previously impossible. These waves were predicted by Einstein's theory of general relativity.",
@@ -2843,24 +2483,6 @@
         "gravity wave detection footage",
         "space time visualizations",
         "cosmic event simulations"
-      ]
-    },
-    {
-      "id": "starling_mururations",
-      "domain": "nature",
-      "fact": "Starlings are known to form massive murmurations, which are intricate patterns in the sky created by thousands of birds flying together. These patterns can be so complex that they resemble a single, living entity.",
-      "angle": "Flocking",
-      "key_terms": [
-        "starlings",
-        "mururations",
-        "flocking"
-      ],
-      "whatif": "What if the principles behind these murmurations could be applied to human transportation systems to create more efficient and coordinated movements?",
-      "wow": "Some murmurations can consist of over a million individual birds.",
-      "queries": [
-        "starling murmuration",
-        "bird flocking patterns",
-        "aerial displays"
       ]
     },
     {
@@ -2936,24 +2558,6 @@
       ]
     },
     {
-      "id": "seismic_sounds",
-      "domain": "geology",
-      "fact": "Earthquakes and volcanic eruptions can produce unique sounds that can be heard from great distances. These seismic sounds are caused by the movement of the Earth's crust and can be used to study the internal structure of the planet.",
-      "angle": "Rumbling",
-      "key_terms": [
-        "seismic sounds",
-        "earthquakes",
-        "volcanic eruptions"
-      ],
-      "whatif": "What if the analysis of seismic sounds could provide early warnings for natural disasters and help us better understand the Earth's internal dynamics?",
-      "wow": "Some seismic sounds can be loud enough to be heard from space.",
-      "queries": [
-        "seismic sounds video",
-        "earthquake rumble",
-        "volcanic eruption audio"
-      ]
-    },
-    {
       "id": "rainbow_eucalyptus",
       "domain": "botany",
       "fact": "The rainbow eucalyptus tree has a unique, multi-colored bark that can change colors over time due to the shedding of its outer layers. This phenomenon is caused by the presence of different pigments in the tree's bark.",
@@ -2990,42 +2594,6 @@
       ]
     },
     {
-      "id": "bioluminescent_forests",
-      "domain": "ecology",
-      "fact": "Certain forests around the world have bioluminescent properties, where the trees and plants emit a glowing light due to the presence of certain fungi or microorganisms. This phenomenon can create a magical and enchanting environment.",
-      "angle": "Glowing",
-      "key_terms": [
-        "bioluminescent forests",
-        "glowing trees",
-        "fungal symbiosis"
-      ],
-      "whatif": "What if the study of bioluminescent forests could lead to a better understanding of the complex relationships between organisms in ecosystems and the development of new, sustainable lighting solutions?",
-      "wow": "Some bioluminescent forests are so bright that they can be seen from space.",
-      "queries": [
-        "bioluminescent forest video",
-        "glowing trees",
-        "fungal forest"
-      ]
-    },
-    {
-      "id": "ice_discs",
-      "domain": "physics",
-      "fact": "Ice discs, also known as ice circles, are rare and mysterious formations of ice that can appear in rivers and lakes. They are thought to be caused by the rotation of the water beneath the surface, which creates a circular motion that freezes into a disc shape.",
-      "angle": "Frozen",
-      "key_terms": [
-        "ice discs",
-        "ice circles",
-        "rotational motion"
-      ],
-      "whatif": "What if the study of ice discs could reveal new insights into the behavior of fluids and rotational motion in natural systems?",
-      "wow": "Ice discs can be several feet in diameter and are often perfectly round.",
-      "queries": [
-        "ice disc video",
-        "ice circle formation",
-        "rotational ice"
-      ]
-    },
-    {
       "id": "dolphin_sleep",
       "domain": "nature",
       "fact": "Dolphins sleep with only half of their brain at a time, allowing them to remain alert and aware of their surroundings. This unique sleep pattern is crucial for their survival.",
@@ -3044,24 +2612,6 @@
       ]
     },
     {
-      "id": "glowing_waves",
-      "domain": "atmosphere",
-      "fact": "Certain types of waves can glow in the dark due to a phenomenon called bioluminescence. This occurs when tiny organisms in the water emit light as a defense mechanism.",
-      "angle": "ocean",
-      "key_terms": [
-        "bioluminescence",
-        "waves",
-        "ocean"
-      ],
-      "whatif": "What if we could harness the power of bioluminescence to create sustainable lighting solutions for our cities and homes?",
-      "wow": "Glowing waves can be seen in certain parts of the world, creating a mesmerizing display of natural light and color.",
-      "queries": [
-        "glowing waves",
-        "bioluminescence",
-        "ocean lighting"
-      ]
-    },
-    {
       "id": "forest_ecosystem",
       "domain": "nature",
       "fact": "Forests are complex ecosystems that rely on a delicate balance of relationships between trees, plants, and animals. This balance is crucial for the health and survival of the forest.",
@@ -3077,24 +2627,6 @@
         "forest ecosystem",
         "tree relationships",
         "animal habitats"
-      ]
-    },
-    {
-      "id": "deep_sea_vent",
-      "domain": "atmosphere",
-      "fact": "Deep sea vents are underwater springs that release hot water and minerals from the Earth's crust, supporting a unique community of organisms that can survive in extreme conditions.",
-      "angle": "ocean",
-      "key_terms": [
-        "deep sea vent",
-        "hot water",
-        "minerals"
-      ],
-      "whatif": "What if we could harness the energy and resources of deep sea vents to create sustainable power sources and new industries?",
-      "wow": "Deep sea vents can reach temperatures of up to 400 degrees Celsius, making them one of the most extreme environments on the planet.",
-      "queries": [
-        "deep sea vent",
-        "underwater spring",
-        "extreme organisms"
       ]
     },
     {
@@ -3149,24 +2681,6 @@
         "space debris",
         "satellite collision",
         "space safety"
-      ]
-    },
-    {
-      "id": "tree_communication",
-      "domain": "nature",
-      "fact": "Trees are able to communicate with each other through complex networks of fungi and roots, sharing nutrients and warning each other of potential threats.",
-      "angle": "ecosystem",
-      "key_terms": [
-        "tree communication",
-        "fungi",
-        "roots"
-      ],
-      "whatif": "What if we could learn from the communication systems of trees and apply this knowledge to human networks and technologies?",
-      "wow": "Trees are able to communicate with each other over vast distances, creating a complex web of relationships that are essential for their survival.",
-      "queries": [
-        "tree communication",
-        "fungi networks",
-        "root systems"
       ]
     },
     {
@@ -3296,96 +2810,6 @@
       ]
     },
     {
-      "id": "gallium_melting",
-      "domain": "matter",
-      "fact": "Gallium is a metal that melts in your hand because its melting point is just 29.76 degrees Celsius, making it one of the most fragile metals known.",
-      "angle": "melting",
-      "key_terms": [
-        "gallium",
-        "melting point",
-        "metal"
-      ],
-      "whatif": "What if we could create a metal that melts at even lower temperatures?",
-      "wow": "But what if we could even create a metal that melts at a temperature of just a few degrees Celsius above room temperature?",
-      "queries": [
-        "gallium melting point",
-        "fragile metals",
-        "low melting point"
-      ]
-    },
-    {
-      "id": "asteroid_weathering",
-      "domain": "astronomy",
-      "fact": "The surface of asteroids and comets can be altered by space weathering, which can create unique and fascinating landscapes.",
-      "angle": "astronomy",
-      "key_terms": [
-        "asteroid weathering",
-        "astronomy",
-        "space weathering"
-      ],
-      "whatif": "What if we could study the surface of asteroids in more detail?",
-      "wow": "But what if we could even create a device that could simulate the effects of space weathering?",
-      "queries": [
-        "asteroid weathering",
-        "astronomy",
-        "space weathering"
-      ]
-    },
-    {
-      "id": "fungal_maze_solving",
-      "domain": "mycology",
-      "fact": "Fungi can solve mazes and make decisions based on their environment, using complex networks of chemical signals.",
-      "angle": "mycology",
-      "key_terms": [
-        "fungal maze solving",
-        "mycology",
-        "decision making"
-      ],
-      "whatif": "What if we could develop a way to harness the problem-solving abilities of fungi?",
-      "wow": "But what if we could even use fungi to create a global network of interconnected organisms?",
-      "queries": [
-        "fungal maze solving",
-        "mycology",
-        "problem solving"
-      ]
-    },
-    {
-      "id": "fungal_nutrient_sharing",
-      "domain": "mycology",
-      "fact": "Fungi have complex mechanisms for sharing nutrients with other organisms, using networks of chemical signals and fungal hyphae.",
-      "angle": "mycology",
-      "key_terms": [
-        "fungal nutrient sharing",
-        "mycology",
-        "nutrient exchange"
-      ],
-      "whatif": "What if we could develop a way to harness the nutrient-sharing abilities of fungi?",
-      "wow": "But what if we could even use fungi to create a global network of interconnected organisms?",
-      "queries": [
-        "fungal nutrient sharing",
-        "mycology",
-        "nutrient exchange"
-      ]
-    },
-    {
-      "id": "plant_root_networks",
-      "domain": "botany",
-      "fact": "Plant root networks can connect with other organisms and even influence their behavior, using complex mechanisms that involve changes in gene expression and hormone signaling.",
-      "angle": "botany",
-      "key_terms": [
-        "plant root networks",
-        "botany",
-        "behavioral influence"
-      ],
-      "whatif": "What if we could develop a way to communicate with plants in a more direct way?",
-      "wow": "But what if we could even use plants to transmit information between different parts of the world?",
-      "queries": [
-        "plant root networks",
-        "botany",
-        "behavioral influence"
-      ]
-    },
-    {
       "id": "starling_murmurations",
       "domain": "astronomy",
       "fact": "Starlings are known to form massive murmurations, which are intricate patterns that can be seen from space, and are influenced by the gravitational pull of the Earth and the position of the stars.",
@@ -3404,42 +2828,6 @@
       ]
     },
     {
-      "id": "wave_glow",
-      "domain": "light",
-      "fact": "Certain types of waves can glow in the dark due to a phenomenon called bioluminescence, where the movement of the waves disturbs and excites the molecules of certain organisms.",
-      "angle": "Glowing Waves",
-      "key_terms": [
-        "wave glow",
-        "bioluminescence",
-        "ocean"
-      ],
-      "whatif": "What if we could harness the power of bioluminescent waves to create sustainable and eco-friendly lighting solutions for our coastal communities?",
-      "wow": "These glowing waves can be so bright that they can be seen from space, and are a popular destination for surfers and scientists alike.",
-      "queries": [
-        "glowing waves at night",
-        "bioluminescent ocean",
-        "wave glow phenomena"
-      ]
-    },
-    {
-      "id": "gallium_properties",
-      "domain": "chemistry",
-      "fact": "Gallium is a metal that melts in your hand because its melting point is below human body temperature. This unique property makes gallium a useful material for a range of applications, from thermometers to semiconductors.",
-      "angle": "materials",
-      "key_terms": [
-        "gallium",
-        "melting point",
-        "semiconductors"
-      ],
-      "whatif": "What if the unique properties of gallium could be used to create new types of thermometers or temperature-sensing devices? Could this lead to a new era of advanced temperature control and measurement?",
-      "wow": "Gallium is also a highly corrosive metal, which can react with other materials to form a range of interesting and complex compounds.",
-      "queries": [
-        "gallium melting point",
-        "gallium uses",
-        "semiconductor materials"
-      ]
-    },
-    {
       "id": "magnetic_moon",
       "domain": "astronomy",
       "fact": "The Moon has a mysterious magnetic field that is not generated by its core, but rather by its crust. This field is thought to be a remnant of an ancient magnetic field that was present when the Moon was formed.",
@@ -3455,60 +2843,6 @@
         "magnetic field of the Moon",
         "lunar crust",
         "Earth's magnetosphere"
-      ]
-    },
-    {
-      "id": "fungal_highways",
-      "domain": "mycology",
-      "fact": "Fungi have vast networks of tiny, branching tendrils that allow them to connect with other organisms and even influence the behavior of plants. These networks can span entire ecosystems, allowing fungi to play a key role in shaping the environment.",
-      "angle": "nature",
-      "key_terms": [
-        "fungal networks",
-        "mycorrhizal fungi",
-        "plant behavior"
-      ],
-      "whatif": "What if these fungal networks are not just limited to individual ecosystems, but are actually connected across the entire planet? What would this mean for our understanding of the global ecosystem?",
-      "wow": "Some fungi can even use these networks to steal nutrients from other organisms, or to warn other plants of potential threats.",
-      "queries": [
-        "fungal networks",
-        "mycorrhizal fungi",
-        "plant-fungus interactions"
-      ]
-    },
-    {
-      "id": "deep_time_clock",
-      "domain": "deep_time",
-      "fact": "The Earth's geological clock is not just a simple measure of time, but is actually influenced by the planet's internal dynamics. The Earth's core is thought to be responsible for the planet's magnetic field, which in turn affects the geological clock.",
-      "angle": "geology",
-      "key_terms": [
-        "geological clock",
-        "Earth's core",
-        "magnetic field"
-      ],
-      "whatif": "What if the Earth's geological clock is not just a one-way process, but is actually influenced by the planet's internal dynamics? What would this mean for our understanding of the Earth's history?",
-      "wow": "The Earth's core is so hot that it can melt the surrounding rock, creating a layer of liquid metal that generates the planet's magnetic field.",
-      "queries": [
-        "geological clock",
-        "Earth's core",
-        "magnetic field generation"
-      ]
-    },
-    {
-      "id": "starlight_serendipity",
-      "domain": "astronomy",
-      "fact": "The light from distant stars is not just a random collection of photons, but is actually influenced by the interstellar medium. This medium can cause the light to be scattered, polarized, or even absorbed, affecting our ability to observe the stars.",
-      "angle": "space",
-      "key_terms": [
-        "interstellar medium",
-        "starlight",
-        "polarization"
-      ],
-      "whatif": "What if the interstellar medium is not just a passive observer of the universe, but is actually an active participant in shaping the light that we see? What would this mean for our understanding of the cosmos?",
-      "wow": "The interstellar medium can even create complex patterns of light and shadow, allowing us to study the properties of the medium itself.",
-      "queries": [
-        "interstellar medium",
-        "starlight polarization",
-        "light scattering"
       ]
     },
     {
@@ -3548,60 +2882,6 @@
       ]
     },
     {
-      "id": "time_travelers",
-      "domain": "deep_time",
-      "fact": "The passage of time is not just a one-way process, but is actually influenced by the Earth's internal dynamics. The planet's core is thought to be responsible for the Earth's magnetic field, which in turn affects the geological clock.",
-      "angle": "geology",
-      "key_terms": [
-        "geological clock",
-        "Earth's core",
-        "magnetic field"
-      ],
-      "whatif": "What if the Earth's geological clock is not just a passive observer of the universe, but is actually an active participant in shaping the passage of time? What would this mean for our understanding of the Earth's history?",
-      "wow": "The Earth's core is so hot that it can melt the surrounding rock, creating a layer of liquid metal that generates the planet's magnetic field.",
-      "queries": [
-        "geological clock",
-        "Earth's core",
-        "magnetic field generation"
-      ]
-    },
-    {
-      "id": "lightning_storms",
-      "domain": "astronomy",
-      "fact": "Lightning storms can create massive electrical discharges that can be seen from space. These discharges can be so powerful that they can affect the Earth's magnetic field and influence the formation of clouds.",
-      "angle": "Electrical Displays",
-      "key_terms": [
-        "lightning storms",
-        "electrical discharges",
-        "magnetic field"
-      ],
-      "whatif": "What if we could better understand and predict the behavior of lightning storms to improve weather forecasting and reduce the risk of damage to infrastructure?",
-      "wow": "Some lightning storms can produce over 1,000 lightning bolts per hour, making them one of the most intense and awe-inspiring displays of electrical energy on the planet.",
-      "queries": [
-        "lightning storms",
-        "electrical discharges",
-        "magnetic field"
-      ]
-    },
-    {
-      "id": "coral_reefs",
-      "domain": "matter",
-      "fact": "Coral reefs are some of the most diverse and complex ecosystems on the planet, supporting over 25% of all marine species. These ecosystems can be influenced by factors such as climate change, pollution, and overfishing.",
-      "angle": "Marine Ecosystems",
-      "key_terms": [
-        "coral reefs",
-        "marine ecosystems",
-        "biodiversity"
-      ],
-      "whatif": "What if we could better understand and protect these ecosystems to preserve the health of the oceans and the planet as a whole?",
-      "wow": "Some coral reefs can be over 2,000 years old, making them one of the longest-living structures on the planet.",
-      "queries": [
-        "coral reefs",
-        "marine ecosystems",
-        "biodiversity"
-      ]
-    },
-    {
       "id": "microbe_metabolism",
       "domain": "mycology",
       "fact": "Certain microbes can survive in extreme environments by slowing down their metabolism to a near-halt, entering a state of dormancy. This allows them to conserve energy and wait for more favorable conditions.",
@@ -3620,96 +2900,6 @@
       ]
     },
     {
-      "id": "starlight_refraction",
-      "domain": "astronomy",
-      "fact": "The light from distant stars can be bent and distorted by the gravitational pull of nearby galaxies, creating a phenomenon known as gravitational lensing. This can actually allow us to see more of the universe than would be possible otherwise.",
-      "angle": "cosmic",
-      "key_terms": [
-        "starlight",
-        "refraction",
-        "gravitational lensing"
-      ],
-      "whatif": "What if we could use this effect to create a kind of cosmic telescope, allowing us to study distant galaxies in unprecedented detail? Could we use this to discover new forms of life?",
-      "wow": "In some cases, gravitational lensing can even create multiple images of the same star or galaxy, allowing us to see it from different angles and learn more about its structure.",
-      "queries": [
-        "gravitational lensing examples",
-        "starlight refraction through galaxies",
-        "cosmic telescope concept"
-      ]
-    },
-    {
-      "id": "fungal_electricity",
-      "domain": "mycology",
-      "fact": "Fungi can generate electricity through their mycelium, creating complex networks of electrical activity that can be used to monitor and respond to environmental changes.",
-      "angle": "fungal_futures",
-      "key_terms": [
-        "fungal",
-        "electricity",
-        "mycelium"
-      ],
-      "whatif": "What if fungal electricity could be harnessed to create sustainable energy solutions? What if it could be used to develop new technologies for environmental monitoring and remediation?",
-      "wow": "Some fungi can even use their electrical activity to communicate with other organisms and coordinate their behavior, creating complex and dynamic ecosystems.",
-      "queries": [
-        "fungal electricity",
-        "mycelium",
-        "sustainable energy"
-      ]
-    },
-    {
-      "id": "fungal_farming",
-      "domain": "mycology",
-      "fact": "Fungi can be used to farm and cultivate other organisms, creating complex and dynamic ecosystems that can be used to produce food, medicine, and other valuable products.",
-      "angle": "fungal_futures",
-      "key_terms": [
-        "fungal",
-        "farming",
-        "mycelium"
-      ],
-      "whatif": "What if fungal farming could be used to develop more sustainable and efficient solutions for human problems? What if it could be used to produce new and innovative products?",
-      "wow": "Some fungi can even be used to cultivate and produce complex organic compounds, like antibiotics and vaccines, making them a valuable resource for human health and medicine.",
-      "queries": [
-        "fungal farming",
-        "mycelium",
-        "sustainable agriculture"
-      ]
-    },
-    {
-      "id": "underwater_rivers",
-      "domain": "oceanography",
-      "fact": "There are underwater rivers that exist beneath the ocean's surface, with their own unique chemistry and ecosystems. These underwater rivers can be found in places like the Gulf of Mexico and the Mediterranean Sea.",
-      "angle": "ocean_secrets",
-      "key_terms": [
-        "underwater",
-        "rivers",
-        "oceanography"
-      ],
-      "whatif": "What if these underwater rivers could provide insights into the Earth's geological history and the formation of oceanic crust? What if they could be used to discover new species and ecosystems?",
-      "wow": "Some of these underwater rivers are so large that they have their own waves and tides, creating complex and dynamic ecosystems that are still poorly understood.",
-      "queries": [
-        "underwater river",
-        "oceanography",
-        "marine science"
-      ]
-    },
-    {
-      "id": "fungal_computing",
-      "domain": "mycology",
-      "fact": "Fungi can be used to create complex computing systems, using their mycelium to process and store information.",
-      "angle": "fungal_futures",
-      "key_terms": [
-        "fungal",
-        "computing",
-        "mycelium"
-      ],
-      "whatif": "What if fungal computing could be used to develop more sustainable and efficient solutions for human problems? What if it could be used to create new and innovative technologies?",
-      "wow": "Some fungi can even be used to create complex networks and patterns, making them a valuable resource for fields like computer science and engineering.",
-      "queries": [
-        "fungal computing",
-        "mycelium",
-        "sustainable technology"
-      ]
-    },
-    {
       "id": "material_transitions",
       "domain": "matter",
       "fact": "Certain materials can change their properties dramatically when exposed to specific conditions, such as temperature or pressure. This can lead to materials that are seemingly 'alive'.",
@@ -3725,24 +2915,6 @@
         "phase transition materials",
         "smart materials",
         "material science experiments"
-      ]
-    },
-    {
-      "id": "underwater_landscape",
-      "domain": "oceanography",
-      "fact": "The ocean floor is home to landscapes that rival those on land, including mountains, valleys, and even 'lakes' within the ocean itself. These underwater landscapes are still largely unexplored.",
-      "angle": "Exploration",
-      "key_terms": [
-        "ocean",
-        "landscape",
-        "exploration"
-      ],
-      "whatif": "What if we were to discover a new species or ecosystem in one of these unexplored underwater landscapes?",
-      "wow": "Some of these underwater mountains are taller than those on land, and their peaks can be covered in unique ecosystems.",
-      "queries": [
-        "ocean floor landscape",
-        "underwater mountains",
-        "deep sea exploration"
       ]
     },
     {
@@ -3833,24 +3005,6 @@
         "ocean acidification",
         "climate change",
         "marine ecosystems"
-      ]
-    },
-    {
-      "id": "bioluminescent_marine_life",
-      "domain": "oceanography",
-      "fact": "Many marine organisms have the ability to produce their own light, a phenomenon known as bioluminescence. This can be used for communication, defense, or attracting prey.",
-      "angle": "Biology",
-      "key_terms": [
-        "bioluminescence",
-        "marine life",
-        "light"
-      ],
-      "whatif": "What if the secrets of bioluminescence could be unlocked to create sustainable, eco-friendly lighting solutions?",
-      "wow": "Some deep-sea creatures can produce light that is bright enough to be seen from miles away, despite the darkness of their surroundings.",
-      "queries": [
-        "bioluminescent marine life",
-        "deep sea creatures",
-        "bioluminescence"
       ]
     },
     {
@@ -3962,24 +3116,6 @@
       ]
     },
     {
-      "id": "space_time_ripples",
-      "domain": "astronomy",
-      "fact": "Gravity waves are ripples in the fabric of space and time that can be detected from billions of light-years away. These ripples can provide insights into the most violent and energetic events in the universe.",
-      "angle": "cosmological",
-      "key_terms": [
-        "gravity",
-        "waves",
-        "space-time"
-      ],
-      "whatif": "What if we could use gravity waves to study the early universe and uncover its secrets?",
-      "wow": "The detection of gravity waves has confirmed a key prediction made by Einstein a century ago, revolutionizing our understanding of the universe.",
-      "queries": [
-        "gravity wave detection",
-        "space-time ripples",
-        "cosmological events"
-      ]
-    },
-    {
       "id": "synchronous_fireflies",
       "domain": "biology",
       "fact": "Fireflies can synchronize their flashes to create a stunning display of light, with some species able to flash in perfect unison. This phenomenon is known as synchrony.",
@@ -4070,24 +3206,6 @@
       ]
     },
     {
-      "id": "glowing_mushrooms",
-      "domain": "mycology",
-      "fact": "Certain species of mushrooms, like the jack o' lantern mushroom, have a unique ability to glow in the dark due to a chemical reaction that produces light. This phenomenon is called bioluminescence.",
-      "angle": "Fungi",
-      "key_terms": [
-        "bioluminescent mushrooms",
-        "glowing fungi",
-        "chemical reaction"
-      ],
-      "whatif": "What if the bioluminescent properties of these mushrooms could be harnessed to create sustainable and eco-friendly lighting solutions? Could glowing mushrooms be used to reduce our reliance on artificial lighting?",
-      "wow": "The glowing mushrooms can be so bright that they can illuminate entire forests, creating an otherworldly atmosphere.",
-      "queries": [
-        "glowing mushroom forest",
-        "bioluminescent fungi",
-        "chemical reaction light"
-      ]
-    },
-    {
       "id": "neural_rejuvenation",
       "domain": "neurology",
       "fact": "Neural rejuvenation is the process by which the brain regenerates and reorganizes itself in response to injury or disease. This process can involve the growth of new neurons, the formation of new connections between neurons, and the improvement of cognitive function.",
@@ -4103,24 +3221,6 @@
         "neural rejuvenation techniques",
         "brain regeneration exercises",
         "cognitive function improvement"
-      ]
-    },
-    {
-      "id": "memory_transference",
-      "domain": "psychology",
-      "fact": "Memory transference is the process by which memories can be transferred from one person to another through various means, such as smell, touch, or social learning. This phenomenon has been observed in both humans and animals.",
-      "angle": "Memory",
-      "key_terms": [
-        "memory transference",
-        "social learning",
-        "smell"
-      ],
-      "whatif": "What if memories could be transferred from one person to another through a direct brain-to-brain interface? Could this technology be used to preserve memories and experiences for future generations?",
-      "wow": "Research has shown that certain smells can evoke powerful memories and emotions, and that these memories can be transferred from one person to another through smell alone.",
-      "queries": [
-        "memory transference experiment",
-        "smell-induced memory",
-        "brain-to-brain interface"
       ]
     },
     {
@@ -4268,24 +3368,6 @@
       ]
     },
     {
-      "id": "neural_darwinism",
-      "domain": "neurology",
-      "fact": "Our brains have a process called neural Darwinism, where neurons compete for survival and the strongest ones win.",
-      "angle": "fascinating",
-      "key_terms": [
-        "brain",
-        "neurons",
-        "compete"
-      ],
-      "whatif": "What if we could harness neural Darwinism to improve brain function?",
-      "wow": "Neural Darwinism is thought to be involved in learning and memory.",
-      "queries": [
-        "neural Darwinism examples",
-        "neuron competition",
-        "brain function"
-      ]
-    },
-    {
       "id": "emotional_intelligence",
       "domain": "psychology",
       "fact": "Our ability to understand and manage emotions, called emotional intelligence, is just as important as IQ.",
@@ -4358,78 +3440,6 @@
       ]
     },
     {
-      "id": "geological_oscillations",
-      "domain": "geology",
-      "fact": "The Earth's geological processes are not always linear, but can oscillate between different states. This is due to the complex interactions between the Earth's crust, mantle, and core.",
-      "angle": "geological oscillations",
-      "key_terms": [
-        "geological oscillations",
-        "Earth's crust",
-        "mantle-core interactions"
-      ],
-      "whatif": "What if we could understand and predict these oscillations to better prepare for natural disasters? Could we use this knowledge to develop more effective early warning systems?",
-      "wow": "The Earth's geological processes can oscillate on timescales of millions of years, leading to dramatic changes in the planet's climate and geography.",
-      "queries": [
-        "geological oscillations",
-        "Earth's crust dynamics",
-        "mantle-core interactions"
-      ]
-    },
-    {
-      "id": "geomagnetic_reversals",
-      "domain": "geophysics",
-      "fact": "The Earth's magnetic field has reversed many times throughout its history, with the most recent reversal occurring around 780,000 years ago. These reversals can have significant effects on the planet's climate and ecosystems.",
-      "angle": "geomagnetic reversals",
-      "key_terms": [
-        "geomagnetic reversals",
-        "magnetic field",
-        "climate effects"
-      ],
-      "whatif": "What if we could better understand and predict the effects of geomagnetic reversals on the Earth's climate and ecosystems? Could we use this knowledge to develop more effective strategies for mitigating the impacts of climate change?",
-      "wow": "The Earth's magnetic field is weakening at a rate of around 5% per century, which could indicate that we are due for another geomagnetic reversal.",
-      "queries": [
-        "geomagnetic reversals",
-        "magnetic field",
-        "climate effects"
-      ]
-    },
-    {
-      "id": "geological_time",
-      "domain": "geology",
-      "fact": "The Earth's geological clock is not just a simple measure of time, but is actually influenced by the planet's magnetic field and the movement of tectonic plates. This means that time can appear to speed up or slow down in different parts of the planet.",
-      "angle": "Time",
-      "key_terms": [
-        "geological",
-        "time",
-        "magnetic field"
-      ],
-      "whatif": "What if the Earth's magnetic field were to suddenly reverse, how would it affect our perception of time? Would it slow down or speed up the passage of time?",
-      "wow": "The Earth's magnetic field has reversed many times throughout its history, with the most recent reversal occurring around 780,000 years ago.",
-      "queries": [
-        "earth magnetic field reversal",
-        "geological time scale",
-        "tectonic plate movement"
-      ]
-    },
-    {
-      "id": "seismic_activity",
-      "domain": "geophysics",
-      "fact": "The Earth's seismic activity is not just limited to earthquakes, but also includes the movement of tectonic plates and the eruption of volcanoes. This activity can create complex patterns of seismic waves that can be used to study the Earth's interior.",
-      "angle": "Earthquakes",
-      "key_terms": [
-        "seismic",
-        "activity",
-        "tectonic plates"
-      ],
-      "whatif": "What if scientists were able to predict seismic activity with greater accuracy, how would it impact our ability to prepare for natural disasters?",
-      "wow": "The Earth's seismic activity is so powerful that it can create seismic waves that can travel all the way around the world, allowing scientists to study the Earth's interior in great detail.",
-      "queries": [
-        "seismic activity",
-        "earthquakes",
-        "tectonic plate movement"
-      ]
-    },
-    {
       "id": "atmospheric_phenomena",
       "domain": "atmosphere",
       "fact": "The Earth's atmosphere is home to a wide range of phenomena, including clouds, storms, and aurorae. These phenomena can create complex patterns of light and color that can be seen from space.",
@@ -4445,24 +3455,6 @@
         "atmospheric phenomena",
         "cloud formations",
         "storm systems"
-      ]
-    },
-    {
-      "id": "glacier_calving",
-      "domain": "glaciology",
-      "fact": "Glaciers are not just slow-moving rivers of ice, but can also experience sudden and dramatic events such as calving, where large chunks of ice break off into the ocean. This process can create massive waves and disrupt marine ecosystems.",
-      "angle": "Ice",
-      "key_terms": [
-        "glacier",
-        "calving",
-        "ice"
-      ],
-      "whatif": "What if glacier calving were to increase due to climate change, how would it impact sea levels and coastal communities?",
-      "wow": "The largest glacier calving event ever recorded was so massive that it created a tsunami wave that traveled over 100 miles, affecting several coastal towns and villages.",
-      "queries": [
-        "glacier calving",
-        "icebergs",
-        "ocean waves"
       ]
     },
     {
@@ -4502,42 +3494,6 @@
       ]
     },
     {
-      "id": "geological_history",
-      "domain": "geology",
-      "fact": "The Earth's geological history is not just a simple record of rock formations and fossils, but also includes the movement of tectonic plates and the eruption of volcanoes. This history can be used to study the Earth's climate and weather patterns.",
-      "angle": "History",
-      "key_terms": [
-        "geological",
-        "history",
-        "tectonic plates"
-      ],
-      "whatif": "What if scientists were able to study the Earth's geological history in greater detail, how would it impact our understanding of the planet's evolution and conservation efforts?",
-      "wow": "The Earth's geological history is so complex that it can include entire periods of time where the planet was covered in ice, with some periods being so extreme that they can be seen as 'snowball Earth' events.",
-      "queries": [
-        "geological history",
-        "rock formations",
-        "fossil record"
-      ]
-    },
-    {
-      "id": "glacier_singing",
-      "domain": "geophysics",
-      "fact": "Glaciers can produce a singing or whistling sound as they move, due to the stress and friction within the ice. This sound can be heard for miles and is a result of the glacier's unique properties.",
-      "angle": "sonic",
-      "key_terms": [
-        "glacier",
-        "singing",
-        "ice"
-      ],
-      "whatif": "What if the singing of glaciers could be used to monitor their movement and predict potential disasters? Could this unique phenomenon be the key to understanding glacier behavior?",
-      "wow": "Some glaciers can produce sounds so loud that they can be heard from space, making them one of the most vocal natural wonders on Earth",
-      "queries": [
-        "glacier calving sounds",
-        "singing glacier footage",
-        "ice whistle recording"
-      ]
-    },
-    {
       "id": "ocean_twilight",
       "domain": "marine",
       "fact": "There is a twilight zone in the ocean where the last remnants of sunlight barely penetrate, creating an ethereal landscape of glowing creatures and faintly lit seafloor. This zone is home to a unique array of bioluminescent organisms that light up the darkness.",
@@ -4553,60 +3509,6 @@
         "deep sea bioluminescence",
         "twilight zone creatures",
         "glowing squid footage"
-      ]
-    },
-    {
-      "id": "earthquake_harmonics",
-      "domain": "geophysics",
-      "fact": "Earthquakes can produce unique harmonic vibrations that can be used to predict the likelihood of future earthquakes. These vibrations can be detected using specialized equipment and can provide valuable insights into the Earth's internal structure.",
-      "angle": "seismic",
-      "key_terms": [
-        "earthquake",
-        "harmonics",
-        "prediction"
-      ],
-      "whatif": "What if the harmonic vibrations of earthquakes could be used to develop a system for early warning detection? Could this technology be used to save lives and prevent devastation?",
-      "wow": "The harmonic vibrations of earthquakes can be so powerful that they can be detected on the other side of the world, allowing scientists to study the Earth's internal structure in unprecedented detail",
-      "queries": [
-        "earthquake harmonic detection",
-        "seismic vibration recording",
-        "earthquake prediction technology"
-      ]
-    },
-    {
-      "id": "ice_disc_formation",
-      "domain": "glaciology",
-      "fact": "Ice discs are rare and mysterious formations that can appear on the surface of rivers and lakes, creating a circular patch of ice that can rotate slowly. The exact mechanism behind their formation is still not fully understood, but it is thought to be related to temperature and water flow.",
-      "angle": "cryospheric",
-      "key_terms": [
-        "ice disc",
-        "formation",
-        "rotation"
-      ],
-      "whatif": "What if the formation of ice discs could be used to study the properties of water and ice in extreme conditions? Could this phenomenon be used to develop new technologies for ice formation and manipulation?",
-      "wow": "Ice discs can grow up to 15 feet in diameter and rotate at a speed of up to 1 revolution per minute, creating a mesmerizing display of natural beauty",
-      "queries": [
-        "ice disc formation footage",
-        "rotating ice disc video",
-        "cryospheric research"
-      ]
-    },
-    {
-      "id": "sea_floor_spreading",
-      "domain": "geophysics",
-      "fact": "The sea floor is constantly moving due to the process of sea floor spreading, where new oceanic crust is created at mid-ocean ridges and pushed apart by magma. This process is responsible for the creation of new oceanic crust and the movement of tectonic plates.",
-      "angle": "tectonic",
-      "key_terms": [
-        "sea floor",
-        "spreading",
-        "tectonic"
-      ],
-      "whatif": "What if the process of sea floor spreading could be used to develop new technologies for geological exploration and resource extraction? Could this phenomenon be used to unlock new sources of energy and minerals?",
-      "wow": "The sea floor is moving at a rate of up to 2 inches per year, which is faster than the growth rate of human hair, and is responsible for the creation of new mountain ranges and volcanoes",
-      "queries": [
-        "sea floor spreading animation",
-        "mid-ocean ridge footage",
-        "tectonic plate movement video"
       ]
     }
   ]
