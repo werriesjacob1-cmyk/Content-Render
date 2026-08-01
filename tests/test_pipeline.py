@@ -471,6 +471,36 @@ def test_final_qa():
             os.environ["GEMINI_API_KEY"] = _key_bak
 
 
+def test_vibe_and_hybrid_footage_mode():
+    section("generate.py: _normalize_vibe / _assign_footage_mode (mood-matched pacing + hero AI shots)")
+    m = {"vibe": "chaotic"}
+    check(G._normalize_vibe(m)["vibe"] == "chaotic", "valid vibe passes through unchanged")
+    m = {"vibe": "CHAOTIC"}
+    check(G._normalize_vibe(m)["vibe"] == "chaotic", "vibe case-normalized")
+    m = {"vibe": "  peaceful  "}
+    check(G._normalize_vibe(m)["vibe"] == "peaceful", "vibe whitespace-stripped")
+    m = {"vibe": "spooky-fun-times"}
+    check(G._normalize_vibe(m)["vibe"] == "awe", "invented/invalid vibe -> safe 'awe' default, not rejected")
+    m = {}
+    check(G._normalize_vibe(m)["vibe"] == "awe", "missing vibe -> safe 'awe' default")
+    check(set(G.VIBES) == {"chaotic", "peaceful", "eerie", "awe", "visceral", "tense"},
+          "VIBES vocabulary is exactly the 6 documented options")
+
+    scenes = [{"id": i, "search_query": f"query {i}"} for i in range(1, 7)]
+    G._assign_footage_mode(scenes)
+    check(scenes[0]["footage_mode"] == "ai", "hook (scene 1) tagged for AI generation")
+    check(scenes[-1]["footage_mode"] == "ai", "payoff (last scene) tagged for AI generation")
+    check(all(s["footage_mode"] == "real" for s in scenes[1:-1]),
+          "every middle scene stays 'real' (stock) -- matches FAL_MAX_CLIPS default of 2/video")
+    check(sum(1 for s in scenes if s["footage_mode"] == "ai") == 2,
+          "exactly 2 scenes tagged ai regardless of video length")
+
+    one = [{"id": 1, "search_query": "q"}]
+    G._assign_footage_mode(one)
+    check(one[0]["footage_mode"] == "ai", "single-scene edge case tags the only scene")
+    check(G._assign_footage_mode([]) == [], "empty scene list -> no crash, returns empty")
+
+
 def test_keywords_from_text():
     section("main._keywords_from_text: salient nouns, stopwords dropped")
     kw = M._keywords_from_text("The churning liquid outer core generates a magnetic field")
@@ -1025,6 +1055,43 @@ def test_fal_gap_fill_gating():
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
 
 
+def test_apply_vibe():
+    section("main._apply_vibe: mood-matched pacing/grade layered on the page profile")
+    _profile_bak = dict(M.PROFILE)
+    _clip_bak, _sub_bak = M.CLIP_SECONDS, M.MAX_SUBCLIPS
+    try:
+        check(set(M.VIBE_TWEAKS.keys()) == {"chaotic", "tense", "visceral", "eerie", "peaceful", "awe"},
+              "VIBE_TWEAKS covers exactly the 6 vibes generate.py can emit")
+
+        M.CLIP_SECONDS, M.MAX_SUBCLIPS = 1.9, 6
+        base_grade = M.PROFILE["grade"]
+        clip_s, subclips = M._apply_vibe("chaotic")
+        check(clip_s < 1.9, f"chaotic -> SHORTER clips for faster cuts ({clip_s:.2f}s < 1.9s)")
+        check(subclips > 6, f"chaotic -> MORE subclips allowed ({subclips} > 6)")
+        check(M.PROFILE["grade"].startswith(base_grade) and M.PROFILE["grade"] != base_grade,
+              "chaotic grade EXTENDS the base page grade (additive), doesn't replace it")
+
+        M.PROFILE["grade"] = base_grade
+        M.CLIP_SECONDS, M.MAX_SUBCLIPS = 1.9, 6
+        clip_s, subclips = M._apply_vibe("peaceful")
+        check(clip_s > 1.9, f"peaceful -> LONGER holds ({clip_s:.2f}s > 1.9s)")
+        check(subclips < 6, f"peaceful -> FEWER subclips ({subclips} < 6)")
+
+        M.PROFILE["grade"] = base_grade
+        M.CLIP_SECONDS, M.MAX_SUBCLIPS = 1.9, 6
+        clip_s, subclips = M._apply_vibe("some-invented-vibe")
+        check((clip_s, subclips) == (1.9, 6), "unknown vibe -> 'awe' entry, all deltas zero, no change")
+
+        M.CLIP_SECONDS, M.MAX_SUBCLIPS = 0.95, 2
+        M._apply_vibe("peaceful")
+        check(M.CLIP_SECONDS >= 0.9, "clip seconds floor respected even after a slow-down multiplier")
+        check(M.MAX_SUBCLIPS >= 2, "subclip count floor respected even after a negative bonus")
+    finally:
+        M.PROFILE.clear()
+        M.PROFILE.update(_profile_bak)
+        M.CLIP_SECONDS, M.MAX_SUBCLIPS = _clip_bak, _sub_bak
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1080,6 +1147,7 @@ def main():
     test_footage_intent_anchors_on_subject()
     test_local_footage_relevance()
     test_final_qa()
+    test_vibe_and_hybrid_footage_mode()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
@@ -1103,6 +1171,7 @@ def main():
     test_perf_saves_comments()
     test_length_ab_mode()
     test_fal_gap_fill_gating()
+    test_apply_vibe()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

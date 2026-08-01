@@ -1932,6 +1932,53 @@ MAX_SUBCLIPS    = int(os.getenv("MAX_SUBCLIPS", "6"))        # cap distinct clip
 _MULTICLIP_MOTIONS = ["zoom_in", "pan", "zoom_out"]          # cycled so no two cuts move alike
 
 
+# ---------- VIBE-MATCHED PACING/GRADE (mood-matched cutting, not one constant rhythm) ----------
+# Every video used to get the SAME cut speed and color grade regardless of
+# subject — a violent-eruption video cut at the identical rhythm as a sleeping-
+# dolphin video. generate.py tags each manifest with a 'vibe' (_normalize_vibe,
+# always one of VIBES below) picked to match how the topic actually FEELS; this
+# layers a small delta on top of the PAGE's own grade/pacing (profiles.py) —
+# additive, not a replacement — so the page's identity (font, voice, base
+# color) stays intact while chaotic and peaceful topics on the SAME page no
+# longer render identically. zoom/clip/subclip deltas track published short-
+# form retention guidance (faster, more varied cuts read as chaotic/tense;
+# fewer, longer holds read as calm) filtered through this channel's own
+# analytics pattern (concrete/visceral topics already outperform passive ones —
+# the pacing should reinforce that feeling, not fight it).
+VIBE_TWEAKS = {
+    #              contrast  saturation  brightness  zoom_mult  clip_mult  subclip_bonus
+    "chaotic":  {"contrast": 0.10, "saturation": 0.12, "brightness": 0.00, "zoom_mult": 1.35, "clip_mult": 0.70, "subclip_bonus": 2},
+    "tense":    {"contrast": 0.08, "saturation": 0.00, "brightness": -0.02, "zoom_mult": 1.15, "clip_mult": 0.85, "subclip_bonus": 1},
+    "visceral": {"contrast": 0.06, "saturation": 0.08, "brightness": -0.01, "zoom_mult": 1.20, "clip_mult": 0.80, "subclip_bonus": 1},
+    "eerie":    {"contrast": 0.02, "saturation": -0.10, "brightness": -0.04, "zoom_mult": 0.75, "clip_mult": 1.25, "subclip_bonus": -1},
+    "peaceful": {"contrast": -0.04, "saturation": -0.06, "brightness": 0.02, "zoom_mult": 0.60, "clip_mult": 1.40, "subclip_bonus": -2},
+    "awe":      {"contrast": 0.00, "saturation": 0.00, "brightness": 0.00, "zoom_mult": 1.00, "clip_mult": 1.00, "subclip_bonus": 0},
+}
+
+
+def _apply_vibe(vibe):
+    """Mutate PROFILE['grade']/['zoom_speed'] and CLIP_SECONDS/MAX_SUBCLIPS in
+    place for THIS render, based on the manifest's vibe tag. Called once at the
+    top of main(), before any scene is built, so every scene in the video picks
+    up the same mood-matched pacing/grade. Chains an EXTRA small eq= filter
+    after the page's own grade (ffmpeg composes sequential eq= filters) rather
+    than parsing/replacing it, so a page's base look is never lost — only
+    nudged. Unknown/missing vibe -> the 'awe' entry, all deltas zero (identical
+    to pre-vibe behavior). Returns (clip_seconds, max_subclips) for easy
+    testing without needing to re-read the mutated globals."""
+    global CLIP_SECONDS, MAX_SUBCLIPS
+    t = VIBE_TWEAKS.get(vibe, VIBE_TWEAKS["awe"])
+    PROFILE["grade"] = PROFILE["grade"] + (
+        f",eq=contrast={1 + t['contrast']:.3f}:saturation={1 + t['saturation']:.3f}:"
+        f"brightness={t['brightness']:.3f}")
+    PROFILE["zoom_speed"] = PROFILE["zoom_speed"] * t["zoom_mult"]
+    CLIP_SECONDS = max(0.9, CLIP_SECONDS * t["clip_mult"])
+    MAX_SUBCLIPS = max(2, min(8, MAX_SUBCLIPS + t["subclip_bonus"]))
+    print(f"  [vibe] '{vibe}' -> clip {CLIP_SECONDS:.2f}s, max {MAX_SUBCLIPS} subclips/scene, "
+          f"zoom x{t['zoom_mult']}, grade contrast{t['contrast']:+.2f}/sat{t['saturation']:+.2f}")
+    return CLIP_SECONDS, MAX_SUBCLIPS
+
+
 def _subclip_plan(seg_dur, target_secs, max_subclips):
     """Split a scene of `seg_dur` seconds into as-even-as-possible sub-clip
     durations so the video CUTS between different clips instead of holding one.
@@ -2031,14 +2078,33 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
 def build_scene(scene, idx, seg_mp3, seg_dur):
     global _last_motion_kind, STAT_CARD_SCENES, ARCHIVAL_SCENES
     raw = os.path.join(WORK, f"s{idx}_raw.mp4")
+    have, score, fal_filled = False, None, False
+
+    # HERO SHOT (footage_mode == "ai", set by generate.py's _assign_footage_mode
+    # on the hook + payoff scenes — the two beats that matter most): try a
+    # purpose-built AI clip made FOR this exact line BEFORE ever spending a
+    # stock search on it, instead of only reaching for AI as a rescue when
+    # stock comes back weak. A bespoke shot beats a generic "roughly relevant"
+    # stock clip on the shots that actually decide whether someone keeps
+    # watching. Falls straight through to the normal stock flow below if fal
+    # is unavailable/unkeyed/fails — zero behavior change for a render with no
+    # fal key, and the shared FAL_MAX_CLIPS budget (_fal_can_spend()) still
+    # bounds total spend across hero shots AND the gap-fill rescue below.
+    if scene.get("footage_mode") == "ai" and _fal_can_spend():
+        fal_raw = os.path.join(WORK, f"s{idx}_hero.mp4")
+        if _fal_video(scene, fal_raw):
+            raw, have, score, fal_filled = fal_raw, True, 10, True
+            print(f"  [fal] hero shot for scene {idx} ({scene['search_query']!r})")
+
     # Once MAX_STAT_CARDS scenes have already carded, force this scene to take
     # its best real clip instead of adding to a wall of text cards.
     # accept_best=True ALWAYS: prefer the best real (moving) clip down to
     # SOFT_VIDEO_FLOOR before ever falling to a static photo or text card, so the
     # feed is video-first (user ask: "more videos, not just photos"). fetch_clip's
     # own soft-floor guard still blocks genuinely off-topic video.
-    have, score = fetch_clip(scene["search_query"], raw,
-                              intent=_footage_intent(scene), accept_best=True)
+    if not have:
+        have, score = fetch_clip(scene["search_query"], raw,
+                                  intent=_footage_intent(scene), accept_best=True)
 
     # AI-VIDEO GAP-FILL (fal.ai): the relevance safety net. If the best stock clip
     # is off-topic (weak judge score) OR nothing was found, and a paid fal key is
@@ -2046,7 +2112,6 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # (render-160 fix: no more girl-and-rabbit / ocean-waves on a Pluto video). A
     # fal-filled scene renders as ONE strong on-topic clip (no multi-clip mixing
     # with off-topic stock sub-clips). Falls straight through if fal is off/fails.
-    fal_filled = False
     if ((not have) or (score is not None and score < FAL_RELEVANCE_FLOOR)) and _fal_can_spend():
         fal_raw = os.path.join(WORK, f"s{idx}_fal.mp4")
         if _fal_video(scene, fal_raw):
@@ -2730,6 +2795,7 @@ def main():
     # ElevenLabs voice is still used first whenever credits are available).
     voice = PROFILE.get("edge_voice") or m.get("render", {}).get("voice", "en-US-GuyNeural")
     rate  = m.get("render", {}).get("rate", "-5%")
+    _apply_vibe(m.get("vibe", "awe"))
 
     for d in (WORK, OUT):
         shutil.rmtree(d, ignore_errors=True); os.makedirs(d, exist_ok=True)

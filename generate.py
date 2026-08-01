@@ -696,6 +696,55 @@ JARGON_TERM_RE = re.compile(
     r"hemocyanin)\b", re.I)
 
 
+# ---------- VIBE + HYBRID REAL/AI FOOTAGE (mood-matched pacing, movie-like relevance) ----------
+# Every video currently gets the same flat pacing/grade/caption energy regardless
+# of subject — a violent-eruption video cuts at the identical rhythm as a
+# sleeping-dolphin video. VIBE tags the topic's emotional register so main.py can
+# vary pacing/color/caption intensity to actually MATCH it — both this channel's
+# own data (concrete/visceral topics outperform abstract/passive ones) and
+# published short-form retention research agree the right pace is topic-
+# dependent, not a constant ("educational content benefits from a steady pace,
+# entertainment thrives on varied pacing with unexpected moments").
+VIBES = ["chaotic", "peaceful", "eerie", "awe", "visceral", "tense"]
+
+
+def _normalize_vibe(m):
+    """Coerce m['vibe'] to a valid VIBES entry, defaulting to 'awe' (neutral,
+    safe) on anything missing/misspelled/invented. SOFT normalization, never a
+    validate()-style reject — a vibe tag is a presentation nicety, not a
+    correctness gate, and the writer is already under real pressure some
+    nights; one more hard-fail reason would inflate the abort rate for no
+    content-quality benefit. Mutates and returns m. Pure/testable."""
+    v = str(m.get("vibe", "")).strip().lower()
+    m["vibe"] = v if v in VIBES else "awe"
+    return m
+
+
+def _assign_footage_mode(scenes):
+    """Mark the HOOK (first scene) and PAYOFF (last scene) for a purpose-built AI
+    video instead of a generic stock search — the two beats that matter most (the
+    shot that has to stop the scroll, and the shot the whole video was building
+    to) get something made FOR this exact line instead of whatever a stock
+    library happens to have on file. Positional, not content-pattern-based: by
+    the time a manifest reaches here, validate() has already forced every
+    search_query to be concrete/filmable (UNSTOCKABLE_Q), so there's no
+    'impossible to film' signal left to key off — hook/payoff is a reliable,
+    deterministic proxy for 'this shot matters most' that holds on every topic,
+    and it lines up exactly with FAL_MAX_CLIPS' existing default of 2/video in
+    main.py, so this doesn't schedule more AI spend than was already budgeted.
+    A single-scene video (near-miss-trimmed edge case) tags just that one scene.
+    Pure/testable, no I/O — main.py's fal budget/key gating decides at render
+    time whether an 'ai' tag actually spends anything."""
+    if not scenes:
+        return scenes
+    for s in scenes:
+        s["footage_mode"] = "real"
+    scenes[0]["footage_mode"] = "ai"
+    if len(scenes) > 1:
+        scenes[-1]["footage_mode"] = "ai"
+    return scenes
+
+
 # ---------- TOPIC NOVELTY / DEDUP ----------
 # Concepts we never want to repeat regardless of what memory currently holds --
 # e.g. the starling-murmuration / flocking / emergence video the user flagged
@@ -1212,12 +1261,19 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
 For each scene give: one-sentence voiceover, a 2-4 word on_screen_text label (punchy, include the keyword where natural),
 and the search query as specified above.
 
+VIBE: pick the ONE word from [chaotic, peaceful, eerie, awe, visceral, tense] that matches how this topic actually
+FEELS, not a default. A volcano/explosion/attack story is chaotic or tense, not awe; a deep-ocean/space/sleep fact
+is peaceful or eerie; a body-horror/gross/visceral fact (stomach acid, parasites, decay) is visceral; a scale/wonder
+fact (size of the universe, deep time) is awe. This drives the video's pacing, color grade, and music — get it
+right and the video FEELS like its topic instead of every video feeling the same.
+
 Return ONLY valid JSON, no markdown, exactly:
 {{
   "title": "...",
   "viewer_job": "{job_name}",
   "keyword": "the core search phrase",
   "metaphor": "3-5 word topic tag",
+  "vibe": "one of: chaotic, peaceful, eerie, awe, visceral, tense",
   "hook": "first spoken line, 8-14 words",
   "hook_headline": "2-5 word ALL-CAPS scroll-stopper for the top of the screen — the curiosity gap in a few words, e.g. 'THIS ANIMAL CAN'T DIE' or 'YOU'D HAVE 15 SECONDS'. NOT the same words as the spoken hook; punchier and shorter. Max ~22 characters so it fits on screen.",
   "script": "full narration as one string",
@@ -3073,6 +3129,13 @@ def main():
     # Carry the topic domain through to the manifest (and thus out/post.json)
     # so funnel.py can pick the topic-matched affiliate angle per video.
     manifest["domain"] = chosen_fact.get("domain") if chosen_fact else None
+    # VIBE + hybrid real/AI footage mode — see the definitions above. Applied
+    # HERE (the single point every generation path converges on: live attempts,
+    # the near-miss/punch-up fallback, and the Gemini rescue) so it's baked into
+    # manifest.json before enqueue/dequeue ever sees it, rather than duplicated
+    # at each of those call sites.
+    _normalize_vibe(manifest)
+    _assign_footage_mode(manifest.get("scenes", []))
     # internal-only gate flag (see generate_candidate / the quality loop) — never
     # belongs in the manifest main.py renders from.
     manifest.pop("_degraded", None)
