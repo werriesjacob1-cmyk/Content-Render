@@ -8,6 +8,12 @@ on:
       length_mode:
         description: "video length: auto (A/B alternate) | long (~40-46s) | short (~28-32s)"
         default: "auto"
+      openrouter_model:
+        description: "OPTIONAL one-off OpenRouter writer model override for THIS manual run only
+          (e.g. deepseek/deepseek-chat) -- leave blank to use the repo Variable / default (openai/
+          gpt-4o). Does NOT touch the daily cron's model; for A/B testing a different writer
+          without changing the permanent default."
+        default: ""
   schedule:
     # Once a day, 13:00 UTC. The "science" profile's intended posting window
     # is evening (7-10pm) in its audience's local time (see profiles.py
@@ -137,8 +143,14 @@ jobs:
           # With paid credits we use a stronger model that follows the length/format
           # rules and clears the quality floor reliably. Env-overridable via a repo
           # Variable (Settings -> Variables -> OPENROUTER_MODEL) with no code change;
-          # default gpt-4o. Cheaper strong alt: deepseek/deepseek-chat.
-          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'openai/gpt-4o' }}
+          # default gpt-4o. Cheaper strong alt: deepseek/deepseek-chat. A manual
+          # workflow_dispatch run can override just itself via the openrouter_model
+          # input above, without touching the permanent default the daily cron uses --
+          # 2026-08-01 overnight: gpt-4o cleared 2/9 renders (~22%), failing on a spread
+          # of DIFFERENT quality axes each time (payoff, fact-restatement, missing key
+          # terms, no memorable detail) rather than one fixable pattern -- worth an A/B
+          # test against deepseek-chat before committing to a permanent model change.
+          OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'openai/gpt-4o' }}
           # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
           # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
           # mistral-small on their free tiers). Optional — absent keys are simply
