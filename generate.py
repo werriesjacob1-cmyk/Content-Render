@@ -678,6 +678,18 @@ FORMAL_CONNECTOR_RE = re.compile(
     r"\b(however|nevertheless|furthermore|consequently|notably|essentially|"
     r"arguably|thus|hence|moreover|whereas)\b", re.I)
 
+# Named-but-unexplained jargon that has shipped in real videos despite the prompt's
+# own PLAIN-SPOKEN-ENGLISH rule already banning it — self-scored 'clarity' keeps
+# missing these because the SENTENCE reads smoothly; it's the specific NOUN a smart
+# 15-year-old wouldn't know. Grows as new offenders are caught (was antisolar point/
+# rhizomorphs/mycelium/hyphae/transdifferentiation/cnidarian/senescence in the
+# prompt; render 181 shipped "mycorrhizal networks", render 182 shipped
+# "hemocyanin" — both named outright with no plain-language explanation).
+JARGON_TERM_RE = re.compile(
+    r"\b(antisolar point|refraction index|angular radius|rhizomorphs?|mycelium|"
+    r"myceli\w*|hyphae?|transdifferentiation|cnidarian|senescence|mycorrhizal|"
+    r"hemocyanin)\b", re.I)
+
 
 # ---------- TOPIC NOVELTY / DEDUP ----------
 # Concepts we never want to repeat regardless of what memory currently holds --
@@ -1061,7 +1073,10 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   "the antisolar point"; say "spreads out" or "opens up" rather than "unfurls". BANNED: literary/purple
   verbs (unfurls, cascades, dances, whispers, beckons) and unexplained jargon (antisolar point,
   refraction index, angular radius, rhizomorphs, mycelium, hyphae, transdifferentiation, cnidarian,
-  senescence — say "underground root-like threads" / "reverses back into a baby" / "aging" instead).
+  senescence, mycorrhizal (say "underground fungus threads connecting the trees" instead of naming
+  the mycorrhizal network), hemocyanin (say "a copper-based molecule" or just "why the blood runs
+  blue" instead of naming it) — say "underground root-like threads" / "reverses back into a baby" /
+  "aging" instead. This check is MECHANICAL now (validate() rejects these outright), not a suggestion.
   HARD RULE: no single word may be longer than 13 letters — if the real term is longer (e.g.
   "transdifferentiation", "photosynthesis"), you MUST replace it with a plain phrase, because a long
   word ALSO overflows the on-screen caption and gets cut off at the edges. One unfamiliar word is
@@ -1891,6 +1906,11 @@ def validate(m, job_name, fact=None):
         if fc:
             return (f"scene {i} voiceover uses the formal connector {fc.group(0)!r} — nobody talks "
                      f"like this out loud; rewrite in plain conversational language")
+        jt = JARGON_TERM_RE.search(s["voiceover"])
+        if jt:
+            return (f"scene {i} voiceover names unexplained jargon {jt.group(0)!r} — a smart "
+                     f"15-year-old wouldn't know this word; either explain it in plain words in the "
+                     f"same breath or replace it entirely (see the PLAIN SPOKEN ENGLISH rule)")
         # stock libraries return junk (flesh closeups, random labs) for these:
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):

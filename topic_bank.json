@@ -4000,19 +4000,19 @@
     {
       "id": "underwater_brain",
       "domain": "neurology",
-      "fact": "The sea cucumber has a unique nervous system that allows it to detach its internal organs, including its brain, and regrow them. This process is called evisceration.",
-      "angle": "Regrowing the Brain",
+      "fact": "The sea cucumber has no centralized brain at all, just a decentralized nerve ring — yet under threat it can eject most of its internal organs (gut, respiratory tree) through its own body wall, then fully regrow them within weeks.",
+      "angle": "No Brain, Full Organ Regrowth",
       "key_terms": [
         "sea cucumber",
         "evisceration",
-        "neuroregeneration"
+        "regeneration"
       ],
-      "whatif": "What if humans could regrow their brains like sea cucumbers? Could this ability hold the key to treating neurodegenerative diseases and injuries?",
-      "wow": "The sea cucumber's ability to regrow its brain is so efficient that it can even regrow an entire new body from a small piece of tissue.",
+      "whatif": "What if humans could regrow entire organs the way a sea cucumber regrows its guts?",
+      "wow": "Some sea cucumber species can regenerate an entirely new, complete body from just a small fragment of tissue.",
       "queries": [
-        "sea cucumber regrowing brain",
-        "evisceration in sea cucumbers",
-        "neuroregeneration in marine animals"
+        "sea cucumber evisceration",
+        "sea cucumber regeneration",
+        "sea cucumber nervous system"
       ]
     },
     {
