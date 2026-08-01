@@ -284,6 +284,17 @@ def test_validate_rejections():
     m["scenes"][0]["search_query"] = "human stomach anatomy diagram"
     check(G.validate(m, "EXPLAIN") is not None, "un-filmable anatomy query rejected")
 
+    # PLURAL bypass (render 181 bug): "system"/"organ"/"diagram" were banned but their
+    # plain -s plurals slipped straight through the old \bsystem\b-style regex --
+    # "resilient communication systems" (trees video, scene 6) shipped as the query
+    # and rendered as a lingering generic abstract network-graphic ending scene.
+    m = copy.deepcopy(FIX_BIO)
+    m["scenes"][0]["search_query"] = "resilient communication systems"
+    check(G.validate(m, "EXPLAIN") is not None, "plural 'systems' un-filmable query now rejected")
+    m = copy.deepcopy(FIX_BIO)
+    m["scenes"][0]["search_query"] = "human organs regrowing"
+    check(G.validate(m, "EXPLAIN") is not None, "plural 'organs' un-filmable query now rejected")
+
     # missing required field
     m = copy.deepcopy(FIX_PHYS); del m["hashtags"]
     check(G.validate(m, "EXPLAIN") is not None, "missing hashtags rejected")

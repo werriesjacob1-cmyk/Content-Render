@@ -1606,8 +1606,8 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
 
 # terms free stock libraries can't actually satisfy — searches for them degrade
 # into random flesh/lab/texture close-ups (see the belly-button incident)
-UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organ|cells?|microscop\w*|diagram|x-?ray|molecul\w*|"
-                           r"atoms?|quantum|abstract|concept\w*|system|"
+UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organs?|cells?|microscop\w*|diagrams?|x-?ray|molecul\w*|"
+                           r"atoms?|quantum|abstracts?|concept\w*|systems?|"
                            # jargon that returns nothing filmable (or a random
                            # texture the judge then rates a false match — the
                            # "rhizomorphs -> orange brick wall" miss). Say the
