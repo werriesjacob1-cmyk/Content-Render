@@ -2733,6 +2733,26 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         if nm_ig_err:
             print(f"  [info-gain] near-miss fallback still redundant ({nm_ig_err}) — "
                   f"shipping anyway (last-resort fallback, never blocks the run)")
+        # RE-VALIDATE THE REPAIR (render-186 bug): everything above only fixes
+        # PACING (scene/word count) and a couple of hardcoded patterns — it does
+        # NOT address whatever ORIGINAL reason put this draft in near_miss in the
+        # first place. near_miss is only ever set when validate() rejected the
+        # attempt, so if that rejection was e.g. a mechanical jargon/register/
+        # coherence violation (DANGLING_COMPARATIVE_RE, FORMAL_INVERSION_RE,
+        # JARGON_TERM_RE, the whatif/contradiction guards, ...), the repaired
+        # draft still has that exact problem — a length-only repair cannot fix
+        # it. Render 186 shipped "the antisolar point" this way: validate()
+        # correctly rejected it on EVERY attempt ("names unexplained jargon
+        # 'antisolar point'"), yet the near-miss repair only trimmed scene
+        # count/word count and shipped the untouched jargon anyway. Re-running
+        # the SAME validate() used to gate fresh attempts closes that loophole:
+        # a near-miss that still fails ANY validate() rule is exactly the junk
+        # video this pipeline exists to never publish, not a shippable fallback.
+        _repair_err = validate(nm, job_name, fact=chosen_fact)
+        if _repair_err:
+            print(f"  near-miss still fails validation after repair ({_repair_err}) — "
+                  f"abandoning this weak draft (consistency over cadence)")
+            return None
         # Mark this as a DEGRADED candidate: it reached the repair path because
         # strict validate() rejected every real attempt (usually because the LLM
         # was rate-limited/exhausted and never produced a clean script). main()

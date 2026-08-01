@@ -587,6 +587,37 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_near_miss_repair_revalidates():
+    section("generate.py: near-miss repair re-validates before shipping (render-186 bug)")
+    # Render 186 shipped "the antisolar point" verbatim even though validate()
+    # correctly rejected it as banned jargon on EVERY attempt -- because the
+    # near-miss repair path only fixes PACING (scene/word count), never re-runs
+    # validate() against the ORIGINAL rejection reason before shipping. Every
+    # attempt here returns a manifest that's structurally fine (so it's kept as
+    # a near_miss backup) but fails validate() on the jargon check, and stays
+    # broken after repair since repair never touches voiceover wording.
+    import copy as _copy, json as _json
+    bad = _copy.deepcopy(FIX_PHYS)
+    bad["scenes"][2]["voiceover"] = ("The phenomenon forms at 42 degrees from the antisolar "
+                                      "point, directly opposite the sun.")
+    bad["script"] = " ".join(s["voiceover"] for s in bad["scenes"])
+    raw = _json.dumps(bad)
+    orig_call, orig_circuit = G.call_groq, G._CIRCUIT_OPEN
+    G.call_groq = lambda _p: raw
+    G._CIRCUIT_OPEN = False
+    try:
+        res = G.generate_candidate(
+            "EXPLAIN", "explain a thing", "none",
+            {"id": "x", "fact": "Rainbows form opposite the sun.", "angle": "hidden circle",
+             "key_terms": ["rainbow"], "whatif": "", "wow": "", "queries": ["ocean"]},
+            history=[], dossier="(dossier)")
+    finally:
+        G.call_groq = orig_call
+        G._CIRCUIT_OPEN = orig_circuit
+    check(res is None, "near-miss still containing banned jargon after pacing-only repair -> "
+                        "abandoned (consistency over cadence), not shipped with the jargon intact")
+
+
 def test_caption_function_word_grouping():
     section("main._group_function_words: no lone 'OF'/'THE' frame, and NO word dropped")
     # "capable of stopping the plane" -> 'of' rides with 'stopping', 'the' with 'plane'
@@ -1075,6 +1106,7 @@ def main():
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
+    test_near_miss_repair_revalidates()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 
