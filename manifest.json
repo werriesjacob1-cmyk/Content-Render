@@ -1,79 +1,96 @@
 {
-  "title": "The Hidden Circle of Rainbows",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "full circle rainbow",
-  "metaphor": "hidden beauty of light",
-  "hook": "A rainbow is a full circle you never see.",
-  "hook_headline": "RAINBOW FULL CIRCLE",
-  "script": "A rainbow is a full circle you never see. But what if you could get high enough to see it all? The phenomenon forms at 42 degrees from the antisolar point, directly opposite the sun. Pilots have captured this complete circle from planes flying high above the Atlantic Ocean. It's not just rainbows; fogbows, formed in mist, also reveal hidden beauty. But here's the real twist: every rainbow is a private view, an angle that exists only for you.",
+  "title": "The Bacteria That Eats Plastic",
+  "viewer_job": "REFRAME",
+  "keyword": "plastic-eating bacteria",
+  "metaphor": "trash transformation",
+  "vibe": "eerie",
+  "hook": "Could bacteria learn to digest our rubbish?",
+  "hook_headline": "BACTERIA VS PLASTIC",
+  "script": "Could bacteria learn to digest our rubbish? In 2016, scientists found Ideonella sakaiensis at a Japanese recycling site, thriving on PET plastic bottles. This bacterium uses two enzymes to transform PET into energy. Despite the efficiency, it relies on a symbiotic relationship with other microbes. Its enzyme action is as efficient as termites digesting wood. Engineered versions can now break a bottle in hours, hinting at a new recycling future. Imagine: plastic waste as a feast for bacteria.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A rainbow is a full circle you never see.",
-      "on_screen_text": "full circle",
-      "search_query": "rainbow sky",
-      "motion": "zoom_in"
+      "voiceover": "Could bacteria learn to digest our rubbish?",
+      "on_screen_text": "Bacteria Digest Rubbish?",
+      "search_query": "plastic bottles pile",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "But what if you could get high enough to see it all?",
-      "on_screen_text": "see it all?",
-      "search_query": "airplane window clouds",
-      "motion": "zoom_out"
+      "voiceover": "In 2016, scientists found Ideonella sakaiensis at a Japanese recycling site, thriving on PET plastic bottles.",
+      "on_screen_text": "2016 Discovery",
+      "search_query": "recycling plant conveyor",
+      "motion": "pan",
+      "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "The phenomenon forms at 42 degrees from the antisolar point, directly opposite the sun.",
-      "on_screen_text": "42 degrees",
-      "search_query": "sunset horizon",
-      "motion": "pan_left"
+      "voiceover": "This bacterium uses two enzymes to transform PET into energy.",
+      "on_screen_text": "Enzymatic Feast",
+      "search_query": "enzyme reaction closeup",
+      "motion": "zoom_in",
+      "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Pilots have captured this complete circle from planes flying high above the Atlantic Ocean.",
-      "on_screen_text": "plane view",
-      "search_query": "pilot cockpit view",
-      "motion": "zoom_in"
+      "voiceover": "Despite the efficiency, it relies on a symbiotic relationship with other microbes.",
+      "on_screen_text": "Symbiotic Relationship",
+      "search_query": "microbe interaction",
+      "motion": "static",
+      "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "It's not just rainbows; fogbows, formed in mist, also reveal hidden beauty.",
-      "on_screen_text": "hidden beauty",
-      "search_query": "misty fogbow",
-      "motion": "pan_down"
+      "voiceover": "Its enzyme action is as efficient as termites digesting wood.",
+      "on_screen_text": "Efficient Digestion",
+      "search_query": "termites eating wood",
+      "motion": "zoom_out",
+      "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "But here's the real twist: every rainbow is a private view, an angle that exists only for you.",
-      "on_screen_text": "private view",
-      "search_query": "personal rainbow",
-      "motion": "zoom_out"
+      "voiceover": "Engineered versions can now break a bottle in hours, hinting at a new recycling future.",
+      "on_screen_text": "Future Recycling",
+      "search_query": "plastic bottle breaking",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Imagine: plastic waste as a feast for bacteria.",
+      "on_screen_text": "Plastic Feast",
+      "search_query": "bacteria consuming",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Have you ever seen a complete rainbow circle?",
-    "Would you fly high enough to see it?",
-    "Every rainbow is just for you."
+    "Could bacteria digest plastic waste?",
+    "How does Ideonella sakaiensis eat plastic?",
+    "What if waste was food for microbes?"
   ],
   "hashtags": [
-    "#rainbow",
-    "#nature",
-    "#optics",
-    "#weather",
-    "#wonder"
+    "#science",
+    "#bacteria",
+    "#recycling",
+    "#innovation",
+    "#environment",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-01_the-hidden-circle-of-rainbows",
-  "cta_style": "COMMENT",
-  "domain": "light"
+  "video_id": "science_2026-08-01_the-bacteria-that-eats-plastic",
+  "cta_style": "LOOP",
+  "domain": "biology"
 }
