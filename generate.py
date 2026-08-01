@@ -1107,7 +1107,11 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   question, the mechanism/why it's true, a second independent consequence, what it means for YOU —
   never a rephrasing of the reveal in new words. A script that circles back to the same reveal even
   twice is an automatic FAIL: each scene is a NEW fact about the topic, not an echo of the last one:
-  what -> how -> why it's stranger than it sounds -> what it means for YOU.
+  what -> how -> why it's stranger than it sounds -> what it means for YOU. CONCRETE EXAMPLE OF THE
+  FAIL: hook says "X can survive losing 60% of its body mass" — a LATER scene must NOT also say
+  "even after losing more than half its mass, it survives" — same fact, new words, still a FAIL.
+  Before writing each scene, check every EARLIER scene: does this one repeat a number, name, or
+  claim already made, even paraphrased? If yes, replace it with something that hasn't been said yet.
 - MIDPOINT TURN: around scene 5-7, pivot to a genuinely NEW dimension of the topic — a second,
   independent surprise the viewer has not heard yet. The turn is carried by the NEW FACT itself,
   not by a stock transition phrase. BANNED opener phrases (overused, and they force the script into
