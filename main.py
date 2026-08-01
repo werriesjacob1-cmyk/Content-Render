@@ -1065,6 +1065,18 @@ def _relevance_words(text):
             if len(w) > 2 and w not in _QUERY_STOPWORDS}
 
 
+def _subject_word(query):
+    """The query's SUBJECT — its first content word, in order (e.g. 'octopus' out
+    of 'octopus blood vessels'). Every scene search_query is written subject-first
+    ('octopus swimming ocean', 'tree communication'), so this reliably names the
+    one animal/object/place the clip actually needs to show. Returns '' if the
+    query has no content word at all."""
+    for w in re.findall(r"[a-z]+", (query or "").lower()):
+        if len(w) > 2 and w not in _QUERY_STOPWORDS:
+            return w
+    return ""
+
+
 def _best_keyword_match(query, cands, min_overlap=0.5, min_shared=2):
     """Index of the candidate whose OWN description clearly matches the query
     SUBJECT by keyword overlap — or None if none clears the bar (ambiguous, so
@@ -1078,9 +1090,18 @@ def _best_keyword_match(query, cands, min_overlap=0.5, min_shared=2):
     qw = _relevance_words(query)
     if len(qw) < 2:
         return None
+    # SUBJECT REQUIRED: a candidate must name the query's actual subject (e.g.
+    # 'octopus'), not just share OTHER words with it. Without this, a sea turtle
+    # clip cleared "octopus swimming ocean" purely on "swimming"+"ocean" (frac
+    # 0.67, shared 2) and shipped as an octopus video's HOOK shot with zero LLM
+    # judge ever looking at it — the animal itself was never checked.
+    subject = _subject_word(query)
     best_i, best_frac, best_shared = None, 0.0, 0
     for i, c in enumerate(cands):
-        shared = len(qw & _relevance_words(c.get("desc", "")))
+        desc_words = _relevance_words(c.get("desc", ""))
+        if subject and subject not in desc_words:
+            continue
+        shared = len(qw & desc_words)
         frac = shared / len(qw)
         if frac > best_frac or (frac == best_frac and shared > best_shared):
             best_i, best_frac, best_shared = i, frac, shared
@@ -1844,7 +1865,7 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
     if need <= 0:
         return paths
     q = scene.get("search_query", "") or scene.get("voiceover", "")
-    qw = _relevance_words(q)
+    subject = _subject_word(q)
     seen = set(exclude_ids)
     # Build a pooled, de-duplicated candidate list across the query variants. Stop
     # early once we have plenty to choose from (need*4) to bound network work.
@@ -1855,7 +1876,16 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
                 cid = c.get("id")
                 if cid is None or cid in seen:
                     continue
-                if len(qw) >= 2 and not (qw & _relevance_words(c.get("desc", ""))):
+                # ON-SUBJECT, not just on-theme: require the query's actual SUBJECT
+                # word (e.g. 'octopus'), not any shared word. The old check accepted
+                # a candidate sharing ANY content word with the query — but generic
+                # modifiers like "close", "ocean", "swimming", "blood", "handling"
+                # show up in totally unrelated stock (a sea turtle for "octopus
+                # swimming ocean"; a lipstick tube for "octopus blood vessels"; an
+                # orange being cut for "octopus close up") because THEY share a
+                # word too, just not the subject. No subject word (rare) = no
+                # filter, same as before.
+                if subject and subject not in _relevance_words(c.get("desc", "")):
                     continue  # keep sub-clips on-subject
                 seen.add(cid)          # provisional: don't pool the same id twice
                 pool.append(c)

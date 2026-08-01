@@ -248,6 +248,19 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "formal connector word ('however') rejected")
 
+    # render 181/182 named jargon outright with no plain-language explanation
+    # ("mycorrhizal networks", "hemocyanin") despite the prompt already banning it --
+    # self-scored clarity missed both, so this is now a mechanical reject.
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "An underground network of mycorrhizal fungi links the trees."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "named jargon ('mycorrhizal') rejected")
+
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "Its blue blood, rich in hemocyanin, thrives in the cold."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is not None, "named jargon ('hemocyanin') rejected")
+
     # command ending: "send this to a friend" (the render-67 Krakatoa flaw). The
     # rubric bans command endings; SHARE is out of the rotation and the guard now
     # rejects the phrasing outright.
@@ -394,6 +407,27 @@ def test_local_footage_relevance():
     # too few content words to decide locally -> None
     check(M._best_keyword_match("the it a", cands) is None, "too-short query defers to LLM")
     check(M._relevance_words("The Ocean's Waves") == {"ocean", "waves"}, "content words extracted")
+
+    section("main._subject_word / SUBJECT-REQUIRED footage matching (render-182 octopus/turtle bug)")
+    # render 182 shipped a SEA TURTLE as an octopus video's hook clip: the old
+    # keyword check accepted it because it shared "swimming"+"ocean" (frac 0.67,
+    # shared 2) with query "octopus swimming ocean" -- the subject noun itself
+    # was never required to appear. Same render also cut in an orange being
+    # sliced ("octopus close up" shared only "close") and a lipstick tube
+    # ("octopus blood vessels" shared only "blood").
+    check(M._subject_word("octopus swimming ocean") == "octopus", "subject = first content word")
+    check(M._subject_word("tree communication") == "tree", "subject word on a 2-word query")
+    check(M._subject_word("the of a") == "", "no content words -> empty subject")
+    turtle_cands = [{"desc": "sea turtle swimming in green ocean water", "id": 1},
+                    {"desc": "octopus swimming through open ocean", "id": 2}]
+    check(M._best_keyword_match("octopus swimming ocean", turtle_cands) == 1,
+          "turtle sharing 'swimming'+'ocean' is REJECTED; the real octopus clip wins")
+    orange_only = [{"desc": "close up of hand slicing a fresh orange", "id": 1}]
+    check(M._best_keyword_match("octopus close up", orange_only) is None,
+          "orange clip sharing only 'close' does not win -- falls to the LLM judge, not shipped blind")
+    lipstick_only = [{"desc": "woman applying blood red lipstick tube closeup", "id": 1}]
+    check(M._best_keyword_match("octopus blood vessels", lipstick_only) is None,
+          "lipstick clip sharing only 'blood' does not win -- falls to the LLM judge, not shipped blind")
 
 
 def test_keywords_from_text():
