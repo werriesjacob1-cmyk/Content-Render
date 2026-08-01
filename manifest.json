@@ -1,87 +1,80 @@
 {
-  "title": "The Sea Cucumber's Regrowing Brain",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "regrowing brain",
-  "metaphor": "sea cucumber marvel",
-  "hook": "Imagine if you could regrow your brain in a week.",
-  "hook_headline": "BRAIN REGENERATION",
-  "script": "Imagine if you could regrow your brain in a week. How does the sea cucumber achieve this marvel? Their nervous system ejects organs, including the brain, and regrows them. The Holothuria parvula species can lose 60% of its body mass and survive. They rely on a decentralized nerve net, not a central brain. This regrowth can even create a new body from a small piece. What if humans had this power?",
+  "title": "Cosmic Origins of Gold",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "gold's cosmic birth",
+  "metaphor": "stellar collisions",
+  "hook": "Every gold atom in your ring was born in a cosmic explosion.",
+  "hook_headline": "GOLD'S VIOLENT BIRTH",
+  "script": "Every atom of gold in your jewelry was born from a cosmic collision! Ever wondered if you could trace its roots to the stars? Neutron star collisions unleash energy equal to 1,000 supernovae, forming gold instantly! Picture squeezing all humanity into a sugar cube; that's a neutron star's density! GW170817, the first collision witnessed, confirmed these events forge elements heavier than iron! This gold predates the Sun, born when the fabric of space-time rippled!",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Imagine if you could regrow your brain in a week.",
-      "on_screen_text": "Regrow Your Brain",
-      "search_query": "brain regeneration",
+      "voiceover": "Every atom of gold in your jewelry was born from a cosmic collision!",
+      "on_screen_text": "Cosmic Gold",
+      "search_query": "gold jewelry closeup",
       "motion": "zoom_in"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "How does the sea cucumber achieve this marvel?",
-      "on_screen_text": "Sea Cucumber Marvel",
-      "search_query": "sea cucumber regrowing brain",
+      "voiceover": "Ever wondered if you could trace its roots to the stars?",
+      "on_screen_text": "Trace Its Origin?",
+      "search_query": "galaxy collision space",
       "motion": "zoom_out"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Their nervous system ejects organs, including the brain, and regrows them.",
-      "on_screen_text": "Ejects & Regrows",
-      "search_query": "evisceration in sea cucumbers",
-      "motion": "zoom_out"
+      "voiceover": "Neutron star collisions unleash energy equal to 1,000 supernovae, forming gold instantly!",
+      "on_screen_text": "1,000 Supernovae",
+      "search_query": "supernova explosion",
+      "motion": "zoom_in"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "The Holothuria parvula species can lose 60% of its body mass and survive.",
-      "on_screen_text": "Survival Mechanism",
-      "search_query": "Holothuria parvula",
+      "voiceover": "Picture squeezing all humanity into a sugar cube; that's a neutron star's density!",
+      "on_screen_text": "Star Density",
+      "search_query": "dense star",
       "motion": "zoom_in"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "They rely on a decentralized nerve net, not a central brain.",
-      "on_screen_text": "Decentralized Nerves",
-      "search_query": "sea cucumber nerve net",
-      "motion": "static"
+      "voiceover": "GW170817, the first collision witnessed, confirmed these events forge elements heavier than iron!",
+      "on_screen_text": "GW170817",
+      "search_query": "neutron star collision",
+      "motion": "zoom_out"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "This regrowth can even create a new body from a small piece.",
-      "on_screen_text": "Body Regeneration",
-      "search_query": "neuroregeneration in marine animals",
-      "motion": "zoom_out"
-    },
-    {
-      "id": 7,
-      "duration": 5,
-      "voiceover": "What if humans had this power?",
-      "on_screen_text": "Human Potential?",
-      "search_query": "human brain regeneration",
-      "motion": "zoom_in"
+      "voiceover": "This gold predates the Sun, born when the fabric of space-time rippled!",
+      "on_screen_text": "Older Than Sun",
+      "search_query": "molten gold pour",
+      "motion": "static"
     }
   ],
   "captions": [
-    "Could we regrow our brains like sea cucumbers?",
-    "What if humans had this power?",
-    "Ever heard of evisceration?"
+    "gold's cosmic birth? Did you know?",
+    "What if gold is older than the Sun?",
+    "How dense are neutron stars?"
   ],
   "hashtags": [
     "#science",
-    "#biology",
-    "#marinelife",
-    "#neuroregeneration",
-    "#weirdfacts"
+    "#space",
+    "#facts",
+    "#cosmos",
+    "#gold",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-01_the-sea-cucumber-s-regrowing-brain",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "neurology"
+  "video_id": "science_2026-08-01_cosmic-origins-of-gold",
+  "cta_style": "LOOP",
+  "domain": "chemistry"
 }
