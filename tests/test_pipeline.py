@@ -441,6 +441,36 @@ def test_local_footage_relevance():
           "lipstick clip sharing only 'blood' does not win -- falls to the LLM judge, not shipped blind")
 
 
+def test_final_qa():
+    section("main._qa_frame_timestamps / _final_qa_check: post-render holistic QA")
+    # pure math: n evenly-spaced timestamps, inset 3% from each end
+    ts = M._qa_frame_timestamps(40.0, 8)
+    check(len(ts) == 8, "8 requested -> 8 timestamps")
+    check(ts[0] > 0 and ts[-1] < 40.0, "first/last timestamp inset from the hard edges (no fade black frames)")
+    check(all(ts[i] < ts[i + 1] for i in range(len(ts) - 1)), "timestamps strictly increasing")
+    check(abs((ts[-1] - ts[0]) - (ts[1] - ts[0]) * 7) < 1e-6, "evenly spaced")
+    check(M._qa_frame_timestamps(40.0, 1) == [20.0], "n=1 -> the midpoint")
+    check(M._qa_frame_timestamps(0, 8) == [], "zero duration -> no timestamps (fail-safe, no crash)")
+    check(M._qa_frame_timestamps(40.0, 0) == [], "n=0 -> no timestamps")
+    check(M._qa_frame_timestamps(-5, 8) == [], "negative duration -> no timestamps")
+
+    # _final_qa_check must be a total no-op (report ran:false, no exception, no
+    # network) when GEMINI_API_KEY isn't set -- same fail-safe contract as every
+    # other best-effort AI feature in this file (fal video, AI image, vision judge)
+    import tempfile, json as _json
+    _out_bak = M.OUT
+    _key_bak = os.environ.pop("GEMINI_API_KEY", None)
+    try:
+        M.OUT = tempfile.mkdtemp()
+        M._final_qa_check("/nonexistent/video.mp4", {"scenes": [{"voiceover": "x"}]})
+        rep = _json.load(open(os.path.join(M.OUT, "qa_report.json")))
+        check(rep == {"ran": False}, "no GEMINI_API_KEY -> qa_report.json written as a clean no-op")
+    finally:
+        M.OUT = _out_bak
+        if _key_bak is not None:
+            os.environ["GEMINI_API_KEY"] = _key_bak
+
+
 def test_keywords_from_text():
     section("main._keywords_from_text: salient nouns, stopwords dropped")
     kw = M._keywords_from_text("The churning liquid outer core generates a magnetic field")
@@ -1018,6 +1048,7 @@ def main():
     test_diversify_queries()
     test_footage_intent_anchors_on_subject()
     test_local_footage_relevance()
+    test_final_qa()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()

@@ -302,6 +302,7 @@ jobs:
             out/platforms.json
             out/platform_text.json
             out/funnel.json
+            out/qa_report.json
             out/proof_frame.png
           retention-days: 7
 
@@ -323,7 +324,7 @@ jobs:
           for f in tiktok_reels_shorts instagram_reels youtube_shorts facebook_reels square landscape final; do
             [ -f "out/$f.mp4" ] && FILES="$FILES out/$f.mp4"
           done
-          for f in post platforms platform_text funnel; do
+          for f in post platforms platform_text funnel qa_report; do
             [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
           done
           # the designed cover thumbnail (bold hook on the best clean frame) so

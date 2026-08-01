@@ -856,6 +856,126 @@ def _gemini_vision_pick(intent, candidates):
     return None
 
 
+# ---------- FINAL HOLISTIC QA (post-render sanity check) ----------
+# Everything above judges footage scene-by-scene DURING selection, against that
+# scene's own intent — nothing looks at the ASSEMBLED video afterward. This is
+# the automated version of the frame-by-frame manual review this channel has
+# needed on every render so far: sample the finished, CAPTIONED video, hand it
+# to Gemini vision with the full script, and get a holistic verdict logged
+# right in the render output (and written to out/qa_report.json, shipped as a
+# release asset) — so a bad video is FLAGGED without anyone downloading and
+# watching it by hand first. Best-effort and NEVER blocking: a QA failure or
+# unavailability never fails the render. This is a VISIBILITY tool, not a new
+# quality gate — a hard gate here risks blocking a genuinely good video on a
+# single vision-judge false negative, and weak SCRIPTS are already blocked
+# pre-render; this adds eyes on the one thing nothing currently checks, which
+# is whether the assembled result actually matches what was intended.
+FINAL_QA = os.environ.get("FINAL_QA", "1") != "0"
+FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
+
+
+def _qa_frame_timestamps(dur, n):
+    """n evenly-spaced timestamps spanning `dur` seconds, inset 3% from each
+    end so sampling never lands on a fade-in/fade-out black frame. Pure math
+    (no ffmpeg), so it's testable without a real video. Returns [] for a
+    degenerate duration/count so callers can treat that as 'nothing to do'."""
+    if not dur or dur <= 0 or n <= 0:
+        return []
+    if n == 1:
+        return [dur / 2]
+    pad = dur * 0.03
+    span = dur - 2 * pad
+    return [pad + span * i / (n - 1) for i in range(n)]
+
+
+def _extract_qa_frames(video, n, dest_dir):
+    """Best-effort JPEG frame extraction at _qa_frame_timestamps(...) — returns
+    whatever ffmpeg actually produced (may be short of `n` on a probe/seek
+    failure); callers already treat 'fewer frames than expected' as fine."""
+    dur = ffprobe_dur(video)
+    times = _qa_frame_timestamps(dur, n)
+    if not times:
+        return []
+    os.makedirs(dest_dir, exist_ok=True)
+    paths = []
+    for i, t in enumerate(times):
+        p = os.path.join(dest_dir, f"qa_{i:02d}.jpg")
+        try:
+            run(["ffmpeg", "-y", "-ss", f"{t:.2f}", "-i", video, "-frames:v", "1", "-q:v", "3", p])
+            if os.path.exists(p) and os.path.getsize(p) > 1000:
+                paths.append(p)
+        except Exception:  # noqa: BLE001 — skip a bad frame, keep going
+            continue
+    return paths
+
+
+def _final_qa_check(video, m):
+    """Best-effort holistic sanity check on the ASSEMBLED, captioned video —
+    never raises, never blocks the render. Always writes out/qa_report.json
+    (shipped as a release asset) and prints a single [final-qa] summary line
+    so a bad video is visible in the render log without anyone downloading and
+    watching it."""
+    out_path = os.path.join(OUT, "qa_report.json")
+    report = {"ran": False}
+    try:
+        key = os.environ.get("GEMINI_API_KEY", "")
+        if not (FINAL_QA and key):
+            return
+        frames = _extract_qa_frames(video, FINAL_QA_FRAMES, os.path.join(WORK, "qa_frames"))
+        if len(frames) < 3:
+            print(f"[final-qa] skipped — only {len(frames)} frame(s) extracted")
+            return
+        script = " ".join(s.get("voiceover", "") for s in m.get("scenes", []))
+        import base64
+        parts = [{"text": (
+            f"You are doing FINAL QUALITY CONTROL on a finished short-form science video, "
+            f"sampled as {len(frames)} evenly-spaced frames across its full length, in order. "
+            f"The full narration is: \"{script}\"\n\n"
+            f"Judge the ASSEMBLED video, not the script. Answer honestly and strictly:\n"
+            f"1. footage_matches_narration (0-10): across the frames, does what's ON SCREEN "
+            f"actually match what the topic is about? Score low if you see an unrelated subject, "
+            f"a generic/off-topic clip, or footage that contradicts the topic.\n"
+            f"2. visual_variety (0-10): is there real variety across the frames, or does it look "
+            f"like the same clip/color/composition repeated throughout?\n"
+            f"3. caption_legible (0-10): are on-screen captions (if any are visible) readable, not "
+            f"cut off, not overlapping other text? Use 10 if no captions are visible to judge.\n"
+            f"4. biggest_issue: one short sentence naming the single worst concrete problem you "
+            f"see, or \"none\" if it looks clean.\n"
+            f"Return ONLY JSON: {{\"footage_matches_narration\": 0, \"visual_variety\": 0, "
+            f"\"caption_legible\": 0, \"biggest_issue\": \"...\"}}")}]
+        for i, fp in enumerate(frames):
+            parts.append({"text": f"Frame {i + 1}/{len(frames)}:"})
+            parts.append({"inline_data": {"mime_type": "image/jpeg",
+                                          "data": base64.b64encode(open(fp, "rb").read()).decode()}})
+        body = json.dumps({"contents": [{"parts": parts}],
+                           "generationConfig": {"temperature": 0, "maxOutputTokens": 200,
+                                                "thinkingConfig": {"thinkingBudget": 0}}}).encode()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
+        rq = urllib.request.Request(url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(rq, timeout=60) as r:
+            data = json.loads(r.read().decode())
+        txt = data["candidates"][0]["content"]["parts"][0]["text"]
+        verdict = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+        report = {"ran": True, "frames_sampled": len(frames), **verdict}
+        fm = verdict.get("footage_matches_narration")
+        vv = verdict.get("visual_variety")
+        cl = verdict.get("caption_legible")
+        issue = verdict.get("biggest_issue", "")
+        flag = "FLAG" if (isinstance(fm, (int, float)) and fm < 6) else "ok"
+        print(f"[final-qa] {flag} footage_match={fm}/10 variety={vv}/10 captions={cl}/10 "
+              f"issue={issue!r} ({len(frames)} frames sampled)")
+    except Exception as e:  # noqa: BLE001 — best-effort, must never break the render
+        print(f"[final-qa] unavailable ({type(e).__name__}: {str(e)[:150]})")
+        report = {"ran": False, "error": str(e)[:200]}
+    finally:
+        try:
+            json.dump(report, open(out_path, "w"), indent=2)
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def _groq_judge(intent, candidates, _allow_retry=True):
     """Pick the best-matching clip AND score its relevance 0-10, so a bad
     batch can be rejected outright instead of shipping the least-bad clip
@@ -2854,6 +2974,7 @@ def main():
     cover_src = scene_files[0] if scene_files else body
     if not make_cover(cover_src, m, os.path.join(OUT, "cover.jpg")) and cover_src is not body:
         make_cover(body, m, os.path.join(OUT, "cover.jpg"))
+    _final_qa_check(final, m)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 
