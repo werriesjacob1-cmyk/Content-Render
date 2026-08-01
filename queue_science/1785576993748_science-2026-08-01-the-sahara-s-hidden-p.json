@@ -1,0 +1,71 @@
+{
+  "title": "The Sahara's Hidden Past",
+  "viewer_job": "REFRAME",
+  "keyword": "green Sahara",
+  "metaphor": "desert oasis",
+  "hook": "The Sahara was once a green land",
+  "hook_headline": "SAHARA: NOT ALWAYS SAND",
+  "script": "The Sahara was once a green land What did it look like when the first pyramids were being planned? The Sahara's green-to-desert cycle is driven by Earth's axial precession Cave paintings deep in the Sahara still show people swimming The same area is now the dustiest place on Earth",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "The Sahara was once a green land",
+      "on_screen_text": "Green Sahara",
+      "search_query": "sahara desert dunes",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "What did it look like when the first pyramids were being planned?",
+      "on_screen_text": "Ancient Pyramids",
+      "search_query": "african savanna wildlife",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "The Sahara's green-to-desert cycle is driven by Earth's axial precession",
+      "on_screen_text": "Axial Precession",
+      "search_query": "desert oasis water",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "Cave paintings deep in the Sahara still show people swimming",
+      "on_screen_text": "Cave Paintings",
+      "search_query": "ancient cave paintings",
+      "motion": "pan"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "The same area is now the dustiest place on Earth",
+      "on_screen_text": "Dusty Sahara",
+      "search_query": "dry cracked desert",
+      "motion": "zoom_in"
+    }
+  ],
+  "captions": [
+    "Did you know the Sahara was once green? #greenSahara",
+    "The Sahara's past is full of surprises",
+    "Share your thoughts on the Sahara's transformation"
+  ],
+  "hashtags": [
+    "#Sahara",
+    "#Desert",
+    "#GreenSahara",
+    "#AncientHistory",
+    "#Science"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-01_the-sahara-s-hidden-past",
+  "cta_style": "LOOP",
+  "domain": "deep_time"
+}

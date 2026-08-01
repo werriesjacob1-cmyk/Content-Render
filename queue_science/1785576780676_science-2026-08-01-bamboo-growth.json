@@ -1,0 +1,79 @@
+{
+  "title": "Bamboo Growth",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "bamboo growth",
+  "metaphor": "fastest plant",
+  "hook": "You can watch bamboo rise",
+  "hook_headline": "PLANTS THAT OUTRUN YOU",
+  "script": "You can watch bamboo rise It grows nearly a meter between sunrise and sunset Bamboo achieves its speed by pumping water under high pressure into thousands of pre-formed cells What if a plant could outpace you Bamboo isn't a tree at all, it's a grass, and it's the fastest growing plant on the planet You can hear it grow, with distinct popping and creaking sounds as it expands",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "You can watch bamboo rise",
+      "on_screen_text": "Bamboo Growth",
+      "search_query": "green bamboo stalks",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 3,
+      "voiceover": "It grows nearly a meter between sunrise and sunset",
+      "on_screen_text": "Fastest Plant",
+      "search_query": "bamboo forest sunlight",
+      "motion": "pan"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "Bamboo achieves its speed by pumping water under high pressure into thousands of pre-formed cells",
+      "on_screen_text": "How Bamboo Grows",
+      "search_query": "bamboo grove closeup",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 3,
+      "voiceover": "What if a plant could outpace you",
+      "on_screen_text": "Bamboo Speed",
+      "search_query": "bamboo swaying in wind",
+      "motion": "pan"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Bamboo isn't a tree at all, it's a grass, and it's the fastest growing plant on the planet",
+      "on_screen_text": "Bamboo Facts",
+      "search_query": "bamboo field landscape",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 6,
+      "duration": 3,
+      "voiceover": "You can hear it grow, with distinct popping and creaking sounds as it expands",
+      "on_screen_text": "Bamboo Sounds",
+      "search_query": "bamboo creaking audio",
+      "motion": "static"
+    }
+  ],
+  "captions": [
+    "What's the fastest growing plant? Is it bamboo? Yes or no?",
+    "Bamboo can grow almost a meter in a day",
+    "Bamboo is actually a type of grass"
+  ],
+  "hashtags": [
+    "#bamboo",
+    "#plantgrowth",
+    "#fastestplant",
+    "#grass",
+    "#nature"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-01_bamboo-growth",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "plants"
+}

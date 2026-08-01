@@ -1,0 +1,71 @@
+{
+  "title": "Spider Silk Strength",
+  "viewer_job": "REFRAME",
+  "keyword": "spider silk",
+  "metaphor": "super material",
+  "hook": "Spider silk beats steel",
+  "hook_headline": "SILK STRONGER THAN STEEL",
+  "script": "Spider silk beats steel What if a strand were as thick as a pencil? It would support a Boeing 747 A spider spins this super-material at room temperature from water and protein Something no human factory can yet copy",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Spider silk beats steel",
+      "on_screen_text": "Spider Silk",
+      "search_query": "spider web dew drops",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "What if a strand were as thick as a pencil?",
+      "on_screen_text": "Super Strong",
+      "search_query": "spider spinning web",
+      "motion": "static"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "It would support a Boeing 747",
+      "on_screen_text": "Weight Champion",
+      "search_query": "web macro morning",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "A spider spins this super-material at room temperature from water and protein",
+      "on_screen_text": "Nature's Factory",
+      "search_query": "spider silk production",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Something no human factory can yet copy",
+      "on_screen_text": "Unmatched Strength",
+      "search_query": "spider web close up",
+      "motion": "pan"
+    }
+  ],
+  "captions": [
+    "What's the strongest natural material? #spidersilk",
+    "Spider silk is stronger than steel!",
+    "Can you guess what's stronger than Kevlar? #spiderweb"
+  ],
+  "hashtags": [
+    "#spidersilk",
+    "#supermaterial",
+    "#nature",
+    "#strength",
+    "#science"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-01_spider-silk-strength",
+  "cta_style": "LOOP",
+  "domain": "materials"
+}

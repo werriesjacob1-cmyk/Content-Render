@@ -1,0 +1,85 @@
+{
+  "title": "Your Body's Hidden Speed",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "nerve speed",
+  "metaphor": "body's fastest path",
+  "hook": "Your nerves fire faster than a Formula 1 car",
+  "hook_headline": "YOU'RE FASTER THAN YOU THINK",
+  "script": "Your nerves fire faster than a Formula 1 car What if they were slower? You already feel a stubbed toe a beat late Nerve signals can travel up to 270 miles per hour That's about 120 meters every second, quicker than a Formula 1 car at full throttle, all happening inside your own body This speed is why you react so quickly to danger Your body is faster than you think, and it's all thanks to your nerves",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Your nerves fire faster than a Formula 1 car",
+      "on_screen_text": "Nerve Speed",
+      "search_query": "race car speed",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "What if they were slower?",
+      "on_screen_text": "Slow Reaction",
+      "search_query": "slow motion crash",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "You already feel a stubbed toe a beat late",
+      "on_screen_text": "Pain Delay",
+      "search_query": "stubbed toe reaction",
+      "motion": "pan"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "Nerve signals can travel up to 270 miles per hour",
+      "on_screen_text": "Fast Signals",
+      "search_query": "lightning storm night",
+      "motion": "pan"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "That's about 120 meters every second, quicker than a Formula 1 car at full throttle, all happening inside your own body",
+      "on_screen_text": "Body Speed",
+      "search_query": "fiber optic lights",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "This speed is why you react so quickly to danger",
+      "on_screen_text": "Quick Reflexes",
+      "search_query": "danger reaction",
+      "motion": "pan"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Your body is faster than you think, and it's all thanks to your nerves",
+      "on_screen_text": "Nerve Power",
+      "search_query": "human body systems",
+      "motion": "zoom_out"
+    }
+  ],
+  "captions": [
+    "What's the fastest thing about you? Nerve speed?",
+    "Your body's hidden speed",
+    "The surprising truth about your nerves"
+  ],
+  "hashtags": [
+    "#science",
+    "#humanbody",
+    "#nervoussystem"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-01_your-body-s-hidden-speed",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "body"
+}

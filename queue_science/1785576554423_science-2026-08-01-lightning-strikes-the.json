@@ -1,0 +1,71 @@
+{
+  "title": "Lightning Strikes the Earth 100 Times a Second",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "lightning strikes",
+  "metaphor": "Electric Storms",
+  "hook": "Lightning strikes the Earth 100 times every second",
+  "hook_headline": "LIGHTNING STRIKES 100 TIMES",
+  "script": "Lightning strikes the Earth 100 times every second This constant violence is hidden from us The same lightning that can kill also shapes our planet What if you could see every lightning strike on Earth at once? Somewhere on Earth, right now, lightning is striking about a hundred times over",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Lightning strikes the Earth 100 times every second",
+      "on_screen_text": "Lightning",
+      "search_query": "lightning storm",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "This constant violence is hidden from us",
+      "on_screen_text": "Hidden Danger",
+      "search_query": "storm clouds dramatic",
+      "motion": "static"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "The same lightning that can kill also shapes our planet",
+      "on_screen_text": "Shaping Earth",
+      "search_query": "lightning strike landscape",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "What if you could see every lightning strike on Earth at once?",
+      "on_screen_text": "Electric Storm",
+      "search_query": "multiple lightning strikes",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 5,
+      "duration": 4,
+      "voiceover": "Somewhere on Earth, right now, lightning is striking about a hundred times over",
+      "on_screen_text": "100 Strikes",
+      "search_query": "lightning storm time lapse",
+      "motion": "zoom_out"
+    }
+  ],
+  "captions": [
+    "Lightning strikes the Earth 100 times a second - can you believe it?",
+    "The constant violence of lightning is hidden from us",
+    "What if you could see every lightning strike on Earth at once?"
+  ],
+  "hashtags": [
+    "#lightning",
+    "#storms",
+    "#weather",
+    "#science",
+    "#electricity"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-01_lightning-strikes-the-earth-100-times-a-",
+  "cta_style": "COMMENT",
+  "domain": "earth"
+}

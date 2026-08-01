@@ -1,126 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-23_molten-glass-rain-on-a-blue-planet",
-      "metaphor": "alien weather phenomena",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "hook_frame": "SCALE_SHOCK",
-      "title": "Molten Glass Rain on a Blue Planet",
-      "fact_id": "glass_rain_exoplanet",
-      "domain": "space",
-      "hook": "What if rain fell sideways at 8,000 kilometres per hour?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "overall": 7.5
-      }
-    },
-    {
-      "video_id": "science_2026-07-23_the-toughest-animal-you-can-t-see",
-      "metaphor": "invisible resilience",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "The Toughest Animal You Can't See",
-      "fact_id": "tardigrade",
-      "domain": "animals",
-      "hook": "What if you left a tardigrade in the vacuum of space?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 7.0,
-        "payoff": 9.0,
-        "rewatch": 4.0,
-        "clarity": 9.0,
-        "overall": 7.17
-      }
-    },
-    {
-      "video_id": "science_2026-07-23_the-color-mystery-of-mantis-shrimp",
-      "metaphor": "color perception",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "IMPOSSIBLE_FACT",
-      "title": "The Color Mystery of Mantis Shrimp",
-      "fact_id": "mantis_shrimp_eyes",
-      "domain": "senses",
-      "hook": "Mantis shrimp have up to 16 color receptors \u2014 so what do they see?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
-      "video_id": "science_2026-07-23_the-astonishing-possibilities-of-a-shuff",
-      "metaphor": "incredible card arrangements",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Astonishing Possibilities of a Shuffled Deck",
-      "fact_id": "card_shuffle_52",
-      "domain": "math",
-      "hook": "What if every shuffled deck has never existed before?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 4.0,
-        "clarity": 7.0,
-        "overall": 6.83
-      }
-    },
-    {
-      "video_id": "science_2026-07-23_the-element-discovered-before-it-existed",
-      "metaphor": "cosmic element mystery",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "The Element Discovered Before It Existed on Earth",
-      "fact_id": "helium_found_on_sun",
-      "domain": "chemistry",
-      "hook": "How do you discover something 93 million miles away before finding it at home?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 6.0,
-        "payoff": 8.0,
-        "rewatch": 5.0,
-        "clarity": 7.0,
-        "overall": 6.83
-      }
-    },
-    {
       "video_id": "science_2026-07-23_what-happens-if-you-re-thrown-into-space",
       "metaphor": "science fiction reality",
       "viewer_job": "REFRAME",
@@ -337,6 +217,131 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 6.86
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_spider-silk-strength",
+      "metaphor": "super material",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "COMPARISON_COLLISION",
+      "title": "Spider Silk Strength",
+      "fact_id": "spider_silk_steel",
+      "domain": "materials",
+      "hook": "Spider silk beats steel",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 5.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.43
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_lightning-strikes-the-earth-100-times-a-",
+      "metaphor": "Electric Storms",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "Lightning Strikes the Earth 100 Times a Second",
+      "fact_id": "lightning_strikes_earth",
+      "domain": "earth",
+      "hook": "Lightning strikes the Earth 100 times every second",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 4.0,
+        "escalation": 5.0,
+        "payoff": 5.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 6.29
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_bamboo-growth",
+      "metaphor": "fastest plant",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Bamboo Growth",
+      "fact_id": "bamboo_growth",
+      "domain": "plants",
+      "hook": "You can watch bamboo rise",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 5.0,
+        "rewatch": 4.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 6.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_the-sahara-s-hidden-past",
+      "metaphor": "desert oasis",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "CHALLENGE",
+      "title": "The Sahara's Hidden Past",
+      "fact_id": "green_sahara",
+      "domain": "deep_time",
+      "hook": "The Sahara was once a green land",
+      "structure": {
+        "scene_count": 5,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 5.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.43
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_your-body-s-hidden-speed",
+      "metaphor": "body's fastest path",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Your Body's Hidden Speed",
+      "fact_id": "nerve_speed",
+      "domain": "body",
+      "hook": "Your nerves fire faster than a Formula 1 car",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 4.0,
+        "escalation": 5.0,
+        "payoff": 5.0,
+        "rewatch": 7.0,
+        "clarity": 8.0,
+        "coherence": 8.0,
+        "overall": 6.14
       }
     }
   ]
