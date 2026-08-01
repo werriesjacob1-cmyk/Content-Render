@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-24_the-tallest-mountain-a-surprising-perspe",
-      "metaphor": "mountain height mystery",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "MYTH_FLIP",
-      "title": "The Tallest Mountain: A Surprising Perspective",
-      "fact_id": "mauna_kea",
-      "domain": "earth",
-      "hook": "Mount Everest isn't the tallest mountain on Earth. How can that be?",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 6.0,
-        "payoff": 8.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "overall": 7.33
-      }
-    },
-    {
       "video_id": "science_2026-07-24_the-hidden-colors-we-can-t-name",
       "metaphor": "hidden color world",
       "viewer_job": "MYTH_BUSTER",
@@ -340,6 +316,31 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-01_the-sea-cucumber-s-regrowing-brain",
+      "metaphor": "sea cucumber marvel",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "The Sea Cucumber's Regrowing Brain",
+      "fact_id": "underwater_brain",
+      "domain": "neurology",
+      "hook": "Imagine if you could regrow your brain in a week.",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 8.0,
+        "coherence": 7.0,
+        "overall": 6.86
       }
     }
   ]

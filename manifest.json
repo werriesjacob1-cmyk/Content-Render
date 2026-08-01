@@ -1,71 +1,79 @@
 {
-  "title": "The Alien Anatomy of Octopuses",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "octopus anatomy",
-  "metaphor": "alien ocean creatures",
-  "hook": "An octopus' heart stops every time it swims. How?",
-  "hook_headline": "THREE HEARTS, BLUE BLOOD",
-  "script": "An octopus' heart stops every time it swims. How? With three hearts, two for gills, one for the body, swimming halts the main heart. Its blue blood, rich in hemocyanin, thrives in deep-sea cold. Imagine a network of blood vessels two to three times its length. This alien design lets it crawl where others swim. Blood chemistry so strange it can cause allergies in humans.",
+  "title": "The Sea Cucumber's Regrowing Brain",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "regrowing brain",
+  "metaphor": "sea cucumber marvel",
+  "hook": "Imagine if you could regrow your brain in a week.",
+  "hook_headline": "BRAIN REGENERATION",
+  "script": "Imagine if you could regrow your brain in a week. How does the sea cucumber achieve this marvel? Their nervous system ejects organs, including the brain, and regrows them. The Holothuria parvula species can lose 60% of its body mass and survive. They rely on a decentralized nerve net, not a central brain. This regrowth can even create a new body from a small piece. What if humans had this power?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "An octopus' heart stops every time it swims. How?",
-      "on_screen_text": "Heart Stops Swimming",
-      "search_query": "octopus swimming ocean",
+      "voiceover": "Imagine if you could regrow your brain in a week.",
+      "on_screen_text": "Regrow Your Brain",
+      "search_query": "brain regeneration",
       "motion": "zoom_in"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "With three hearts, two for gills, one for the body, swimming halts the main heart.",
-      "on_screen_text": "Three Hearts",
-      "search_query": "octopus close up",
+      "duration": 5,
+      "voiceover": "How does the sea cucumber achieve this marvel?",
+      "on_screen_text": "Sea Cucumber Marvel",
+      "search_query": "sea cucumber regrowing brain",
       "motion": "zoom_out"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "Its blue blood, rich in hemocyanin, thrives in deep-sea cold.",
-      "on_screen_text": "Blue Blood",
-      "search_query": "deep sea octopus",
-      "motion": "pan"
+      "duration": 5,
+      "voiceover": "Their nervous system ejects organs, including the brain, and regrows them.",
+      "on_screen_text": "Ejects & Regrows",
+      "search_query": "evisceration in sea cucumbers",
+      "motion": "zoom_out"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Imagine a network of blood vessels two to three times its length.",
-      "on_screen_text": "Vast Network",
-      "search_query": "octopus blood vessels",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "The Holothuria parvula species can lose 60% of its body mass and survive.",
+      "on_screen_text": "Survival Mechanism",
+      "search_query": "Holothuria parvula",
+      "motion": "zoom_in"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This alien design lets it crawl where others swim.",
-      "on_screen_text": "Alien Design",
-      "search_query": "octopus crawling ocean",
-      "motion": "zoom_out"
+      "duration": 5,
+      "voiceover": "They rely on a decentralized nerve net, not a central brain.",
+      "on_screen_text": "Decentralized Nerves",
+      "search_query": "sea cucumber nerve net",
+      "motion": "static"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "Blood chemistry so strange it can cause allergies in humans.",
-      "on_screen_text": "Strange Chemistry",
-      "search_query": "octopus handling",
+      "duration": 5,
+      "voiceover": "This regrowth can even create a new body from a small piece.",
+      "on_screen_text": "Body Regeneration",
+      "search_query": "neuroregeneration in marine animals",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "What if humans had this power?",
+      "on_screen_text": "Human Potential?",
+      "search_query": "human brain regeneration",
       "motion": "zoom_in"
     }
   ],
   "captions": [
-    "Why does an octopus' heart stop? #octopusanatomy",
-    "Three hearts, blue blood \u2014 did you know?",
-    "Can you imagine having three hearts?"
+    "Could we regrow our brains like sea cucumbers?",
+    "What if humans had this power?",
+    "Ever heard of evisceration?"
   ],
   "hashtags": [
     "#science",
-    "#ocean",
-    "#octopus",
     "#biology",
+    "#marinelife",
+    "#neuroregeneration",
     "#weirdfacts"
   ],
   "render": {
@@ -73,7 +81,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-07-31_the-alien-anatomy-of-octopuses",
-  "cta_style": "LOOP",
-  "domain": "animals"
+  "video_id": "science_2026-08-01_the-sea-cucumber-s-regrowing-brain",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "neurology"
 }
