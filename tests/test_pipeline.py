@@ -1110,6 +1110,43 @@ def test_apply_vibe():
         M.CURRENT_VIBE = "awe"
 
 
+def test_vibe_matched_captions():
+    section("main._event: caption pop intensity follows CURRENT_VIBE")
+    _vibe_bak, _kw_bak = M.CURRENT_VIBE, set(M._KEYWORD_TOKENS)
+    try:
+        check(set(M.CAPTION_INTENSITY.keys()) == set(M.VIBE_TWEAKS.keys()),
+              "every vibe has a caption-intensity entry")
+        M._KEYWORD_TOKENS = {"MUON"}
+
+        M.CURRENT_VIBE = "awe"
+        awe_kw = M._event(0.0, 0.5, "muon")
+        awe_plain = M._event(0.0, 0.5, "the")
+        check("\\fscx120\\fscy120" in awe_kw and "\\fscx104\\fscy104" in awe_kw,
+              "'awe' (intensity 1.0) reproduces the ORIGINAL hardcoded overshoot exactly -- no regression")
+        check("\\fscx110\\fscy110" in awe_plain, "'awe' plain-word overshoot also unchanged")
+
+        M.CURRENT_VIBE = "chaotic"
+        chaotic_kw = M._event(0.0, 0.5, "muon")
+        check(chaotic_kw != awe_kw, "chaotic produces a DIFFERENT (bigger) pop than awe")
+        check("\\fscx128\\fscy128" in chaotic_kw, "chaotic keyword overshoot scaled up (120 * 1.4 = 128)")
+
+        M.CURRENT_VIBE = "peaceful"
+        peaceful_kw = M._event(0.0, 0.5, "muon")
+        check(peaceful_kw != awe_kw, "peaceful produces a DIFFERENT (gentler) pop than awe")
+        check("\\fscx113\\fscy113" in peaceful_kw, "peaceful keyword overshoot scaled down (100+20*0.65=113)")
+
+        # the over-wide auto-shrink branch must NEVER overshoot past 100%,
+        # regardless of vibe -- that safety cap predates vibe and must survive it
+        M.CURRENT_VIBE = "chaotic"
+        wide = M._event(0.0, 0.5, "transdifferentiations" * 2)
+        check("\\t(0,110,\\fscx100\\fscy100)" in wide,
+              "over-wide word's overshoot is LITERALLY unchanged by vibe -- caps at exactly 100%, "
+              "chaotic can't reopen the no-wrap frame-overflow bug")
+    finally:
+        M.CURRENT_VIBE = _vibe_bak
+        M._KEYWORD_TOKENS = _kw_bak
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1190,6 +1227,7 @@ def main():
     test_length_ab_mode()
     test_fal_gap_fill_gating()
     test_apply_vibe()
+    test_vibe_matched_captions()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

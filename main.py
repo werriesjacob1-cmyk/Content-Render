@@ -1870,6 +1870,16 @@ VIBE_PROMPT_STYLE = {
 CURRENT_VIBE = "awe"   # set by _apply_vibe() at the top of main(); read here, not threaded
                         # through every function signature (same pattern as _last_motion_kind).
 
+# How hard each caption word's overshoot-bounce pop punches, per vibe (see
+# _event() in the ASS-caption builder below) — chaotic/visceral topics get a
+# snappier, bigger overshoot; peaceful/eerie topics get a gentler one, so the
+# captions themselves carry the mood, not just the footage/grade. Deliberately
+# does NOT touch the over-wide-word auto-shrink branch (fs_over in _event) —
+# that one already caps its own overshoot at exactly 100% by design, to avoid
+# shoving a long word off the no-wrap frame (a real regression to not reopen).
+CAPTION_INTENSITY = {"chaotic": 1.4, "tense": 1.15, "visceral": 1.2,
+                      "eerie": 0.75, "peaceful": 0.65, "awe": 1.0}
+
 
 def _fal_prompt(scene):
     """Cinematic text-to-video prompt built from the scene's literal SUBJECT
@@ -2397,12 +2407,21 @@ def _event(start, end, word):
     #   - normal word: a snappy bounce back to 100%;
     #   - over-wide word (auto-shrunk): a gentle grow only, so a big scale can't
     #     shove it off the no-wrap frame.
+    # VIBE-MATCHED POP: how far past 100% each overshoot peak scales, per the
+    # video's CURRENT_VIBE (CAPTION_INTENSITY above) — a chaotic/visceral topic
+    # snaps harder, a peaceful/eerie one barely overshoots at all. The over-wide
+    # (fs_over) tier is deliberately left untouched: it already caps its own
+    # overshoot at exactly 100% by design, to avoid shoving a long word off the
+    # no-wrap frame — not something to reopen for a caption-energy nicety.
+    ci = CAPTION_INTENSITY.get(CURRENT_VIBE, 1.0)
     if fs_over:
         pop = "\\fscx82\\fscy82\\t(0,110,\\fscx100\\fscy100)"
     elif accent:
-        pop = "\\fscx64\\fscy64\\t(0,90,\\fscx120\\fscy120)\\t(90,175,\\fscx104\\fscy104)"
+        ov, settle = min(150, 100 + round(20 * ci)), min(120, 100 + round(4 * ci))
+        pop = f"\\fscx64\\fscy64\\t(0,90,\\fscx{ov}\\fscy{ov})\\t(90,175,\\fscx{settle}\\fscy{settle})"
     else:
-        pop = "\\fscx58\\fscy58\\t(0,90,\\fscx110\\fscy110)\\t(90,160,\\fscx100\\fscy100)"
+        ov = min(150, 100 + round(10 * ci))
+        pop = f"\\fscx58\\fscy58\\t(0,90,\\fscx{ov}\\fscy{ov})\\t(90,160,\\fscx100\\fscy100)"
     tag = (f"{{\\pos(540,{PROFILE['cap_y']})\\an5\\fad(30,0){fs_over}{pop}{accent}}}")
     return f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Pop,,0,0,0,,{tag}{clean}"
 
