@@ -1202,6 +1202,56 @@ def test_vibe_music_filter():
         M.PROFILE.update(_profile_bak)
 
 
+def test_trim_scene_to_cap():
+    section("generate._trim_scene_to_cap: shorten (not drop) an over-cap near-miss scene")
+    # already-short voiceover, unrelated to the cap directly (helper is only
+    # ever called on over-cap scenes, but must be a safe no-op regardless)
+    short = "A short punchy line."
+    check(G._trim_scene_to_cap(short, 25) == short, "under-cap voiceover passes through untouched")
+    # multi-sentence: keep only as many WHOLE leading sentences as fit --
+    # never chop mid-sentence when a clean sentence boundary is available.
+    # First sentence is 3 words (fits the cap=5 on its own); adding the
+    # 10-word second sentence would push the total to 13, well over 5.
+    two_sent = "This is short. This second sentence would push it well over the cap."
+    out = G._trim_scene_to_cap(two_sent, 5)
+    check(out == "This is short.",
+          "trims at a sentence boundary, keeping only whole leading sentences")
+    check(len(out.split()) <= 5, "sentence-boundary trim respects the cap")
+    # single long run-on with no sentence punctuation at all -- must fall back
+    # to a hard word truncation and re-terminate with a period, never crash
+    run_on = "word " * 30
+    out2 = G._trim_scene_to_cap(run_on.strip(), 10)
+    check(len(out2.rstrip(".").split()) == 10, "no-punctuation run-on hard-truncates to exactly the cap")
+    check(out2.endswith("."), "hard-truncated fallback is re-terminated with a period")
+    # first sentence ALONE already exceeds the cap -- same hard-truncate
+    # fallback (can't keep a whole sentence, but must still never exceed cap)
+    one_long_sent = ("This single sentence just keeps going and going well past any "
+                      "reasonable per-scene word budget for a short punchy video.")
+    out3 = G._trim_scene_to_cap(one_long_sent, 12)
+    check(len(out3.rstrip(".").split()) == 12, "an over-cap FIRST sentence alone also hard-truncates to the cap")
+
+
+def test_reference_worthy_spelled_numbers():
+    section("generate.REFERENCE_WORTHY_RE: catches spelled-out numbers, not just digits (render 194-200 bug)")
+    # a script whose only "number" is spelled out in words must still pass --
+    # renders 194/195/197/198/200 kept aborting exactly this once Gemini came
+    # back online, because the old regex only matched digit characters
+    check(G.REFERENCE_WORTHY_RE.search("It happens a dozen times a year."),
+          "'a dozen' (spelled-out number) is reference-worthy")
+    check(G.REFERENCE_WORTHY_RE.search("Three thousand years passed before anyone noticed."),
+          "'three thousand' (spelled-out number) is reference-worthy")
+    check(G.REFERENCE_WORTHY_RE.search("A hundred generations lived and died."),
+          "'a hundred' (spelled-out number) is reference-worthy")
+    # digits and the original phrase patterns must still match (no regression)
+    check(G.REFERENCE_WORTHY_RE.search("It weighs 42 kilograms."), "a literal digit still matches")
+    check(G.REFERENCE_WORTHY_RE.search("That's equivalent to a school bus."), "'equivalent to' still matches")
+    # a script with genuinely nothing concrete (no number, spelled or digit,
+    # and none of the comparison phrases) must still correctly fail the gate --
+    # widening the regex must not turn it into a rubber stamp
+    check(not G.REFERENCE_WORTHY_RE.search("Scientists find this genuinely fascinating and strange."),
+          "a script with no concrete reference point still correctly fails")
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1284,6 +1334,8 @@ def main():
     test_apply_vibe()
     test_vibe_matched_captions()
     test_vibe_music_filter()
+    test_trim_scene_to_cap()
+    test_reference_worthy_spelled_numbers()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

@@ -344,6 +344,12 @@ def _resolve_length_mode():
     except Exception:  # noqa: BLE001 — no/broken memory => default to the proven long
         return "long"
 
+# Per-scene hard word cap -- mode-independent (SHORT and LONG both use natural
+# ~6-16 word scenes; this is just the ceiling for an occasional longer beat).
+# ONE constant read by validate(), the writer prompt, AND the near-miss repair's
+# per-scene trim below, so the three can never drift out of sync with each other.
+SCENE_WORD_CAP = 25
+
 LENGTH_MODE = _resolve_length_mode()
 if LENGTH_MODE == "short":
     # SHORT's 55-74 word budget was NEVER hit natively (renders 187-191: every
@@ -632,11 +638,20 @@ GENERIC_SAVE_CMD = re.compile(
 # script has literally nothing a viewer could reference again (see
 # validate()). Bank-fact videos almost always pass automatically via their
 # key_terms; this exists for jobs/scripts without a bank fact behind them.
+# Renders 194/195/197/198/200 kept aborting an otherwise-fine near-miss on
+# this exact gate once Gemini started carrying generation again (2026-08-02) --
+# "\d" only matches DIGIT characters, so a script that spells a number out in
+# words ("a dozen species," "three thousand years," "a hundred times") reads
+# as having zero reference-worthy content even though it plainly does. Widen
+# to also catch spelled-out cardinals/scale words, the same "match what
+# writers actually produce" fix applied to the word-count window above.
 REFERENCE_WORTHY_RE = re.compile(
     r"\d"                                    # any concrete number
     r"|\bthe (size|weight|length|height|speed) of\b"
     r"|\bequivalent to\b|\bthe same (as|size)\b"
-    r"|\byou could\b|\benough to\b|\bfor every\b",
+    r"|\byou could\b|\benough to\b|\bfor every\b"
+    r"|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+    r"dozen|hundred|thousand|million|billion|trillion)\b",
     re.I)
 
 # The specific abstraction failure the Sun video's hook shipped with: a
@@ -1086,7 +1101,7 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   one flattens the payoff); if under {WORD_LO}, you're too thin — add one more real fact from the research,
   never filler. A tighter video beats a padded one: competitors win on COMPLETION, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of words.
-- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed 25 words
+- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed {SCENE_WORD_CAP} words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1961,19 +1976,16 @@ def validate(m, job_name, fact=None):
                 return f"scene {i} missing {k}"
             s[k] = _clean(s[k])
         s["on_screen_text"] = " ".join(s["on_screen_text"].split()[:4])  # cap label to 4 words
-        # Hard per-scene cap tightened 28 -> 22, then loosened to 25 words.
-        # The Sun video's scene 11 ran 34 words -- a run-on jammed between
-        # 6-9 word scenes is exactly the "choppy / doesn't stop talking"
-        # complaint: one scene breathless while its neighbors are punchy
-        # reads as uneven, not varied. 22 was too tight against SHORT's
-        # widened word window (2026-08-02): renders 189/194 both aborted a
-        # near-miss on a single 24-25 word scene that near-miss repair can't
-        # fix (it only DROPS whole redundant scenes, never shortens one) --
-        # a genuinely fine sentence with a mandatory key term in it was
-        # killing an otherwise-clean draft. Prompt targets 6-16 words/scene;
-        # 25 is the hard ceiling (still far under the 34-word complaint).
-        if len(s["voiceover"].split()) > 25:
-            return f"scene {i} voiceover too long ({len(s['voiceover'].split())} words, cap is 25)"
+        # Hard per-scene cap tightened 28 -> 22, then loosened to 25 words
+        # (SCENE_WORD_CAP, shared with the writer prompt and the near-miss
+        # per-scene trim below). The Sun video's scene 11 ran 34 words -- a
+        # run-on jammed between 6-9 word scenes is exactly the "choppy /
+        # doesn't stop talking" complaint: one scene breathless while its
+        # neighbors are punchy reads as uneven, not varied. Prompt targets
+        # 6-16 words/scene; 25 is the hard ceiling (still far under 34).
+        if len(s["voiceover"].split()) > SCENE_WORD_CAP:
+            return (f"scene {i} voiceover too long ({len(s['voiceover'].split())} words, "
+                     f"cap is {SCENE_WORD_CAP})")
         # TOO-FORMAL / "sounds like a textbook" — user feedback on 'Continents in
         # Motion': "But is the distance between New York and London fixed?" then a
         # flat "No." Every word was plain, but the SENTENCE SHAPE was stiff, not
@@ -2630,6 +2642,24 @@ def research_dossier(fact):
         return []
 
 
+def _trim_scene_to_cap(vo, cap):
+    """Shorten an over-cap voiceover to <=cap words, preferring a sentence
+    boundary (keep only as many whole leading sentences as fit) over a
+    mid-sentence word chop; falls back to a hard word-count truncation +
+    re-terminating period if even the first sentence alone exceeds the cap
+    (or there's no sentence punctuation at all). Pure/testable."""
+    sentences = re.split(r"(?<=[.!?])\s+", vo.strip())
+    kept, count = [], 0
+    for sent in sentences:
+        n = len(sent.split())
+        if kept and count + n > cap:
+            break
+        kept.append(sent); count += n
+    if kept and count <= cap:
+        return " ".join(kept)
+    return " ".join(vo.split()[:cap]).rstrip(",;:") + "."
+
+
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
                         cta_style="SAVE_WORTHY", dossier=None, hook_frame=None):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
@@ -2768,6 +2798,27 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             nm["scenes"] = _scenes
             print(f"  near-miss trimmed {_dropped} most-redundant middle scene(s) -> "
                   f"{len(_scenes)} scenes / {_wc(_scenes)} words (pacing/length/repetition)")
+        # SHORTEN (don't drop) any single scene over the per-scene cap. Scene-
+        # dropping above only fixes TOTAL word/scene count -- it can't touch a
+        # near-miss whose sole problem is one over-cap sentence, and dropping
+        # that scene outright would also delete whatever key term/escalation
+        # beat it was carrying. Renders 189/194/198/199 all abandoned an
+        # otherwise-clean near-miss over exactly this (one 24-30 word scene
+        # against the 25-word cap) -- prefer a sentence-boundary trim (keep
+        # only as many whole leading sentences as fit) over losing the scene.
+        # (_trim_scene_to_cap is module-level, above generate_candidate, so
+        # it's directly unit-tested without mocking the whole repair path.)
+        _trimmed = 0
+        for s in _scenes:
+            vo = s.get("voiceover", "")
+            if len(vo.split()) > SCENE_WORD_CAP:
+                s["voiceover"] = _trim_scene_to_cap(vo, SCENE_WORD_CAP)
+                _trimmed += 1
+        if _trimmed:
+            nm["scenes"] = _scenes
+            print(f"  near-miss shortened {_trimmed} over-cap scene(s) to fit the "
+                  f"{SCENE_WORD_CAP}-word ceiling (trimmed, not dropped -- keeps the "
+                  f"scene's content/key term intact)")
         if _wc(_scenes) > NEARMISS_MAX_WORDS:
             print(f"  near-miss still {_wc(_scenes)} words after trimming to {len(_scenes)} scenes "
                   f"(cap {NEARMISS_MAX_WORDS}) — abandoning this weak/long draft (consistency over cadence)")
