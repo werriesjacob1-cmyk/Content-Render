@@ -852,9 +852,14 @@ def _gemini_vision_pick(intent, candidates):
     # every single scene, live, while the plain-text judge in the same run
     # succeeded normally. A small POSITIVE budget (proven safe for generation
     # in generate.py's _call_gemini) is the fix: Gemini apparently won't fully
-    # disable thinking on a multimodal request, only bound it.
+    # disable thinking on a multimodal request, only bound it. maxOutputTokens
+    # MUST comfortably exceed thinkingBudget -- render 206 showed the next bug
+    # this caused: 200 < 512 left ~0 tokens for the actual answer once
+    # reasoning was spent, so the reply got cut off before any closing "}"
+    # ("[vision] judge unavailable (no JSON in reply: ...)"). 1024 leaves
+    # plenty of headroom above the 512-token thinking budget either way.
     body = json.dumps({"contents": [{"parts": parts}],
-                       "generationConfig": {"temperature": 0, "maxOutputTokens": 200,
+                       "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
                                             "thinkingConfig": {"thinkingBudget": 512}}}).encode()
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
     try:
@@ -972,9 +977,11 @@ def _final_qa_check(video, m):
         # Same fix as _gemini_vision_pick: thinkingBudget=0 400s once the
         # request carries image parts (this call sends FINAL_QA_FRAMES of
         # them) -- render 203 confirmed live: "[final-qa] unavailable
-        # (HTTPError: HTTP Error 400)" on every attempt.
+        # (HTTPError: HTTP Error 400)" on every attempt. maxOutputTokens must
+        # comfortably exceed thinkingBudget (render 206: 300 < 512 truncated
+        # the reply before any closing "}" once reasoning ate the budget).
         body = json.dumps({"contents": [{"parts": parts}],
-                           "generationConfig": {"temperature": 0, "maxOutputTokens": 300,
+                           "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
                                                 "thinkingConfig": {"thinkingBudget": 512}}}).encode()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
         rq = urllib.request.Request(url, data=body,
@@ -1983,8 +1990,12 @@ def _fal_clip_relevant(scene, clip_path):
             {"inline_data": {"mime_type": "image/jpeg",
                              "data": base64.b64encode(open(frame_path, "rb").read()).decode()}},
         ]
+        # maxOutputTokens must comfortably exceed thinkingBudget (see the
+        # identical fix + explanation in _gemini_vision_pick above -- a
+        # budget smaller than the thinking allowance truncates the reply
+        # before any closing "}").
         body = json.dumps({"contents": [{"parts": parts}],
-                           "generationConfig": {"temperature": 0, "maxOutputTokens": 60,
+                           "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
                                                 "thinkingConfig": {"thinkingBudget": 512}}}).encode()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
         req = urllib.request.Request(url, data=body,
