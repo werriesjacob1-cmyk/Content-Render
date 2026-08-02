@@ -1764,25 +1764,8 @@ Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}
     except Exception as e:  # noqa: BLE001 - punch-up is best-effort
         print(f"  punch-up failed ({e}), keeping original")
         return m
-    if set(new_scenes) != {s["id"] for s in m["scenes"]}:
-        print("  punch-up returned mismatched scenes, keeping original")
-        return m
-    import copy
-    trial = copy.deepcopy(m)
-    for s in trial["scenes"]:
-        s["voiceover"] = new_scenes[s["id"]]
-    trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
-    if key_terms:
-        orig_text = " ".join(s["voiceover"] for s in m["scenes"])
-        new_text = " ".join(s["voiceover"] for s in trial["scenes"])
-        dropped = [kt for kt in key_terms
-                   if _key_term_present(kt, orig_text) and not _key_term_present(kt, new_text)]
-        if dropped:
-            print(f"  punch-up dropped key term(s) {dropped}, keeping original")
-            return m
-    err = validate(trial, m.get("viewer_job", ""), fact=fact)
-    if err:
-        print(f"  punch-up rejected by validation ({err}), keeping original")
+    trial = _apply_scene_rewrite(m, fact, new_scenes, "punch-up")
+    if trial is None:
         return m
     print("  punch-up applied")
     return trial
@@ -2266,6 +2249,138 @@ def _coerce_score(v):
     return None
 
 
+# The exact rubric definition for each scored criterion, shared between
+# score_script's prompt (which scores ALL of them) and revise_for_floors
+# below (which quotes back ONLY the criteria that actually failed) -- ONE
+# source of truth so a judge and a targeted-repair pass can never describe
+# the same rubric two different ways. 'rewatch' is deliberately excluded:
+# its wording depends on cta_style (see CTA_RUBRIC_HINTS) and it carries no
+# floor, so it never drives a targeted repair.
+RUBRIC_CRITERION_TEXT = {
+    "hook": ("does the first line open a REAL curiosity gap (a specific question the "
+             "viewer NEEDS answered), not just a description or a mild tease?"),
+    "surprise": ("would most adults genuinely react \"wait, WHAT?\" and be left "
+                 "THINKING/seeing something differently — not just hearing facts and numbers "
+                 "scroll by? A script that mostly recites measurements (how tall/old/fast/many) "
+                 "with no mind-bending IDEA behind them scores 3 or below. CRUCIAL: a pure scale "
+                 "or counting fact — how many ways to shuffle a deck, how many atoms/combinations "
+                 "exist, how many times bigger X is than Y — is NOT surprise. \"That number is "
+                 "unimaginably big/small\" makes a smart viewer shrug. Unless the scale exposes a "
+                 "hidden mechanism or a consequence a real person would feel, score magnitude-only "
+                 "scripts 3 or below."),
+    "escalation": ("does EVERY scene reveal something new, with zero scenes just restating an "
+                   "earlier scene in different words?"),
+    "payoff": ("does the central question resolve into a genuine mind-bending IDEA — a "
+               "realization that reframes how the viewer sees the thing — rather than a recited "
+               "number or a shrug? A number as the payoff (a dry \"it's 8,849 metres\") is WEAK. "
+               "If the payoff is essentially \"the number is astronomically large/small\" or "
+               "\"this has never existed before because there are so many combinations,\" score "
+               "3 or below — that is magnitude, not a thought. The payoff must pass the "
+               "who-cares test: it changes how the viewer sees something, or it fails."),
+    "clarity": ("is the LANGUAGE plain and jargon-free — each sentence easy to parse on one "
+                "listen? (Wording only; whether the MEANING holds together is judged by "
+                "'coherence'.)"),
+    "coherence": ("does EVERY sentence make literal sense and state something TRUE, with clear "
+                  "referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "
+                  "\"your great-grandparents saw its start, but it won't finish\" (start of WHAT? "
+                  "finish WHAT?) — OR a DANGLING comparative with no completion — e.g. \"T. rex is "
+                  "closer to you\" (closer than WHAT? — needs \"...than Stegosaurus\") — OR a "
+                  "non-sequitur, OR any line that makes a smart listener think \"wait, that "
+                  "doesn't even make sense\" scores 3 or below. Simple-SOUNDING but muddled is a "
+                  "FAILURE here even if 'clarity' is high. This is the most important criterion: "
+                  "a confusing script must not pass."),
+}
+
+
+def _apply_scene_rewrite(m, fact, new_scenes, label):
+    """Shared by punch_up/revise_for_floors: build a trial manifest from a
+    {scene_id: new_voiceover} rewrite and check it survives every guard a
+    rewrite must clear — matching scene ids, no dropped mandatory key term,
+    passes validate(). Returns the trial manifest on success, None if the
+    rewrite must be discarded (each caller decides what "discard" means for
+    it -- punch_up keeps the pre-rewrite original, revise_for_floors falls
+    through to a full from-scratch regeneration)."""
+    if set(new_scenes) != {s["id"] for s in m["scenes"]}:
+        print(f"  {label} returned mismatched scenes, discarding")
+        return None
+    import copy
+    trial = copy.deepcopy(m)
+    for s in trial["scenes"]:
+        s["voiceover"] = new_scenes[s["id"]]
+    trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
+    key_terms = fact.get("key_terms", []) if fact else []
+    if key_terms:
+        orig_text = " ".join(s["voiceover"] for s in m["scenes"])
+        new_text = " ".join(s["voiceover"] for s in trial["scenes"])
+        dropped = [kt for kt in key_terms
+                   if _key_term_present(kt, orig_text) and not _key_term_present(kt, new_text)]
+        if dropped:
+            print(f"  {label} dropped key term(s) {dropped}, discarding")
+            return None
+    err = validate(trial, m.get("viewer_job", ""), fact=fact)
+    if err:
+        print(f"  {label} rejected by validation ({err}), discarding")
+        return None
+    return trial
+
+
+def revise_for_floors(m, fact, violations, cta_style="SAVE_WORTHY"):
+    """Targeted repair for a script that failed specific rubric floors (see
+    QUALITY_CRITERION_FLOORS) — the direct answer to "one weak part shouldn't
+    mean scrap the whole video": instead of a blind from-scratch regeneration
+    (a brand-new draft with no memory of what was wrong) this quotes the
+    EXACT rubric definition for ONLY the criteria that actually failed, and
+    asks for the smallest rewrite that fixes them. The caller re-scores the
+    result and only keeps it if the targeted criteria demonstrably improved
+    (see main()); on any failure here it returns None and the caller falls
+    back to its existing regenerate-from-scratch path unchanged."""
+    fact_line = fact["fact"] if fact else "the fact stated in the script"
+    key_terms = fact.get("key_terms", []) if fact else []
+    key_terms_rule = ""
+    if key_terms:
+        key_terms_rule = (
+            f"- MUST preserve every one of these exact terms verbatim, spelled exactly as given, "
+            f"somewhere across the rewritten lines: {key_terms}. Do not paraphrase them away or "
+            f"swap a real name/number for a vaguer description.\n")
+    problems = "\n".join(
+        f"- {crit.upper()} scored too low (needs {QUALITY_CRITERION_FLOORS[crit]}+/10): "
+        f"{RUBRIC_CRITERION_TEXT.get(crit, '')}"
+        for crit in violations)
+    scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
+    prompt = f"""You are a short-form script doctor. An editor just scored this FINISHED script and it failed specific checks below. Fix ONLY those problems — leave every line that isn't implicated alone.
+
+THE VERIFIED FACT (do not alter it, do not add new numbers): "{fact_line}"
+
+WHAT FAILED AND WHY (fix these, nothing else):
+{problems}
+
+RULES:
+- Same number of scenes, same ids, same order, same underlying facts per scene.
+- Each line stays ONE punchy spoken sentence, 6-18 words, natural to read aloud.
+- Only touch the line(s) actually responsible for the failure(s) above; a line that
+  wasn't part of the problem should come back unchanged.
+- Keep any real numbers exactly as they are. Add NO new facts or numbers.
+{key_terms_rule}- Every line ends with proper punctuation (. ? or !).
+
+Scenes: {scenes_json}
+
+Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}"""
+    try:
+        raw = call_groq(prompt)
+        new_scenes = {}
+        for s in json.loads(raw)["scenes"]:
+            if not s.get("voiceover"):
+                continue
+            line = _clean(s["voiceover"])
+            if line and line[-1] not in ".?!":
+                line += "."
+            new_scenes[s["id"]] = line
+    except Exception as e:  # noqa: BLE001 - targeted repair is best-effort
+        print(f"  [targeted-repair] failed ({e})")
+        return None
+    return _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]")
+
+
 def score_script(m, fact=None, cta_style="SAVE_WORTHY"):
     """Self-critique pass: one Groq call scores the finished, punched-up
     script against an explicit rubric so a weak script can be caught and
@@ -2297,13 +2412,13 @@ FULL SCENE-BY-SCENE SCRIPT:
 {scenes_text}
 
 Score each criterion 0-10 (integers, be strict):
-- hook: does the first line open a REAL curiosity gap (a specific question the viewer NEEDS answered), not just a description or a mild tease?
-- surprise: would most adults genuinely react "wait, WHAT?" and be left THINKING/seeing something differently — not just hearing facts and numbers scroll by? A script that mostly recites measurements (how tall/old/fast/many) with no mind-bending IDEA behind them scores 3 or below. CRUCIAL: a pure scale or counting fact — how many ways to shuffle a deck, how many atoms/combinations exist, how many times bigger X is than Y — is NOT surprise. "That number is unimaginably big/small" makes a smart viewer shrug. Unless the scale exposes a hidden mechanism or a consequence a real person would feel, score magnitude-only scripts 3 or below.
-- escalation: does EVERY scene reveal something new, with zero scenes just restating an earlier scene in different words?
-- payoff: does the central question resolve into a genuine mind-bending IDEA — a realization that reframes how the viewer sees the thing — rather than a recited number or a shrug? A number as the payoff (a dry "it's 8,849 metres") is WEAK. If the payoff is essentially "the number is astronomically large/small" or "this has never existed before because there are so many combinations," score 3 or below — that is magnitude, not a thought. The payoff must pass the who-cares test: it changes how the viewer sees something, or it fails.
+- hook: {RUBRIC_CRITERION_TEXT['hook']}
+- surprise: {RUBRIC_CRITERION_TEXT['surprise']}
+- escalation: {RUBRIC_CRITERION_TEXT['escalation']}
+- payoff: {RUBRIC_CRITERION_TEXT['payoff']}
 - rewatch: {rewatch_hint}
-- clarity: is the LANGUAGE plain and jargon-free — each sentence easy to parse on one listen? (Wording only; whether the MEANING holds together is judged by 'coherence'.)
-- coherence: does EVERY sentence make literal sense and state something TRUE, with clear referents? A vague pronoun the listener CANNOT resolve — e.g. a hook like "your great-grandparents saw its start, but it won't finish" (start of WHAT? finish WHAT?) — OR a DANGLING comparative with no completion — e.g. "T. rex is closer to you" (closer than WHAT? — needs "...than Stegosaurus") — OR a non-sequitur, OR any line that makes a smart listener think "wait, that doesn't even make sense" scores 3 or below. Simple-SOUNDING but muddled is a FAILURE here even if 'clarity' is high. This is the most important criterion: a confusing script must not pass.
+- clarity: {RUBRIC_CRITERION_TEXT['clarity']}
+- coherence: {RUBRIC_CRITERION_TEXT['coherence']}
 
 Return ONLY valid JSON, exactly:
 {{"hook": 0, "surprise": 0, "escalation": 0, "payoff": 0, "rewatch": 0, "clarity": 0, "coherence": 0}}"""
@@ -3092,6 +3207,33 @@ def main():
         if violations:
             print(f"  [quality] attempt {regen_i+1} rejected: per-criterion floor broken "
                   f"regardless of overall {overall} — regenerating")
+            # TARGETED REPAIR before burning a whole new blind regeneration:
+            # most floor violations are a property of a FEW specific lines
+            # (a flat hook, a restated scene, a muddled sentence), not the
+            # entire script -- throwing the whole draft away and hoping a
+            # brand-new attempt does better (with no memory of what was
+            # actually wrong) is the expensive, unreliable way to fix it.
+            # One extra call, spent only when there's a concrete, named
+            # problem to fix; only kept if it demonstrably clears the SAME
+            # floors it was asked to fix (re-scored, not assumed).
+            revised = revise_for_floors(candidate, chosen_fact, violations, cta_style=cta_style)
+            if revised is not None:
+                r_quality = score_script(revised, chosen_fact, cta_style=cta_style)
+                if r_quality is not None:
+                    r_overall = r_quality["overall"]
+                    r_violations = {k: r_quality[k] for k, floor in QUALITY_CRITERION_FLOORS.items()
+                                     if r_quality.get(k, 10) < floor}
+                    print(f"  [targeted-repair] re-scored: overall {r_overall}/10 {r_quality}"
+                          + (f" — still violates {r_violations}" if r_violations
+                             else " — CLEARED the floor(s) that failed"))
+                    r_rank = (0 if r_violations else 1, r_overall)
+                    if best_rank is None or r_rank > best_rank:
+                        best_manifest, best_overall, best_quality, best_rank = (
+                            revised, r_overall, r_quality, r_rank)
+                    if not r_violations and r_overall >= QUALITY_THRESHOLD:
+                        print(f"  [targeted-repair] cleared threshold ({r_overall} >= "
+                              f"{QUALITY_THRESHOLD}) with no floor violations — shipping")
+                        break
             continue
         if overall >= QUALITY_THRESHOLD:
             print(f"  [quality] cleared threshold ({overall} >= {QUALITY_THRESHOLD}) with no "

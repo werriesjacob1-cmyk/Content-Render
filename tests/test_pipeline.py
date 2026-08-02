@@ -1252,6 +1252,115 @@ def test_reference_worthy_spelled_numbers():
           "a script with no concrete reference point still correctly fails")
 
 
+def test_rubric_criterion_text_complete():
+    section("generate.RUBRIC_CRITERION_TEXT: one source shared by score_script and revise_for_floors")
+    # every scored criterion except 'rewatch' (dynamic, cta_style-dependent,
+    # and carries no floor) must have a static rubric description
+    for crit in G.QUALITY_RUBRIC_CRITERIA:
+        if crit == "rewatch":
+            continue
+        check(crit in G.RUBRIC_CRITERION_TEXT and len(G.RUBRIC_CRITERION_TEXT[crit]) > 10,
+              f"'{crit}' has a real rubric description")
+    # every criterion that can actually trigger a targeted repair (i.e. has a
+    # floor) MUST have text -- revise_for_floors would silently produce an
+    # empty bullet for a floor violation otherwise
+    for crit in G.QUALITY_CRITERION_FLOORS:
+        check(crit in G.RUBRIC_CRITERION_TEXT, f"floored criterion '{crit}' has rubric text")
+
+
+def test_apply_scene_rewrite():
+    section("generate._apply_scene_rewrite: shared rewrite/validate/key-term guard (punch_up + revise_for_floors)")
+    import copy as _copy
+    base = _copy.deepcopy(FIX_ASTRO)
+    # validate() requires >=2 of the fact's key_terms to be named (see
+    # validate()'s "only N/M mandatory key terms" check), so a fact needs at
+    # least 2 -- both already present in FIX_ASTRO's untouched scenes 2 and 3.
+    fact = {"key_terms": ["243 Earth days", "225 Earth days"]}
+
+    # success path: same scene ids, key term preserved, still validates clean
+    # -> returns a trial with the new voiceovers AND a rebuilt "script" field
+    good_scenes = {s["id"]: s["voiceover"] for s in base["scenes"]}
+    good_scenes[2] = "The planet turns so slowly that one spin takes 243 Earth days to finish."
+    trial = G._apply_scene_rewrite(base, fact, good_scenes, "test")
+    check(trial is not None, "a clean, validate()-passing rewrite is accepted")
+    check(trial["scenes"][1]["voiceover"] == good_scenes[2], "the rewritten scene's voiceover is applied")
+    check(trial["script"] == " ".join(s["voiceover"] for s in trial["scenes"]),
+          "the 'script' field is rebuilt from the new voiceovers")
+    check(base["scenes"][1]["voiceover"] != good_scenes[2], "the ORIGINAL manifest is untouched (deepcopy)")
+
+    # mismatched scene ids -> discarded
+    missing_one = {s["id"]: s["voiceover"] for s in base["scenes"] if s["id"] != 1}
+    check(G._apply_scene_rewrite(base, fact, missing_one, "test") is None,
+          "a rewrite missing a scene id is discarded")
+
+    # dropped mandatory key term -> discarded even though ids match
+    dropped_term = {s["id"]: s["voiceover"] for s in base["scenes"]}
+    dropped_term[2] = "The planet turns impossibly slowly on its axis."  # no longer says "243 Earth days"
+    check(G._apply_scene_rewrite(base, fact, dropped_term, "test") is None,
+          "a rewrite that drops a mandatory key term is discarded")
+
+    # rewrite that fails validate() (introduces banned jargon) -> discarded.
+    # No fact/key_terms here so the key-term guard can't mask WHICH check
+    # actually caught it -- this isolates the validate() call itself.
+    jargon = {s["id"]: s["voiceover"] for s in base["scenes"]}
+    jargon[3] = "It forms at 42 degrees from the antisolar point, opposite the sun."
+    check(G._apply_scene_rewrite(base, None, jargon, "test") is None,
+          "a rewrite that fails validate() (banned jargon) is discarded")
+
+
+def test_revise_for_floors():
+    section("generate.revise_for_floors: targeted fix for named criteria (not a blind full regeneration)")
+    import copy as _copy, json as _json
+    base = _copy.deepcopy(FIX_ASTRO)
+    # validate() requires >=2 of the fact's key_terms named, so 2 here --
+    # both already present untouched in FIX_ASTRO's scenes 3.
+    fact = {"fact": "Venus's day is longer than its year.",
+            "key_terms": ["243 Earth days", "225 Earth days"]}
+    violations = {"hook": 5.0, "escalation": 5.0}
+
+    # a clean rewrite response -> accepted, script rebuilt, original untouched
+    clean_scenes = [{"id": s["id"], "voiceover": s["voiceover"]} for s in base["scenes"]]
+    clean_scenes[1]["voiceover"] = "The planet turns so slowly that one spin takes 243 Earth days to complete."
+    orig_call = G.call_groq
+    G.call_groq = lambda _p: _json.dumps({"scenes": clean_scenes})
+    try:
+        out = G.revise_for_floors(base, fact, violations)
+        check(out is not None, "a clean targeted rewrite is accepted")
+        check(out["scenes"][1]["voiceover"] == clean_scenes[1]["voiceover"],
+              "the targeted rewrite's voiceover is applied")
+        check(base["scenes"][1]["voiceover"] != clean_scenes[1]["voiceover"],
+              "the original candidate manifest is not mutated")
+    finally:
+        G.call_groq = orig_call
+
+    # a call_groq failure must not crash -- returns None so the caller falls
+    # through to its existing (unchanged) full-regeneration path
+    G.call_groq = lambda _p: (_ for _ in ()).throw(RuntimeError("rate limited"))
+    try:
+        check(G.revise_for_floors(base, fact, violations) is None,
+              "a failed LLM call returns None, never raises")
+    finally:
+        G.call_groq = orig_call
+
+    # the prompt actually NAMES the violated criteria and quotes their rubric
+    # text -- this is the whole point (a targeted fix, not a guess)
+    captured = {}
+    def _capture(p):
+        captured["prompt"] = p
+        return _json.dumps({"scenes": clean_scenes})
+    G.call_groq = _capture
+    try:
+        G.revise_for_floors(base, fact, violations)
+        check("HOOK" in captured["prompt"] and "ESCALATION" in captured["prompt"],
+              "the repair prompt names the specific failing criteria")
+        check(G.RUBRIC_CRITERION_TEXT["hook"] in captured["prompt"],
+              "the repair prompt quotes the EXACT hook rubric text (shared with score_script)")
+        check("payoff" not in captured["prompt"].lower(),
+              "a criterion that did NOT fail is not mentioned (truly targeted, not the whole rubric)")
+    finally:
+        G.call_groq = orig_call
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1336,6 +1445,9 @@ def main():
     test_vibe_music_filter()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
+    test_rubric_criterion_text_complete()
+    test_apply_scene_rewrite()
+    test_revise_for_floors()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
