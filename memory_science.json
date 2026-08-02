@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-29_the-hidden-truth-of-house-dust",
-      "metaphor": "unsettling reality",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "The Hidden Truth of House Dust",
-      "fact_id": "skin_cells",
-      "domain": "body",
-      "hook": "You might be living in a home made of you.",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 5.0,
-        "escalation": 7.0,
-        "payoff": 6.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 6.83
-      }
-    },
-    {
       "video_id": "science_2026-07-26_pluto-s-eternal-orbit",
       "metaphor": "cosmic scale",
       "viewer_job": "REFRAME",
@@ -349,6 +325,32 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.0
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_the-animal-that-refuses-to-die",
+      "metaphor": "zero oxygen survival",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Animal That Refuses to Die",
+      "fact_id": "naked_mole_rat",
+      "domain": "animals",
+      "hook": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.71
       }
     }
   ]

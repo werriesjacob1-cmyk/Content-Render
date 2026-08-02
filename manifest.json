@@ -1,88 +1,87 @@
 {
-  "title": "You Can See Time Travel With Your Own Eyes",
-  "viewer_job": "REFRAME",
-  "keyword": "naked eye",
-  "metaphor": "seeing time directly",
-  "vibe": "awe",
-  "hook": "Name the farthest object you can see with your naked eye right now.",
-  "hook_headline": "SEEING TIME TRAVEL",
-  "script": "What is the single most distant thing your naked eye can actually see? What if the Andromeda galaxy vanished completely from existence tonight? You would still look up and see it glowing for another 2.5 million years. Its light began traveling through space long before modern humans ever existed. While our ancestors chipped stone tools, those photons were already racing toward Earth. Tonight, rod cells in your eye absorb those ancient particles to create a live signal. Staring at Andromeda isn't just looking across space \u2014 it's seeing time directly.",
+  "title": "The Animal That Refuses to Die",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "naked mole rat",
+  "metaphor": "zero oxygen survival",
+  "vibe": "eerie",
+  "hook": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
+  "hook_headline": "SURVIVES WITHOUT AIR",
+  "script": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely. How can a naked mole rat survive eighteen minutes without breathing? When air vanishes underground, its brain stops using normal glucose sugar. It switches its metabolism to burn fructose instead, functioning just like a plant. This trick keeps its brain alive, while dense sugar coats its cells to block cancer. A mouse dies in three years, but this rodent survives over thirty without aging like us. Would you trade normal looks for thirty years of immunity, or no?",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "What is the single most distant thing your naked eye can actually see?",
-      "on_screen_text": "NAKED EYE VISION",
-      "search_query": "andromeda galaxy night",
+      "duration": 5,
+      "voiceover": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
+      "on_screen_text": "naked mole rat",
+      "search_query": "naked mole rat",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What if the Andromeda galaxy vanished completely from existence tonight?",
-      "on_screen_text": "VANISHED TONIGHT?",
-      "search_query": "stargazing telescope",
+      "duration": 5,
+      "voiceover": "How can a naked mole rat survive eighteen minutes without breathing?",
+      "on_screen_text": "eighteen minutes",
+      "search_query": "burrow tunnel dark",
       "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "You would still look up and see it glowing for another 2.5 million years.",
-      "on_screen_text": "2.5 MILLION YEARS",
-      "search_query": "milky way night sky",
+      "voiceover": "When air vanishes underground, its brain stops using normal glucose sugar.",
+      "on_screen_text": "glucose sugar",
+      "search_query": "rodent close up",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "Its light began traveling through space long before modern humans ever existed.",
-      "on_screen_text": "NAKED EYE SKY",
-      "search_query": "night sky stars",
-      "motion": "zoom_out",
+      "voiceover": "It switches its metabolism to burn fructose instead, functioning just like a plant.",
+      "on_screen_text": "fructose energy",
+      "search_query": "naked mole rat burrow",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "While our ancestors chipped stone tools, those photons were already racing toward Earth.",
-      "on_screen_text": "ANCIENT LIGHT",
-      "search_query": "stone tools archaeology",
-      "motion": "zoom_in",
+      "voiceover": "This trick keeps its brain alive, while dense sugar coats its cells to block cancer.",
+      "on_screen_text": "cancer defense",
+      "search_query": "thick syrup gel liquid",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "Tonight, rod cells in your eye absorb those ancient particles to create a live signal.",
-      "on_screen_text": "RETINA LIGHT SIGNALS",
-      "search_query": "human eye close up",
-      "motion": "pan",
+      "voiceover": "A mouse dies in three years, but this rodent survives over thirty without aging like us.",
+      "on_screen_text": "thirty year lifespan",
+      "search_query": "small mouse dark burrow",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Staring at Andromeda isn't just looking across space \u2014 it's seeing time directly.",
-      "on_screen_text": "SEEING TIME DIRECTLY",
-      "search_query": "deep space galaxy",
-      "motion": "zoom_out",
+      "voiceover": "Would you trade normal looks for thirty years of immunity, or no?",
+      "on_screen_text": "would you trade",
+      "search_query": "naked mole rat close up",
+      "motion": "pan",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Have you ever spotted Andromeda with the naked eye? Yes or no?",
-    "When you look at Andromeda, you are literally looking 2.5 million years into the past.",
-    "The photons hitting your eye tonight started their journey before modern humans existed."
+    "Could you survive without oxygen for 18 minutes like the naked mole rat \u2014 yes or no?",
+    "How this subterranean mammal switches to plant power when oxygen runs out.",
+    "Nature's strange secret to cancer immunity and 30-year lifespans."
   ],
   "hashtags": [
+    "#biology",
     "#science",
-    "#space",
-    "#astronomy",
-    "#andromeda",
-    "#physics",
+    "#nature",
+    "#weirdfacts",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +89,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_you-can-see-time-travel-with-your-own-ey",
-  "cta_style": "LOOP",
-  "domain": "space"
+  "video_id": "science_2026-08-02_the-animal-that-refuses-to-die",
+  "cta_style": "COMMENT",
+  "domain": "animals"
 }
