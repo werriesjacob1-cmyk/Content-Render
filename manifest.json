@@ -1,88 +1,88 @@
 {
-  "title": "Microbes Are Thinking",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "microbial intelligence",
-  "metaphor": "single celled brain",
+  "title": "The Strange Power of Fake Medicine",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "placebo effect",
+  "metaphor": "brain healing mind cure",
   "vibe": "eerie",
-  "hook": "Right now, microbes inside your mouth are actively predicting your next move.",
-  "hook_headline": "MICROBES PREDICT YOU",
-  "script": "Right now, microbes inside your mouth are actively predicting your next move. How do simple organisms without a brain exhibit complex problem solving? When E. coli senses sudden warmth, it turns off oxygen genes before ever reaching your gut. Colonies communicate using potassium channels, firing electrical waves exactly like human brain cells. Mother microbes store cellular memories, passing critical lessons down to four generations of offspring. This microbial intelligence allows swarms to outsmart your immune system by waiting until their numbers are lethal. Would you classify single-celled life as truly intelligent\u2014yes or no?",
+  "hook": "Every time you take medicine, your brain might respond by healing you alone.",
+  "hook_headline": "YOUR BRAIN HEALS ITSELF",
+  "script": "Every time you take medicine, your brain might respond by healing you alone. Can a fake treatment trick your body into making its own real painkiller? When patients take a fake placebo pill, their spine releases real painkilling chemicals. Blocking those natural chemicals with another drug instantly brought the pain back. In fake knee surgeries where doctors made incisions without operating, patients healed just as well. Two fake pills work better than one, and branded sugar pills outperform generic ones. Your brain is already manufacturing the cure before any pill ever touches your tongue.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "Right now, microbes inside your mouth are actively predicting your next move.",
-      "on_screen_text": "MICROBES PREDICT YOU",
-      "search_query": "human mouth close up",
+      "voiceover": "Every time you take medicine, your brain might respond by healing you alone.",
+      "on_screen_text": "brain response",
+      "search_query": "hand holding pill bottle",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "How do simple organisms without a brain exhibit complex problem solving?",
-      "on_screen_text": "NO BRAIN NEEDED",
-      "search_query": "bacteria swarming petri dish",
-      "motion": "zoom_in",
+      "voiceover": "Can a fake treatment trick your body into making its own real painkiller?",
+      "on_screen_text": "fake treatment",
+      "search_query": "glass water with white pills",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "When E. coli senses sudden warmth, it turns off oxygen genes before ever reaching your gut.",
-      "on_screen_text": "PREDICTING YOUR BODY",
-      "search_query": "bubbling laboratory beaker",
+      "duration": 5,
+      "voiceover": "When patients take a fake placebo pill, their spine releases real painkilling chemicals.",
+      "on_screen_text": "placebo effect",
+      "search_query": "medical hospital corridor lights",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "Colonies communicate using potassium channels, firing electrical waves exactly like human brain cells.",
-      "on_screen_text": "ELECTRICAL BRAIN WAVES",
-      "search_query": "glowing blue slime mold",
-      "motion": "static",
+      "duration": 5,
+      "voiceover": "Blocking those natural chemicals with another drug instantly brought the pain back.",
+      "on_screen_text": "chemical block",
+      "search_query": "doctor preparing injection syringe",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "Mother microbes store cellular memories, passing critical lessons down to four generations of offspring.",
-      "on_screen_text": "HERITABLE MEMORY",
-      "search_query": "petri dish bacteria culture",
+      "duration": 6,
+      "voiceover": "In fake knee surgeries where doctors made incisions without operating, patients healed just as well.",
+      "on_screen_text": "fake surgery",
+      "search_query": "operating room surgical lights",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 6,
-      "voiceover": "This microbial intelligence allows swarms to outsmart your immune system by waiting until their numbers are lethal.",
-      "on_screen_text": "OUTSMARTING IMMUNITY",
-      "search_query": "blood vessel flow close up",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "Two fake pills work better than one, and branded sugar pills outperform generic ones.",
+      "on_screen_text": "mind power",
+      "search_query": "pills spilling on table",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Would you classify single-celled life as truly intelligent\u2014yes or no?",
-      "on_screen_text": "INTELLIGENT YES OR NO",
-      "search_query": "laboratory scientist petri dish",
+      "duration": 5,
+      "voiceover": "Your brain is already manufacturing the cure before any pill ever touches your tongue.",
+      "on_screen_text": "self healing",
+      "search_query": "person swallowing glass of water",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Is microbial intelligence real or just chemical reaction? Yes or no?",
-    "Single-celled microbes pass down cellular memories without a single neuron.",
-    "Your body is a battleground against organisms that predict your moves."
+    "Did you know your mind can act like a pharmacy? Is the placebo effect real or just in our heads?",
+    "Science proves belief alters physical chemistry.",
+    "Our bodies hold hidden mechanisms we are only starting to understand."
   ],
   "hashtags": [
-    "#microbiology",
     "#science",
-    "#biology",
-    "#nature",
-    "#documentary",
+    "#brain",
+    "#medicine",
+    "#facts",
+    "#mindset",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_microbes-are-thinking",
-  "cta_style": "COMMENT",
-  "domain": "biology"
+  "video_id": "science_2026-08-02_the-strange-power-of-fake-medicine",
+  "cta_style": "LOOP",
+  "domain": "psychology"
 }

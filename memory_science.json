@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-30_birthday-probability",
-      "metaphor": "birthday surprise",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "Birthday Probability",
-      "fact_id": "birthday_paradox",
-      "domain": "math",
-      "hook": "What if you bet on a shared birthday?",
-      "structure": {
-        "scene_count": 5,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 5.0,
-        "payoff": 6.0,
-        "rewatch": 4.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 6.86
-      }
-    },
-    {
       "video_id": "science_2026-07-30_continents-in-motion",
       "metaphor": "moving continents mystery",
       "viewer_job": "MYTH_BUSTER",
@@ -355,6 +330,32 @@
         "clarity": 8.0,
         "coherence": 8.0,
         "overall": 8.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_the-strange-power-of-fake-medicine",
+      "metaphor": "brain healing mind cure",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Strange Power of Fake Medicine",
+      "fact_id": "placebo_effect",
+      "domain": "psychology",
+      "hook": "Every time you take medicine, your brain might respond by healing you alone.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.0
       }
     }
   ]
