@@ -713,6 +713,33 @@ JARGON_TERM_RE = re.compile(
     r"myceli\w*|hyphae?|transdifferentiation|cnidarian|senescence|mycorrhizal|"
     r"hemocyanin)\b", re.I)
 
+# mechanical backstop for the ONE-IDEA-PER-SENTENCE prompt rule (user feedback,
+# the petrichor video: "at five parts per trillion, hundreds of times more
+# sensitive than a shark tracking blood" -- "is not spoken in a methodic way or
+# rhythm"). A prompt rule alone can still slip through self-scoring, same as
+# every other mechanical guard in this file. Narrow by design: only fires when
+# a comma splits a numeric clause from a SEPARATE "X times more/less/faster...
+# than ___" comparative clause -- that specific shape is what reads as a rushed,
+# flat TTS monotone; an ordinary comma (an appositive, a list, a clause) is fine.
+COMPARATIVE_STACK_RE = re.compile(
+    r"\btimes\s+(more|less|as|faster|slower|bigger|smaller|higher|lower|"
+    r"stronger|weaker|hotter|colder|deeper|heavier|lighter|sensitive|greater)\b"
+    r"[^,.!?]*\bthan\b", re.I)
+
+
+def _comma_stacked_comparative(vo):
+    """Returns the offending comma-split fragment, or None if the line is fine."""
+    parts = vo.split(",")
+    if len(parts) < 2:
+        return None
+    for i in range(len(parts) - 1):
+        left = parts[i]
+        right = ",".join(parts[i + 1:])
+        if ((REFERENCE_WORTHY_RE.search(left) and COMPARATIVE_STACK_RE.search(right)) or
+                (REFERENCE_WORTHY_RE.search(right) and COMPARATIVE_STACK_RE.search(left))):
+            return vo
+    return None
+
 
 # ---------- VIBE + HYBRID REAL/AI FOOTAGE (mood-matched pacing, movie-like relevance) ----------
 # Every video currently gets the same flat pacing/grade/caption energy regardless
@@ -2032,6 +2059,11 @@ def validate(m, job_name, fact=None):
             return (f"scene {i} voiceover names unexplained jargon {jt.group(0)!r} — a smart "
                      f"15-year-old wouldn't know this word; either explain it in plain words in the "
                      f"same breath or replace it entirely (see the PLAIN SPOKEN ENGLISH rule)")
+        if _comma_stacked_comparative(s["voiceover"]):
+            return (f"scene {i} voiceover '{s['voiceover']}' comma-splices a numeric clause and a "
+                     f"separate 'X times more/less... than' comparison into one sentence — the TTS "
+                     f"voice reads this in a flat, rushed monotone with no natural rhythm; split it "
+                     f"into two sentences, one landing per beat (see the ONE IDEA PER SENTENCE rule)")
         # stock libraries return junk (flesh closeups, random labs) for these:
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):

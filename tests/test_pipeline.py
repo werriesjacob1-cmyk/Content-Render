@@ -261,6 +261,28 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "named jargon ('hemocyanin') rejected")
 
+    # comma-stacked numeric + comparative clause (user feedback, petrichor video:
+    # "at five parts per trillion, hundreds of times more sensitive than a shark
+    # tracking blood" -- "not spoken in a methodic way or rhythm")
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = ("You detect geosmin at five parts per trillion, hundreds of "
+                                    "times more sensitive than a shark tracking blood.")
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "rhythm" in err, f"comma-stacked numeric+comparative rejected ({err})")
+    # the fixed, split version (two beats) must be ALLOWED
+    m = copy.deepcopy(FIX_PHYS)
+    m["scenes"][2]["voiceover"] = "You detect geosmin at five parts per trillion."
+    m["scenes"][3]["voiceover"] = "That is hundreds of times more sensitive than a shark tracking blood."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    check(G.validate(m, "EXPLAIN") is None, "split into two sentences (one beat each) is allowed")
+    # an ordinary comma with no comparative clause on the other side must NOT fire
+    check(G._comma_stacked_comparative("It weighs 200 kilograms, roughly the size of a small car.") is None,
+          "an ordinary appositive comma (number, but no times/than comparative) does not fire")
+    # a comparative with no number clause on the other side must NOT fire either
+    check(G._comma_stacked_comparative("It is fast, and it is also very strong.") is None,
+          "a comma with neither side being a numeric+comparative pair does not fire")
+
     # command ending: "send this to a friend" (the render-67 Krakatoa flaw). The
     # rubric bans command endings; SHARE is out of the rotation and the guard now
     # rejects the phrasing outright.
