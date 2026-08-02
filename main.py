@@ -899,6 +899,24 @@ def _gemini_vision_pick(intent, candidates):
 # is whether the assembled result actually matches what was intended.
 FINAL_QA = os.environ.get("FINAL_QA", "1") != "0"
 FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
+# Hard publish gate: a CONFIDENT (judge actually ran + returned a number) low
+# footage_matches_narration score aborts the render (mirrors the
+# STAT_CARD_SCENES > MAX_STAT_CARDS gate). Deliberately stricter than the
+# FLAG threshold used for the log line (6) -- this is the last line of
+# defense before a release goes out, so it only fires on a clear, blatant
+# mismatch (render 205/209 territory), not a borderline judge call.
+FINAL_QA_ABORT_FLOOR = int(os.environ.get("FINAL_QA_ABORT_FLOOR") or "4")
+
+
+def _qa_should_abort(qa_report):
+    """True only on a CONFIDENT low footage_matches_narration score (the judge
+    actually ran and returned a number below FINAL_QA_ABORT_FLOOR). Any failure
+    to judge (no key, bad reply, exception) fails OPEN -- never blocks a
+    publish just because the best-effort QA call itself broke."""
+    if not qa_report.get("ran"):
+        return False
+    fm = qa_report.get("footage_matches_narration")
+    return isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR
 
 
 def _qa_frame_timestamps(dur, n):
@@ -938,20 +956,21 @@ def _extract_qa_frames(video, n, dest_dir):
 
 def _final_qa_check(video, m):
     """Best-effort holistic sanity check on the ASSEMBLED, captioned video —
-    never raises, never blocks the render. Always writes out/qa_report.json
-    (shipped as a release asset) and prints a single [final-qa] summary line
-    so a bad video is visible in the render log without anyone downloading and
-    watching it."""
+    never raises. Always writes out/qa_report.json (shipped as a release
+    asset) and prints a single [final-qa] summary line so a bad video is
+    visible in the render log without anyone downloading and watching it.
+    Returns the report dict; the caller gates publishing on a confidently
+    low footage_matches_narration score (see FINAL_QA_ABORT_FLOOR)."""
     out_path = os.path.join(OUT, "qa_report.json")
     report = {"ran": False}
     try:
         key = os.environ.get("GEMINI_API_KEY", "")
         if not (FINAL_QA and key):
-            return
+            return report
         frames = _extract_qa_frames(video, FINAL_QA_FRAMES, os.path.join(WORK, "qa_frames"))
         if len(frames) < 3:
             print(f"[final-qa] skipped — only {len(frames)} frame(s) extracted")
-            return
+            return report
         script = " ".join(s.get("voiceover", "") for s in m.get("scenes", []))
         import base64
         parts = [{"text": (
@@ -994,7 +1013,7 @@ def _final_qa_check(video, m):
         if _match is None:
             print(f"[final-qa] unavailable (no JSON in reply: {txt[:80]!r})")
             report = {"ran": False, "error": "no JSON in reply"}
-            return
+            return report
         verdict = json.loads(_match.group(0))
         report = {"ran": True, "frames_sampled": len(frames), **verdict}
         fm = verdict.get("footage_matches_narration")
@@ -1012,6 +1031,7 @@ def _final_qa_check(video, m):
             json.dump(report, open(out_path, "w"), indent=2)
         except Exception:  # noqa: BLE001
             pass
+    return report
 
 
 def _groq_judge(intent, candidates, _allow_retry=True):
@@ -3251,7 +3271,15 @@ def main():
     cover_src = scene_files[0] if scene_files else body
     if not make_cover(cover_src, m, os.path.join(OUT, "cover.jpg")) and cover_src is not body:
         make_cover(body, m, os.path.join(OUT, "cover.jpg"))
-    _final_qa_check(final, m)
+    qa_report = _final_qa_check(final, m)
+    if _qa_should_abort(qa_report):
+        print(f"ERROR: final QA judged footage_matches_narration="
+              f"{qa_report.get('footage_matches_narration')}/10 (< FINAL_QA_ABORT_FLOOR="
+              f"{FINAL_QA_ABORT_FLOOR}) on the ASSEMBLED video — issue="
+              f"{qa_report.get('biggest_issue', '')!r}. Aborting so a blatant "
+              f"footage/narration mismatch is never published — the script was "
+              f"fine, only the footage failed; retry re-renders it.")
+        sys.exit(1)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
 

@@ -462,13 +462,31 @@ def test_final_qa():
     _key_bak = os.environ.pop("GEMINI_API_KEY", None)
     try:
         M.OUT = tempfile.mkdtemp()
-        M._final_qa_check("/nonexistent/video.mp4", {"scenes": [{"voiceover": "x"}]})
-        rep = _json.load(open(os.path.join(M.OUT, "qa_report.json")))
-        check(rep == {"ran": False}, "no GEMINI_API_KEY -> qa_report.json written as a clean no-op")
+        rep = M._final_qa_check("/nonexistent/video.mp4", {"scenes": [{"voiceover": "x"}]})
+        on_disk = _json.load(open(os.path.join(M.OUT, "qa_report.json")))
+        check(rep == {"ran": False}, "no GEMINI_API_KEY -> _final_qa_check returns the no-op report")
+        check(on_disk == {"ran": False}, "no GEMINI_API_KEY -> qa_report.json written as a clean no-op")
     finally:
         M.OUT = _out_bak
         if _key_bak is not None:
             os.environ["GEMINI_API_KEY"] = _key_bak
+
+    # publish gate (render 205/209: a blatant footage/narration mismatch must
+    # abort, not ship) -- fails OPEN on anything less than a confident low score
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 1}) is True,
+          "confident, blatantly low score (1/10) -> abort")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": M.FINAL_QA_ABORT_FLOOR - 1}) is True,
+          "score just under the floor -> abort")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": M.FINAL_QA_ABORT_FLOOR}) is False,
+          "score AT the floor -> does not abort (only strictly below)")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 8}) is False,
+          "healthy score -> no abort")
+    check(M._qa_should_abort({"ran": False, "footage_matches_narration": 0}) is False,
+          "judge did not run (ran:false, e.g. no key) -> fails OPEN, never aborts")
+    check(M._qa_should_abort({"ran": True, "error": "no JSON in reply"}) is False,
+          "ran but no numeric score parsed -> fails OPEN, never aborts")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": "n/a"}) is False,
+          "non-numeric score value -> fails OPEN, never aborts")
 
 
 def test_vibe_and_hybrid_footage_mode():
