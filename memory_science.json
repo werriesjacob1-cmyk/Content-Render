@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-29_time-s-hidden-gap",
-      "metaphor": "dinosaur timeline",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "Time's Hidden Gap",
-      "fact_id": "trex_stegosaurus_time",
-      "domain": "deep_time",
-      "hook": "Tyrannosaurus rex is closer to you",
-      "structure": {
-        "scene_count": 5,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 6.0,
-        "rewatch": 5.0,
-        "clarity": 9.0,
-        "coherence": 8.0,
-        "overall": 7.0
-      }
-    },
-    {
       "video_id": "science_2026-07-29_the-truth-about-old-windows",
       "metaphor": "Glass Mystery",
       "viewer_job": "REFRAME",
@@ -353,6 +328,32 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_the-collapsing-family-tree",
+      "metaphor": "collapsing family tree",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "The Collapsing Family Tree",
+      "fact_id": "everyone_is_your_ancestor",
+      "domain": "math",
+      "hook": "Pick any total stranger on Earth \u2014 how far back until your family trees collide?",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.14
       }
     }
   ]
