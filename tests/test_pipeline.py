@@ -648,6 +648,40 @@ def test_near_miss_repair_revalidates():
                         "abandoned (consistency over cadence), not shipped with the jargon intact")
 
 
+def test_near_miss_injects_missing_curiosity_gap():
+    section("generate.py: near-miss mechanically injects the missing whatif question (renders 196/197)")
+    # FIX_ASTRO has zero '?' anywhere (hook or scenes) -- every attempt hits
+    # the SAME validate() failure ("whatif curiosity gap never opened"), so
+    # it becomes the near-miss. The fix text is the fact's own "whatif" field
+    # (no LLM call needed): near-miss repair should inject it into scene 2
+    # and SHIP the result, rather than abandoning an otherwise-clean script.
+    import copy as _copy, json as _json
+    bad = _copy.deepcopy(FIX_ASTRO)
+    check("?" not in (bad["hook"] + " ".join(s["voiceover"] for s in bad["scenes"])),
+          "sanity: the fixture has no question mark anywhere")
+    raw = _json.dumps(bad)
+    orig_call, orig_circuit = G.call_groq, G._CIRCUIT_OPEN
+    G.call_groq = lambda _p: raw
+    G._CIRCUIT_OPEN = False
+    fact = {"id": "x", "fact": "Venus's day is longer than its year.", "angle": "backwards planet",
+            "key_terms": ["243 Earth days", "225 Earth days"],
+            "whatif": "Could a planet's day really last longer than its whole year",
+            "wow": "", "queries": ["venus planet"]}
+    try:
+        res = G.generate_candidate("EXPLAIN", "explain a thing", "none", fact,
+                                    history=[], dossier="(dossier)")
+    finally:
+        G.call_groq = orig_call
+        G._CIRCUIT_OPEN = orig_circuit
+    check(res is not None, "the whatif-only violation is mechanically repaired and SHIPPED, "
+                            "not abandoned")
+    if res is not None:
+        early = res["hook"] + " " + " ".join(s["voiceover"] for s in res["scenes"][:4])
+        check("?" in early, "the repaired script now opens a curiosity gap in the first few lines")
+        check("last longer than its whole year" in res["scenes"][1]["voiceover"].lower(),
+              "the fact's own whatif TEXT was injected verbatim into scene 2")
+
+
 def test_caption_function_word_grouping():
     section("main._group_function_words: no lone 'OF'/'THE' frame, and NO word dropped")
     # "capable of stopping the plane" -> 'of' rides with 'stopping', 'the' with 'plane'
@@ -1452,6 +1486,7 @@ def main():
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
     test_near_miss_repair_revalidates()
+    test_near_miss_injects_missing_curiosity_gap()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 

@@ -2934,6 +2934,29 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             print(f"  near-miss shortened {_trimmed} over-cap scene(s) to fit the "
                   f"{SCENE_WORD_CAP}-word ceiling (trimmed, not dropped -- keeps the "
                   f"scene's content/key term intact)")
+        # CURIOSITY-GAP INJECTION: "whatif curiosity gap never opened" is a
+        # 100% MECHANICAL check (a literal '?' somewhere in the hook + first
+        # few scenes) and the exact fix text already exists verbatim on the
+        # fact (whatif) -- no LLM call needed, just place it. Renders 196/197
+        # each abandoned an otherwise-clean near-miss over exactly this (the
+        # model forgot to literally ask its own question early). Only fires
+        # when the near-miss doesn't already open one and there's a scene 2
+        # to carry it.
+        if chosen_fact and chosen_fact.get("whatif") and len(_scenes) > 1:
+            _early_n = min(4, len(_scenes))
+            _early_text = (nm.get("hook", "") + " " +
+                           " ".join(s.get("voiceover", "") for s in _scenes[:_early_n]))
+            if "?" not in _early_text:
+                _q = chosen_fact["whatif"].strip()
+                if _q and _q[-1] != "?":
+                    _q += "?"
+                if _q:
+                    _target = _scenes[1]
+                    _merged = f"{_q} {_target.get('voiceover', '')}".strip()
+                    _target["voiceover"] = _trim_scene_to_cap(_merged, SCENE_WORD_CAP)
+                    nm["scenes"] = _scenes
+                    print("  near-miss injected the missing curiosity-gap question "
+                          "into scene 2 (mechanical fix, no LLM call)")
         if _wc(_scenes) > NEARMISS_MAX_WORDS:
             print(f"  near-miss still {_wc(_scenes)} words after trimming to {len(_scenes)} scenes "
                   f"(cap {NEARMISS_MAX_WORDS}) — abandoning this weak/long draft (consistency over cadence)")
