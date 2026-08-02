@@ -846,6 +846,38 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_fal_clip_relevant():
+    section("main._fal_clip_relevant: fal hero/gap-fill clips now get a relevance check (render 205)")
+    # Render 205 asked fal for "naked mole rat close up" and got a boat, then a
+    # human silhouette -- shipped unconditionally as the PAYOFF scene because
+    # a fal clip was accepted on API success alone (score hardcoded to 10),
+    # never actually checked against what was asked for. No GEMINI_API_KEY /
+    # VISION_JUDGE off must fail OPEN (accept the clip, no network attempt at
+    # all) -- this check existing must never be a NEW way to abort a render.
+    prev_key = os.environ.get("GEMINI_API_KEY")
+    prev_vj = M.VISION_JUDGE
+    try:
+        os.environ.pop("GEMINI_API_KEY", None)
+        M.VISION_JUDGE = True
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
+              "no GEMINI_API_KEY -> fail open, accepts the clip (no network attempt)")
+        os.environ["GEMINI_API_KEY"] = "x"
+        M.VISION_JUDGE = False
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
+              "VISION_JUDGE off -> fail open, accepts the clip")
+        # a genuinely bad/missing clip path (ffmpeg can't extract a frame) must
+        # also fail open, not crash or block the render on a judging hiccup
+        M.VISION_JUDGE = True
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
+              "frame extraction failure -> fail open, accepts the clip")
+    finally:
+        M.VISION_JUDGE = prev_vj
+        if prev_key is None:
+            os.environ.pop("GEMINI_API_KEY", None)
+        else:
+            os.environ["GEMINI_API_KEY"] = prev_key
+
+
 def test_hook_headline_event():
     section("main._headline_event: top-anchored hook headline, auto-fit, optional")
     check(M._headline_event("") is None, "empty headline -> no event drawn")
@@ -1567,6 +1599,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_fal_clip_relevant()
     test_hook_headline_event()
     test_caption_autoshrink()
     test_caption_pop_animation()

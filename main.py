@@ -864,7 +864,11 @@ def _gemini_vision_pick(intent, candidates):
         with urllib.request.urlopen(rq, timeout=45) as r:
             data = json.loads(r.read().decode())
         txt = data["candidates"][0]["content"]["parts"][0]["text"]
-        m = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+        _match = re.search(r"\{.*\}", txt, re.S)
+        if _match is None:
+            print(f"  [vision] judge unavailable (no JSON in reply: {txt[:80]!r}); using text judge")
+            return None
+        m = json.loads(_match.group(0))
         best, score = int(m.get("best")), int(m.get("score"))
         if 0 <= best < len(idxs):
             print(f"  [vision] Gemini picked clip index {idxs[best]} (match {score}/10) by thumbnail")
@@ -979,7 +983,12 @@ def _final_qa_check(video, m):
         with urllib.request.urlopen(rq, timeout=60) as r:
             data = json.loads(r.read().decode())
         txt = data["candidates"][0]["content"]["parts"][0]["text"]
-        verdict = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+        _match = re.search(r"\{.*\}", txt, re.S)
+        if _match is None:
+            print(f"[final-qa] unavailable (no JSON in reply: {txt[:80]!r})")
+            report = {"ran": False, "error": "no JSON in reply"}
+            return
+        verdict = json.loads(_match.group(0))
         report = {"ran": True, "frames_sampled": len(frames), **verdict}
         fm = verdict.get("footage_matches_narration")
         vv = verdict.get("visual_variety")
@@ -1945,6 +1954,63 @@ def _fal_prompt(scene):
             f"no text, no words, no captions, no watermark, no logo.")
 
 
+def _fal_clip_relevant(scene, clip_path):
+    """Single-frame Gemini vision check: does a fal.ai-generated clip actually
+    show what it was asked for? Text-to-video generation can hallucinate a
+    completely unrelated subject even on a successful, well-formed API
+    response (see the darkness check above and _fal_video's caller for why
+    a 200 response alone proves nothing about CONTENT). Fails OPEN (returns
+    True) whenever judging itself is unavailable/broken/unparseable -- this
+    must never be the reason a render aborts or a fal clip is wrongly
+    rejected; it only rejects on a CONFIDENT low score. Reuses the same
+    bounded-thinking-budget fix as _gemini_vision_pick/_final_qa_check
+    (thinkingBudget=0 400s once image parts are attached)."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not (VISION_JUDGE and key):
+        return True
+    frame_path = os.path.join(WORK, f"_fal_check_{os.path.basename(clip_path)}.jpg")
+    try:
+        run(["ffmpeg", "-y", "-i", clip_path, "-ss", "1.0", "-frames:v", "1", frame_path])
+        if not os.path.exists(frame_path):
+            return True
+        intent = _footage_intent(scene)
+        import base64
+        parts = [
+            {"text": (f"Does this image LITERALLY show: \"{intent}\"? Score 0-10 -- "
+                      f"8-10 = clearly, literally shows the subject; 4-7 = related but "
+                      f"not an exact match; 0-3 = a completely different, unrelated "
+                      f"subject. Return ONLY JSON: {{\"score\": <0-10>}}.")},
+            {"inline_data": {"mime_type": "image/jpeg",
+                             "data": base64.b64encode(open(frame_path, "rb").read()).decode()}},
+        ]
+        body = json.dumps({"contents": [{"parts": parts}],
+                           "generationConfig": {"temperature": 0, "maxOutputTokens": 60,
+                                                "thinkingConfig": {"thinkingBudget": 512}}}).encode()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
+        req = urllib.request.Request(url, data=body,
+            headers={"Content-Type": "application/json", "x-goog-api-key": key,
+                     "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read().decode())
+        txt = data["candidates"][0]["content"]["parts"][0]["text"]
+        m = re.search(r"\{.*\}", txt, re.S)
+        if not m:
+            return True   # unparseable reply -- fail open, don't block on a judging hiccup
+        score = int(json.loads(m.group(0)).get("score", 10))
+        if score < FAL_RELEVANCE_FLOOR:
+            print(f"  [fal] vision check: {score}/10 against {intent!r} -- rejecting")
+            return False
+        return True
+    except Exception as e:  # noqa: BLE001 - a broken check must never block a render
+        print(f"  [fal] relevance check unavailable ({e}); accepting clip")
+        return True
+    finally:
+        try:
+            os.remove(frame_path)
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def _fal_video(scene, dest):
     """Generate an on-topic AI video clip for a scene via fal.ai. Returns True on
     success (a playable clip written to dest), False on any failure so the caller
@@ -1987,6 +2053,21 @@ def _fal_video(scene, dest):
         FAL_VIDEO_SCENES += 1
         if _clip_too_dark(dest):
             print(f"  [fal] clip for '{subject[:40]}' came back too dark/broken "
+                  f"({FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} spent) — falling back to stock")
+            return False
+        # RELEVANCE CHECK (2026-08-02, render 205): unlike stock footage --
+        # which is always vision/text-judged before shipping -- a fal clip
+        # was accepted UNCONDITIONALLY (score hardcoded to 10 at the call
+        # site), because a successful API response only proves the model
+        # generated SOMETHING, not that it generated the right SUBJECT.
+        # Text-to-video hallucinates: asked for "naked mole rat close up,"
+        # render 205 got a boat on water, then an unrelated human silhouette,
+        # and shipped it as the PAYOFF scene with nothing to catch it. Same
+        # spend-already-counts-either-way reasoning as the darkness check
+        # above -- this is a paid clip either way; only whether it SHIPS
+        # changes.
+        if not _fal_clip_relevant(scene, dest):
+            print(f"  [fal] clip for '{subject[:40]}' didn't match the subject "
                   f"({FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} spent) — falling back to stock")
             return False
         print(f"  [fal] AI video clip {FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} for "
