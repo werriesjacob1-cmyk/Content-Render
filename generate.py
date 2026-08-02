@@ -1086,7 +1086,7 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   one flattens the payoff); if under {WORD_LO}, you're too thin — add one more real fact from the research,
   never filler. A tighter video beats a padded one: competitors win on COMPLETION, so cut every non-essential
   line and keep only the strongest "wait, what?" beats. Density of surprise over quantity of words.
-- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed 22 words
+- PER-SCENE LENGTH: aim {WORDS_PER_SCENE}. NEVER exceed 25 words
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
@@ -1961,13 +1961,19 @@ def validate(m, job_name, fact=None):
                 return f"scene {i} missing {k}"
             s[k] = _clean(s[k])
         s["on_screen_text"] = " ".join(s["on_screen_text"].split()[:4])  # cap label to 4 words
-        # Hard per-scene cap tightened 28 -> 22 words. The Sun video's scene
-        # 11 ran 34 words -- a run-on jammed between 6-9 word scenes is
-        # exactly the "choppy / doesn't stop talking" complaint: one scene
-        # breathless while its neighbors are punchy reads as uneven, not
-        # varied. Prompt targets 6-16 words/scene; 22 is the hard ceiling.
-        if len(s["voiceover"].split()) > 22:
-            return f"scene {i} voiceover too long ({len(s['voiceover'].split())} words, cap is 22)"
+        # Hard per-scene cap tightened 28 -> 22, then loosened to 25 words.
+        # The Sun video's scene 11 ran 34 words -- a run-on jammed between
+        # 6-9 word scenes is exactly the "choppy / doesn't stop talking"
+        # complaint: one scene breathless while its neighbors are punchy
+        # reads as uneven, not varied. 22 was too tight against SHORT's
+        # widened word window (2026-08-02): renders 189/194 both aborted a
+        # near-miss on a single 24-25 word scene that near-miss repair can't
+        # fix (it only DROPS whole redundant scenes, never shortens one) --
+        # a genuinely fine sentence with a mandatory key term in it was
+        # killing an otherwise-clean draft. Prompt targets 6-16 words/scene;
+        # 25 is the hard ceiling (still far under the 34-word complaint).
+        if len(s["voiceover"].split()) > 25:
+            return f"scene {i} voiceover too long ({len(s['voiceover'].split())} words, cap is 25)"
         # TOO-FORMAL / "sounds like a textbook" — user feedback on 'Continents in
         # Motion': "But is the distance between New York and London fixed?" then a
         # flat "No." Every word was plain, but the SENTENCE SHAPE was stiff, not
