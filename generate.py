@@ -1044,9 +1044,11 @@ HOOK (first 2 seconds decide 70% of retention):
 - First spoken line = 8-14 words. A contrarian claim or direct call-out that opens a curiosity gap. NOT a description.
 - FRONT-LOAD THE SHOCK (#1 retention lever — most viewers drop at 0:01): the most surprising word lands
   in the FIRST 3-4 words, no wind-up. BANNED first-line openers: "Did you know", "Have you ever",
-  "Imagine", "What if I told you", "Here's", "This is", "Ever wonder". BAD: "Have you ever wondered what
+  "Imagine", "What if I told you", "Here's", "This is". BAD: "Have you ever wondered what
   your stomach acid can do?" GOOD: "Your stomach acid could dissolve a razor blade." Open cold on the
-  shock. (A curiosity '?' still appears by scene 2, never as the very first line.)
+  shock. (A curiosity '?' still appears by scene 2, never as the very first line. "Ever wonder..." is
+  an exception to this ban ONLY for the specific perception-gap case below — it grounds the hook in a
+  lived experience the viewer already recognizes, which is itself the shock/relevance, not a wind-up.)
 - MAKE LITERAL SENSE (non-negotiable): every line must be TRUE and have clear referents — no vague
   pronoun a listener can't resolve. State the actual fact PLAINLY. BAD: "your great-grandparents saw
   Pluto's start, but it won't finish" (start of WHAT? finish WHAT? — meaningless). GOOD: "Pluto takes
@@ -2338,15 +2340,42 @@ RUBRIC_CRITERION_TEXT = {
                   "a confusing script must not pass."),
 }
 
+# Extra concrete guidance injected into revise_for_floors() ONLY when "hook"
+# is one of the failed criteria -- the terse RUBRIC_CRITERION_TEXT['hook']
+# line alone gave the targeted repair nowhere near enough to work with (it's
+# a one-sentence description, not the good/bad examples the main writer
+# prompt uses). This is the free lever: richer prompting, not a stronger/
+# paid model. Condensed from the HOOK section of build_prompt() above.
+HOOK_REPAIR_GUIDANCE = """
+HOOK REWRITE RULES (the hook is its OWN field, said before scene 1 — rewrite it too):
+- 8-14 words. The most surprising word lands in the FIRST 3-4 words, no wind-up. BANNED
+  openers: "Did you know", "Have you ever", "Imagine", "What if I told you", "Here's",
+  "This is". BAD: "Have you ever wondered what your stomach acid can do?" GOOD: "Your
+  stomach acid could dissolve a razor blade."
+- CONCRETE, NOT ABSTRACT: something the viewer instantly PICTURES, self-contained, no setup
+  needed. BAD: "You're seeing the Sun as it was, not as it is." (only makes sense after the
+  explanation). GOOD: "Sharks are older than trees."
+- STAKES BEAT TRIVIA: frame it as something HAPPENING to the viewer — a danger, a survival
+  scenario, a consequence to their own body — not a quiz they can shrug off. A passive
+  "how many/how much/can you see" question is the weakest possible opener.
+- DON'T PRESUPPOSE A PERCEPTION NOBODY HAS HAD: only ask "why does X happen" if the viewer
+  has actually NOTICED X before you named it. BAD: "Why does your nose pick up a dark
+  biological signal every time it rains?" GOOD: "Ever wonder why you can smell rain coming?"
+- Must make literal sense (clear referents, no dangling comparative with no "than ___").
+"""
 
-def _apply_scene_rewrite(m, fact, new_scenes, label):
+
+def _apply_scene_rewrite(m, fact, new_scenes, label, new_hook=None):
     """Shared by punch_up/revise_for_floors: build a trial manifest from a
     {scene_id: new_voiceover} rewrite and check it survives every guard a
     rewrite must clear — matching scene ids, no dropped mandatory key term,
     passes validate(). Returns the trial manifest on success, None if the
     rewrite must be discarded (each caller decides what "discard" means for
     it -- punch_up keeps the pre-rewrite original, revise_for_floors falls
-    through to a full from-scratch regeneration)."""
+    through to a full from-scratch regeneration). new_hook, if given,
+    replaces m["hook"] too (the hook rubric criterion scores that field, not
+    any scene voiceover — a hook-floor repair that never touches it is a
+    no-op by construction)."""
     if set(new_scenes) != {s["id"] for s in m["scenes"]}:
         print(f"  {label} returned mismatched scenes, discarding")
         return None
@@ -2355,6 +2384,8 @@ def _apply_scene_rewrite(m, fact, new_scenes, label):
     for s in trial["scenes"]:
         s["voiceover"] = new_scenes[s["id"]]
     trial["script"] = " ".join(s["voiceover"] for s in trial["scenes"])
+    if new_hook:
+        trial["hook"] = new_hook
     key_terms = fact.get("key_terms", []) if fact else []
     if key_terms:
         orig_text = " ".join(s["voiceover"] for s in m["scenes"])
@@ -2393,14 +2424,23 @@ def revise_for_floors(m, fact, violations, cta_style="SAVE_WORTHY"):
         f"- {crit.upper()} scored too low (needs {QUALITY_CRITERION_FLOORS[crit]}+/10): "
         f"{RUBRIC_CRITERION_TEXT.get(crit, '')}"
         for crit in violations)
+    # "hook" scores m["hook"], a field this function otherwise never touches —
+    # a hook-floor violation with only the scene rewrite below is a no-op by
+    # construction. Ask for it explicitly, with the same richer guidance the
+    # main writer prompt uses (the terse rubric line alone isn't enough to work
+    # with — see HOOK_REPAIR_GUIDANCE).
+    hook_fixing = "hook" in violations
+    hook_block = HOOK_REPAIR_GUIDANCE if hook_fixing else ""
+    hook_field = ', "hook": "..."' if hook_fixing else ""
+    hook_current = f'\nCURRENT HOOK (first spoken line, said before scene 1): "{m.get("hook", "")}"' if hook_fixing else ""
     scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
     prompt = f"""You are a short-form script doctor. An editor just scored this FINISHED script and it failed specific checks below. Fix ONLY those problems — leave every line that isn't implicated alone.
 
 THE VERIFIED FACT (do not alter it, do not add new numbers): "{fact_line}"
-
+{hook_current}
 WHAT FAILED AND WHY (fix these, nothing else):
 {problems}
-
+{hook_block}
 RULES:
 - Same number of scenes, same ids, same order, same underlying facts per scene.
 - Each line stays ONE punchy spoken sentence, 6-18 words, natural to read aloud.
@@ -2411,21 +2451,23 @@ RULES:
 
 Scenes: {scenes_json}
 
-Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}"""
+Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]{hook_field}}}"""
     try:
         raw = call_groq(prompt)
+        parsed = json.loads(raw)
         new_scenes = {}
-        for s in json.loads(raw)["scenes"]:
+        for s in parsed["scenes"]:
             if not s.get("voiceover"):
                 continue
             line = _clean(s["voiceover"])
             if line and line[-1] not in ".?!":
                 line += "."
             new_scenes[s["id"]] = line
+        new_hook = _clean(parsed["hook"]) if hook_fixing and parsed.get("hook") else None
     except Exception as e:  # noqa: BLE001 - targeted repair is best-effort
         print(f"  [targeted-repair] failed ({e})")
         return None
-    return _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]")
+    return _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]", new_hook=new_hook)
 
 
 def inject_missing_key_terms(m, fact):

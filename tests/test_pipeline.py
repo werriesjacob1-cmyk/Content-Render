@@ -1471,6 +1471,53 @@ def test_revise_for_floors():
     finally:
         G.call_groq = orig_call
 
+    # "hook" scores m["hook"], a field this function otherwise never touches --
+    # a hook-floor violation must actually rewrite it (see HOOK_REPAIR_GUIDANCE),
+    # not just shuffle scene voiceovers around while the bad hook ships unchanged.
+    captured = {}
+    def _capture_hook(p):
+        captured["prompt"] = p
+        return _json.dumps({"scenes": clean_scenes, "hook": "Sharks are older than trees."})
+    G.call_groq = _capture_hook
+    try:
+        out = G.revise_for_floors(base, fact, {"hook": 5.0})
+        check("HOOK REWRITE RULES" in captured["prompt"],
+              "hook violated -> the richer HOOK_REPAIR_GUIDANCE block is injected into the prompt")
+        check(base["hook"] in captured["prompt"],
+              "the prompt shows the model the CURRENT hook it needs to fix")
+        check(out is not None and out["hook"] == "Sharks are older than trees.",
+              "the model's rewritten hook is applied to the trial manifest")
+    finally:
+        G.call_groq = orig_call
+
+    # hook NOT among the violated criteria -> no guidance injected, and even if
+    # the (possibly hallucinating) model returns a "hook" key anyway, it must be
+    # ignored -- only touch what's actually broken
+    captured = {}
+    def _capture_nohook(p):
+        captured["prompt"] = p
+        return _json.dumps({"scenes": clean_scenes, "hook": "Should be ignored entirely."})
+    G.call_groq = _capture_nohook
+    try:
+        out = G.revise_for_floors(base, fact, {"escalation": 5.0})
+        check("HOOK REWRITE RULES" not in captured["prompt"],
+              "hook not violated -> HOOK_REPAIR_GUIDANCE is not injected")
+        check(out is not None and out["hook"] == base["hook"],
+              "hook not violated -> an unsolicited 'hook' in the reply is ignored, original kept")
+    finally:
+        G.call_groq = orig_call
+
+    # a rewritten hook that itself fails validate() (e.g. reintroduces a
+    # dangling comparative) must be discarded by the shared validate() guard --
+    # the hook rewrite is not exempt from the checks any other hook must pass
+    G.call_groq = lambda _p: _json.dumps(
+        {"scenes": clean_scenes, "hook": "Venus is somehow closer to you."})
+    try:
+        check(G.revise_for_floors(base, fact, {"hook": 5.0}) is None,
+              "a rewritten hook with a dangling comparative is rejected by validate(), discarded")
+    finally:
+        G.call_groq = orig_call
+
 
 def test_inject_missing_key_terms():
     section("generate.inject_missing_key_terms: targeted fix for a missing mandatory term (renders 188/198/199/201)")
