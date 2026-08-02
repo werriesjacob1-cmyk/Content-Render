@@ -1,88 +1,88 @@
 {
-  "title": "The Bacteria That Eats Plastic",
-  "viewer_job": "REFRAME",
-  "keyword": "plastic-eating bacteria",
-  "metaphor": "trash transformation",
-  "vibe": "eerie",
-  "hook": "Could bacteria learn to digest our rubbish?",
-  "hook_headline": "BACTERIA VS PLASTIC",
-  "script": "Could bacteria learn to digest our rubbish? In 2016, scientists found Ideonella sakaiensis at a Japanese recycling site, thriving on PET plastic bottles. This bacterium uses two enzymes to transform PET into energy. Despite the efficiency, it relies on a symbiotic relationship with other microbes. Its enzyme action is as efficient as termites digesting wood. Engineered versions can now break a bottle in hours, hinting at a new recycling future. Imagine: plastic waste as a feast for bacteria.",
+  "title": "The Hidden Truth Behind the Smell of Rain",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "smell of rain",
+  "metaphor": "bacterial signal trap",
+  "vibe": "awe",
+  "hook": "When rain hits hot pavement, your nose inhales a dark biological signal.",
+  "hook_headline": "SHARKS CAN'T MATCH THIS",
+  "script": "Why does your nose pick up a dark biological signal every time it rains? Could your sense of smell actually outperform a great white shark in open water? Falling raindrops trap tiny air bubbles against wet soil that burst like champagne fizz. This unleashes petrichor, an airborne scent packed with geosmin made by soil bacteria. You detect geosmin at five parts per trillion, hundreds of times more sensitive than a shark tracking blood. You are not smelling clean water, but a chemical trap designed to spread bacterial spores. Yet science still cannot explain why humans evolved to crave the scent of microbes.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Could bacteria learn to digest our rubbish?",
-      "on_screen_text": "Bacteria Digest Rubbish?",
-      "search_query": "plastic bottles pile",
+      "voiceover": "Why does your nose pick up a dark biological signal every time it rains?",
+      "on_screen_text": "THE SMELL OF RAIN",
+      "search_query": "rain on pavement",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "In 2016, scientists found Ideonella sakaiensis at a Japanese recycling site, thriving on PET plastic bottles.",
-      "on_screen_text": "2016 Discovery",
-      "search_query": "recycling plant conveyor",
-      "motion": "pan",
+      "duration": 5,
+      "voiceover": "Could your sense of smell actually outperform a great white shark in open water?",
+      "on_screen_text": "HUMAN VS SHARK",
+      "search_query": "great white shark swimming ocean",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "This bacterium uses two enzymes to transform PET into energy.",
-      "on_screen_text": "Enzymatic Feast",
-      "search_query": "enzyme reaction closeup",
+      "duration": 5,
+      "voiceover": "Falling raindrops trap tiny air bubbles against wet soil that burst like champagne fizz.",
+      "on_screen_text": "AIR BUBBLES BURSTING",
+      "search_query": "rain falling ground",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Despite the efficiency, it relies on a symbiotic relationship with other microbes.",
-      "on_screen_text": "Symbiotic Relationship",
-      "search_query": "microbe interaction",
-      "motion": "static",
+      "duration": 5,
+      "voiceover": "This unleashes petrichor, an airborne scent packed with geosmin made by soil bacteria.",
+      "on_screen_text": "PETRICHOR AND GEOSMIN",
+      "search_query": "wet soil closeup",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Its enzyme action is as efficient as termites digesting wood.",
-      "on_screen_text": "Efficient Digestion",
-      "search_query": "termites eating wood",
+      "duration": 6,
+      "voiceover": "You detect geosmin at five parts per trillion, hundreds of times more sensitive than a shark tracking blood.",
+      "on_screen_text": "PARTS PER TRILLION",
+      "search_query": "water drop macro ripples",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "Engineered versions can now break a bottle in hours, hinting at a new recycling future.",
-      "on_screen_text": "Future Recycling",
-      "search_query": "plastic bottle breaking",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "You are not smelling clean water, but a chemical trap designed to spread bacterial spores.",
+      "on_screen_text": "BACTERIAL BROADCAST",
+      "search_query": "forest soil damp dirt",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Imagine: plastic waste as a feast for bacteria.",
-      "on_screen_text": "Plastic Feast",
-      "search_query": "bacteria consuming",
+      "duration": 5,
+      "voiceover": "Yet science still cannot explain why humans evolved to crave the scent of microbes.",
+      "on_screen_text": "THE UNEXPLAINED SENSE",
+      "search_query": "human face rain looking up",
       "motion": "zoom_in",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Could bacteria digest plastic waste?",
-    "How does Ideonella sakaiensis eat plastic?",
-    "What if waste was food for microbes?"
+    "Did you know the smell of rain comes from bacteria? Yes or no?",
+    "Why your nose easily beats a shark in scent sensitivity.",
+    "The unsettling truth about petrichor."
   ],
   "hashtags": [
     "#science",
-    "#bacteria",
-    "#recycling",
-    "#innovation",
-    "#environment",
+    "#rain",
+    "#biology",
+    "#nature",
+    "#facts",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-01_the-bacteria-that-eats-plastic",
-  "cta_style": "LOOP",
-  "domain": "biology"
+  "video_id": "science_2026-08-02_the-hidden-truth-behind-the-smell-of-rai",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "weather"
 }
