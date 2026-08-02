@@ -835,9 +835,16 @@ def _gemini_vision_pick(intent, candidates):
         parts.append({"text": f"Image {n}:"})
         parts.append({"inline_data": {"mime_type": "image/jpeg",
                                       "data": base64.b64encode(raw).decode()}})
+    # thinkingBudget=0 works fine for the TEXT-only judge (_gemini_chat above)
+    # but 400s the API outright once the request carries image parts too --
+    # render 203's log showed "[vision] judge unavailable (HTTP Error 400)" on
+    # every single scene, live, while the plain-text judge in the same run
+    # succeeded normally. A small POSITIVE budget (proven safe for generation
+    # in generate.py's _call_gemini) is the fix: Gemini apparently won't fully
+    # disable thinking on a multimodal request, only bound it.
     body = json.dumps({"contents": [{"parts": parts}],
-                       "generationConfig": {"temperature": 0, "maxOutputTokens": 80,
-                                            "thinkingConfig": {"thinkingBudget": 0}}}).encode()
+                       "generationConfig": {"temperature": 0, "maxOutputTokens": 200,
+                                            "thinkingConfig": {"thinkingBudget": 512}}}).encode()
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
     try:
         rq = urllib.request.Request(url, data=body,
@@ -947,9 +954,13 @@ def _final_qa_check(video, m):
             parts.append({"text": f"Frame {i + 1}/{len(frames)}:"})
             parts.append({"inline_data": {"mime_type": "image/jpeg",
                                           "data": base64.b64encode(open(fp, "rb").read()).decode()}})
+        # Same fix as _gemini_vision_pick: thinkingBudget=0 400s once the
+        # request carries image parts (this call sends FINAL_QA_FRAMES of
+        # them) -- render 203 confirmed live: "[final-qa] unavailable
+        # (HTTPError: HTTP Error 400)" on every attempt.
         body = json.dumps({"contents": [{"parts": parts}],
-                           "generationConfig": {"temperature": 0, "maxOutputTokens": 200,
-                                                "thinkingConfig": {"thinkingBudget": 0}}}).encode()
+                           "generationConfig": {"temperature": 0, "maxOutputTokens": 300,
+                                                "thinkingConfig": {"thinkingBudget": 512}}}).encode()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
         rq = urllib.request.Request(url, data=body,
             headers={"Content-Type": "application/json", "x-goog-api-key": key,
