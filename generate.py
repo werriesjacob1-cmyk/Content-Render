@@ -2381,6 +2381,57 @@ Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}
     return _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]")
 
 
+def inject_missing_key_terms(m, fact):
+    """Targeted repair for validate()'s "only N/M mandatory key terms named"
+    rejection — the single most common near-miss abandon reason seen live
+    (renders 188/198/199/201). Asks for the smallest rewrite that works the
+    specific MISSING term(s) in verbatim, rather than discarding an
+    otherwise-clean script over one or two missing proper nouns/numbers the
+    model explained around instead of naming. Self-verifying: the shared
+    _apply_scene_rewrite() guard re-runs validate() at the end, so this can
+    only return a manifest that actually now names the term(s) — never a
+    rewrite that merely claims to. Returns None on any failure (LLM error,
+    dropped a DIFFERENT term, still doesn't validate) so the caller's
+    existing abandon path is unchanged."""
+    key_terms = fact.get("key_terms", []) if fact else []
+    if not key_terms:
+        return None
+    full_text = m.get("script", "") + " " + " ".join(s.get("voiceover", "") for s in m.get("scenes", []))
+    missing = [kt for kt in key_terms if not _key_term_present(kt, full_text)]
+    if not missing:
+        return None
+    scenes_json = json.dumps([{"id": s["id"], "voiceover": s["voiceover"]} for s in m["scenes"]])
+    prompt = f"""You are a short-form script doctor. This script never explicitly says specific required term(s) — work them in NATURALLY, verbatim, changing as few lines as possible.
+
+MUST explicitly say, verbatim and spelled exactly as given, somewhere across the rewritten lines: {missing}
+
+RULES:
+- Same number of scenes, same ids, same order, same underlying facts per scene.
+- Each line stays ONE punchy spoken sentence, 6-18 words, natural to read aloud.
+- Only touch as many lines as needed to fit the missing term(s) in naturally — a line
+  that doesn't need to change should come back unchanged.
+- Do not remove or paraphrase away any term that's already correctly named elsewhere.
+- Every line ends with proper punctuation (. ? or !).
+
+Scenes: {scenes_json}
+
+Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]}}"""
+    try:
+        raw = call_groq(prompt)
+        new_scenes = {}
+        for s in json.loads(raw)["scenes"]:
+            if not s.get("voiceover"):
+                continue
+            line = _clean(s["voiceover"])
+            if line and line[-1] not in ".?!":
+                line += "."
+            new_scenes[s["id"]] = line
+    except Exception as e:  # noqa: BLE001 - targeted repair is best-effort
+        print(f"  [key-term-repair] failed ({e})")
+        return None
+    return _apply_scene_rewrite(m, fact, new_scenes, "[key-term-repair]")
+
+
 def score_script(m, fact=None, cta_style="SAVE_WORTHY"):
     """Self-critique pass: one Groq call scores the finished, punched-up
     script against an explicit rubric so a weak script can be caught and
@@ -3007,6 +3058,19 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
         # a near-miss that still fails ANY validate() rule is exactly the junk
         # video this pipeline exists to never publish, not a shippable fallback.
         _repair_err = validate(nm, job_name, fact=chosen_fact)
+        # TARGETED REPAIR for the single most common near-miss abandon reason
+        # seen live (renders 188/198/199/201): the script never explicitly
+        # NAMED a required term. One extra call that works the missing
+        # term(s) in, rather than discarding an otherwise-clean script over
+        # one or two missing proper nouns/numbers. Only attempted for this
+        # exact error (see inject_missing_key_terms's docstring for why it's
+        # safe to try) — every other rejection reason still aborts as before.
+        if _repair_err and chosen_fact and "mandatory key terms" in _repair_err:
+            _fixed = inject_missing_key_terms(nm, chosen_fact)
+            if _fixed is not None:
+                nm = _fixed
+                _repair_err = None
+                print("  near-miss repaired the missing key term(s) with a targeted rewrite")
         if _repair_err:
             print(f"  near-miss still fails validation after repair ({_repair_err}) — "
                   f"abandoning this weak draft (consistency over cadence)")

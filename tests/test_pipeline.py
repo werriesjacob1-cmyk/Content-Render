@@ -1395,6 +1395,111 @@ def test_revise_for_floors():
         G.call_groq = orig_call
 
 
+def test_inject_missing_key_terms():
+    section("generate.inject_missing_key_terms: targeted fix for a missing mandatory term (renders 188/198/199/201)")
+    import copy as _copy, json as _json
+    base = _copy.deepcopy(FIX_ASTRO)
+    # "225 Earth days" is already present verbatim (scene 3, untouched);
+    # "backwards rotation" is genuinely absent -- so exactly one of the two
+    # key_terms needs fixing, isolating the MISSING-term repair path.
+    fact = {"key_terms": ["225 Earth days", "backwards rotation"]}
+    check("backwards rotation" not in " ".join(s["voiceover"] for s in base["scenes"]).lower(),
+          "sanity: 'backwards rotation' is genuinely absent from the fixture")
+
+    # nothing missing -> no-op, no LLM call, returns None immediately
+    check(G.inject_missing_key_terms(base, {"key_terms": ["225 Earth days"]}) is None,
+          "no missing terms (only checking a present one) -> None, no-op")
+
+    # a clean rewrite that works the missing term in -> accepted
+    clean_scenes = [{"id": s["id"], "voiceover": s["voiceover"]} for s in base["scenes"]]
+    clean_scenes[4]["voiceover"] = "Stranger still, it spins backwards rotation compared with almost every planet."
+    orig_call = G.call_groq
+    G.call_groq = lambda _p: _json.dumps({"scenes": clean_scenes})
+    try:
+        out = G.inject_missing_key_terms(base, fact)
+        check(out is not None, "a rewrite that successfully works in the missing term is accepted")
+        if out is not None:
+            full = out["script"] + " " + " ".join(s["voiceover"] for s in out["scenes"])
+            check("backwards rotation" in full.lower(), "the previously-missing term is now present")
+    finally:
+        G.call_groq = orig_call
+
+    # a rewrite that STILL doesn't include the missing term must be discarded
+    # -- self-verifying via _apply_scene_rewrite's validate() call, not just
+    # trusting the model claims to have fixed it
+    still_missing = [{"id": s["id"], "voiceover": s["voiceover"]} for s in base["scenes"]]
+    G.call_groq = lambda _p: _json.dumps({"scenes": still_missing})
+    try:
+        check(G.inject_missing_key_terms(base, fact) is None,
+              "a rewrite that still omits the missing term is discarded, not accepted on faith")
+    finally:
+        G.call_groq = orig_call
+
+    # the prompt actually lists the missing term(s), not the whole key_terms set
+    captured = {}
+    def _capture(p):
+        captured["prompt"] = p
+        return _json.dumps({"scenes": clean_scenes})
+    G.call_groq = _capture
+    try:
+        G.inject_missing_key_terms(base, fact)
+        check("backwards rotation" in captured["prompt"], "the repair prompt names the missing term")
+        check("225 Earth days" not in captured["prompt"].split("MUST explicitly say")[1].split("\n")[0],
+              "a term that's already present is not listed as something to add")
+    finally:
+        G.call_groq = orig_call
+
+    # LLM failure never crashes -- returns None so the caller's abandon path is unchanged
+    G.call_groq = lambda _p: (_ for _ in ()).throw(RuntimeError("rate limited"))
+    try:
+        check(G.inject_missing_key_terms(base, fact) is None, "a failed LLM call returns None, never raises")
+    finally:
+        G.call_groq = orig_call
+
+
+def test_near_miss_injects_missing_key_term():
+    section("generate.py: near-miss mechanically repairs a missing key term end-to-end (renders 188/198/199/201)")
+    # Every attempt names only 1 of 2 required key_terms (the model explains
+    # the concept but never says "backwards rotation" verbatim) -- validate()
+    # rejects on "only 1/2 mandatory key terms named" every time, and this
+    # becomes the near-miss. inject_missing_key_terms should work the missing
+    # term in and the run should SHIP rather than abandon.
+    import copy as _copy, json as _json
+    bad = _copy.deepcopy(FIX_ASTRO)
+    raw = _json.dumps(bad)
+    fixed_scenes = [{"id": s["id"], "voiceover": s["voiceover"]} for s in bad["scenes"]]
+    fixed_scenes[4]["voiceover"] = "Stranger still, it spins backwards rotation compared with almost every planet."
+    fixed_raw = _json.dumps({"scenes": fixed_scenes})
+    # call_groq is used for BOTH the raw attempt generation (needs the full
+    # manifest shape) and the later targeted-repair call (needs just
+    # {"scenes": [...]});  key off which one is being asked for.
+    def _router(p):
+        return fixed_raw if "MUST explicitly say" in p else raw
+    orig_call, orig_circuit = G.call_groq, G._CIRCUIT_OPEN
+    G.call_groq = _router
+    G._CIRCUIT_OPEN = False
+    # deliberately NOT "Venus's day is longer than its year" -- that phrasing
+    # incidentally scores >0.40 similarity (validate()'s restatement guard,
+    # see check_information_gain) against TWO of FIX_ASTRO's own untouched
+    # scenes, tripping an unrelated, correct rejection and masking the thing
+    # this test actually checks. A lexically distant fact statement isolates
+    # the key-term repair path.
+    fact = {"id": "x", "fact": "A neighboring world does not turn the way most do.",
+            "angle": "backwards planet",
+            "key_terms": ["225 Earth days", "backwards rotation"], "whatif": "", "wow": "",
+            "queries": ["venus planet"]}
+    try:
+        res = G.generate_candidate("EXPLAIN", "explain a thing", "none", fact,
+                                    history=[], dossier="(dossier)")
+    finally:
+        G.call_groq = orig_call
+        G._CIRCUIT_OPEN = orig_circuit
+    check(res is not None, "the missing-key-term-only violation is mechanically repaired and SHIPPED")
+    if res is not None:
+        full = res["script"] + " " + " ".join(s["voiceover"] for s in res["scenes"])
+        check("backwards rotation" in full.lower(), "the repaired script now names the missing term")
+
+
 def test_subclip_plan():
     section("main._subclip_plan: multi-clip scene splitting (more clips / flashing)")
     # a short scene stays a single clip (no sub-cutting)
@@ -1482,6 +1587,8 @@ def main():
     test_rubric_criterion_text_complete()
     test_apply_scene_rewrite()
     test_revise_for_floors()
+    test_inject_missing_key_terms()
+    test_near_miss_injects_missing_key_term()
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
