@@ -1279,6 +1279,11 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
   (for space: "night sky stars", "telescope observatory", "galaxy nebula") — never an abstract stand-in.
 - MATCH THE MOMENT: the query depicts the exact thing THAT sentence is about, tracking the narration
   second-by-second — "a dying tree feeds its neighbours" -> "dead fallen tree forest", not a bare "forest".
+- DON'T REACH FOR "NIGHT SKY STARS"/COSMIC IMAGERY AS A DEFAULT FILLER (render 209): that query is only
+  right when the SENTENCE is actually about space/astronomy. A payoff line about, say, human ancestry
+  or biology has NOTHING to do with a starfield — querying one anyway ships an off-topic clip that
+  breaks trust in the final seconds. If a scene feels hard to picture, describe ITS OWN concrete subject
+  instead of defaulting to a pretty, unrelated cosmic shot.
 - PREFER MOVING FOOTAGE: subjects real stock VIDEO exists for (flowing lava, a swimming animal, crashing
   waves, a hand touching something), not static objects that only return stills. Motion beats slideshow.
 - Every scene's query must be VISUALLY DISTINCT from the others — the same three shots on loop reads as spam.
@@ -1720,6 +1725,21 @@ UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organs?|cells?|microscop\w*|diagrams?|
                            # plain subject instead: "fungus threads underground".
                            r"rhizomorph\w*|myceli\w*|hyphae?|antisolar)\b", re.I)
 
+# render-209: the payoff scene was a human-ancestry line, but its search_query
+# was "night sky stars" -- generic cosmic imagery the writer defaults to when
+# it can't think of anything concrete, landing a totally off-topic clip. Only
+# fires when BOTH hold: the query is cosmic/space filler AND this specific
+# scene's own voiceover never mentions anything space-related either (so it's
+# clearly not an intentional space metaphor/comparison) AND the fact's domain
+# isn't actually space/astronomy (where cosmic imagery is exactly right).
+COSMIC_FILLER_Q_RE = re.compile(r"\b(night sky|starry|star field|starfield|milky way|deep space|"
+                                r"outer space|nebula|galaxy|galaxies|constellation|solar system|"
+                                r"cosmos|cosmic|planets? orbit\w*)\b", re.I)
+SPACE_CONTEXT_RE = re.compile(r"\b(stars?|sky|galaxy|galaxies|nebula|cosmic|cosmos|universe|orbit\w*|"
+                              r"planets?|moon|sun|space|asteroids?|comets?|constellation|milky way|"
+                              r"black hole)\b", re.I)
+SPACE_DOMAINS = {"space", "astronomy"}
+
 # visually-rich neutral B-roll for query dedup / repair — always available on stock sites
 VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street timelapse",
                    "lightning storm clouds", "forest sunlight drone", "hourglass sand falling",
@@ -2014,6 +2034,14 @@ def validate(m, job_name, fact=None):
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):
             return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
+        if (fact and fact.get("domain") not in SPACE_DOMAINS
+                and COSMIC_FILLER_Q_RE.search(s["search_query"])
+                and not SPACE_CONTEXT_RE.search(s["voiceover"])):
+            return (f"scene {i} query '{s['search_query']}' is generic cosmic/space imagery, but "
+                    f"this fact's domain is {fact.get('domain')!r} and the scene's own voiceover "
+                    f"never mentions anything space-related — pick a search_query that actually "
+                    f"shows this scene's real subject instead of defaulting to space filler "
+                    f"(render-209 bug: 'night sky stars' on a human-ancestry payoff line)")
         # NOTE: a duplicate search_query used to get force-swapped to an
         # unrelated VARIETY_QUERIES term here. That's how a scene whose
         # voiceover was "humanity fits in a sugar cube" ended up querying

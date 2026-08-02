@@ -295,6 +295,33 @@ def test_validate_rejections():
     m["scenes"][0]["search_query"] = "human organs regrowing"
     check(G.validate(m, "EXPLAIN") is not None, "plural 'organs' un-filmable query now rejected")
 
+    # render-209: cosmic/space-imagery search_query defaulted onto a scene whose
+    # own voiceover has nothing to do with space, on a non-space-domain fact
+    # ("night sky stars" on a human-ancestry payoff line). Only fires when a
+    # `fact` with a domain is actually passed AND the scene's own voiceover is
+    # silent on anything space-related -- both conditions must hold.
+    bio_fact = {"domain": "biology"}
+    m = copy.deepcopy(FIX_BIO)
+    m["scenes"][-1]["search_query"] = "night sky stars"
+    err = G.validate(m, "EXPLAIN", fact=bio_fact)
+    check(err is not None and "cosmic" in err, f"cosmic-filler query on a non-space fact rejected ({err})")
+    # no `fact` passed (fact=None, e.g. HOW_TO jobs) -> can't know the domain, so it
+    # must NOT fire -- fails open rather than guessing
+    check(G.validate(m, "EXPLAIN", fact=None) is None or "cosmic" not in (G.validate(m, "EXPLAIN", fact=None) or ""),
+          "cosmic-filler check does not fire when no fact/domain is available")
+    # the scene's OWN voiceover mentions something space-related -- deliberate,
+    # not filler -- so it must NOT be rejected
+    m2 = copy.deepcopy(FIX_BIO)
+    m2["scenes"][-1]["voiceover"] = "Even a tardigrade sent under open sky and stars can survive it."
+    m2["scenes"][-1]["search_query"] = "night sky stars"
+    m2["script"] = " ".join(s["voiceover"] for s in m2["scenes"])
+    check(G.validate(m2, "EXPLAIN", fact=bio_fact) is None,
+          "cosmic query allowed when the scene's own voiceover is actually about the sky/stars")
+    # an actual space/astronomy fact is exempt -- cosmic imagery is exactly right there
+    space_fact = {"domain": "astronomy"}
+    check(G.validate(m, "EXPLAIN", fact=space_fact) is None,
+          "cosmic-filler query allowed outright on an astronomy-domain fact")
+
     # missing required field
     m = copy.deepcopy(FIX_PHYS); del m["hashtags"]
     check(G.validate(m, "EXPLAIN") is not None, "missing hashtags rejected")
