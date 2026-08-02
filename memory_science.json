@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-29_chess-more-games-than-atoms",
-      "metaphor": "Chess vs. Universe",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "COMPARISON_COLLISION",
-      "title": "Chess: More Games Than Atoms",
-      "fact_id": "chess_possible_games",
-      "domain": "math",
-      "hook": "There are more possible chess games than atoms in the universe?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 7.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "overall": 7.83
-      }
-    },
-    {
       "video_id": "science_2026-07-29_the-hidden-truth-of-house-dust",
       "metaphor": "unsettling reality",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -347,6 +323,32 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_you-can-see-time-travel-with-your-own-ey",
+      "metaphor": "seeing time directly",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "CHALLENGE",
+      "title": "You Can See Time Travel With Your Own Eyes",
+      "fact_id": "andromeda_time",
+      "domain": "space",
+      "hook": "Name the farthest object you can see with your naked eye right now.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 5.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.0
       }
     }
   ]

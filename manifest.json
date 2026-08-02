@@ -1,88 +1,88 @@
 {
-  "title": "The Hidden Truth Behind the Smell of Rain",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "smell of rain",
-  "metaphor": "bacterial signal trap",
+  "title": "You Can See Time Travel With Your Own Eyes",
+  "viewer_job": "REFRAME",
+  "keyword": "naked eye",
+  "metaphor": "seeing time directly",
   "vibe": "awe",
-  "hook": "When rain hits hot pavement, your nose inhales a dark biological signal.",
-  "hook_headline": "SHARKS CAN'T MATCH THIS",
-  "script": "Why does your nose pick up a dark biological signal every time it rains? Could your sense of smell actually outperform a great white shark in open water? Falling raindrops trap tiny air bubbles against wet soil that burst like champagne fizz. This unleashes petrichor, an airborne scent packed with geosmin made by soil bacteria. You detect geosmin at five parts per trillion, hundreds of times more sensitive than a shark tracking blood. You are not smelling clean water, but a chemical trap designed to spread bacterial spores. Yet science still cannot explain why humans evolved to crave the scent of microbes.",
+  "hook": "Name the farthest object you can see with your naked eye right now.",
+  "hook_headline": "SEEING TIME TRAVEL",
+  "script": "What is the single most distant thing your naked eye can actually see? What if the Andromeda galaxy vanished completely from existence tonight? You would still look up and see it glowing for another 2.5 million years. Its light began traveling through space long before modern humans ever existed. While our ancestors chipped stone tools, those photons were already racing toward Earth. Tonight, rod cells in your eye absorb those ancient particles to create a live signal. Staring at Andromeda isn't just looking across space \u2014 it's seeing time directly.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Why does your nose pick up a dark biological signal every time it rains?",
-      "on_screen_text": "THE SMELL OF RAIN",
-      "search_query": "rain on pavement",
+      "voiceover": "What is the single most distant thing your naked eye can actually see?",
+      "on_screen_text": "NAKED EYE VISION",
+      "search_query": "andromeda galaxy night",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "Could your sense of smell actually outperform a great white shark in open water?",
-      "on_screen_text": "HUMAN VS SHARK",
-      "search_query": "great white shark swimming ocean",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "What if the Andromeda galaxy vanished completely from existence tonight?",
+      "on_screen_text": "VANISHED TONIGHT?",
+      "search_query": "stargazing telescope",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Falling raindrops trap tiny air bubbles against wet soil that burst like champagne fizz.",
-      "on_screen_text": "AIR BUBBLES BURSTING",
-      "search_query": "rain falling ground",
-      "motion": "zoom_in",
+      "voiceover": "You would still look up and see it glowing for another 2.5 million years.",
+      "on_screen_text": "2.5 MILLION YEARS",
+      "search_query": "milky way night sky",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "This unleashes petrichor, an airborne scent packed with geosmin made by soil bacteria.",
-      "on_screen_text": "PETRICHOR AND GEOSMIN",
-      "search_query": "wet soil closeup",
-      "motion": "pan",
+      "voiceover": "Its light began traveling through space long before modern humans ever existed.",
+      "on_screen_text": "NAKED EYE SKY",
+      "search_query": "night sky stars",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "You detect geosmin at five parts per trillion, hundreds of times more sensitive than a shark tracking blood.",
-      "on_screen_text": "PARTS PER TRILLION",
-      "search_query": "water drop macro ripples",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "While our ancestors chipped stone tools, those photons were already racing toward Earth.",
+      "on_screen_text": "ANCIENT LIGHT",
+      "search_query": "stone tools archaeology",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "You are not smelling clean water, but a chemical trap designed to spread bacterial spores.",
-      "on_screen_text": "BACTERIAL BROADCAST",
-      "search_query": "forest soil damp dirt",
+      "voiceover": "Tonight, rod cells in your eye absorb those ancient particles to create a live signal.",
+      "on_screen_text": "RETINA LIGHT SIGNALS",
+      "search_query": "human eye close up",
       "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Yet science still cannot explain why humans evolved to crave the scent of microbes.",
-      "on_screen_text": "THE UNEXPLAINED SENSE",
-      "search_query": "human face rain looking up",
-      "motion": "zoom_in",
+      "voiceover": "Staring at Andromeda isn't just looking across space \u2014 it's seeing time directly.",
+      "on_screen_text": "SEEING TIME DIRECTLY",
+      "search_query": "deep space galaxy",
+      "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Did you know the smell of rain comes from bacteria? Yes or no?",
-    "Why your nose easily beats a shark in scent sensitivity.",
-    "The unsettling truth about petrichor."
+    "Have you ever spotted Andromeda with the naked eye? Yes or no?",
+    "When you look at Andromeda, you are literally looking 2.5 million years into the past.",
+    "The photons hitting your eye tonight started their journey before modern humans existed."
   ],
   "hashtags": [
     "#science",
-    "#rain",
-    "#biology",
-    "#nature",
-    "#facts",
+    "#space",
+    "#astronomy",
+    "#andromeda",
+    "#physics",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_the-hidden-truth-behind-the-smell-of-rai",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "weather"
+  "video_id": "science_2026-08-02_you-can-see-time-travel-with-your-own-ey",
+  "cta_style": "LOOP",
+  "domain": "space"
 }
