@@ -1,30 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-26_pluto-s-eternal-orbit",
-      "metaphor": "cosmic scale",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "Pluto's Eternal Orbit",
-      "fact_id": "pluto_no_orbit",
-      "domain": "space",
-      "hook": "Your great-grandparents saw Pluto's start, but it won't finish?",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 10.0,
-        "payoff": 9.0,
-        "rewatch": 10.0,
-        "clarity": 10.0,
-        "overall": 9.33
-      }
-    },
-    {
       "video_id": "science_2026-07-29_time-s-hidden-gap",
       "metaphor": "dinosaur timeline",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -351,6 +327,32 @@
         "clarity": 9.0,
         "coherence": 8.0,
         "overall": 7.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_the-secret-underground-network-of-trees",
+      "metaphor": "forest underground network",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Secret Underground Network of Trees",
+      "fact_id": "wood_wide_web",
+      "domain": "plants",
+      "hook": "How does a dying tree pump remaining sugar to a neighboring sapling?",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.0
       }
     }
   ]

@@ -1,87 +1,88 @@
 {
-  "title": "The Animal That Refuses to Die",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "naked mole rat",
-  "metaphor": "zero oxygen survival",
+  "title": "The Secret Underground Network of Trees",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "underground network",
+  "metaphor": "forest underground network",
   "vibe": "eerie",
-  "hook": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
-  "hook_headline": "SURVIVES WITHOUT AIR",
-  "script": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely. How can a naked mole rat survive eighteen minutes without breathing? When air vanishes underground, its brain stops using normal glucose sugar. It switches its metabolism to burn fructose instead, functioning just like a plant. This trick keeps its brain alive, while dense sugar coats its cells to block cancer. A mouse dies in three years, but this rodent survives over thirty without aging like us. Would you trade normal looks for thirty years of immunity, or no?",
+  "hook": "How does a dying tree pump remaining sugar to a neighboring sapling?",
+  "hook_headline": "TREES TALK UNDERGROUND",
+  "script": "How does a dying tree pump remaining sugar to a neighboring sapling? Beneath the silent forest floor, fungi link tree roots into a living underground network. A single teaspoon of dirt holds over thirty feet of these microscopic threads. When insects attack a leaf, chemical warning signals pulse through the soil to alert nearby trees. Some trees even pump toxic compounds through the threads to kill competing seedlings. Before dying, a mature tree sends forty percent of its carbon to young saplings. You are never looking at individual trees, but one living organism.",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
-      "on_screen_text": "naked mole rat",
-      "search_query": "naked mole rat",
+      "voiceover": "How does a dying tree pump remaining sugar to a neighboring sapling?",
+      "on_screen_text": "A HIDDEN SIGNAL",
+      "search_query": "dying tree forest",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "How can a naked mole rat survive eighteen minutes without breathing?",
-      "on_screen_text": "eighteen minutes",
-      "search_query": "burrow tunnel dark",
+      "voiceover": "Beneath the silent forest floor, fungi link tree roots into a living underground network.",
+      "on_screen_text": "UNDERGROUND NETWORK",
+      "search_query": "forest tree roots",
       "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "When air vanishes underground, its brain stops using normal glucose sugar.",
-      "on_screen_text": "glucose sugar",
-      "search_query": "rodent close up",
-      "motion": "zoom_out",
+      "voiceover": "A single teaspoon of dirt holds over thirty feet of these microscopic threads.",
+      "on_screen_text": "30 FEET PER TEASPOON",
+      "search_query": "forest floor closeup",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "It switches its metabolism to burn fructose instead, functioning just like a plant.",
-      "on_screen_text": "fructose energy",
-      "search_query": "naked mole rat burrow",
-      "motion": "zoom_in",
+      "duration": 6,
+      "voiceover": "When insects attack a leaf, chemical warning signals pulse through the soil to alert nearby trees.",
+      "on_screen_text": "WARNING SIGNALS",
+      "search_query": "caterpillar eating leaf",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "This trick keeps its brain alive, while dense sugar coats its cells to block cancer.",
-      "on_screen_text": "cancer defense",
-      "search_query": "thick syrup gel liquid",
+      "voiceover": "Some trees even pump toxic compounds through the threads to kill competing seedlings.",
+      "on_screen_text": "CHEMICAL WARFARE",
+      "search_query": "walnut tree sapling",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "A mouse dies in three years, but this rodent survives over thirty without aging like us.",
-      "on_screen_text": "thirty year lifespan",
-      "search_query": "small mouse dark burrow",
+      "voiceover": "Before dying, a mature tree sends forty percent of its carbon to young saplings.",
+      "on_screen_text": "40% CARBON TRANSFER",
+      "search_query": "sunlight through trees",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Would you trade normal looks for thirty years of immunity, or no?",
-      "on_screen_text": "would you trade",
-      "search_query": "naked mole rat close up",
-      "motion": "pan",
+      "voiceover": "You are never looking at individual trees, but one living organism.",
+      "on_screen_text": "ONE LIVING ORGANISM",
+      "search_query": "aerial view forest",
+      "motion": "static",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Could you survive without oxygen for 18 minutes like the naked mole rat \u2014 yes or no?",
-    "How this subterranean mammal switches to plant power when oxygen runs out.",
-    "Nature's strange secret to cancer immunity and 30-year lifespans."
+    "Is a forest really just one connected underground network?",
+    "Trees pass food and warning signals through tiny fungal threads.",
+    "A dying tree shares its last energy with neighboring saplings."
   ],
   "hashtags": [
-    "#biology",
-    "#science",
     "#nature",
-    "#weirdfacts",
+    "#science",
+    "#forest",
+    "#biology",
+    "#facts",
     "#learnontiktok"
   ],
   "render": {
@@ -89,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_the-animal-that-refuses-to-die",
-  "cta_style": "COMMENT",
-  "domain": "animals"
+  "video_id": "science_2026-08-02_the-secret-underground-network-of-trees",
+  "cta_style": "LOOP",
+  "domain": "plants"
 }
