@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-29_the-truth-about-old-windows",
-      "metaphor": "Glass Mystery",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "The Truth About Old Windows",
-      "fact_id": "glass_solid",
-      "domain": "physics",
-      "hook": "Old windows thicken over time, but why?",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 4.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 9.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 7.43
-      }
-    },
-    {
       "video_id": "science_2026-07-30_birthday-probability",
       "metaphor": "birthday surprise",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -353,6 +328,32 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "coherence": 9.0,
+        "overall": 8.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-02_microbes-are-thinking",
+      "metaphor": "single celled brain",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Microbes Are Thinking",
+      "fact_id": "microbe_intelligence",
+      "domain": "biology",
+      "hook": "Right now, microbes inside your mouth are actively predicting your next move.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 8.0,
+        "coherence": 8.0,
         "overall": 8.14
       }
     }

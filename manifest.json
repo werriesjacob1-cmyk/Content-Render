@@ -1,88 +1,88 @@
 {
-  "title": "The Collapsing Family Tree",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "shared ancestors",
-  "metaphor": "collapsing family tree",
-  "vibe": "awe",
-  "hook": "Pick any total stranger on Earth \u2014 how far back until your family trees collide?",
-  "hook_headline": "HOW CLOSE ARE WE?",
-  "script": "Pick any total stranger on Earth \u2014 how far back until your family trees collide? Doubling your ancestors every generation requires over a billion slots nine centuries ago. Yet Earth's entire population back then was only three hundred fifty million. To fit, the exact same individuals had to repeat millions of times on your tree. Go back a few thousand years, and every surviving person is an ancestor of everyone. Every human alive today, across every background, is at least a distant cousin. You inherit no DNA from most of them, but they remain your shared ancestors.",
+  "title": "Microbes Are Thinking",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "microbial intelligence",
+  "metaphor": "single celled brain",
+  "vibe": "eerie",
+  "hook": "Right now, microbes inside your mouth are actively predicting your next move.",
+  "hook_headline": "MICROBES PREDICT YOU",
+  "script": "Right now, microbes inside your mouth are actively predicting your next move. How do simple organisms without a brain exhibit complex problem solving? When E. coli senses sudden warmth, it turns off oxygen genes before ever reaching your gut. Colonies communicate using potassium channels, firing electrical waves exactly like human brain cells. Mother microbes store cellular memories, passing critical lessons down to four generations of offspring. This microbial intelligence allows swarms to outsmart your immune system by waiting until their numbers are lethal. Would you classify single-celled life as truly intelligent\u2014yes or no?",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "voiceover": "Pick any total stranger on Earth \u2014 how far back until your family trees collide?",
-      "on_screen_text": "SHARED ANCESTORS",
-      "search_query": "busy street crowd",
+      "voiceover": "Right now, microbes inside your mouth are actively predicting your next move.",
+      "on_screen_text": "MICROBES PREDICT YOU",
+      "search_query": "human mouth close up",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "Doubling your ancestors every generation requires over a billion slots nine centuries ago.",
-      "on_screen_text": "A BILLION SLOTS",
-      "search_query": "antique portrait paintings",
+      "voiceover": "How do simple organisms without a brain exhibit complex problem solving?",
+      "on_screen_text": "NO BRAIN NEEDED",
+      "search_query": "bacteria swarming petri dish",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "Yet Earth's entire population back then was only three hundred fifty million.",
-      "on_screen_text": "THE POPULATION GAP",
-      "search_query": "crowd of people walking",
+      "duration": 6,
+      "voiceover": "When E. coli senses sudden warmth, it turns off oxygen genes before ever reaching your gut.",
+      "on_screen_text": "PREDICTING YOUR BODY",
+      "search_query": "bubbling laboratory beaker",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "To fit, the exact same individuals had to repeat millions of times on your tree.",
-      "on_screen_text": "PEDIGREE COLLAPSE",
-      "search_query": "old family photographs",
-      "motion": "zoom_out",
+      "duration": 6,
+      "voiceover": "Colonies communicate using potassium channels, firing electrical waves exactly like human brain cells.",
+      "on_screen_text": "ELECTRICAL BRAIN WAVES",
+      "search_query": "glowing blue slime mold",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "Go back a few thousand years, and every surviving person is an ancestor of everyone.",
-      "on_screen_text": "EVERYONE CONNECTED",
-      "search_query": "ancient stone statues",
+      "voiceover": "Mother microbes store cellular memories, passing critical lessons down to four generations of offspring.",
+      "on_screen_text": "HERITABLE MEMORY",
+      "search_query": "petri dish bacteria culture",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "Every human alive today, across every background, is at least a distant cousin.",
-      "on_screen_text": "DISTANT COUSINS",
-      "search_query": "busy street crowd",
-      "motion": "pan",
+      "duration": 6,
+      "voiceover": "This microbial intelligence allows swarms to outsmart your immune system by waiting until their numbers are lethal.",
+      "on_screen_text": "OUTSMARTING IMMUNITY",
+      "search_query": "blood vessel flow close up",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "You inherit no DNA from most of them, but they remain your shared ancestors.",
-      "on_screen_text": "ONE HUMAN FAMILY",
-      "search_query": "night sky stars",
+      "duration": 4,
+      "voiceover": "Would you classify single-celled life as truly intelligent\u2014yes or no?",
+      "on_screen_text": "INTELLIGENT YES OR NO",
+      "search_query": "laboratory scientist petri dish",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "How far back do you think you share a family tree with a random stranger? The math of shared ancestors is closer than you think.",
-    "Did you know every human alive today shares the exact same ancestors from just a few thousand years ago? Yes or no?",
-    "Pedigree collapse proves we are all distant cousins on one recent tree."
+    "Is microbial intelligence real or just chemical reaction? Yes or no?",
+    "Single-celled microbes pass down cellular memories without a single neuron.",
+    "Your body is a battleground against organisms that predict your moves."
   ],
   "hashtags": [
+    "#microbiology",
     "#science",
-    "#history",
-    "#genealogy",
-    "#humanity",
-    "#facts",
+    "#biology",
+    "#nature",
+    "#documentary",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_the-collapsing-family-tree",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "math"
+  "video_id": "science_2026-08-02_microbes-are-thinking",
+  "cta_style": "COMMENT",
+  "domain": "biology"
 }
