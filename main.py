@@ -318,6 +318,17 @@ def _align_words_by_content(script_words, heard):
             s2h[a + k] = b + k
     if not s2h:
         return []
+    # DIAGNOSTIC (2026-08-02, user-reported footage/narration timing drift on
+    # render 203): a scene-cut boundary that lands on an INTERPOLATED word
+    # (whisper never actually heard it -- e.g. it mis-transcribed an unusual
+    # term) gets a linearly-guessed time, not a real spoken instant, and can
+    # be off by hundreds of ms -- enough to read as "the clip changed before
+    # the line." Print the real match rate so a future render's log can
+    # confirm or rule this out instead of guessing at a fix.
+    matched = len(s2h)
+    if matched < len(script_words):
+        print(f"  [align] {matched}/{len(script_words)} script words matched a real "
+              f"whisper timestamp ({len(script_words) - matched} interpolated)")
 
     n = len(script_words)
     times = [None] * n  # (start, end) per script word
@@ -2570,6 +2581,16 @@ def build_ass(scenes, segments, actual_durs, path, headline=""):
     seg_durs = [d for _, d in segments]
     orig_starts = _prefix_starts(seg_durs)
     final_starts = _prefix_starts(actual_durs)
+    # DIAGNOSTIC (2026-08-02, user-reported footage/narration timing drift):
+    # this docstring's own claim ("only ever a few ms of cut rounding") has
+    # never actually been measured on a real render. If a scene's REQUESTED
+    # duration (seg_dur, what the audio segment was cut to) and its ACTUAL
+    # rendered duration (footage build, ffprobed) disagree by more than a
+    # frame or two, video and audio at that scene boundary genuinely drift
+    # apart -- print it so the next render's log can confirm or rule this out.
+    _max_drift = max((abs(a - b) for a, b in zip(seg_durs, actual_durs)), default=0.0)
+    if _max_drift > 0.05:
+        print(f"  [sync] max per-scene requested-vs-rendered duration drift: {_max_drift:.3f}s")
 
     def _shift(i):
         j = min(i, len(orig_starts) - 1, len(final_starts) - 1)

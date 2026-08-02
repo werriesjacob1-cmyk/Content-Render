@@ -1077,6 +1077,16 @@ HOOK (first 2 seconds decide 70% of retention):
   BAD: "Reality isn't what it seems." (vague fortune-cookie phrasing, not a real claim)
   If your hook needs the rest of the script to make sense, rewrite it — name the concrete thing
   (a body part, an animal, an object, a number) up front.
+- DON'T PRESUPPOSE A PERCEPTION NOBODY HAS HAD: a "why does X happen" hook only works if the viewer
+  has actually NOTICED X as a distinct thing before you named it — otherwise the question reads as
+  testing knowledge nobody has, not opening a curiosity gap (user feedback, the petrichor video: "no
+  one knows that... asking assumes this is commonly known"). BAD: "Why does your nose pick up a dark
+  biological signal every time it rains?" (nobody has ever consciously thought of rain-smell as "a
+  dark biological signal" — there is nothing to wonder about yet). GOOD: "Ever wonder why you can
+  smell rain coming?" (starts from something almost everyone has actually experienced and can
+  instantly say "yes, that's real," THEN the script reveals the surprising specific mechanism).
+  Ground the hook in a universal, lived sensation/experience/memory the viewer immediately recognizes
+  as true of themselves — never in a technical framing of the phenomenon that IS the video's reveal.
 - OPEN COLD ON THE SHOCK — no scene-setting preamble (backed by THIS channel's own analytics:
   videos that opened calm or scenic — "a peaceful lake…", a slow establishing shot — bled the viewer
   by ~4 seconds; average watch time was stuck at 4.5s of a 40s video). The single most surprising
@@ -1109,6 +1119,15 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   a natural beat before the next one starts. The video should feel PACED, not like it never stops
   talking. If you can't say a scene's line out loud in one comfortable breath, it's too long or too
   packed with clauses — split the idea or cut it.
+- ONE IDEA PER SENTENCE, ESPECIALLY WITH NUMBERS: never comma-splice two separate claims/comparisons
+  into one breath — the TTS voice reads a stacked sentence in a flat, hurried monotone with no natural
+  rhythm (user feedback, the petrichor video: "at five parts per trillion, hundreds of times more
+  sensitive than a shark tracking blood" — "is not spoken in a methodic way or rhythm"). BAD (two ideas
+  crammed into one comma-spliced sentence): "You detect geosmin at five parts per trillion, hundreds
+  of times more sensitive than a shark tracking blood." GOOD (split into two beats, each with its own
+  landing): "You detect geosmin at five parts per trillion. That is hundreds of times more sensitive
+  than a shark tracking blood in water." If a sentence has two numbers or two comparisons, it is
+  almost always two scenes' worth of content wearing one scene's punctuation — split it.
 - SPEAK IN FLOWING SENTENCES, NOT FRAGMENTS (this is read aloud by a voice — write for the EAR):
   every scene must be a COMPLETE, natural-sounding sentence that a narrator can say smoothly in one
   breath, with a real subject and verb. Do NOT write clipped telegram fragments or stacked noun
