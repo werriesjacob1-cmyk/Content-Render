@@ -1015,6 +1015,27 @@ def test_length_ab_mode():
     check((G.WORD_HARD_LO, G.WORD_HARD_HI) == (85, 115), "long hard window is 85-115")
     check(G.WORD_LO < G.WORD_HI <= G.WORD_HARD_HI and G.WORD_HARD_LO <= G.WORD_LO,
           "word bounds are ordered (hard_lo <= target_lo < target_hi <= hard_hi)")
+    # SHORT's window must reflect what writer models ACTUALLY produce, not an
+    # aspirational number nobody hits -- renders 187-191 (5 straight aborts, two
+    # different writer models) wrote 83-111 words against the old 55-74/45-82
+    # window, forcing a scene-dropping near-miss repair on every attempt that then
+    # broke a SECOND mechanical gate (missing key term / whatif / redundancy).
+    # Widened the same way the LONG-mode 85-115 fix was: match observed output.
+    # Read straight from source (not a live reload -- WORD_LO etc. are resolved
+    # ONCE at import off LENGTH_MODE, which this test process may have already
+    # locked to "long") so this is a real, side-effect-free regression guard.
+    import re as _re
+    _src = open(G.__file__).read()
+    _m = _re.search(
+        r'if LENGTH_MODE == "short":.*?WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = '
+        r'(\d+), (\d+), (\d+), (\d+)', _src, _re.S)
+    check(_m is not None, "SHORT word-window assignment found in source")
+    _lo, _hi, _hlo, _hhi = (int(x) for x in _m.groups())
+    check((_hlo, _hhi) != (45, 82),
+          "SHORT hard window moved off the too-tight 45-82 that caused renders 187-191")
+    check(_hhi - _hlo >= 30, "SHORT hard window has enough slack (>=30 words) for writer variance")
+    check(_hhi >= 108, "SHORT hard ceiling comfortably covers the observed 83-111 word failure range")
+    check(_hlo <= _lo < _hi <= _hhi, "SHORT word bounds are internally ordered")
     # a SHORT-length script (~63 words) must PASS a short-window validate and be
     # REJECTED by the long window — proving the A/B actually changes the gate.
     short_scenes = [{"id": i, "voiceover": "Here is one genuinely surprising true fact about it."}

@@ -346,22 +346,25 @@ def _resolve_length_mode():
 
 LENGTH_MODE = _resolve_length_mode()
 if LENGTH_MODE == "short":
-    # SHORT needs FEWER scenes, not terser ones: a 7-scene floor at a 74-word cap
-    # forces ~9 words/scene, which the models overshoot every time → endless
-    # near-miss trims and regenerations (the render-163 grind). 5-6 natural-length
-    # scenes hit ~65 words comfortably, so a clean draft passes on the first try.
-    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 55, 74, 45, 82    # ~26-32s
+    # SHORT's 55-74 word budget was NEVER hit natively (renders 187-191: every
+    # writer model — gpt-4o AND deepseek/deepseek-chat, five straight aborts —
+    # wrote 83-111 words regardless of the instruction). This is the exact same
+    # failure shape already diagnosed and fixed for LONG mode 2026-07-22 (see the
+    # "Word window 80-100 -> 85-115" note below): a tight cap that doesn't match
+    # what the models actually produce forces near-miss SCENE-dropping on every
+    # single attempt, and each drop has good odds of collaterally deleting the
+    # scene carrying a mandatory key term / the whatif question / a unique fact —
+    # so the run aborts on a SECONDARY violation even after the trim "succeeds."
+    # Fix = the same one that worked for LONG: widen the window to match reality
+    # so a clean draft ships with ALL its scenes (and their content) intact.
+    WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 78, 98, 68, 108   # ~32-38s
     SCENE_MIN, SCENE_MAX = 5, 8
-    WORDS_PER_SCENE = "~11-13 words (5-6 scenes x ~12 words = ~65 total)"
-    # SHORT's failure mode (render 164): drafts overshoot to ~99 words, the near-miss
-    # trims MIDDLE scenes to fit, and the trimmed-out scenes were carrying the payoff
-    # build → payoff scores 5 and the run aborts. Fix = write to budget NATIVELY and
-    # protect the payoff: the LAST scene must be the reframe, reached fast.
-    LENGTH_HINT = ("THIS IS A SHORT ~30s video. Structure: hook (scene 1) → 3-4 escalating fact "
+    WORDS_PER_SCENE = "~12-15 words (6-7 scenes x ~13 words = ~85 total)"
+    LENGTH_HINT = ("THIS IS A SHORT ~32-38s video. Structure: hook (scene 1) → 4-5 escalating fact "
                    "beats → PAYOFF (final scene, the reframe that recontextualises everything). "
-                   "Land the payoff HARD and FAST — with only 5-6 scenes there is no room to wander, "
+                   "Land the payoff HARD and FAST — with only 6-7 scenes there is no room to wander, "
                    "so every scene earns its place and the last one must reframe, not summarise. COUNT "
-                   "your words as you write and STAY at 55-74 total; do NOT overshoot and rely on trimming.")
+                   "your words as you write and STAY at 78-98 total; do NOT overshoot and rely on trimming.")
 else:
     WORD_LO, WORD_HI, WORD_HARD_LO, WORD_HARD_HI = 95, 110, 85, 115  # ~40-46s
     SCENE_MIN, SCENE_MAX = 7, 10
