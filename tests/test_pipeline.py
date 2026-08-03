@@ -635,6 +635,20 @@ def test_domain_family():
           "geology/earth/weather map to the same family (no back-to-back deep-earth videos)")
     check(G._domain_family("space") != G._domain_family("earth"), "space stays distinct from earth")
     check(G._domain_family("animals") == "animals", "unlisted domain is its own family")
+    # a real bank-domain audit (2026-08-03) found the same split-domain issue in
+    # several other pairs that were never folded into a family
+    check(G._domain_family("atmosphere") == G._domain_family("weather"),
+          "atmosphere joins the earth/weather family")
+    check(G._domain_family("ocean") == G._domain_family("oceanography") == G._domain_family("marine"),
+          "ocean/oceanography/marine map to the same family")
+    check(G._domain_family("fungi") == G._domain_family("mycology"),
+          "fungi/mycology map to the same family")
+    check(G._domain_family("plants") == G._domain_family("botany"),
+          "plants/botany map to the same family")
+    check(G._domain_family("space") == G._domain_family("astronomy"),
+          "space/astronomy map to the same family")
+    check(G._domain_family("ocean") != G._domain_family("earth"),
+          "the new ocean family stays distinct from the earth family")
 
 
 def test_generate_helpers():

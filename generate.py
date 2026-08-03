@@ -819,7 +819,19 @@ RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
 # (renders 69 then 70) both read as deep-earth science. Group those into one
 # FAMILY so the recent-domain dedup below treats the whole family as used. Any
 # domain not listed is its own family (unchanged behaviour).
-DOMAIN_FAMILIES = {"geology": "earth", "earth": "earth", "weather": "earth"}
+# EXPANDED 2026-08-03 (system-wide sweep): a bank-domain audit found the same
+# earth/weather-style fragmentation in several other pairs that were never
+# folded in -- "ocean"/"oceanography"/"marine", "fungi"/"mycology",
+# "plants"/"botany", and "space"/"astronomy" are each really one family under
+# two different domain strings, so two back-to-back videos from a split pair
+# read as the same kind of video and dodged the recent-domain dedup entirely.
+DOMAIN_FAMILIES = {
+    "geology": "earth", "earth": "earth", "weather": "earth", "atmosphere": "earth",
+    "ocean": "ocean", "oceanography": "ocean", "marine": "ocean",
+    "fungi": "fungi", "mycology": "fungi",
+    "plants": "plants", "botany": "plants",
+    "space": "space", "astronomy": "space",
+}
 def _domain_family(domain):
     return DOMAIN_FAMILIES.get(domain, domain)
 TOPIC_SIM_THRESHOLD = 0.62  # difflib ratio between metaphors above this = dupe
@@ -1780,7 +1792,6 @@ COSMIC_FILLER_Q_RE = re.compile(r"\b(night sky|starry|star field|starfield|milky
 SPACE_CONTEXT_RE = re.compile(r"\b(stars?|sky|galaxy|galaxies|nebula|cosmic|cosmos|universe|orbit\w*|"
                               r"planets?|moon|sun|space|asteroids?|comets?|constellation|milky way|"
                               r"black hole)\b", re.I)
-SPACE_DOMAINS = {"space", "astronomy"}
 
 # visually-rich neutral B-roll for query dedup / repair — always available on stock sites
 VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street timelapse",
@@ -2081,7 +2092,7 @@ def validate(m, job_name, fact=None):
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):
             return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
-        if (fact and fact.get("domain") not in SPACE_DOMAINS
+        if (fact and _domain_family(fact.get("domain")) != "space"
                 and COSMIC_FILLER_Q_RE.search(s["search_query"])
                 and not SPACE_CONTEXT_RE.search(s["voiceover"])):
             return (f"scene {i} query '{s['search_query']}' is generic cosmic/space imagery, but "
