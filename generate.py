@@ -305,15 +305,28 @@ QUALITY_HARD_FLOOR = 6.8   # RESTORED 2026-07-30 (was briefly 6.0 2026-07-29). T
                             # range is not trustworthy enough to lower the bar for; 6.8
                             # + the new coherence floor (7) + the mechanical dangling-
                             # comparative check are the actual quality backstop now.
-QUALITY_MAX_REGENERATIONS = 1   # extra attempts beyond the first (so 2 total).
-                                 # Was 2 (3 total), but each attempt re-runs the full
-                                 # generate+validate+info-gain+punch-up+score pipeline
-                                 # (~5 LLM calls), and on the free tier the per-minute
-                                 # rate limit turns 3 attempts into a ~13-min backoff
-                                 # grind (run 59). With the escalation floor relaxed to
-                                 # 6, a strong first attempt usually clears the bar and
-                                 # breaks early, so 2 attempts is enough and keeps the
-                                 # run well under the 30-min job timeout.
+QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first (so 3 total).
+                                 # RAISED 1 -> 2 (2026-08-02): with only 2 attempts, a
+                                 # run that missed threshold on both fell straight to
+                                 # "ship the best attempt anyway" -- e.g. a real render
+                                 # shipped at overall 6.86 (below the 7.5 threshold, no
+                                 # floor violation) purely because the budget ran out on
+                                 # attempt 2, not because 7.5+ was unreachable. A 3rd
+                                 # attempt is cheap real quality, not wasted spend.
+                                 # The original free-tier concern below (rate-limit
+                                 # backoff grind, run 59) is now much less pressing:
+                                 # Gemini + OpenRouter are both PAID keys with far
+                                 # higher per-minute ceilings than the free tier this
+                                 # comment was written against. Was 2 (3 total), but
+                                 # each attempt re-runs the full generate+validate+
+                                 # info-gain+punch-up+score pipeline (~5 LLM calls),
+                                 # and on the FREE tier the per-minute rate limit used
+                                 # to turn 3 attempts into a ~13-min backoff grind. With
+                                 # the escalation floor relaxed to 6, a strong first
+                                 # attempt usually clears the bar and breaks early
+                                 # anyway, so this only costs extra time on the weak
+                                 # nights that most need the extra attempt. Revisit if
+                                 # a render starts approaching the 30-min job timeout.
 # WALL-CLOCK BUDGET on the whole generation loop — a hard backstop that
 # complements the smaller regen count above. When ALL free providers are
 # throttled, the circuit breaker (call_groq) eventually opens, but before it
