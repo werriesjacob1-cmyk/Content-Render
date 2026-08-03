@@ -75,6 +75,10 @@ def manifest(title, hook, sc):
     return {
         "title": title,
         "hook": hook,
+        # realistic default cover-thumbnail headline (2026-08-03: now a
+        # required field) -- derived from title, not hook, so it never
+        # collides with the new hook/headline near-duplicate check
+        "hook_headline": title.upper()[:40],
         "script": " ".join(s["voiceover"] for s in sc),
         "scenes": sc,
         "captions": [title],
@@ -279,6 +283,28 @@ def test_validate_rejections():
     m5 = copy.deepcopy(FIX_ASTRO)
     m5["captions"] = ["Venus spins backwards compared to every other planet.", "science fact", "wow"]
     check(G.validate(m5, "EXPLAIN") is None, "a clean caption opener passes")
+
+    # HOOK_HEADLINE (2026-08-03): the burned-on cover-thumbnail text -- what a
+    # scrolling viewer sees BEFORE hearing a word. Required to exist (a missing
+    # one reproduces the old "black tile in the grid" problem) and must not be
+    # a near-duplicate of the spoken hook (the prompt explicitly wants it
+    # different wording, not a restatement).
+    m6 = copy.deepcopy(FIX_ASTRO)
+    m6["hook_headline"] = ""
+    err6 = G.validate(m6, "EXPLAIN")
+    check(err6 is not None and "missing hook_headline" in err6, f"an empty hook_headline is rejected ({err6})")
+    m7 = copy.deepcopy(FIX_ASTRO)
+    del m7["hook_headline"]
+    err7 = G.validate(m7, "EXPLAIN")
+    check(err7 is not None and "missing hook_headline" in err7, f"an absent hook_headline field is rejected ({err7})")
+    m8 = copy.deepcopy(FIX_ASTRO)
+    m8["hook_headline"] = m8["hook"].upper()  # identical wording, just upper-cased
+    err8 = G.validate(m8, "EXPLAIN")
+    check(err8 is not None and "nearly identical to the spoken hook" in err8,
+          f"a hook_headline that just restates the hook is rejected ({err8})")
+    m9 = copy.deepcopy(FIX_ASTRO)
+    m9["hook_headline"] = "A DAY LONGER THAN A YEAR"
+    check(G.validate(m9, "EXPLAIN") is None, "a distinct, punchy hook_headline passes")
 
     # TOO-FORMAL / "sounds like a textbook" (render-177 'Continents in Motion':
     # "But is the distance between New York and London fixed?" then a flat "No.")

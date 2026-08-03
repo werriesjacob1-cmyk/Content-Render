@@ -2249,6 +2249,27 @@ def validate(m, job_name, fact=None):
                 f"told you'/'Here's'/'This is' as openers but this was never mechanically "
                 f"enforced; open cold on the shock instead, no wind-up")
 
+    # HOOK_HEADLINE (2026-08-03): the burned-on COVER text -- what a scrolling
+    # viewer sees in the profile grid before they ever hear a word, arguably
+    # the single highest-leverage piece of text in the whole video. Nothing
+    # ever required it exist or checked its content; main.make_cover() just
+    # silently skips a missing one, which is the exact "black tile in the
+    # grid" failure this field was built to prevent in the first place. Also
+    # enforce the prompt's own stated rule ("NOT the same words as the spoken
+    # hook") mechanically -- a near-duplicate headline wastes the one chance
+    # to say something DIFFERENT and punchier on the thumbnail.
+    hh = (m.get("hook_headline") or "").strip()
+    if not hh:
+        return ("missing hook_headline — the burned-on cover-thumbnail scroll-stopper text; "
+                "main.make_cover() silently skips it when absent, reproducing the exact "
+                "'black tile in the profile grid' problem this field exists to prevent")
+    import difflib
+    if difflib.SequenceMatcher(None, hh.lower(), m["hook"].lower()).ratio() > 0.7:
+        return (f"hook_headline {hh!r} is nearly identical to the spoken hook {m['hook']!r} — the "
+                f"prompt explicitly wants the cover text punchier and WORDED DIFFERENTLY, not a "
+                f"restatement; the thumbnail and the first spoken line are two separate chances "
+                f"to hook someone, don't waste one repeating the other")
+
     # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
         for k in ("voiceover", "on_screen_text", "search_query"):
