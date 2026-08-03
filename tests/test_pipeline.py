@@ -831,6 +831,53 @@ def test_domain_family():
           "the new ocean family stays distinct from the earth family")
 
 
+def test_series_and_callback():
+    section("generate._pick_series / _find_callback: binge architecture (PLATFORM.md idea 2)")
+    # no history at all -> never continues (nothing to continue), MAY start
+    # fresh depending on the random draw -- pin random for a deterministic check
+    G.random.seed(1)
+    name, part = G._pick_series([], "body")
+    check(part in (None, 1), f"first-ever video either starts a series at part 1 or skips ({name!r}, {part})")
+
+    # an in-progress, still-eligible series ALWAYS continues (never re-rolls
+    # to start something new instead) -- this is the actual "binge" mechanic
+    hist_mid_series = [{"domain": "body", "series": {"name": "Things Happening In Your Body Right Now", "part": 2}}]
+    name2, part2 = G._pick_series(hist_mid_series, "senses")  # senses is in the SAME theme's domain set
+    check((name2, part2) == ("Things Happening In Your Body Right Now", 3),
+          f"a compatible in-progress series continues to the next part deterministically ({name2}, {part2})")
+
+    # a domain that no longer fits the active series' theme does NOT force a
+    # continuation -- falls through to the normal start-or-skip logic instead
+    name3, part3 = G._pick_series(hist_mid_series, "space")
+    check(name3 != "Things Happening In Your Body Right Now",
+          f"an incompatible domain does not continue the wrong series ({name3})")
+
+    # a series at the cap retires -- no more forced continuation even if the
+    # domain would otherwise fit
+    hist_capped = [{"domain": "body", "series": {"name": "Things Happening In Your Body Right Now",
+                                                  "part": G.SERIES_MAX_PARTS}}]
+    name4, part4 = G._pick_series(hist_capped, "body")
+    check(name4 != "Things Happening In Your Body Right Now" or part4 != G.SERIES_MAX_PARTS + 1,
+          f"a series AT its max part count does not force yet another continuation ({name4}, {part4})")
+
+    # a domain matching no theme at all never starts or continues anything
+    name5, part5 = G._pick_series([], "totally_unmapped_domain_xyz")
+    check((name5, part5) == (None, None), "a domain with no matching theme never starts a series")
+
+    # _find_callback: most recent same-domain title wins, exclude_ids honored
+    hist_cb = [
+        {"video_id": "a", "domain": "ocean", "title": "The Trench Nobody Has Touched"},
+        {"video_id": "b", "domain": "space", "title": "A Day Longer Than a Year"},
+        {"video_id": "c", "domain": "ocean", "title": "Bioluminescent Blooms"},
+    ]
+    check(G._find_callback(hist_cb, "ocean") == "Bioluminescent Blooms",
+          "callback picks the MOST RECENT same-domain video")
+    check(G._find_callback(hist_cb, "ocean", exclude_ids={"c"}) == "The Trench Nobody Has Touched",
+          "excluded video_id is skipped, falls back to the next same-domain match")
+    check(G._find_callback(hist_cb, "geology") is None, "no matching domain -> no callback")
+    check(G._find_callback([], "ocean") is None, "empty history -> no callback, no crash")
+
+
 def test_generate_helpers():
     section("generate.py pure helpers")
     check(re.match(r"^[a-z0-9-]+$", G._slugify("A Day Longer Than a Year!")) is not None,
@@ -2108,6 +2155,7 @@ def main():
     test_build_ass_fallback_monotonic()
     test_square_crop_top()
     test_domain_family()
+    test_series_and_callback()
     test_funnel_affiliate_coverage()
     test_generate_helpers()
     test_caption_function_word_grouping()

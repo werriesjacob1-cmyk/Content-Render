@@ -14,6 +14,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
 SERIES_PART = os.environ.get("SERIES_PART", "").strip()  # e.g. "2"
+# CROSS-VIDEO CALLBACK (PLATFORM.md idea 2, "connected universe" half): set by
+# main() before generation, read by build_prompt. Module-level global rather
+# than a threaded function param to match the exact pattern SERIES/SERIES_PART
+# already use here -- one mechanism, not two.
+CALLBACK_TITLE = ""
 MEMORY = os.path.join(ROOT, f"memory_{PAGE}.json")
 # Research dossiers are keyed by the verified fact text and cached across runs:
 # the same fact costs one Gemini/Groq call to research the FIRST time, then zero
@@ -873,6 +878,61 @@ DOMAIN_FAMILIES = {
 }
 def _domain_family(domain):
     return DOMAIN_FAMILIES.get(domain, domain)
+
+# ---------- SERIES / BINGE ARCHITECTURE (PLATFORM.md idea 2) ----------
+# The ONE roadmap idea flagged PARTIAL and never finished: "a page people
+# follow and binge," not a page that posts one-off facts. SERIES mode and its
+# prompt block (below in build_prompt) already existed, gated behind manual
+# SERIES/SERIES_PART env vars nobody set -- this activates it automatically.
+# Themes pool by exact `domain` (not family -- family collapses too much:
+# geology+earth+weather would make "Deep-Time Archive" and "Ocean's Hidden
+# World" indistinguishable), so a continued series stays thematically tight.
+SERIES_THEMES = {
+    "Things Happening In Your Body Right Now": {"body", "biology", "senses", "neurology", "psychology"},
+    "The Deep-Time Archive": {"deep_time", "geology", "earth", "history"},
+    "Rule-Breaking Animals": {"animals", "nature", "marine"},
+    "The Universe You Can't See": {"space", "astronomy", "light", "physics", "matter"},
+    "Ocean's Hidden World": {"ocean", "oceanography", "marine"},
+    "Weird Science, Real Life": {"chemistry", "materials", "math", "atmosphere", "weather"},
+}
+SERIES_MAX_PARTS = 4          # retire a series after this many parts (avoid staleness/fatigue)
+SERIES_START_PROB = 0.35      # not every eligible video launches a series, or "Part 1" never stops
+
+
+def _pick_series(history, domain):
+    """Continue or start a series for this video. Returns (name, part) or
+    (None, None). Continuing an in-progress series ALWAYS wins over starting a
+    new one -- an abandoned "Part 2 that never got a Part 3" is worse than no
+    series at all. Otherwise, if this fact's domain fits some theme,
+    probabilistically start one. Pure/testable: the only randomness is one
+    random.random() call gating whether a NEW series starts; continuation is
+    fully deterministic given history+domain."""
+    last = history[-1] if history else None
+    last_series = (last or {}).get("series") if last else None
+    if last_series and last_series.get("name") and last_series.get("part", 0) < SERIES_MAX_PARTS:
+        theme = last_series["name"]
+        if domain in SERIES_THEMES.get(theme, ()):
+            return theme, last_series["part"] + 1
+    eligible = [name for name, domains in SERIES_THEMES.items() if domain in domains]
+    if eligible and random.random() < SERIES_START_PROB:
+        return random.choice(eligible), 1
+    return None, None
+
+
+def _find_callback(history, domain, exclude_ids=()):
+    """A previously-published, SAME-domain video to briefly reference
+    ("remember the ocean-floor one? this is why...") -- PLATFORM.md idea 2's
+    "connected universe" half. Domain-exact (not family) so a callback always
+    feels specific, never a vague genre match. Most-recent-first; skips
+    anything in exclude_ids (already covered by an active series' own
+    continuity, which is a stronger, more explicit callback already). Returns
+    a title string, or None. Pure/testable."""
+    for h in reversed(history):
+        if h.get("domain") == domain and h.get("video_id") not in exclude_ids and h.get("title"):
+            return h["title"]
+    return None
+
+
 TOPIC_SIM_THRESHOLD = 0.62  # difflib ratio between metaphors above this = dupe
 TOPIC_TOKEN_OVERLAP = 0.6   # content-word overlap fraction above this = dupe
 
@@ -1014,6 +1074,17 @@ def build_prompt(job_name, job_desc, avoid, fact=None, avoid_openers=None, cta_s
                         f"End by teasing the NEXT part to make viewers follow so they don't miss it "
                         f"(e.g. 'Follow so you don't miss part {int(part)+1}.'). "
                         f"Put the series name + part number in the first on_screen_text and first caption.")
+    callback_block = ""
+    if CALLBACK_TITLE and not SERIES:
+        # skip when SERIES is active -- the series' own part-N continuity IS
+        # the callback mechanism already; stacking both reads as forced.
+        callback_block = (
+            f"\n\nCALLBACK (use ONLY if it fits naturally — do not force this): you've previously covered "
+            f"a related video titled \"{CALLBACK_TITLE}\". If a brief, ONE-CLAUSE reference to it would "
+            f"land naturally (e.g. 'like the {{that topic}}, except...'), weave it in — it rewards people "
+            f"who watch multiple videos on this page, building a connected feel. NEVER spend a whole "
+            f"scene on it, never explain it at length, and skip it entirely if no natural connection "
+            f"exists for THIS fact — a forced callback is worse than none.")
     fact_block = ""
     if fact:
         key_terms = fact.get("key_terms", [])
@@ -1368,7 +1439,7 @@ CONTENT (CRITICAL):
 - Visually deliverable with real stock footage (nature, space, ocean, animals, cities, body, weather, hands, household).
 - No "imagine", no "did you know", no filler.
 
-AVOID these recent topics entirely: {avoid}{series_block}{opener_block}
+AVOID these recent topics entirely: {avoid}{series_block}{callback_block}{opener_block}
 
 FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust instantly):
 - Each scene needs a 2-5 word query for something a videographer ACTUALLY FILMS: a concrete subject +
@@ -3533,6 +3604,27 @@ def main():
         chosen_fact = random.choice(available) if available else None
     if chosen_fact:
         print(f"  [bank] fact: {chosen_fact['id']}")
+
+    # SERIES / CALLBACK activation (PLATFORM.md idea 2, "a page people follow
+    # and binge" -- the one roadmap idea flagged PARTIAL all session). Manual
+    # SERIES/SERIES_PART env vars still win if a human sets them for a one-off
+    # forced episode; otherwise this picks automatically off the chosen fact's
+    # domain. video_id isn't assigned yet at this point in main(), so the
+    # callback's exclude_ids uses fact_ids already covered by an in-progress
+    # series continuation instead (same effect: don't re-callback what the
+    # series continuity already covers).
+    global SERIES, SERIES_PART, CALLBACK_TITLE
+    series_name = series_part = None
+    if chosen_fact and not SERIES:
+        series_name, series_part = _pick_series(history, chosen_fact.get("domain"))
+        if series_name:
+            SERIES, SERIES_PART = series_name, str(series_part)
+            print(f"[series] {series_name} — part {series_part}")
+        else:
+            cb = _find_callback(history, chosen_fact.get("domain"))
+            if cb:
+                CALLBACK_TITLE = cb
+                print(f"[series] callback to {cb!r}")
     last_job = history[-1].get("viewer_job") if history else None
     jobs = [j for j in VIEWER_JOBS if j[0] != last_job] or VIEWER_JOBS
     # HOW_TO asks for a household demo the viewer can try. That is incompatible
@@ -3818,6 +3910,10 @@ def main():
             "scene_count": len(manifest.get("scenes", [])),
             "used_whatif": bool(chosen_fact and chosen_fact.get("whatif")),
         },
+        # persists whichever series state actually drove THIS video (auto-
+        # picked by _pick_series or a human-forced SERIES/SERIES_PART env var)
+        # so the NEXT render's _pick_series can detect continuation.
+        "series": {"name": SERIES, "part": int(SERIES_PART)} if SERIES and SERIES_PART else None,
         "quality": best_quality,
     })
     _dest = f"buffer ({QUEUE_DIR})" if GEN_MODE == "enqueue" else OUT_MANIFEST
