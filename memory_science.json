@@ -1,56 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-31_the-secret-language-of-trees",
-      "metaphor": "hidden tree networks",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "The Secret Language of Trees",
-      "fact_id": "tree_communication",
-      "domain": "nature",
-      "hook": "Your backyard trees are secretly talking to each other.",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 6.0,
-        "rewatch": 5.0,
-        "clarity": 8.0,
-        "coherence": 9.0,
-        "overall": 7.29
-      }
-    },
-    {
-      "video_id": "science_2026-07-31_the-alien-anatomy-of-octopuses",
-      "metaphor": "alien ocean creatures",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "The Alien Anatomy of Octopuses",
-      "fact_id": "octopus_three_hearts",
-      "domain": "animals",
-      "hook": "An octopus' heart stops every time it swims. How?",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 6.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 7.71
-      }
-    },
-    {
       "video_id": "science_2026-08-01_the-sea-cucumber-s-regrowing-brain",
       "metaphor": "sea cucumber marvel",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -357,6 +307,58 @@
         "clarity": 8.0,
         "coherence": 8.0,
         "overall": 7.0
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_why-ocean-currents-shape-our-world",
+      "metaphor": "underwater planetary climate engines",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "Why Ocean Currents Shape Our World",
+      "fact_id": "ocean_current_patterns",
+      "domain": "oceanography",
+      "hook": "How do ocean currents keep London mild while Calgary at the same latitude freezes?",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.86
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_the-shortest-war-in-history",
+      "metaphor": "briefest historical conflict",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Shortest War in History",
+      "fact_id": "shortest_war",
+      "domain": "history",
+      "hook": "How could a full-scale war between nations end in just 38 minutes?",
+      "vibe": "tense",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.71
       }
     }
   ]
