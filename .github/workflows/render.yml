@@ -10,9 +10,9 @@ on:
         default: "auto"
       openrouter_model:
         description: "OPTIONAL one-off OpenRouter writer model override for THIS manual run only
-          (e.g. deepseek/deepseek-chat) -- leave blank to use the repo Variable / default (openai/
-          gpt-4o). Does NOT touch the daily cron's model; for A/B testing a different writer
-          without changing the permanent default."
+          (e.g. deepseek/deepseek-chat) -- leave blank to use the repo Variable / default
+          (anthropic/claude-sonnet-5). Does NOT touch the daily cron's model; for A/B testing a
+          different writer without changing the permanent default."
         default: ""
   schedule:
     # Once a day, 13:00 UTC. The "science" profile's intended posting window
@@ -119,14 +119,17 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # GEMINI-FIRST generation (user-approved 2026-07-22 for reliability +
-          # quality). The free writers (gpt-4o-mini / groq-llama) overshoot the word
-          # count and abort on escalation-floor violations; Gemini is grounded, writes
-          # tighter/stronger hooks, and stops the abort spiral — the "generate
-          # multiple without failure" the user asked for. Cost is pennies/render on
-          # gemini-flash (~$2-3/mo at 4-7 renders/day). Set to "0" to revert to the
-          # free-first chain (Gemini then only rescues weak drafts).
-          GEMINI_GENERATION: "1"
+          # 2026-08-03: OFF. The recurring "clumsy/jumbled/doesn't make sense"
+          # narration complaints trace to the WRITER model, not to Gemini-vs-not.
+          # Gemini's auto-discovered model on this key is "gemini-flash-latest" /
+          # "gemini-3.5-flash" -- Google's FAST tier, not their strongest. The user
+          # said explicitly to stop optimizing for cost and use the strongest
+          # writer available: OpenRouter's default is now Claude Sonnet 5 / GPT-5
+          # (see OPENROUTER_MODEL below), which leads the chain when this is unset/
+          # "0". Gemini (still grounded, still has the vision footage judge) is the
+          # backstop for nights OpenRouter is unavailable. Set to "1" to restore
+          # Gemini-first.
+          GEMINI_GENERATION: "0"
           # Gemini's free tier has a far larger daily quota than Groq's; when set,
           # generate.py prefers it so renders stop aborting at this step. Optional
           # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
@@ -138,19 +141,18 @@ jobs:
           # (stronger than Cerebras' free model) on a separate daily bucket.
           # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          # OpenRouter WRITER MODEL. The free llama-3.3-70b overshoots the word cap
-          # and returns empty bodies (renders 161-165 aborted on it, 1 clean in 5).
-          # With paid credits we use a stronger model that follows the length/format
-          # rules and clears the quality floor reliably. Env-overridable via a repo
-          # Variable (Settings -> Variables -> OPENROUTER_MODEL) with no code change;
-          # default gpt-4o. Cheaper strong alt: deepseek/deepseek-chat. A manual
-          # workflow_dispatch run can override just itself via the openrouter_model
-          # input above, without touching the permanent default the daily cron uses --
-          # 2026-08-01 overnight: gpt-4o cleared 2/9 renders (~22%), failing on a spread
-          # of DIFFERENT quality axes each time (payoff, fact-restatement, missing key
-          # terms, no memorable detail) rather than one fixable pattern -- worth an A/B
-          # test against deepseek-chat before committing to a permanent model change.
-          OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'openai/gpt-4o' }}
+          # OpenRouter WRITER MODEL, now the PRIMARY writer (see GEMINI_GENERATION
+          # above). 2026-08-01 overnight found gpt-4o cleared only 2/9 renders
+          # (~22%), failing on a spread of different quality axes each time -- not
+          # a strong enough writer to lean on. 2026-08-03: the user said stop
+          # optimizing for cost, use whatever model gets consistently good videos;
+          # default is now Claude Sonnet 5 first, GPT-5 second, the old 70b llama
+          # last (comma-separated = tried in order within this one provider).
+          # Env-overridable via a repo Variable (Settings -> Variables ->
+          # OPENROUTER_MODEL) with no code change. A manual workflow_dispatch run
+          # can override just itself via the openrouter_model input above, without
+          # touching the permanent default the daily cron uses.
+          OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
           # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
           # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
           # mistral-small on their free tiers). Optional — absent keys are simply

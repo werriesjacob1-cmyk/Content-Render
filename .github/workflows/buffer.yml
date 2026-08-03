@@ -52,9 +52,10 @@ jobs:
       - name: Fill the buffer
         env:
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
-          # Gemini-first here too, so BANKED scripts are as strong as live ones
-          # (the dequeue path replays them without re-scoring). See render.yml.
-          GEMINI_GENERATION:  "1"
+          # Matches render.yml (2026-08-03): OFF, so banked scripts get the same
+          # OpenRouter-Claude-Sonnet-5-first writer as live renders, not Gemini's
+          # fast/cheap tier. See render.yml's GEMINI_GENERATION comment.
+          GEMINI_GENERATION:  "0"
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           CEREBRAS_API_KEY:   ${{ secrets.CEREBRAS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

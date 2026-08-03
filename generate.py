@@ -185,24 +185,28 @@ def cerebras_models():
     return _CEREBRAS_MODELS_CACHE
 
 
-# FOURTH free provider: OpenRouter. Its free tier ("...:free" model slugs) serves
-# genuinely strong models — notably llama-3.3-70b — which is a big step up from
-# Cerebras' free gemma-4-31b for a weak-model day, and it's a SEPARATE free daily
-# bucket, so it stretches how many videos we can render for $0. OpenAI-compatible
-# endpoint, so it reuses _call_openai_compat. Optional/env-gated (no key = skip).
-# Free key (no card): https://openrouter.ai/keys . Add as OPENROUTER_API_KEY.
+# FOURTH provider: OpenRouter. The channel spent months routing generation
+# through a 70B open model (meta-llama/llama-3.3-70b-instruct) to stay free-ish,
+# and it produced the exact recurring complaints the user kept catching by ear:
+# clumsy phrasing, jumbled clause stacking, sentences that don't parse on one
+# listen. Every fix so far has been a mechanical regex patch AFTER the fact --
+# that catches specific shapes of the problem, not the root cause, which is that
+# the WRITER itself was never actually strong. 2026-08-03: user said explicitly
+# "stop holding back on your capabilities... use whatever model you need" --
+# the OpenRouter key is already paid, so this switches the primary writer (and,
+# for free, the self-critique/scoring judge -- both go through call_groq) to
+# genuine frontier models: Claude Sonnet 5 first, GPT-5 second, the old 70B
+# llama as a last-resort fallback within this same provider. Cost is still
+# cents/render (short prompts, short manifests) -- this is not a "spend a lot
+# more" change, it's "stop deliberately picking the weaker model to save those
+# cents." OpenAI-compatible endpoint, so it reuses _call_openai_compat.
+# Optional/env-gated (no key = skip). Key: https://openrouter.ai/keys .
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-# The FREE llama-3.3-70b slug ("...:free") was discontinued — OpenRouter 404s it
-# ("This model is unavailable for free. The paid version is available now - use
-# this slug instead: meta-llama/llama-3.3-70b-instruct"). With paid credits on the
-# key we use that PAID slug (drop ":free"): a strong, NON-rate-limited writer — a
-# few cents per render — that catches the nights Gemini's quota 429s. This is the
-# reliability fix for the aborted renders (every strong free writer was exhausted).
-# Env-overridable (OPENROUTER_MODEL, comma-separated) so the model can change with
-# NO code edit — e.g. set it to deepseek/deepseek-chat-v3 for a stronger writer.
+# Env-overridable (OPENROUTER_MODEL, comma-separated) so the model can change
+# with NO code edit.
 _OR_RAW = os.environ.get("OPENROUTER_MODEL", "").strip()
 OPENROUTER_MODELS = [m.strip() for m in _OR_RAW.split(",") if m.strip()] or \
-    ["meta-llama/llama-3.3-70b-instruct"]
+    ["anthropic/claude-sonnet-5", "openai/gpt-5", "meta-llama/llama-3.3-70b-instruct"]
 # More free/separate-bucket providers, all OpenAI-compatible and ENV-GATED (no
 # key = skipped, zero behaviour change). Each is its own daily bucket, so adding
 # any one key gives a whole extra pool of strong-model generation on free tier —
@@ -1666,26 +1670,19 @@ def call_groq(prompt):
     global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN, _FORCE_GEMINI_GEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
-    # Order = quality-per-free-call: Gemini (fast, ~450 RPD) → OpenRouter
-    # (llama-3.3-70b:free, strongest free model, separate daily bucket) →
-    # Cerebras (gemma-4-31b, RPM-limited) → Groq (100k tokens/day, last resort).
-    # Generation quality order: Gemini → OpenRouter → GROQ → Cerebras. Groq now
-    # sits ABOVE Cerebras: Groq's llama-3.3-70b-versatile is a STRONG model with a
-    # generous 100k-tokens/day free budget, whereas Cerebras only serves the weak
-    # gemma-4-31b (which produces the escalation-4 near-misses that abort). So on a
-    # day when Gemini + OpenRouter are spent, generation still gets a strong model
-    # (Groq) instead of dropping to weak gemma — far fewer weak/aborted runs. The
-    # footage JUDGE (main.py) prefers Groq too but its prompts are tiny, so the
-    # 100k/day budget comfortably covers both.
-    # COST MODEL: the render itself is free (GitHub Actions + free footage + TTS);
-    # only the LLM writing the script costs money, and only because GEMINI is a
-    # PAID key now. But the free providers (OpenRouter/Groq llama-3.3-70b, GitHub
-    # gpt-4o-mini) write strong scripts — ESPECIALLY when handed the Gemini-grounded
-    # research dossier (research_dossier still grounds on Gemini directly). So for
-    # the generic text calls we go FREE-FIRST and keep paid Gemini only as a
-    # last-resort quality backstop. That turns the common 4-7-renders/day case into
-    # ~$0 of generation, while grounding (cached per fact) + the vision judge stay
-    # the only small Gemini spend. Set GEMINI_GENERATION=1 to restore Gemini-first.
+    # Order, 2026-08-03 (quality-first, not cost-first): OpenRouter now leads with
+    # Claude Sonnet 5 / GPT-5 (see the OPENROUTER_MODELS comment above) → GitHub →
+    # Groq's llama-3.3-70b-versatile → Together/Fireworks/Mistral → Cerebras
+    # gemma-4-31b (weakest, last resort — produces the escalation-4 near-misses
+    # that abort). Gemini (grounded, also frontier-tier) sits after this "free-ish"
+    # chain purely so its own paid quota isn't burned when OpenRouter alone would
+    # have written a great script anyway — NOT because it's a worse writer; set
+    # GEMINI_GENERATION=1 to put it first instead. The point of this whole ladder
+    # is "try a genuinely strong writer first, in every branch" — the OLD framing
+    # here talked about "free-first to save money," which is exactly the
+    # cost-over-quality tradeoff the user told us to stop making. A weak-model
+    # script (Cerebras/Groq-8B) reaching QUALITY_HARD_FLOOR is a near-miss to be
+    # tolerated on a bad day, never the goal.
     _gemini_chain = [("gemini", m) for m in gemini_models()] if GEMINI_KEY else []
     _free_chain = (([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) +
                    ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
