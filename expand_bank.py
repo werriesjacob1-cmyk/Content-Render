@@ -36,9 +36,17 @@ def _norm(s):
 
 
 def _domain_counts(facts):
+    """Counts by FAMILY (see generate.DOMAIN_FAMILIES), not raw domain string.
+    Without this, "thin domain" detection below chases split-domain strings
+    (astronomy/mycology/botany/marine/oceanography) that are really part of
+    an already-well-stocked family (space/fungi/plants/ocean) under a
+    different name -- actively perpetuating the exact fragmentation the
+    render-selection dedup logic was built to avoid, by asking the LLM for
+    MORE facts in a domain that already has plenty, just spelled differently."""
     c = {}
     for f in facts:
-        c[f.get("domain", "?")] = c.get(f.get("domain", "?"), 0) + 1
+        fam = G._domain_family(f.get("domain", "?"))
+        c[fam] = c.get(fam, 0) + 1
     return c
 
 
@@ -89,7 +97,11 @@ def accept_fact(f, have_ids, have_norms):
         return None
     if _too_similar(fact, have_norms):
         return None
-    return {"id": fid, "domain": str(f.get("domain", "misc")).lower().split()[0],
+    # canonicalize to the domain FAMILY's name (e.g. "astronomy" -> "space") so
+    # newly-added facts heal the existing split-domain fragmentation instead of
+    # adding another instance of it -- see _domain_counts above.
+    raw_domain = str(f.get("domain", "misc")).lower().split()[0]
+    return {"id": fid, "domain": G._domain_family(raw_domain),
             "fact": fact, "angle": str(f.get("angle", ""))[:60],
             "key_terms": [str(k) for k in f["key_terms"]][:5],
             "whatif": str(f.get("whatif", "")), "wow": str(f.get("wow", "")),

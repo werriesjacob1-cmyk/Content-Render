@@ -1018,6 +1018,28 @@ def test_bank_expander():
     # missing keys / empty lists rejected
     check(E.accept_fact({"id":"x","domain":"y","fact":"a long enough claim about the world here"}, set(), []) is None,
           "schema-incomplete fact rejected")
+    # domain CANONICALIZATION to the family name -- a real bank audit found
+    # astronomy/mycology/botany/marine/oceanography each fragmenting an
+    # already-well-stocked family (space/fungi/plants/ocean) under a
+    # different domain string. New facts must heal that, not add to it.
+    astro = {**good, "id": "astro1", "domain": "astronomy",
+             "fact": "A planet in our solar system rains glass sideways in hundred-mile-an-hour winds."}
+    ok2 = E.accept_fact(astro, set(), [])
+    check(ok2 is not None and ok2["domain"] == "space",
+          "a fact submitted under 'astronomy' is canonicalized to the 'space' family")
+    marine = {**good, "id": "marine1", "domain": "marine",
+              "fact": "A deep-sea fish generates its own light through a chemical reaction in its skin."}
+    ok3 = E.accept_fact(marine, set(), [])
+    check(ok3 is not None and ok3["domain"] == "ocean",
+          "a fact submitted under 'marine' is canonicalized to the 'ocean' family")
+    # _domain_counts groups by FAMILY, so a split-domain string doesn't read as
+    # "thin" when its family is already well-stocked (the bug that would have
+    # kept asking the LLM for more 'astronomy' facts forever)
+    mixed_bank = ([{"id": f"s{i}", "domain": "space"} for i in range(17)]
+                  + [{"id": f"a{i}", "domain": "astronomy"} for i in range(2)])
+    counts = E._domain_counts(mixed_bank)
+    check(counts.get("space") == 19 and "astronomy" not in counts,
+          "space+astronomy count together as one 'space' family (19), not two thin domains")
     # JSON array extraction tolerates surrounding prose
     arr = E._extract_json_array('Sure! Here you go:\n[{"a":1}]\nHope that helps')
     check(_json.loads(arr) == [{"a":1}], "_extract_json_array pulls the array out of prose")
