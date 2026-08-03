@@ -636,6 +636,27 @@ def test_final_qa():
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": "n/a"}) is False,
           "non-numeric score value -> fails OPEN, never aborts")
 
+    # 2026-08-03: narration_flow -- the judge now LISTENS to the actual voice
+    # audio, not just text, so a script that reads fine on paper but sounds
+    # clumsy/jumbled out loud can be caught automatically, the same class of
+    # defect the user has repeatedly caught by ear (mechanical validate()
+    # checks only ever guard the specific phrasing shape they were written
+    # for; this is a holistic backstop, not another narrow pattern match).
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 9,
+                              "narration_flow": 2}) is True,
+          "great footage but bad-SOUNDING narration still aborts")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 9,
+                              "narration_flow": M.FINAL_QA_FLOW_FLOOR - 1}) is True,
+          "narration_flow just under its own floor -> abort")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 9,
+                              "narration_flow": M.FINAL_QA_FLOW_FLOOR}) is False,
+          "narration_flow AT the floor -> does not abort (only strictly below)")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 9,
+                              "narration_flow": 8}) is False,
+          "good footage AND good narration flow -> no abort")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 9}) is False,
+          "no audio judged this run (narration_flow absent) -> only footage gates, fails open on flow")
+
 
 def test_vibe_and_hybrid_footage_mode():
     section("generate.py: _normalize_vibe / _assign_footage_mode (mood-matched pacing + hero AI shots)")

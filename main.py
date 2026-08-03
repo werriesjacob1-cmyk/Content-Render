@@ -929,15 +929,35 @@ FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
 FINAL_QA_ABORT_FLOOR = int(os.environ.get("FINAL_QA_ABORT_FLOOR") or "6")
 
 
+# 2026-08-03: every "narration sounds clumsy/jumbled/doesn't make sense"
+# complaint the user has caught has been caught the SAME way -- by actually
+# LISTENING to a published video. Every mechanical fix shipped so far
+# (question-hooks, stacked clauses, unnamed landmarks...) only guards the
+# SPECIFIC phrasing shape it was written for; the next novel bad pattern
+# sails through validate() untouched. This is the structural fix: the final
+# QA judge below now gets the ACTUAL VOICE AUDIO, not just the text script --
+# it LISTENS to the real narration the way a viewer (and the user) does, and
+# scores whether it actually sounds natural, not whether it reads fine on
+# paper. A narration_flow score below this floor aborts the publish exactly
+# like a footage mismatch already does, so a bad-sounding video can no longer
+# reach a release without a human having to catch it after the fact.
+FINAL_QA_FLOW_FLOOR = int(os.environ.get("FINAL_QA_FLOW_FLOOR") or "6")
+
+
 def _qa_should_abort(qa_report):
-    """True only on a CONFIDENT low footage_matches_narration score (the judge
-    actually ran and returned a number below FINAL_QA_ABORT_FLOOR). Any failure
-    to judge (no key, bad reply, exception) fails OPEN -- never blocks a
-    publish just because the best-effort QA call itself broke."""
+    """True on a CONFIDENT low footage_matches_narration OR narration_flow
+    score (the judge actually ran and returned a number below its floor). Any
+    failure to judge (no key, bad reply, exception) fails OPEN -- never blocks
+    a publish just because the best-effort QA call itself broke."""
     if not qa_report.get("ran"):
         return False
     fm = qa_report.get("footage_matches_narration")
-    return isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR
+    if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+        return True
+    nf = qa_report.get("narration_flow")
+    if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
+        return True
+    return False
 
 
 def _qa_frame_timestamps(dur, n):
@@ -980,8 +1000,20 @@ def _final_qa_check(video, m):
     never raises. Always writes out/qa_report.json (shipped as a release
     asset) and prints a single [final-qa] summary line so a bad video is
     visible in the render log without anyone downloading and watching it.
-    Returns the report dict; the caller gates publishing on a confidently
-    low footage_matches_narration score (see FINAL_QA_ABORT_FLOOR)."""
+    Returns the report dict; the caller gates publishing on a confidently low
+    footage_matches_narration OR narration_flow score (see FINAL_QA_ABORT_FLOOR
+    / FINAL_QA_FLOW_FLOOR).
+
+    2026-08-03: the judge now LISTENS to the actual voice track (full_vo.mp3,
+    the raw TTS output from earlier in this same render — still on disk, WORK
+    is only wiped at the top of main()), not just the text script. Every
+    "sounds clumsy/jumbled" complaint the user has caught was caught by
+    actually hearing it; validate()'s mechanical checks only ever guard the
+    SPECIFIC phrasing shape they were written for, so a novel bad pattern
+    sails through untouched. This closes that gap structurally instead of
+    reactively: a script that reads fine on paper but sounds wrong out loud
+    now gets caught by the pipeline itself, on every render, not just the
+    ones a human happens to watch."""
     out_path = os.path.join(OUT, "qa_report.json")
     report = {"ran": False}
     try:
@@ -994,9 +1026,21 @@ def _final_qa_check(video, m):
             return report
         script = " ".join(s.get("voiceover", "") for s in m.get("scenes", []))
         import base64
+        voice_mp3 = os.path.join(WORK, "full_vo.mp3")
+        have_audio = os.path.exists(voice_mp3) and os.path.getsize(voice_mp3) > 1000
+        audio_criterion = (
+            f"5. narration_flow (0-10): LISTEN to the attached narration audio (not just the text "
+            f"above). Does it actually sound natural, clear, and well-paced when SPOKEN, not just "
+            f"when read? Score low if any word is confusing or ambiguous once heard, if a sentence "
+            f"has too many clauses crammed together and rushes/jumbles, if the pacing feels uneven "
+            f"or robotic, or if anything makes a listener think \"wait, what did that mean?\" on "
+            f"first listen. This is independent of footage — judge the AUDIO alone.\n"
+            if have_audio else "")
+        _nf_json_field = ', "narration_flow": 0' if have_audio else ""
         parts = [{"text": (
             f"You are doing FINAL QUALITY CONTROL on a finished short-form science video, "
-            f"sampled as {len(frames)} evenly-spaced frames across its full length, in order. "
+            f"sampled as {len(frames)} evenly-spaced frames across its full length, in order"
+            f"{' plus its narration audio' if have_audio else ''}. "
             f"The full narration is: \"{script}\"\n\n"
             f"Judge the ASSEMBLED video, not the script. Answer honestly and strictly:\n"
             f"1. footage_matches_narration (0-10): across the frames, does what's ON SCREEN "
@@ -1008,12 +1052,18 @@ def _final_qa_check(video, m):
             f"cut off, not overlapping other text? Use 10 if no captions are visible to judge.\n"
             f"4. biggest_issue: one short sentence naming the single worst concrete problem you "
             f"see, or \"none\" if it looks clean.\n"
+            f"{audio_criterion}"
             f"Return ONLY JSON: {{\"footage_matches_narration\": 0, \"visual_variety\": 0, "
-            f"\"caption_legible\": 0, \"biggest_issue\": \"...\"}}")}]
+            f"\"caption_legible\": 0{_nf_json_field}, "
+            f"\"biggest_issue\": \"...\"}}")}]
         for i, fp in enumerate(frames):
             parts.append({"text": f"Frame {i + 1}/{len(frames)}:"})
             parts.append({"inline_data": {"mime_type": "image/jpeg",
                                           "data": base64.b64encode(open(fp, "rb").read()).decode()}})
+        if have_audio:
+            parts.append({"text": "Narration audio:"})
+            parts.append({"inline_data": {"mime_type": "audio/mpeg",
+                                          "data": base64.b64encode(open(voice_mp3, "rb").read()).decode()}})
         # Same fix as _gemini_vision_pick: thinkingBudget=0 400s once the
         # request carries image parts (this call sends FINAL_QA_FRAMES of
         # them) -- render 203 confirmed live: "[final-qa] unavailable
@@ -1036,14 +1086,16 @@ def _final_qa_check(video, m):
             report = {"ran": False, "error": "no JSON in reply"}
             return report
         verdict = json.loads(_match.group(0))
-        report = {"ran": True, "frames_sampled": len(frames), **verdict}
+        report = {"ran": True, "frames_sampled": len(frames), "audio_judged": have_audio, **verdict}
         fm = verdict.get("footage_matches_narration")
         vv = verdict.get("visual_variety")
         cl = verdict.get("caption_legible")
+        nf = verdict.get("narration_flow")
         issue = verdict.get("biggest_issue", "")
-        flag = "FLAG" if (isinstance(fm, (int, float)) and fm < 6) else "ok"
-        print(f"[final-qa] {flag} footage_match={fm}/10 variety={vv}/10 captions={cl}/10 "
-              f"issue={issue!r} ({len(frames)} frames sampled)")
+        flag = "FLAG" if _qa_should_abort(report) else "ok"
+        nf_part = f" flow={nf}/10" if have_audio else ""
+        print(f"[final-qa] {flag} footage_match={fm}/10 variety={vv}/10 captions={cl}/10{nf_part} "
+              f"issue={issue!r} ({len(frames)} frames sampled{', +audio' if have_audio else ''})")
     except Exception as e:  # noqa: BLE001 — best-effort, must never break the render
         print(f"[final-qa] unavailable ({type(e).__name__}: {str(e)[:150]})")
         report = {"ran": False, "error": str(e)[:200]}
@@ -3425,12 +3477,16 @@ def main():
         make_cover(body, m, os.path.join(OUT, "cover.jpg"))
     qa_report = _final_qa_check(final, m)
     if _qa_should_abort(qa_report):
-        print(f"ERROR: final QA judged footage_matches_narration="
-              f"{qa_report.get('footage_matches_narration')}/10 (< FINAL_QA_ABORT_FLOOR="
-              f"{FINAL_QA_ABORT_FLOOR}) on the ASSEMBLED video — issue="
-              f"{qa_report.get('biggest_issue', '')!r}. Aborting so a blatant "
-              f"footage/narration mismatch is never published — the script was "
-              f"fine, only the footage failed; retry re-renders it.")
+        fm, nf = qa_report.get("footage_matches_narration"), qa_report.get("narration_flow")
+        reasons = []
+        if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+            reasons.append(f"footage_matches_narration={fm}/10 (< {FINAL_QA_ABORT_FLOOR})")
+        if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
+            reasons.append(f"narration_flow={nf}/10 (< {FINAL_QA_FLOW_FLOOR})")
+        print(f"ERROR: final QA judged the ASSEMBLED video below the publish bar: "
+              f"{'; '.join(reasons)} — issue={qa_report.get('biggest_issue', '')!r}. "
+              f"Aborting so a blatant footage mismatch or bad-sounding narration is never "
+              f"published; retry re-renders/re-writes it.")
         sys.exit(1)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
