@@ -234,6 +234,25 @@ def _caption_band():
     return cap_y - half, cap_y + half
 
 
+def _square_crop_top():
+    """Vertical offset for the 1080x1080 square crop (X / FB / IG feed). Was a
+    flat hardcoded 520px regardless of profile -- tuned/reviewed for the
+    'science' profile's cap_y=760 (band fits inside [520, 1600] there), but a
+    real audit found 2 of the 4 defined profiles (history_pov cap_y=1480,
+    dark_mystery cap_y=300) have a caption band that does NOT fit in that
+    fixed window, so switching PAGE to either would silently ship a square
+    cut with the captions cropped completely out of frame. Keeps the exact
+    same 520 for any profile the default already covers (zero behavior
+    change for the currently-shipping 'science' profile); only recenters on
+    the caption band when the default would actually cut it off."""
+    band_top, band_bottom = _caption_band()
+    default_top = 520.0
+    if band_top >= default_top and band_bottom <= default_top + 1080:
+        return int(default_top)
+    center = (band_top + band_bottom) / 2
+    return int(max(0, min(H - 1080, center - 540)))
+
+
 def apply_safe_zone(master, dest, spec, label):
     """Shift the picture UP just enough that the caption band clears this
     platform's bottom safe-zone line, by cropping the bottom and padding the
@@ -526,7 +545,7 @@ def main():
     #    Center-crop the vertical to square, keeping the caption band in frame.
     sq = os.path.join(OUT, "square.mp4")
     run(["ffmpeg", "-y", "-i", master,
-         "-vf", "crop=1080:1080:0:520,setsar=1",
+         "-vf", f"crop=1080:1080:0:{_square_crop_top()},setsar=1",
          "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", sq])
     print("square.mp4               <- 1:1 for X / FB / IG feed")
 

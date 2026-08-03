@@ -40,6 +40,7 @@ import main as M
 import generate as G
 import expand_bank as E
 import funnel as F
+import repackage as R
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -653,6 +654,32 @@ def test_funnel_affiliate_coverage():
           "a newly-covered domain (fungi) resolves to its own book, not the generic default")
     check(F.affiliate_for("totally_unknown_domain_xyz") == {**F.AFFILIATE_DEFAULT, "domain": "totally_unknown_domain_xyz"},
           "a genuinely unmapped domain still falls open to the generic default (never crashes)")
+
+
+def test_square_crop_top():
+    section("repackage._square_crop_top: the square/X/IG-feed crop must never cut the caption band out of frame")
+    import profiles as P
+    _bak = dict(R.PROFILE)
+    try:
+        # science (the currently-shipping profile): default 520 must be UNCHANGED
+        R.PROFILE.clear(); R.PROFILE.update(P.PROFILES["science"])
+        top = R._square_crop_top()
+        check(top == 520, f"science profile keeps the exact reviewed default (got {top}, not 520)")
+        band_top, band_bottom = R._caption_band()
+        check(band_top >= top and band_bottom <= top + 1080, "science's caption band fits inside its crop")
+
+        # every OTHER defined profile: the band must fit inside whatever crop is chosen,
+        # even the ones the flat 520 default does NOT cover (history_pov, dark_mystery)
+        for name, prof in P.PROFILES.items():
+            R.PROFILE.clear(); R.PROFILE.update(prof)
+            top = R._square_crop_top()
+            band_top, band_bottom = R._caption_band()
+            check(0 <= top <= R.H - 1080, f"{name}: crop top {top} stays within the frame bounds")
+            check(band_top >= top and band_bottom <= top + 1080,
+                  f"{name}: caption band [{band_top:.0f},{band_bottom:.0f}] fits inside crop "
+                  f"[{top},{top + 1080}] (real bug: history_pov/dark_mystery didn't fit the old flat 520)")
+    finally:
+        R.PROFILE.clear(); R.PROFILE.update(_bak)
 
 
 def test_domain_family():
@@ -1837,6 +1864,7 @@ def main():
     test_keywords_from_text()
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
+    test_square_crop_top()
     test_domain_family()
     test_funnel_affiliate_coverage()
     test_generate_helpers()
