@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-07-30_continents-in-motion",
-      "metaphor": "moving continents mystery",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "hook_frame": "MYTH_FLIP",
-      "title": "Continents in Motion",
-      "fact_id": "atlantic_widening",
-      "domain": "geology",
-      "hook": "The Atlantic Ocean is growing as fast as your fingernails.",
-      "structure": {
-        "scene_count": 9,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 5.0,
-        "escalation": 7.0,
-        "payoff": 6.0,
-        "rewatch": 7.0,
-        "clarity": 8.0,
-        "coherence": 9.0,
-        "overall": 7.14
-      }
-    },
-    {
       "video_id": "science_2026-07-31_the-secret-language-of-trees",
       "metaphor": "hidden tree networks",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -356,6 +331,32 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.0
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_the-real-life-zombie-fungus",
+      "metaphor": "biological puppet master",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "MYTH_FLIP",
+      "title": "The Real Life Zombie Fungus",
+      "fact_id": "zombie_ant_fungus",
+      "domain": "fungi",
+      "hook": "You think zombie parasites hijack the brain, but this fungus leaves it completely untouched.",
+      "vibe": "visceral",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 7.0,
+        "payoff": 7.0,
+        "rewatch": 6.0,
+        "clarity": 8.0,
+        "coherence": 8.0,
+        "overall": 7.0
       }
     }
   ]

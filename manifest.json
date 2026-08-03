@@ -1,96 +1,96 @@
 {
-  "title": "The Strange Power of Fake Medicine",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "placebo effect",
-  "metaphor": "brain healing mind cure",
-  "vibe": "eerie",
-  "hook": "Every time you take medicine, your brain might respond by healing you alone.",
-  "hook_headline": "YOUR BRAIN HEALS ITSELF",
-  "script": "Every time you take medicine, your brain might respond by healing you alone. Can a fake treatment trick your body into making its own real painkiller? When patients take a fake placebo pill, their spine releases real painkilling chemicals. Blocking those natural chemicals with another drug instantly brought the pain back. In fake knee surgeries where doctors made incisions without operating, patients healed just as well. Two fake pills work better than one, and branded sugar pills outperform generic ones. Your brain is already manufacturing the cure before any pill ever touches your tongue.",
+  "title": "The Real Life Zombie Fungus",
+  "viewer_job": "REFRAME",
+  "keyword": "zombie fungus",
+  "metaphor": "biological puppet master",
+  "vibe": "visceral",
+  "hook": "You think zombie parasites hijack the brain, but this fungus leaves it completely untouched.",
+  "hook_headline": "REAL ZOMBIE PARASITE",
+  "script": "You think zombie parasites hijack the brain, but this fungus leaves it completely untouched. So how does the fungus drive a zombie ant with absolute precision? Fungal cells invade the muscle tissue, physically pulling limbs directly like a puppet. It forces the ant to climb 25 centimeters high and bite a leaf vein. Chemicals then destroy jaw muscles, locking the bite into a permanent death grip. The Ophiocordyceps fungus then erupts from the head to rain spores on the colony below. Is this biological horror worse than fiction, or do you know a scarier parasite?",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "Every time you take medicine, your brain might respond by healing you alone.",
-      "on_screen_text": "brain response",
-      "search_query": "hand holding pill bottle",
+      "duration": 4,
+      "voiceover": "You think zombie parasites hijack the brain, but this fungus leaves it completely untouched.",
+      "on_screen_text": "brain untouched",
+      "search_query": "ant macro close up",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "Can a fake treatment trick your body into making its own real painkiller?",
-      "on_screen_text": "fake treatment",
-      "search_query": "glass water with white pills",
-      "motion": "static",
+      "duration": 4,
+      "voiceover": "So how does the fungus drive a zombie ant with absolute precision?",
+      "on_screen_text": "zombie fungus control",
+      "search_query": "rainforest insects walking",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "When patients take a fake placebo pill, their spine releases real painkilling chemicals.",
-      "on_screen_text": "placebo effect",
-      "search_query": "medical hospital corridor lights",
-      "motion": "zoom_out",
+      "voiceover": "Fungal cells invade the muscle tissue, physically pulling limbs directly like a puppet.",
+      "on_screen_text": "muscles taken over",
+      "search_query": "ant legs crawling",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "Blocking those natural chemicals with another drug instantly brought the pain back.",
-      "on_screen_text": "chemical block",
-      "search_query": "doctor preparing injection syringe",
-      "motion": "zoom_in",
+      "voiceover": "It forces the ant to climb 25 centimeters high and bite a leaf vein.",
+      "on_screen_text": "forced climb",
+      "search_query": "green leaf vein close up",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 6,
-      "voiceover": "In fake knee surgeries where doctors made incisions without operating, patients healed just as well.",
-      "on_screen_text": "fake surgery",
-      "search_query": "operating room surgical lights",
+      "duration": 5,
+      "voiceover": "Chemicals then destroy jaw muscles, locking the bite into a permanent death grip.",
+      "on_screen_text": "permanent death grip",
+      "search_query": "ant biting leaf",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "Two fake pills work better than one, and branded sugar pills outperform generic ones.",
-      "on_screen_text": "mind power",
-      "search_query": "pills spilling on table",
+      "voiceover": "The Ophiocordyceps fungus then erupts from the head to rain spores on the colony below.",
+      "on_screen_text": "spores rain down",
+      "search_query": "fungus growing time lapse",
       "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Your brain is already manufacturing the cure before any pill ever touches your tongue.",
-      "on_screen_text": "self healing",
-      "search_query": "person swallowing glass of water",
+      "voiceover": "Is this biological horror worse than fiction, or do you know a scarier parasite?",
+      "on_screen_text": "nature or fiction",
+      "search_query": "rainforest canopy trees",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Did you know your mind can act like a pharmacy? Is the placebo effect real or just in our heads?",
-    "Science proves belief alters physical chemistry.",
-    "Our bodies hold hidden mechanisms we are only starting to understand."
+    "Is the zombie fungus the scariest thing in nature, or do you know a worse parasite?",
+    "How Ophiocordyceps controls an ant without touching its brain.",
+    "Real biological horror happening right under the canopy."
   ],
   "hashtags": [
-    "#science",
-    "#brain",
-    "#medicine",
-    "#facts",
-    "#mindset",
-    "#learnontiktok"
+    "#insects",
+    "#biology",
+    "#nature",
+    "#sciencefacts",
+    "#creepy",
+    "#science"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-02_the-strange-power-of-fake-medicine",
-  "cta_style": "LOOP",
-  "domain": "psychology"
+  "video_id": "science_2026-08-03_the-real-life-zombie-fungus",
+  "cta_style": "COMMENT",
+  "domain": "fungi"
 }
