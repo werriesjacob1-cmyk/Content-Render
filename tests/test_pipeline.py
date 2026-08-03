@@ -233,6 +233,19 @@ def test_validate_rejections():
     m["hook"] = "Tyrannosaurus rex is somehow closer to you."
     check(G.validate(m, "EXPLAIN") is not None, "dangling comparative with no 'than ___' rejected")
 
+    # HOOK MUST NOT BE A QUESTION (render-215: "Why Ocean Currents Shape Our World"
+    # shipped with hook "How do ocean currents keep London mild while Calgary at
+    # the same latitude freezes?" -- an entire wind-up QUESTION as the very first
+    # line, directly against the prompt's own "never as the very first line" rule,
+    # which until now was prose-only and never actually enforced)
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "How do ocean currents keep London mild while Calgary at the same latitude freezes?"
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "QUESTION" in err, f"a wind-up question as the entire hook is rejected ({err})")
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "One planet's day lasts longer than its entire year."
+    check(G.validate(m, "EXPLAIN") is None, "a concrete statement hook (no '?') is fine")
+
     # TOO-FORMAL / "sounds like a textbook" (render-177 'Continents in Motion':
     # "But is the distance between New York and London fixed?" then a flat "No.")
     m = copy.deepcopy(FIX_PHYS)

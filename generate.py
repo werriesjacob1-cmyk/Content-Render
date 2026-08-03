@@ -2050,6 +2050,20 @@ def validate(m, job_name, fact=None):
                 f"'than ___' completion — meaningless as an opener (the render-173 bug: "
                 f"'T. rex is closer to you' — closer than WHAT?); either finish the comparison "
                 f"in the same line or rewrite without one")
+    # HOOK MUST NOT BE A QUESTION (mechanical backstop, render-215 bug): the prompt
+    # already says "a curiosity '?' still appears by scene 2, never as the very
+    # first line" -- but that was prose only, never actually checked. A real render
+    # shipped hook "How do ocean currents keep London mild while Calgary at the same
+    # latitude freezes?" -- an entire wind-up QUESTION as the first line, exactly the
+    # FRONT-LOAD-THE-SHOCK violation the prompt already warns against, just never
+    # enforced. Ban EVERY question-mark hook, not just specific banned phrases
+    # ("Did you know" etc.) -- the failure mode is "opens on a question at all",
+    # not one particular phrasing of it.
+    if m["hook"].rstrip().endswith("?"):
+        return (f"hook '{m['hook']}' is phrased as a QUESTION — the first line must be a "
+                f"concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity "
+                f"gap belongs in scene 2 or later, never the very first line); rewrite the hook "
+                f"as a direct claim and move the question, if needed, to a later scene")
 
     # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
