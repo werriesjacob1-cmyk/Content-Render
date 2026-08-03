@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-01_the-hidden-circle-of-rainbows",
-      "metaphor": "hidden beauty of light",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "The Hidden Circle of Rainbows",
-      "fact_id": "rainbow_circle",
-      "domain": "light",
-      "hook": "A rainbow is a full circle you never see.",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 6.0,
-        "payoff": 6.0,
-        "rewatch": 5.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 7.0
-      }
-    },
-    {
       "video_id": "science_2026-08-01_the-bacteria-that-eats-plastic",
       "metaphor": "trash transformation",
       "viewer_job": "REFRAME",
@@ -365,6 +340,33 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.43
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_the-metal-that-remembers-its-shape",
+      "metaphor": "living metal wire",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "The Metal That Remembers Its Shape",
+      "fact_id": "shape_memory_metal",
+      "domain": "materials",
+      "hook": "A crushed metal wire is expanding right now inside thousands of human hearts.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 9.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.29
       }
     }
   ]
