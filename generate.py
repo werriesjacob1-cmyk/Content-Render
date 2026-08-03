@@ -1344,7 +1344,14 @@ FOOTAGE QUERIES (the #1 visual-quality lever — a wrong clip breaks trust insta
 - NAME THE ACTUAL SUBJECT by name when the video is about a specific thing ("naked mole rat", not "rodent
   close up"; "Saturn rings", not "planet space") — a generic groundhog in a naked-mole-rat video is a miss
   viewers catch instantly. The hook scene and payoff scene MUST name the specific subject; only fall back to
-  a generic category/metaphor when it genuinely can't be filmed.
+  a generic category/metaphor when it genuinely can't be filmed. THIS APPLIES TO EVERY SCENE ABOUT THE
+  SUBJECT'S OWN BODY/BEHAVIOR, not just hook/payoff — a real render named the mole rat correctly in scenes
+  1, 2, 4, 7 but scene 3 (about ITS OWN brain/metabolism) used the bare category "rodent close up", which
+  stock footage filled with an unrelated brown, furry, above-ground rodent (a naked mole rat is hairless,
+  pink, and lives underground) — a species-mismatch a viewer catches as fast as an outright wrong subject.
+  If a scene's voiceover is describing what the hero creature itself does or looks like, its query must
+  still name that creature (or a distinctive visual trait of it), even mid-video, even if an earlier scene
+  already named it.
 - LEAD WITH THE FILMABLE NOUN, not a modifier (render 181/184 bugs): "mother tree" and "sea cucumber"
   put the modifier BEFORE the subject, and a search on just the leading word ("mother", "sea") pulled a
   human mother-and-child clip and a literal kitchen VEGETABLE instead of the tree/animal. Reorder so the
