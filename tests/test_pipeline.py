@@ -1561,6 +1561,40 @@ def test_vibe_music_filter():
         M.PROFILE.update(_profile_bak)
 
 
+def test_vibe_sting_freqs():
+    section("main._vibe_sting_freqs: intro sting pitch/tone follows CURRENT_VIBE")
+    # 2026-08-03 craft-audit finding: the intro sting was the ONE piece of
+    # sound design that never varied with mood at all -- bit-for-bit
+    # identical on every video regardless of vibe.
+    _vibe_bak = M.CURRENT_VIBE
+    try:
+        check(set(M.VIBE_STING_FX.keys()) == set(M.VIBE_TWEAKS.keys()),
+              "every vibe has a sting entry")
+
+        M.CURRENT_VIBE = "awe"
+        root, fifth, lp = M._vibe_sting_freqs()
+        check((root, fifth, lp) == (98.0, 147.0, 1200),
+              "'awe' reproduces the ORIGINAL hardcoded 98/147/1200 sting exactly -- no regression")
+
+        M.CURRENT_VIBE = "chaotic"
+        c_root, c_fifth, c_lp = M._vibe_sting_freqs()
+        check(c_root > root, "chaotic pitches the sting HIGHER/brighter than awe")
+        check(c_lp > lp, "chaotic opens the lowpass for more presence than awe")
+        check(abs(c_fifth / c_root - 1.5) < 1e-9, "the fifth interval (x1.5) is preserved at any scale")
+
+        M.CURRENT_VIBE = "eerie"
+        e_root, e_fifth, e_lp = M._vibe_sting_freqs()
+        check(e_root < root, "eerie pitches the sting LOWER/deeper than awe")
+        check(e_lp < lp, "eerie closes the lowpass for a more muffled cue than awe")
+        check(abs(e_fifth / e_root - 1.5) < 1e-9, "the fifth interval is preserved for eerie too")
+
+        # unknown/missing vibe must never crash -- falls back to 'awe'
+        M.CURRENT_VIBE = "not_a_real_vibe"
+        check(M._vibe_sting_freqs() == (98.0, 147.0, 1200), "unknown CURRENT_VIBE falls back to 'awe', no crash")
+    finally:
+        M.CURRENT_VIBE = _vibe_bak
+
+
 def test_trim_scene_to_cap():
     section("generate._trim_scene_to_cap: shorten (not drop) an over-cap near-miss scene")
     # already-short voiceover, unrelated to the cap directly (helper is only
@@ -2028,6 +2062,7 @@ def main():
     test_apply_vibe()
     test_vibe_matched_captions()
     test_vibe_music_filter()
+    test_vibe_sting_freqs()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()

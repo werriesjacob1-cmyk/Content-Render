@@ -2065,6 +2065,36 @@ def _vibe_music_filter():
     return ",".join(parts)
 
 
+# 2026-08-03 craft-audit finding: the intro sting was BIT-FOR-BIT IDENTICAL on
+# every single video regardless of vibe, the one piece of sound design that
+# never varied with mood at all (the music bed, captions, and grade all do).
+# Combined with the old flat music mix, the audio identity of the whole
+# catalog was close to indistinguishable except for the spoken words. Same
+# root frequency pair (a fifth apart, matching the original 98/147 Hz "awe"
+# cue exactly so that vibe is unchanged/non-regressive), scaled up for
+# tense/chaotic/visceral topics (a brighter, more alert cue) and down for
+# eerie/peaceful ones (a deeper, calmer cue), with the lowpass cutoff moving
+# the same direction so a brighter sting also reads less muffled.
+VIBE_STING_FX = {
+    "chaotic":  {"freq_mult": 1.55, "lowpass": 2200},
+    "tense":    {"freq_mult": 1.30, "lowpass": 1800},
+    "visceral": {"freq_mult": 1.15, "lowpass": 1500},
+    "eerie":    {"freq_mult": 0.85, "lowpass": 900},
+    "peaceful": {"freq_mult": 0.90, "lowpass": 1000},
+    "awe":      {"freq_mult": 1.00, "lowpass": 1200},
+}
+
+
+def _vibe_sting_freqs():
+    """(root_hz, fifth_hz, lowpass_hz) for the intro sting, scaled by
+    CURRENT_VIBE off the original 98/147/1200 'awe' baseline (147/98 = 1.5,
+    a perfect fifth, preserved at every scale so it never sounds detuned).
+    Pure/testable."""
+    fx = VIBE_STING_FX.get(CURRENT_VIBE, VIBE_STING_FX["awe"])
+    root = 98.0 * fx["freq_mult"]
+    return root, root * 1.5, fx["lowpass"]
+
+
 def _fal_prompt(scene):
     """Cinematic text-to-video prompt built from the scene's literal SUBJECT
     (search_query, NOT the metaphorical voiceover — the same anchoring rule that
@@ -3362,20 +3392,24 @@ def main():
          "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", captioned])
 
     # SOUND DESIGN — signature intro sting (subtle brand mark). Generated with
-    # ffmpeg (no external asset): two low partials a fifth apart (98/147 Hz) with
-    # a soft swell, lowpassed and quiet (~-25 dB peak, verified) so it reads as a
-    # calm, slightly eerie "we're beginning" cue matching the channel identity,
-    # not a jingle. Plays once under the opening ~1s. Profile-gated (sfx).
+    # ffmpeg (no external asset): two low partials a fifth apart with a soft
+    # swell, lowpassed and quiet (~-25 dB peak, verified) so it reads as a
+    # calm "we're beginning" cue matching the channel identity, not a jingle.
+    # Frequencies/lowpass now scale with CURRENT_VIBE (_vibe_sting_freqs) —
+    # was hardcoded 98/147/1200 regardless of mood, the one sound-design
+    # element that never varied at all. Plays once under the opening ~1s.
+    # Profile-gated (sfx).
     sting = None
     if PROFILE.get("sfx", True):
         sting = os.path.join(WORK, "sting.wav")
         try:
-            run(["ffmpeg", "-y", "-f", "lavfi", "-i", "sine=frequency=98:duration=1.0",
-                 "-f", "lavfi", "-i", "sine=frequency=147:duration=1.0",
+            f1, f2, lp = _vibe_sting_freqs()
+            run(["ffmpeg", "-y", "-f", "lavfi", f"-i", f"sine=frequency={f1:.2f}:duration=1.0",
+                 "-f", "lavfi", "-i", f"sine=frequency={f2:.2f}:duration=1.0",
                  "-filter_complex",
                  "[0:a]volume=0.6[a0];[1:a]volume=0.35[a1];"
                  "[a0][a1]amix=inputs=2:normalize=0,afade=t=in:d=0.08,"
-                 "afade=t=out:st=0.55:d=0.45,volume=0.5,lowpass=f=1200[s]",
+                 f"afade=t=out:st=0.55:d=0.45,volume=0.5,lowpass=f={lp}[s]",
                  "-map", "[s]", sting])
         except Exception as e:
             print("  [sfx] sting generation failed, skipping:", e)
