@@ -1874,24 +1874,6 @@
       ]
     },
     {
-      "id": "cleopatra_timeline",
-      "domain": "history",
-      "fact": "Cleopatra lived closer in time to the first Moon landing than to the building of the Great Pyramid of Giza.",
-      "angle": "history is far older than it feels",
-      "key_terms": [
-        "Cleopatra",
-        "Great Pyramid",
-        "Moon landing"
-      ],
-      "whatif": "What if the pyramids were already ancient ruins when Cleopatra was alive? They were — the Great Pyramid was finished around 2,500 years before her, while the Moon landing was only about 2,000 years after.",
-      "wow": "We picture Cleopatra and the pyramid-builders together, but she lived closer to the age of spaceflight than to the workers who stacked those stones.",
-      "queries": [
-        "great pyramid giza",
-        "ancient egypt ruins",
-        "moon landing"
-      ]
-    },
-    {
       "id": "wombat_cube_poop",
       "domain": "animals",
       "angle": "absurd but true biology",
@@ -2843,24 +2825,6 @@
         "magnetic field of the Moon",
         "lunar crust",
         "Earth's magnetosphere"
-      ]
-    },
-    {
-      "id": "microbial_masters",
-      "domain": "mycology",
-      "fact": "Microbes are not just simple organisms, but are actually capable of complex behaviors such as communication, cooperation, and even warfare. These behaviors are often mediated by complex networks of chemical signals.",
-      "angle": "biology",
-      "key_terms": [
-        "microbial behavior",
-        "chemical signals",
-        "cooperation"
-      ],
-      "whatif": "What if microbes are not just individual organisms, but are actually part of a larger, interconnected network of life? What would this mean for our understanding of the natural world?",
-      "wow": "Some microbes can even form symbiotic relationships with other organisms, allowing them to access new sources of nutrients and energy.",
-      "queries": [
-        "microbial behavior",
-        "chemical signaling",
-        "symbiotic relationships"
       ]
     },
     {

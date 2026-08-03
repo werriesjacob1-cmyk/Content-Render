@@ -1093,7 +1093,7 @@ def test_topic_bank_integrity():
     section("topic_bank.json: every fact is schema-complete (regression guard)")
     bank = _json.load(open(os.path.join(os.path.dirname(M.__file__), "topic_bank.json")))
     facts = bank["facts"]
-    check(len(facts) >= 115, f"bank has grown ({len(facts)} facts)")
+    check(len(facts) >= 180, f"bank hasn't lost facts unexpectedly ({len(facts)} facts)")
     ids = [f.get("id") for f in facts]
     check(len(ids) == len(set(ids)), "no duplicate fact ids")
     req = {"id","domain","fact","angle","key_terms","whatif","wow","queries"}
@@ -1101,6 +1101,27 @@ def test_topic_bank_integrity():
     check(not bad, f"all facts have the full schema (missing: {bad[:3]})")
     listy = [f.get("id") for f in facts if not (isinstance(f.get("key_terms"),list) and isinstance(f.get("queries"),list))]
     check(not listy, f"key_terms + queries are lists everywhere (bad: {listy[:3]})")
+    for f in facts:
+        check(len(f.get("key_terms") or []) >= 2,
+              f"{f.get('id')}: at least 2 key_terms (validate() requires 2+ named)")
+        check("?" in (f.get("whatif") or ""), f"{f.get('id')}: whatif opens a real question")
+
+    # near-duplicate FACT TEXT across different ids -- a real audit found two live
+    # pairs that slipped past the id-uniqueness check above: cleopatra_pyramid_moon/
+    # cleopatra_timeline (0.96 similarity, functionally the same fact) and
+    # microbial_masters/microbe_intelligence (the latter already published as
+    # "science_2026-08-02_microbes-are-thinking" -- the former was still sitting in
+    # the bank ready to ship a near-identical video later under a different id).
+    # Reuses expand_bank._too_similar's own threshold so "new fact rejected as a
+    # dupe of the bank" and "the bank has no internal dupes" are the same bar.
+    import difflib as _difflib
+    norms = [(f["id"], E._norm(f["fact"])) for f in facts]
+    dupes = []
+    for i in range(len(norms)):
+        for j in range(i + 1, len(norms)):
+            if _difflib.SequenceMatcher(None, norms[i][1], norms[j][1]).ratio() > 0.62:
+                dupes.append((norms[i][0], norms[j][0]))
+    check(not dupes, f"no two different fact ids are near-duplicate text (found: {dupes[:5]})")
 
 
 def test_caption_pop_animation():
