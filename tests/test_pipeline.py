@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import main as M
 import generate as G
 import expand_bank as E
+import funnel as F
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -638,6 +639,22 @@ def test_build_ass_fallback_monotonic():
 # --------------------------------------------------------------------------
 # 5. generate.py misc pure helpers
 # --------------------------------------------------------------------------
+def test_funnel_affiliate_coverage():
+    section("funnel.affiliate_for: every real bank-domain family has a topic-matched affiliate, not the generic fallback")
+    # a real audit found only 8/20 domain families mapped -- everything else
+    # silently fell to AFFILIATE_DEFAULT in the newsletter's actual monetization
+    # pitch. Assert against the REAL bank data so a newly-added domain that
+    # forgets a mapping fails this test instead of shipping silently generic.
+    bank = _json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "topic_bank.json")))
+    families = {G._domain_family(f.get("domain")) for f in bank["facts"]}
+    uncovered = [fam for fam in sorted(families) if fam not in F.AFFILIATE_BY_DOMAIN]
+    check(not uncovered, f"every domain family in topic_bank.json has an explicit affiliate mapping (uncovered: {uncovered})")
+    check(F.affiliate_for("fungi")["search"] != F.AFFILIATE_DEFAULT["search"],
+          "a newly-covered domain (fungi) resolves to its own book, not the generic default")
+    check(F.affiliate_for("totally_unknown_domain_xyz") == {**F.AFFILIATE_DEFAULT, "domain": "totally_unknown_domain_xyz"},
+          "a genuinely unmapped domain still falls open to the generic default (never crashes)")
+
+
 def test_domain_family():
     section("generate._domain_family: earth-science domains share one family")
     check(G._domain_family("geology") == G._domain_family("earth") == G._domain_family("weather"),
@@ -1821,6 +1838,7 @@ def main():
     test_prefix_starts_and_chars()
     test_build_ass_fallback_monotonic()
     test_domain_family()
+    test_funnel_affiliate_coverage()
     test_generate_helpers()
     test_caption_function_word_grouping()
     test_script_buffer_queue()

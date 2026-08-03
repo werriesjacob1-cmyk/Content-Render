@@ -89,6 +89,36 @@ AFFILIATE_BY_DOMAIN = {
                   "angle": "the book on what light really is"},
     "materials": {"kind": "book", "search": "Stuff Matters Mark Miodownik",
                   "angle": "the book on the hidden science of ordinary stuff"},
+    # ADDED 2026-08-03 (system-wide sweep): these families cover ~2/3 of the bank
+    # (biology, psychology, chemistry, neurology, plants, math, history, senses,
+    # matter, fungi, nature, deep_time) but had no mapping, so every video from
+    # them silently fell to the generic AFFILIATE_DEFAULT in the newsletter's
+    # monetization pitch -- the one place this file is actually supposed to make
+    # money. Real, well-known, topic-matched books for each.
+    "biology":   {"kind": "book", "search": "The Vital Question Nick Lane",
+                  "angle": "the book on how life itself got started"},
+    "psychology":{"kind": "book", "search": "Thinking Fast and Slow Kahneman",
+                  "angle": "the book on why your own mind fools you"},
+    "chemistry": {"kind": "book", "search": "The Disappearing Spoon Sam Kean",
+                  "angle": "the book with a wild story behind every element"},
+    "neurology": {"kind": "book", "search": "The Brain That Changes Itself Norman Doidge",
+                  "angle": "the book on how strange the brain really is"},
+    "plants":    {"kind": "book", "search": "The Hidden Life of Trees Peter Wohlleben",
+                  "angle": "the book on what plants are secretly doing"},
+    "math":      {"kind": "book", "search": "How Not to Be Wrong Jordan Ellenberg",
+                  "angle": "the book that makes math feel like a superpower"},
+    "history":   {"kind": "book", "search": "Sapiens Yuval Noah Harari",
+                  "angle": "the book on the whole strange story of us"},
+    "senses":    {"kind": "book", "search": "An Immense World Ed Yong",
+                  "angle": "the book on senses you didn't know existed"},
+    "matter":    {"kind": "book", "search": "The Elegant Universe Brian Greene",
+                  "angle": "the book on what everything is actually made of"},
+    "fungi":     {"kind": "book", "search": "Entangled Life Merlin Sheldrake",
+                  "angle": "the book that will make you see fungi everywhere"},
+    "nature":    {"kind": "book", "search": "The Sixth Extinction Elizabeth Kolbert",
+                  "angle": "the book on the wildest parts of the natural world"},
+    "deep_time": {"kind": "book", "search": "Timefulness Marcia Bjornerud",
+                  "angle": "the book that will wreck your sense of time"},
 }
 # Fallback for any domain not mapped above.
 AFFILIATE_DEFAULT = {"kind": "book", "search": "What If Randall Munroe",
