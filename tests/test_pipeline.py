@@ -340,6 +340,24 @@ def test_validate_rejections():
     m3["script"] = " ".join(s["voiceover"] for s in m3["scenes"])
     check(G.validate(m3, "EXPLAIN") is None, "an ordinary comparison ('than most people') does not fire")
 
+    # KEYWORD must appear in the script (2026-08-03): main.py pops the
+    # manifest's 'keyword' words in the page's accent colour wherever they're
+    # spoken -- a keyword that's a paraphrase of the script rather than the
+    # SAME words means that on-screen highlight silently never fires.
+    m4kw = copy.deepcopy(FIX_ASTRO)
+    m4kw["keyword"] = "spinning backward slowly"
+    check(G.validate(m4kw, "EXPLAIN") is None,
+          "keyword whose words DO appear in the script (scene 5 says 'spins backwards') passes")
+    m5kw = copy.deepcopy(FIX_ASTRO)
+    m5kw["keyword"] = "underwater volcano eruption"
+    err = G.validate(m5kw, "EXPLAIN")
+    check(err is not None and "keyword-pop" in err,
+          f"keyword whose words never appear anywhere in the script is rejected ({err})")
+    m6kw = copy.deepcopy(FIX_ASTRO)
+    check("keyword" not in m6kw, "sanity: fixture has no keyword field at all")
+    check(G.validate(m6kw, "EXPLAIN") is None,
+          "no keyword field at all -> not newly rejected (backward compatible)")
+
     # STACKED CONTRAST CLAUSE (render-215, second complaint on the same video:
     # "the timing just sounds like jumbled SHIT ... there is no flow" -- "How do
     # ocean currents keep London mild while Calgary at the same latitude

@@ -2446,6 +2446,28 @@ def validate(m, job_name, fact=None):
         if UNSAFE.search(blob):
             return "HOW_TO tripped safety filter"
 
+    # KEYWORD must actually appear in the SCRIPT (2026-08-03 craft-audit
+    # follow-up): main.py's caption renderer pops the manifest's 'keyword'
+    # words in the page's accent colour (main._KEYWORD_TOKENS, matched
+    # against the spoken words) -- a real, designed piece of visual polish.
+    # But nothing ever checked that the LLM's chosen keyword phrase actually
+    # occurs in the narration; a paraphrased/synonym keyword (e.g. keyword
+    # "deep sea creature" when the script only ever says "anglerfish") means
+    # ZERO words ever match, so the pop effect silently never fires for that
+    # entire video -- an invisible, easy-to-never-notice bug since nothing
+    # errors, the caption just never highlights anything. Only checks when a
+    # keyword was actually written (doesn't force it to exist) so this can't
+    # newly reject a manifest shape that was fine before.
+    kw = (m.get("keyword") or "").strip()
+    if kw:
+        kw_words = {w.lower() for w in re.findall(r"[A-Za-z0-9']+", kw) if len(w) > 2}
+        script_words = {w.lower() for w in re.findall(r"[A-Za-z0-9']+", m["script"])}
+        if kw_words and not (kw_words & script_words):
+            return (f"keyword {kw!r} never appears in the script — the on-screen keyword-pop "
+                     f"accent (main.py's caption highlight) would never fire for this whole "
+                     f"video; pick a keyword using the SAME words the script actually says, or "
+                     f"work the keyword's words into the narration")
+
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None
 
