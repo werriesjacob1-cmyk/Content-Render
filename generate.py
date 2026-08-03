@@ -1764,6 +1764,22 @@ def call_groq(prompt):
                     out = _call_cerebras(model, prompt)
                 else:
                     out = _call_model(model, prompt)
+                # render-217 bug (2026-08-03): an EMPTY 200-OK body (OpenRouter's
+                # known intermittent hiccup, see the caller's own empty-retry
+                # comment) used to be accepted here as a SUCCESS -- no exception,
+                # so _walk returned immediately without ever trying the next
+                # provider, and _accept() then CACHED this empty-returning
+                # provider as _WORKING_MODEL. Every subsequent call_groq() in the
+                # same render process re-tries that cached provider FIRST, so one
+                # transient empty reply permanently locked the rest of the run
+                # onto a broken provider -- Gemini (and everything else) never
+                # got a chance, even after today's reorder fix put it right
+                # behind OpenRouter. Treat empty exactly like a provider error:
+                # fall through to the next chain entry instead of accepting it.
+                if not (out or "").strip():
+                    print(f"  [model] {prov}:{model} returned an EMPTY response — falling through")
+                    last_err = last_err or RuntimeError(f"{prov}:{model} returned an empty response")
+                    continue
                 return out, prov, model
             except urllib.error.HTTPError as e:
                 if e.code in (400, 401, 402, 403, 404, 413, 429):

@@ -878,6 +878,58 @@ def test_fast_fail_when_throttled():
     check(calls["n"] == 0, f"no provider hammered when circuit open ({calls['n']} calls)")
 
 
+def test_call_groq_empty_response_falls_through():
+    section("generate.call_groq: an EMPTY provider response falls through, never gets cached (render-217)")
+    # 2026-08-03: the actual render-217 root cause, found by reading a live log
+    # where generation ground through 3 full attempts and aborted despite
+    # Gemini being available and healthy. call_groq's internal _walk() used to
+    # accept ANY non-exception response as success -- including an EMPTY body,
+    # OpenRouter's own documented intermittent hiccup (see the caller's
+    # empty-retry comment a few lines below in generate.py). Once that empty
+    # response was accepted, _accept() cached it as _WORKING_MODEL, and every
+    # later call_groq() in the same render re-tried THAT SAME broken provider
+    # first -- Gemini, sitting right behind it in the chain, was never reached
+    # even once, for the rest of the entire render.
+    _or_key, _gem_key = G.OPENROUTER_KEY, G.GEMINI_KEY
+    _or_models, _gem_cache = G.OPENROUTER_MODELS, G._GEMINI_MODELS_CACHE
+    _working, _consec, _circuit = G._WORKING_MODEL, G._CONSEC_EXHAUSTIONS, G._CIRCUIT_OPEN
+    _orig_or, _orig_gem = G._call_openrouter, G._call_gemini
+    try:
+        G.OPENROUTER_KEY = "fake-key"
+        G.GEMINI_KEY = "fake-key"
+        G.OPENROUTER_MODELS = ["meta-llama/llama-3.3-70b-instruct"]
+        G._GEMINI_MODELS_CACHE = ["gemini-flash-latest"]
+        G._WORKING_MODEL = None
+        G._CONSEC_EXHAUSTIONS = 0
+        G._CIRCUIT_OPEN = False
+        good = _json.dumps({"ok": True})
+        or_calls = {"n": 0}
+        def _empty_openrouter(model, prompt):
+            or_calls["n"] += 1
+            return ""   # the exact flakiness: HTTP 200, empty body, no exception
+        G._call_openrouter = _empty_openrouter
+        G._call_gemini = lambda model, prompt: good
+
+        out = G.call_groq("prompt")
+        check(out == good, f"an empty openrouter response is NOT accepted as-is; falls through to gemini ({out!r})")
+        check(G._WORKING_MODEL == ("gemini", "gemini-flash-latest"),
+              f"the empty-returning provider is never cached as _WORKING_MODEL ({G._WORKING_MODEL})")
+
+        # a SECOND call in the same process (simulating the next generation
+        # attempt/scene/critique call within one render) must go straight to
+        # the now-cached WORKING gemini model, not get stuck retrying openrouter.
+        or_calls["n"] = 0
+        out2 = G.call_groq("prompt 2")
+        check(out2 == good, "a second call in the same process also succeeds via the cached gemini model")
+        check(or_calls["n"] == 0,
+              f"the known-empty openrouter provider is not even retried once the working model is gemini ({or_calls['n']} calls)")
+    finally:
+        G.OPENROUTER_KEY, G.GEMINI_KEY = _or_key, _gem_key
+        G.OPENROUTER_MODELS, G._GEMINI_MODELS_CACHE = _or_models, _gem_cache
+        G._WORKING_MODEL, G._CONSEC_EXHAUSTIONS, G._CIRCUIT_OPEN = _working, _consec, _circuit
+        G._call_openrouter, G._call_gemini = _orig_or, _orig_gem
+
+
 def test_near_miss_repair_revalidates():
     section("generate.py: near-miss repair re-validates before shipping (render-186 bug)")
     # Render 186 shipped "the antisolar point" verbatim even though validate()
@@ -2091,6 +2143,7 @@ def main():
     test_subclip_plan()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
+    test_call_groq_empty_response_falls_through()
     test_near_miss_repair_revalidates()
     test_near_miss_injects_missing_curiosity_gap()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
