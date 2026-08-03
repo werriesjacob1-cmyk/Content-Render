@@ -1691,9 +1691,23 @@ def call_groq(prompt):
     # cost-over-quality tradeoff the user told us to stop making. A weak-model
     # script (Cerebras/Groq-8B) reaching QUALITY_HARD_FLOOR is a near-miss to be
     # tolerated on a bad day, never the goal.
+    # render-217 bug (2026-08-03, caught same-day): with GEMINI_GENERATION=0,
+    # Gemini used to land at the very END of the chain -- behind github/groq/
+    # together/fireworks/mistral/cerebras, i.e. behind every WEAK backstop
+    # too. That's harmless on a normal day (OpenRouter's claude-sonnet-5/
+    # gpt-5 succeed and nothing else is even tried), but the first live-gen
+    # verification render exposed exactly why it's wrong: the OpenRouter
+    # account didn't have enough credit for claude-sonnet-5/gpt-5 (HTTP 402
+    # "requires more credits") on THIS render, and llama-3.3-70b hit its
+    # known intermittent empty-response flakiness the same run -- so
+    # generation fell through EVERY weak fallback (github gpt-4o-mini, groq,
+    # together, fireworks, mistral, cerebras gemma) before ever reaching
+    # Gemini, a strong/reliable/already-paid writer, and aborted. Gemini now
+    # sits right after OpenRouter, ahead of the weak-tier fallbacks, in BOTH
+    # orderings -- it's a second strong option, not a last resort.
     _gemini_chain = [("gemini", m) for m in gemini_models()] if GEMINI_KEY else []
-    _free_chain = (([("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []) +
-                   ([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
+    _openrouter_chain = [("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []
+    _weak_fallback_chain = (([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
                    ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) +
                    ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) +
                    ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
@@ -1702,9 +1716,11 @@ def call_groq(prompt):
     if _FORCE_GEMINI_GEN or os.getenv("GEMINI_GENERATION", "0") == "1":
         # _FORCE_GEMINI_GEN = the one-shot quality-rescue; GEMINI_GENERATION=1 =
         # the permanent legacy override. Either one puts paid Gemini first.
-        chain = _gemini_chain + _free_chain
+        chain = _gemini_chain + _openrouter_chain + _weak_fallback_chain
     else:
-        chain = _free_chain + _gemini_chain      # default: free-first, Gemini backstop
+        # default: OpenRouter first, Gemini right behind it, weak free
+        # backstops only after BOTH strong paid options have failed.
+        chain = _openrouter_chain + _gemini_chain + _weak_fallback_chain
     # try the cached working provider first (also re-walks the chain if it now
     # fails, fixing the old bug where a cached model that started 429ing raised
     # without ever falling back to the other provider).
