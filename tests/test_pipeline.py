@@ -1663,6 +1663,42 @@ def test_fal_gap_fill_gating():
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
 
 
+def test_inaturalist_photo_license_safety():
+    section("main._inaturalist_safe_photo_url: per-photo commercial-license gate + size upgrade")
+    # 2026-08-03: live-tested iNaturalist before wiring it in -- most real
+    # observations are cc-by-nc (non-commercial), so this check is NOT
+    # theoretical; the query-level photo_license filter alone is not trusted.
+    ok1 = M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177220060/square.jpg",
+         "license_code": "cc-by"})
+    check(ok1 == "https://inaturalist-open-data.s3.amazonaws.com/photos/177220060/large.jpg",
+          "cc-by photo accepted, square thumbnail upgraded to large")
+    ok2 = M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1/square.jpeg",
+         "license_code": "cc0"})
+    check(ok2 == "https://inaturalist-open-data.s3.amazonaws.com/photos/1/large.jpeg",
+          "cc0 photo accepted, .jpeg extension handled too")
+    check(M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2/square.jpg",
+         "license_code": "cc-by-nc"}) is None,
+          "cc-by-nc (non-commercial) REJECTED even though the caller's query param already asked to exclude it")
+    check(M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/3/square.jpg",
+         "license_code": "cc-by-nc-nd"}) is None,
+          "cc-by-nc-nd rejected")
+    check(M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/4/square.jpg",
+         "license_code": None}) is None,
+          "missing license_code -> rejected (fail closed, never assume safe)")
+    check(M._inaturalist_safe_photo_url({"license_code": "cc-by"}) is None,
+          "missing url -> rejected, no crash")
+    check(M._inaturalist_safe_photo_url({}) is None, "empty photo dict -> rejected, no crash")
+    check(M._inaturalist_safe_photo_url(
+        {"url": "https://inaturalist-open-data.s3.amazonaws.com/photos/5/square.jpg",
+         "license_code": "CC-BY"}) is not None,
+          "license check is case-insensitive")
+
+
 def test_pollinations_free_illustration_gating():
     section("main: Pollinations.ai (free) AI-illustration — prompt sharing + cost gating + no-key no-op")
     # shared prompt helper: subject-anchored (search_query first), same rule as
@@ -2326,6 +2362,7 @@ def main():
     test_perf_saves_comments()
     test_length_ab_mode()
     test_fal_gap_fill_gating()
+    test_inaturalist_photo_license_safety()
     test_pollinations_free_illustration_gating()
     test_apply_vibe()
     test_vibe_matched_captions()

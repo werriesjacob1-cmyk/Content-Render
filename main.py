@@ -1738,6 +1738,69 @@ def _openverse_image(query, dest):
     return False
 
 
+_INATURALIST_OK_LICENSES = {"cc0", "cc-by"}
+
+
+def _inaturalist_safe_photo_url(photo):
+    """Pure helper (no network): given one photo dict from the iNaturalist API,
+    return a full-size download URL if — and only if — that SPECIFIC photo's own
+    license_code is commercial-safe, else None. Most iNaturalist observations are
+    cc-by-nc (non-commercial); the API's `photo_license` query filter is not
+    trusted alone here (defense against it being imperfectly enforced) — every
+    candidate is re-checked photo-by-photo. Also upgrades the API's tiny 'square'
+    thumbnail URL to the 'large' size (same S3 path, filename swapped)."""
+    if (photo.get("license_code") or "").lower() not in _INATURALIST_OK_LICENSES:
+        return None
+    square = photo.get("url") or ""
+    if not square:
+        return None
+    return square.replace("square.jpg", "large.jpg").replace("square.jpeg", "large.jpeg")
+
+
+def _inaturalist_image(query, dest):
+    """FIRST archival-STILL source, tried before Openverse/Wikimedia: iNaturalist,
+    a citizen-science biodiversity platform, no API key, explicitly built for
+    automated/app use (unlike Pixabay, whose terms prohibit unattended calls —
+    see _archive_candidates). For our animal-heavy topic bank (most facts are a
+    specific species), a real species-verified observation photo beats a generic
+    keyword-matched Openverse/Wikimedia result or an AI guess — this is the
+    difference between an actual pistol shrimp and stock library's best guess at
+    'shrimp'. Non-animal/plant topics simply return no results and fall through
+    to the next source, so this is a pure addition, never a regression.
+
+    2026-08-03: live-tested before building this — most iNaturalist observations
+    are cc-by-nc (non-commercial, unusable on a monetized channel), so the
+    `photo_license` query param is NOT trusted alone; each candidate photo's own
+    `license_code` is re-checked before download (defense against the query
+    filter being imperfectly enforced). Downloads a jpg to `dest`; returns True
+    on success, never raises."""
+    try:
+        q = urllib.parse.quote(query.strip()[:80])
+        url = ("https://api.inaturalist.org/v1/observations"
+               f"?q={q}&photos=true&photo_license=cc0,cc-by&per_page=10&order_by=votes")
+        req = urllib.request.Request(url, headers={"User-Agent": WIKI_UA})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read().decode())
+        for res in (data.get("results") or []):
+            for p in (res.get("photos") or []):
+                img = _inaturalist_safe_photo_url(p)
+                if not img:
+                    continue
+                try:
+                    ireq = urllib.request.Request(img, headers={"User-Agent": WIKI_UA})
+                    with urllib.request.urlopen(ireq, timeout=20) as ir:
+                        blob = ir.read()
+                    if len(blob) > 8000:  # skip tiny/placeholder images
+                        with open(dest, "wb") as f:
+                            f.write(blob)
+                        return True
+                except Exception:
+                    continue
+    except Exception as e:
+        print(f"  iNaturalist image lookup failed ({e})")
+    return False
+
+
 # Wikimedia Commons requires a descriptive User-Agent identifying the tool (a
 # generic/absent UA gets 403'd per their API etiquette policy).
 WIKI_UA = "content-render/1.0 (https://github.com/werriesjacob1-cmyk/content-render)"
@@ -2652,11 +2715,22 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # not the raw voiceover — same reason as the footage intent above: a
         # metaphorical line must not pull an off-topic archival image.
         _q = scene.get("search_query", "") or scene.get("voiceover", "")
-        # Two free/no-key still sources: Openverse (CC aggregator) then Wikimedia
-        # Commons (the largest public-domain science library — Hubble, microscopy,
-        # diagrams, historical photos). Either gives a documentary look no
-        # generic-stock page has.
-        if _openverse_image(_q, img) or _wikimedia_image(_q, img):
+        # Three free/no-key still sources. iNaturalist tried FIRST: for the many
+        # scenes whose subject is a specific animal/plant species (most of the
+        # topic bank), a real species-verified observation beats a generic
+        # keyword search — it simply returns nothing for non-biological topics
+        # and falls through. Then Openverse (CC aggregator), then Wikimedia
+        # Commons (the largest public-domain science library — Hubble,
+        # microscopy, diagrams, historical photos). Any one gives a documentary
+        # look no generic-stock page has.
+        still_provider = None
+        if _inaturalist_image(_q, img):
+            still_provider = "iNaturalist"
+        elif _openverse_image(_q, img):
+            still_provider = "Openverse"
+        elif _wikimedia_image(_q, img):
+            still_provider = "Wikimedia"
+        if still_provider:
             try:
                 run(["ffmpeg", "-y", "-loop", "1", "-i", img, "-i", seg_mp3,
                      "-t", f"{seg_dur:.3f}", "-r", "30",
@@ -2664,7 +2738,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                      "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
                      "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
                 ARCHIVAL_SCENES += 1
-                print("  archival still scene (Openverse CC image + Ken Burns)")
+                print(f"  archival still scene ({still_provider} CC image + Ken Burns)")
                 return out
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
