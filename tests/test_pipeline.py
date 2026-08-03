@@ -1475,6 +1475,76 @@ def test_revise_for_floors():
     finally:
         G.call_groq = orig_call
 
+    # a TRANSIENT failure (a 503, an empty body) shouldn't cost the whole
+    # repair -- one immediate retry should recover it
+    _calls = {"n": 0}
+    def _flaky(_p):
+        _calls["n"] += 1
+        if _calls["n"] == 1:
+            raise RuntimeError("503 Service Unavailable")
+        return _json.dumps({"scenes": clean_scenes})
+    G.call_groq = _flaky
+    try:
+        out = G.revise_for_floors(base, fact, violations)
+        check(_calls["n"] == 2, "a transient failure triggers exactly one immediate retry")
+        check(out is not None and out["scenes"][1]["voiceover"] == clean_scenes[1]["voiceover"],
+              "the retry's successful response is used")
+    finally:
+        G.call_groq = orig_call
+
+    # an empty-string response (the OpenRouter hiccup seen live) is treated the
+    # same as an exception -- retried once, not accepted as-is
+    _calls = {"n": 0}
+    def _empty_then_ok(_p):
+        _calls["n"] += 1
+        return "" if _calls["n"] == 1 else _json.dumps({"scenes": clean_scenes})
+    G.call_groq = _empty_then_ok
+    try:
+        out = G.revise_for_floors(base, fact, violations)
+        check(_calls["n"] == 2, "an empty response also triggers exactly one retry")
+        check(out is not None, "the retry recovers a usable rewrite")
+    finally:
+        G.call_groq = orig_call
+
+    # CHAINED repair: the first rewrite fixes the violated criteria but
+    # introduces a SEPARATE, different problem (drops a mandatory key term) --
+    # a second informed pass should fix THAT too rather than discarding the
+    # whole repair and falling back to blind full regeneration.
+    first_pass_scenes = [{"id": s["id"], "voiceover": s["voiceover"]} for s in base["scenes"]]
+    first_pass_scenes[1]["voiceover"] = "The planet turns impossibly slowly on its axis."  # drops "243 Earth days"
+    second_pass_scenes = [dict(s) for s in first_pass_scenes]
+    # kept comfortably below the anti-restatement similarity threshold (0.40)
+    # against fact["fact"] -- unlike a close paraphrase of the original line,
+    # this isolates the key-term-repair path from that unrelated guard.
+    second_pass_scenes[1]["voiceover"] = "One full spin of the planet on its axis takes a lengthy 243 Earth days to happen."
+    _calls = {"n": 0}
+    _prompts = []
+    def _two_stage(p):
+        _calls["n"] += 1
+        _prompts.append(p)
+        scenes = first_pass_scenes if _calls["n"] == 1 else second_pass_scenes
+        return _json.dumps({"scenes": scenes})
+    G.call_groq = _two_stage
+    try:
+        out = G.revise_for_floors(base, fact, violations)
+        check(_calls["n"] == 2, "a rewrite that introduces a NEW problem triggers exactly one chained repair call")
+        check(out is not None, "the chained repair's fixed version is accepted")
+        check(out is not None and "243 Earth days" in out["scenes"][1]["voiceover"],
+              "the chained pass restored the key term the first pass dropped")
+        check("key term" in _prompts[1].lower() or "243 Earth days" in _prompts[1],
+              "the chain prompt names the SPECIFIC new problem the first pass introduced")
+    finally:
+        G.call_groq = orig_call
+
+    # if the chained repair ALSO fails to fix the new problem, give up cleanly
+    # (None), never ship the still-broken rewrite
+    G.call_groq = lambda _p: _json.dumps({"scenes": first_pass_scenes})  # always drops the key term
+    try:
+        check(G.revise_for_floors(base, fact, violations) is None,
+              "a chained repair that still fails validation returns None, not the broken rewrite")
+    finally:
+        G.call_groq = orig_call
+
     # the prompt actually NAMES the violated criteria and quotes their rubric
     # text -- this is the whole point (a targeted fix, not a guess)
     captured = {}

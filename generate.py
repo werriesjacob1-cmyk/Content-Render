@@ -2397,7 +2397,7 @@ HOOK REWRITE RULES (the hook is its OWN field, said before scene 1 — rewrite i
 """
 
 
-def _apply_scene_rewrite(m, fact, new_scenes, label, new_hook=None):
+def _apply_scene_rewrite(m, fact, new_scenes, label, new_hook=None, err_out=None):
     """Shared by punch_up/revise_for_floors: build a trial manifest from a
     {scene_id: new_voiceover} rewrite and check it survives every guard a
     rewrite must clear — matching scene ids, no dropped mandatory key term,
@@ -2407,9 +2407,15 @@ def _apply_scene_rewrite(m, fact, new_scenes, label, new_hook=None):
     through to a full from-scratch regeneration). new_hook, if given,
     replaces m["hook"] too (the hook rubric criterion scores that field, not
     any scene voiceover — a hook-floor repair that never touches it is a
-    no-op by construction)."""
+    no-op by construction). err_out, if given a dict, gets err_out["reason"]
+    set to the SPECIFIC rejection reason on failure -- lets a caller (see
+    revise_for_floors) chain one more informed repair pass instead of just
+    discarding a rewrite that fixed the ORIGINAL problem but introduced a
+    new, different, nameable one."""
     if set(new_scenes) != {s["id"] for s in m["scenes"]}:
         print(f"  {label} returned mismatched scenes, discarding")
+        if err_out is not None:
+            err_out["reason"] = "returned mismatched scene ids"
         return None
     import copy
     trial = copy.deepcopy(m)
@@ -2426,10 +2432,14 @@ def _apply_scene_rewrite(m, fact, new_scenes, label, new_hook=None):
                    if _key_term_present(kt, orig_text) and not _key_term_present(kt, new_text)]
         if dropped:
             print(f"  {label} dropped key term(s) {dropped}, discarding")
+            if err_out is not None:
+                err_out["reason"] = f"dropped the mandatory key term(s) {dropped}"
             return None
     err = validate(trial, m.get("viewer_job", ""), fact=fact)
     if err:
         print(f"  {label} rejected by validation ({err}), discarding")
+        if err_out is not None:
+            err_out["reason"] = err
         return None
     return trial
 
@@ -2484,22 +2494,78 @@ RULES:
 Scenes: {scenes_json}
 
 Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]{hook_field}}}"""
-    try:
-        raw = call_groq(prompt)
-        parsed = json.loads(raw)
-        new_scenes = {}
-        for s in parsed["scenes"]:
-            if not s.get("voiceover"):
-                continue
-            line = _clean(s["voiceover"])
-            if line and line[-1] not in ".?!":
-                line += "."
-            new_scenes[s["id"]] = line
-        new_hook = _clean(parsed["hook"]) if hook_fixing and parsed.get("hook") else None
-    except Exception as e:  # noqa: BLE001 - targeted repair is best-effort
-        print(f"  [targeted-repair] failed ({e})")
+
+    def _ask(p, label):
+        # Transient hiccups (a provider 503, an empty body) shouldn't cost the
+        # whole repair -- call_groq only raises once its ENTIRE provider chain
+        # has failed for this call, so a second attempt moments later is cheap
+        # and often clears it (same reasoning as the empty-response retry in
+        # generate_candidate). Real, persistent failures still return None.
+        for _try in range(2):
+            try:
+                raw = call_groq(p)
+                if not (raw or "").strip():
+                    raise ValueError("empty model response")
+                parsed = json.loads(raw)
+                new_scenes = {}
+                for s in parsed["scenes"]:
+                    if not s.get("voiceover"):
+                        continue
+                    line = _clean(s["voiceover"])
+                    if line and line[-1] not in ".?!":
+                        line += "."
+                    new_scenes[s["id"]] = line
+                new_hook = _clean(parsed["hook"]) if hook_fixing and parsed.get("hook") else None
+                return new_scenes, new_hook
+            except Exception as e:  # noqa: BLE001 - targeted repair is best-effort
+                if _try == 0:
+                    print(f"  {label} attempt failed ({e}) — one immediate retry")
+                    continue
+                print(f"  {label} failed twice ({e})")
+                return None
         return None
-    return _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]", new_hook=new_hook)
+
+    got = _ask(prompt, "[targeted-repair]")
+    if got is None:
+        return None
+    new_scenes, new_hook = got
+    err_out = {}
+    trial = _apply_scene_rewrite(m, fact, new_scenes, "[targeted-repair]", new_hook=new_hook, err_out=err_out)
+    if trial is not None:
+        return trial
+    # The rewrite fixed the ORIGINAL violated criteria's problem but introduced
+    # a SEPARATE, nameable one (e.g. it accidentally dropped the whatif question,
+    # or reused a banned phrase) -- that's still a targeted, fixable defect, not
+    # a reason to throw the whole repair away and fall back to a blind full
+    # regeneration. Chain ONE more informed pass that fixes THAT too, using the
+    # first attempt's lines as the base so the original fix isn't lost.
+    new_reason = err_out.get("reason", "")
+    if not new_reason:
+        return None
+    chain_scenes_json = json.dumps([{"id": sid, "voiceover": vo} for sid, vo in new_scenes.items()])
+    chain_hook_line = f'\nYOUR REWRITTEN HOOK SO FAR: "{new_hook}"' if new_hook else ""
+    chain_prompt = f"""Your last rewrite of this script fixed the original problem(s) but introduced a NEW one an editor just caught. Fix ONLY the new problem below, keeping your existing fix for the original problem(s) intact.
+
+THE VERIFIED FACT (do not alter it, do not add new numbers): "{fact_line}"
+
+NEW PROBLEM TO FIX (do not undo your other changes to fix this): {new_reason}
+{chain_hook_line}
+RULES:
+- Same number of scenes, same ids, same order.
+- Each line stays ONE punchy spoken sentence, 6-18 words, natural to read aloud.
+- Only touch the line(s) needed to fix the NEW problem above; everything else should
+  come back exactly as given below.
+{key_terms_rule}- Every line ends with proper punctuation (. ? or !).
+
+Your rewritten scenes so far: {chain_scenes_json}
+
+Return ONLY valid JSON, exactly: {{"scenes": [{{"id": 1, "voiceover": "..."}}]{hook_field}}}"""
+    got2 = _ask(chain_prompt, "[targeted-repair chain]")
+    if got2 is None:
+        return None
+    chain_scenes, chain_hook = got2
+    return _apply_scene_rewrite(m, fact, chain_scenes, "[targeted-repair chain]",
+                                 new_hook=chain_hook or new_hook)
 
 
 def inject_missing_key_terms(m, fact):
