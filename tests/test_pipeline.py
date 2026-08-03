@@ -340,6 +340,29 @@ def test_validate_rejections():
     m3["script"] = " ".join(s["voiceover"] for s in m3["scenes"])
     check(G.validate(m3, "EXPLAIN") is None, "an ordinary comparison ('than most people') does not fire")
 
+    # STACKED CONTRAST CLAUSE (render-215, second complaint on the same video:
+    # "the timing just sounds like jumbled SHIT ... there is no flow" -- "How do
+    # ocean currents keep London mild while Calgary at the same latitude
+    # freezes?" smuggles a SECOND named place into a while-clause on top of the
+    # sentence's own subject)
+    m4 = copy.deepcopy(FIX_GEO)
+    m4["scenes"][2]["voiceover"] = "Ocean currents keep London mild while Calgary at the same latitude freezes."
+    m4["script"] = " ".join(s["voiceover"] for s in m4["scenes"])
+    err = G.validate(m4, "EXPLAIN")
+    check(err is not None and "London" in err, f"a while-clause stacking a second named place is rejected ({err})")
+    # a clean single-entity comparison (the subordinate clause's subject is the
+    # ONLY named entity -- the main clause's subject doesn't count) must NOT fire
+    m5 = copy.deepcopy(FIX_GEO)
+    m5["scenes"][2]["voiceover"] = "Mercury has no atmosphere while Venus is crushed by its own."
+    m5["script"] = " ".join(s["voiceover"] for s in m5["scenes"])
+    check(G.validate(m5, "EXPLAIN") is None, "a clean single-entity while-comparison does not fire")
+    # "although" is covered the same way
+    m6 = copy.deepcopy(FIX_GEO)
+    m6["scenes"][2]["voiceover"] = "This keeps Denmark mild although Norway freezes every winter."
+    m6["script"] = " ".join(s["voiceover"] for s in m6["scenes"])
+    err6 = G.validate(m6, "EXPLAIN")
+    check(err6 is not None and "Denmark" in err6, f"'although' stacking a second named place is also rejected ({err6})")
+
     # PLURAL bypass (render 181 bug): "system"/"organ"/"diagram" were banned but their
     # plain -s plurals slipped straight through the old \bsystem\b-style regex --
     # "resilient communication systems" (trees video, scene 6) shipped as the query

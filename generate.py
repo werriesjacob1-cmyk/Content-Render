@@ -754,6 +754,41 @@ def _comma_stacked_comparative(vo):
     return None
 
 
+# render-215, second complaint on the same video ("the timing just sounds like
+# jumbled SHIT ... there is no flow"): "How do ocean currents keep London mild
+# while Calgary at the same latitude freezes?" packs TWO named places into one
+# while-clause on top of the question itself -- self-scored fine (clarity/
+# coherence both missed it) because every individual WORD is plain; it's the
+# CLAUSE STACKING that reads jumbled aloud. "whereas" is already fully banned
+# by FORMAL_CONNECTOR_RE; this catches "while"/"although"/"even though" doing
+# the same job. Narrow by design: only fires when there is a genuine SECOND
+# named entity in the subordinate clause beyond the main clause's own subject
+# -- "Mercury has no atmosphere while Venus is crushed by one" is a single,
+# clean comparison (Mercury is just the sentence's own subject) and must NOT
+# fire; "keep London mild while Calgary ... freezes" smuggles in a second,
+# unrelated proper noun and must.
+CONTRAST_CONJ_RE = re.compile(r"\b(while|although|even though)\b", re.I)
+
+
+def _stacked_contrast_clause(vo):
+    """Returns the offending sentence if a while/although clause stacks a SECOND
+    named entity on top of the main clause's own subject, else None."""
+    for sent in re.split(r"(?<=[.!?])\s+", vo.strip()):
+        m = CONTRAST_CONJ_RE.search(sent)
+        if not m:
+            continue
+        before, after = sent[:m.start()], sent[m.end():]
+        before_words = re.findall(r"[A-Z][a-zA-Z]*", before)
+        # the sentence's own leading capital (its subject/first word) doesn't
+        # count as a "second" entity -- only extra proper nouns beyond it do.
+        if before_words and before.strip().startswith(before_words[0]):
+            before_words = before_words[1:]
+        after_words = re.findall(r"[A-Z][a-zA-Z]*", after)
+        if before_words and after_words:
+            return sent.strip()
+    return None
+
+
 # ---------- VIBE + HYBRID REAL/AI FOOTAGE (mood-matched pacing, movie-like relevance) ----------
 # Every video currently gets the same flat pacing/grade/caption energy regardless
 # of subject — a violent-eruption video cuts at the identical rhythm as a
@@ -2129,6 +2164,13 @@ def validate(m, job_name, fact=None):
                      f"separate 'X times more/less... than' comparison into one sentence — the TTS "
                      f"voice reads this in a flat, rushed monotone with no natural rhythm; split it "
                      f"into two sentences, one landing per beat (see the ONE IDEA PER SENTENCE rule)")
+        sc = _stacked_contrast_clause(s["voiceover"])
+        if sc:
+            return (f"scene {i} voiceover {sc!r} stacks a SECOND named place/thing into a "
+                     f"while/although clause on top of the sentence's own subject — reads as jumbled, "
+                     f"no natural flow, out loud (render-215: 'keep London mild while Calgary at the "
+                     f"same latitude freezes'); split into two short sentences instead, one entity per "
+                     f"sentence")
         # stock libraries return junk (flesh closeups, random labs) for these:
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):
