@@ -1,88 +1,88 @@
 {
-  "title": "What Happens When Lightning Hits Sand",
-  "viewer_job": "REFRAME",
-  "keyword": "lightning glass",
-  "metaphor": "frozen electricity in sand",
+  "title": "Rule-Breaking Animals Part 1: The Pistol Shrimp",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "pistol shrimp",
+  "metaphor": "underwater heat flash",
   "vibe": "awe",
-  "hook": "You think lightning vanishes the instant it hits the earth.",
-  "hook_headline": "LIGHTNING LEAVES BONES",
-  "script": "You think lightning vanishes the instant it hits the earth. What if you could reach into the sand and pull out its actual shape? When electricity strikes, heat five times hotter than the sun melts quartz sand instantly. Trapped moisture vaporizes into steam, blasting open a hollow tube of natural glass. Geologists call this subterranean frozen scar a fulgurite. Some of these glass roots branch meters into the soil, recording one microsecond. Long after the thunder fades, the lightning is still down there.",
+  "hook": "Part one: This tiny creature punches water hard enough to make it glow.",
+  "hook_headline": "WATER-BOILING SNAP",
+  "script": "Part one: This tiny creature punches water hard enough to make it glow. How does the pistol shrimp generate heat rivaling the surface of the sun? Its snapping claw fires a water jet that creates a rapidly collapsing cavitation bubble. When that bubble implodes, temperatures reach nearly four thousand seven hundred degrees. The resulting shockwave is so intense that ocean colonies disrupt military submarine sonar. If the main claw breaks off, its other small claw transforms into the weapon. Would you ever keep one in an aquarium? Follow for part two.",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "You think lightning vanishes the instant it hits the earth.",
-      "on_screen_text": "lightning glass",
-      "search_query": "lightning bolt strike ground",
+      "duration": 4,
+      "voiceover": "Part one: This tiny creature punches water hard enough to make it glow.",
+      "on_screen_text": "RULE-BREAKING ANIMALS 1",
+      "search_query": "pistol shrimp reef",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "What if you could reach into the sand and pull out its actual shape?",
-      "on_screen_text": "holding lightning",
-      "search_query": "hand picking up sand dunes",
-      "motion": "static",
+      "voiceover": "How does the pistol shrimp generate heat rivaling the surface of the sun?",
+      "on_screen_text": "SUN HEAT UNDERWATER",
+      "search_query": "coral reef shrimp",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "When electricity strikes, heat five times hotter than the sun melts quartz sand instantly.",
-      "on_screen_text": "hotter than sun",
-      "search_query": "extreme plasma lightning strike",
-      "motion": "zoom_out",
+      "voiceover": "Its snapping claw fires a water jet that creates a rapidly collapsing cavitation bubble.",
+      "on_screen_text": "CAVITATION BUBBLE",
+      "search_query": "underwater bubbles macro",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 6,
-      "voiceover": "Trapped moisture vaporizes into steam, blasting open a hollow tube of natural glass.",
-      "on_screen_text": "hollow glass tube",
-      "search_query": "molten glass formation",
-      "motion": "static",
+      "duration": 5,
+      "voiceover": "When that bubble implodes, temperatures reach nearly four thousand seven hundred degrees.",
+      "on_screen_text": "4700 DEGREES",
+      "search_query": "glowing ocean macro",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Geologists call this subterranean frozen scar a fulgurite.",
-      "on_screen_text": "the fulgurite",
-      "search_query": "fulgurite glass specimen close up",
+      "duration": 5,
+      "voiceover": "The resulting shockwave is so intense that ocean colonies disrupt military submarine sonar.",
+      "on_screen_text": "BLINDS SONAR",
+      "search_query": "submarine deep water",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "Some of these glass roots branch meters into the soil, recording one microsecond.",
-      "on_screen_text": "buried in soil",
-      "search_query": "sand excavation roots underground",
-      "motion": "zoom_out",
+      "voiceover": "If the main claw breaks off, its other small claw transforms into the weapon.",
+      "on_screen_text": "CLAW REPLACEMENT",
+      "search_query": "shrimp claw macro",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "Long after the thunder fades, the lightning is still down there.",
-      "on_screen_text": "frozen forever",
-      "search_query": "desert storm dark lightning clouds",
-      "motion": "zoom_out",
+      "duration": 4,
+      "voiceover": "Would you ever keep one in an aquarium? Follow for part two.",
+      "on_screen_text": "DANGEROUS PET?",
+      "search_query": "home aquarium tank",
+      "motion": "static",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Have you ever found lightning glass in the desert? \u26a1\ufe0f",
-    "How fulgurite tubes form underground when lightning hits quartz sand.",
-    "The subterranean heat reaches five times hotter than the sun."
+    "Part 1: Could a pistol shrimp shatter glass in a home tank? Yes or no?",
+    "A cavitation bubble collapsing at 4,700 degrees produces a shockwave louder than a jet engine.",
+    "Follow so you don't miss Part 2 of Rule-Breaking Animals."
   ],
   "hashtags": [
     "#science",
-    "#geology",
+    "#marine",
+    "#ocean",
     "#nature",
-    "#lightning",
-    "#earth",
+    "#animals",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-03_what-happens-when-lightning-hits-sand",
-  "cta_style": "LOOP",
-  "domain": "geology"
+  "video_id": "science_2026-08-03_rule-breaking-animals-part-1-the-pistol-",
+  "cta_style": "COMMENT",
+  "domain": "animals"
 }

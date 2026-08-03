@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-01_cosmic-origins-of-gold",
-      "metaphor": "stellar collisions",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "Cosmic Origins of Gold",
-      "fact_id": "gold_neutron_origin",
-      "domain": "chemistry",
-      "hook": "Every gold atom in your ring was born in a cosmic explosion.",
-      "structure": {
-        "scene_count": 6,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 9.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.14
-      }
-    },
-    {
       "video_id": "science_2026-08-01_the-hidden-circle-of-rainbows",
       "metaphor": "hidden beauty of light",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -360,6 +335,36 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.57
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_rule-breaking-animals-part-1-the-pistol-",
+      "metaphor": "underwater heat flash",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "COMMENT",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "Rule-Breaking Animals Part 1: The Pistol Shrimp",
+      "fact_id": "pistol_shrimp_bubble",
+      "domain": "animals",
+      "hook": "Part one: This tiny creature punches water hard enough to make it glow.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "Rule-Breaking Animals",
+        "part": 1
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 6.0,
+        "escalation": 9.0,
+        "payoff": 6.0,
+        "rewatch": 8.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.43
       }
     }
   ]
