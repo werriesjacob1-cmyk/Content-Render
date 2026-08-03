@@ -10,6 +10,7 @@ on:
   pull_request:
   push:
     branches:
+      - main
       - claude/epic-edison-jybjd1
 
 permissions:

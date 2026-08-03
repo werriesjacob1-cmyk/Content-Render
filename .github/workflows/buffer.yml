@@ -41,8 +41,6 @@ jobs:
       PAGE: science
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: claude/epic-edison-jybjd1
 
       - uses: actions/setup-python@v5
         with:
@@ -98,5 +96,5 @@ jobs:
           git add -A queue_* 2>/dev/null || true
           git commit -m "auto: fill $PAGE script buffer" 2>/dev/null || echo "nothing to commit"
           for a in 1 2 3 4; do
-            git push && break || { echo "push retry $a"; sleep $((2**a)); git pull --rebase origin claude/epic-edison-jybjd1 || true; }
+            git push && break || { echo "push retry $a"; sleep $((2**a)); git pull --rebase origin "$(git branch --show-current)" || true; }
           done
