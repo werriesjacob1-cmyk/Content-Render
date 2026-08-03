@@ -321,6 +321,25 @@ def test_validate_rejections():
     m["scenes"][0]["search_query"] = "human stomach anatomy diagram"
     check(G.validate(m, "EXPLAIN") is not None, "un-filmable anatomy query rejected")
 
+    # NAMED LANDMARK comparison must be reflected in the query (render-215: "a
+    # waterfall three times taller than Angel Falls" shipped with the generic
+    # query "oceanography deep water ocean", never naming Angel Falls itself)
+    m = copy.deepcopy(FIX_GEO)
+    m["scenes"][2]["voiceover"] = "This massive plunge creates a waterfall three times taller than Angel Falls."
+    m["scenes"][2]["search_query"] = "oceanography deep water ocean"
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "Angel Falls" in err, f"named-landmark comparison not reflected in the query is rejected ({err})")
+    # naming the landmark in the query fixes it
+    m2 = copy.deepcopy(m)
+    m2["scenes"][2]["search_query"] = "Angel Falls waterfall Venezuela"
+    check(G.validate(m2, "EXPLAIN") is None, "query that actually names the compared landmark is fine")
+    # an ordinary (non-proper-noun) comparison must NOT fire
+    m3 = copy.deepcopy(FIX_GEO)
+    m3["scenes"][2]["voiceover"] = "It weighs far more than most people would ever guess."
+    m3["script"] = " ".join(s["voiceover"] for s in m3["scenes"])
+    check(G.validate(m3, "EXPLAIN") is None, "an ordinary comparison ('than most people') does not fire")
+
     # PLURAL bypass (render 181 bug): "system"/"organ"/"diagram" were banned but their
     # plain -s plurals slipped straight through the old \bsystem\b-style regex --
     # "resilient communication systems" (trees video, scene 6) shipped as the query

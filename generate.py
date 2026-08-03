@@ -1110,6 +1110,16 @@ HOOK (first 2 seconds decide 70% of retention):
   complete "...than ___" in the SAME sentence, especially in the hook. BAD: "T. rex is closer to you"
   (closer than what? — meaningless on its own). GOOD: "T. rex is closer to you in time than to
   Stegosaurus." A comparison with no stated other side of the comparison is not a fact, it's a fragment.
+- ONE IDEA PER HOOK SENTENCE (render-215 bug): do not stack two named places/things plus a
+  comparison qualifier into a single sentence — it reads as jumbled, not punchy. BAD: "How do ocean
+  currents keep London mild while Calgary at the same latitude freezes?" (two cities + a latitude
+  clause + a vague adjective, all in one breath — no listener can parse it on first hearing). GOOD:
+  "London and Calgary sit at the same latitude. One freezes every winter. The other barely sees frost."
+  (same fact, split across short sentences so each lands before the next starts). If a hook needs
+  "while"/"whereas"/a parenthetical qualifier to fit everything in, it's doing too much — split it.
+- NO VAGUE RELATIVE ADJECTIVES without a concrete anchor: words like "mild", "harsh", "extreme", "a
+  lot", "huge" mean nothing on their own — pair them with the actual number or comparison the viewer
+  can picture ("mild" → "never drops below freezing"; "huge" → "as tall as a 10-story building").
 - Address the viewer directly ("you"/"your"). Self-relevant beats abstract.
 - STAKES BEAT TRIVIA (backed by THIS channel's own analytics — the single strongest signal we have):
   a hook framed as a HIGH-STAKES CONSEQUENCE the viewer would live through ("An airlock bursts and
@@ -1800,6 +1810,16 @@ SPACE_CONTEXT_RE = re.compile(r"\b(stars?|sky|galaxy|galaxies|nebula|cosmic|cosm
                               r"planets?|moon|sun|space|asteroids?|comets?|constellation|milky way|"
                               r"black hole)\b", re.I)
 
+# render-215: "a waterfall three times taller than Angel Falls" shipped with the
+# search_query "oceanography deep water ocean" -- never mentioning Angel Falls at
+# all, despite it being a real, famous, easily-filmable landmark named specifically
+# AS the comparison. Matches "than [The] Proper Noun Phrase" (1-4 capitalized
+# words) -- deliberately narrow so it only fires on genuine named-landmark/object
+# comparisons ("than Angel Falls", "than Mount Everest", "than the Eiffel Tower"),
+# never generic comparatives ("than you think", "than most people", "than a
+# cheetah") since those don't start with a capital letter.
+LANDMARK_COMPARISON_RE = re.compile(r"\bthan\s+(?:the\s+)?([A-Z][A-Za-z]+(?:\s[A-Z][A-Za-z]+){0,3})")
+
 # visually-rich neutral B-roll for query dedup / repair — always available on stock sites
 VARIETY_QUERIES = ["ocean waves aerial", "night sky timelapse", "city street timelapse",
                    "lightning storm clouds", "forest sunlight drone", "hourglass sand falling",
@@ -2121,6 +2141,13 @@ def validate(m, job_name, fact=None):
                     f"never mentions anything space-related — pick a search_query that actually "
                     f"shows this scene's real subject instead of defaulting to space filler "
                     f"(render-209 bug: 'night sky stars' on a human-ancestry payoff line)")
+        lm = LANDMARK_COMPARISON_RE.search(s["voiceover"])
+        if lm and lm.group(1).lower() not in s["search_query"].lower():
+            return (f"scene {i} voiceover compares to a specific named landmark/object "
+                    f"({lm.group(1)!r}) but the search_query '{s['search_query']}' never mentions "
+                    f"it — name it in the query so the footage actually SHOWS what's being compared, "
+                    f"not generic filler (render-215 bug: 'three times taller than Angel Falls' "
+                    f"shipped with the query 'oceanography deep water ocean')")
         # NOTE: a duplicate search_query used to get force-swapped to an
         # unrelated VARIETY_QUERIES term here. That's how a scene whose
         # voiceover was "humanity fits in a sugar cube" ended up querying
