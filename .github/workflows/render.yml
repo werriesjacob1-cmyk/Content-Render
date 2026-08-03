@@ -261,6 +261,11 @@ jobs:
           # optional overrides (no code edit): swap the t2v model or the per-video cap.
           FAL_VIDEO_MODEL:     ${{ vars.FAL_VIDEO_MODEL }}
           FAL_MAX_CLIPS:       ${{ vars.FAL_MAX_CLIPS }}
+          # Pollinations.ai (Flux) — FREE AI-illustration gap-fill, tried BEFORE the
+          # paid Gemini/Imagen call below (see _pollinations_image in main.py). $0:
+          # a free account at enter.pollinations.ai, no billing ever. Absent secret
+          # = feature is a no-op, falls straight through to Imagen unchanged.
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history

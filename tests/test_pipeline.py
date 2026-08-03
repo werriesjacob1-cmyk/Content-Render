@@ -1663,6 +1663,36 @@ def test_fal_gap_fill_gating():
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
 
 
+def test_pollinations_free_illustration_gating():
+    section("main: Pollinations.ai (free) AI-illustration — prompt sharing + cost gating + no-key no-op")
+    # shared prompt helper: subject-anchored (search_query first), same rule as
+    # the footage judge and _fal_prompt -- a metaphor line must not pull an
+    # off-topic image. Both _pollinations_image and _gemini_image call this.
+    sc = {"search_query": "pistol shrimp claw closeup", "voiceover": "a snap loud enough to boil water"}
+    p = M._illustration_prompt(sc)
+    check(p.startswith("Photorealistic cinematic vertical photograph"), "prompt opens with the fixed style prefix")
+    check("pistol shrimp claw closeup" in p, "prompt is anchored on the literal subject, not the metaphor voiceover")
+    check("no watermark" in p and "no text" in p, "prompt guards against burned-in text/watermark")
+    check(M._illustration_prompt({"search_query": "", "voiceover": ""}) == "",
+          "no subject and no voiceover -> empty prompt (caller must treat as failure)")
+
+    # cost/key gate: the ONLY thing that lets Pollinations spend a call. No key
+    # => never called (free tier byte-for-byte unchanged from before this
+    # feature existed); at the per-video cap => stops, same shape as fal's gate.
+    _k, _n, _cap = M.POLLINATIONS_KEY, M.POLLINATIONS_SCENES, M.MAX_POLLINATIONS_IMAGES
+    try:
+        M.POLLINATIONS_KEY, M.POLLINATIONS_SCENES, M.MAX_POLLINATIONS_IMAGES = "", 0, 6
+        check(M._pollinations_can_spend() is False, "no POLLINATIONS_API_KEY -> never spends (feature is a no-op)")
+        check(M._pollinations_image(sc, "/tmp/unused.png") is False,
+              "no key -> _pollinations_image returns False with zero network attempt")
+        M.POLLINATIONS_KEY = "x"
+        check(M._pollinations_can_spend() is True, "key present and under cap -> may spend")
+        M.POLLINATIONS_SCENES = 6
+        check(M._pollinations_can_spend() is False, "at the per-video cap -> stops spending")
+    finally:
+        M.POLLINATIONS_KEY, M.POLLINATIONS_SCENES, M.MAX_POLLINATIONS_IMAGES = _k, _n, _cap
+
+
 def test_apply_vibe():
     section("main._apply_vibe: mood-matched pacing/grade layered on the page profile")
     _profile_bak = dict(M.PROFILE)
@@ -2296,6 +2326,7 @@ def main():
     test_perf_saves_comments()
     test_length_ab_mode()
     test_fal_gap_fill_gating()
+    test_pollinations_free_illustration_gating()
     test_apply_vibe()
     test_vibe_matched_captions()
     test_vibe_music_filter()

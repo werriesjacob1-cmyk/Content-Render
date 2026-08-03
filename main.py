@@ -1962,14 +1962,78 @@ def _diversify_scene_motions(scenes):
           f"'{old}' to 'pan'")
 
 
-# ---------- AI-GENERATED ILLUSTRATIONS (paid Gemini / Imagen) ----------
+# ---------- AI-GENERATED ILLUSTRATIONS, FREE FIRST (Pollinations), PAID FALLBACK (Imagen) ----------
 # When real footage AND archival stills both fail for a scene, generate an EXACT,
 # on-topic vertical image instead of dropping to a plain text card — the single
-# biggest fix for "the footage doesn't match what's being said". Gated + cost-
-# capped (Imagen bills per image), and best-effort: any failure (no billing,
-# safety block, wrong model, network) falls back to the stat card, so it can
-# never break a render. Whole pipeline is already AI-disclosed per platform.
+# biggest fix for "the footage doesn't match what's being said". Best-effort:
+# any failure (no billing, safety block, wrong model, network) falls back to
+# the stat card, so it can never break a render. Whole pipeline is already
+# AI-disclosed per platform.
 AI_IMAGE = os.environ.get("AI_IMAGE", "1") != "0"
+
+# Pollinations.ai (Flux model) is a genuinely free image API — no per-call
+# billing, unlike Imagen below. 2026-08-03: tried FIRST so a weak-footage
+# scene no longer has to spend Gemini billing just to get an on-topic
+# illustration; Imagen only fires now if Pollinations is unset/fails/capped.
+# Requires a free API key (enter.pollinations.ai, $0, just an account) —
+# gated on the key rather than trying the anonymous no-key tier, because
+# Pollinations' own docs say anonymous requests are watermarked, and a
+# watermark burned into a published video is a real, visible defect.
+POLLINATIONS_KEY = os.environ.get("POLLINATIONS_API_KEY", "")
+MAX_POLLINATIONS_IMAGES = int(os.environ.get("MAX_POLLINATIONS_IMAGES", "6"))
+POLLINATIONS_SCENES = 0
+
+
+def _illustration_prompt(scene):
+    """Shared prompt for both AI-illustration providers: anchors on the
+    scene's literal SUBJECT (search_query), same reasoning as the footage
+    judge and _fal_prompt — a metaphorical voiceover line must not pull an
+    off-topic image. No text/watermark/logo, so it reads as real footage."""
+    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
+    if not subject:
+        return ""
+    return (f"Photorealistic cinematic vertical photograph, documentary science style: "
+            f"{subject}. Dramatic natural lighting, shallow depth of field, ultra-detailed, "
+            f"realistic, no text, no words, no captions, no watermark, no logo.")
+
+
+def _pollinations_can_spend():
+    return bool(POLLINATIONS_KEY) and POLLINATIONS_SCENES < MAX_POLLINATIONS_IMAGES
+
+
+def _pollinations_image(scene, dest):
+    """Generate a relevant 9:16 image for a scene via Pollinations.ai (Flux),
+    completely free. Returns True on success (bytes written to dest), False on
+    any failure so the caller falls through to paid Imagen, then the stat
+    card. Cost-capped at MAX_POLLINATIONS_IMAGES/video (Pollinations is free,
+    but a per-video cap keeps behavior symmetric with the paid path and
+    avoids hammering a shared free service)."""
+    global POLLINATIONS_SCENES
+    if not _pollinations_can_spend():
+        return False
+    prompt = _illustration_prompt(scene)
+    if not prompt:
+        return False
+    url = ("https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt) +
+           f"?width=1080&height=1920&model=flux&nologo=true&seed={random.randint(1, 1_000_000)}")
+    try:
+        req = urllib.request.Request(
+            url, headers={"Authorization": f"Bearer {POLLINATIONS_KEY}", "User-Agent": BROWSER_UA})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            data = r.read()
+        with open(dest, "wb") as f:
+            f.write(data)
+        # ffmpeg content-sniffs the image format from magic bytes regardless of
+        # the .png extension on `dest`, so a JPEG-encoded response is fine here.
+        ok = os.path.exists(dest) and os.path.getsize(dest) > 5000
+        if ok:
+            POLLINATIONS_SCENES += 1
+        return ok
+    except Exception as e:  # noqa: BLE001 - best-effort; falls through to paid Imagen / stat card
+        print(f"  Pollinations image gen unavailable ({e})")
+        return False
+
+
 AI_IMAGE_MODEL = os.environ.get("AI_IMAGE_MODEL", "imagen-3.0-generate-002")
 MAX_AI_IMAGES = int(os.environ.get("MAX_AI_IMAGES", "4"))   # per-video cost cap
 AI_IMAGE_SCENES = 0
@@ -1983,12 +2047,9 @@ def _gemini_image(scene, dest):
     key = os.environ.get("GEMINI_API_KEY", "")
     if not (AI_IMAGE and key) or AI_IMAGE_SCENES >= MAX_AI_IMAGES:
         return False
-    subject = (scene.get("search_query") or scene.get("voiceover") or "").strip()
-    if not subject:
+    prompt = _illustration_prompt(scene)
+    if not prompt:
         return False
-    prompt = (f"Photorealistic cinematic vertical photograph, documentary science style: "
-              f"{subject}. Dramatic natural lighting, shallow depth of field, ultra-detailed, "
-              f"realistic, no text, no words, no captions, no watermark, no logo.")
     body = json.dumps({
         "instances": [{"prompt": prompt}],
         "parameters": {"sampleCount": 1, "aspectRatio": "9:16"},
@@ -2608,14 +2669,21 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
 
-    # AI ILLUSTRATION (paid Gemini/Imagen): before dropping to a plain text card,
-    # generate an EXACT, on-topic vertical image for this scene and Ken-Burns it —
-    # turns the least-relevant scenes (no real footage) from a boring card into a
-    # matching visual. Counts as real imagery (not a stat card), so it also relaxes
-    # the footage-starvation abort. Any failure falls through to the stat card.
+    # AI ILLUSTRATION: before dropping to a plain text card, generate an EXACT,
+    # on-topic vertical image for this scene and Ken-Burns it — turns the
+    # least-relevant scenes (no real footage) from a boring card into a
+    # matching visual. Counts as real imagery (not a stat card), so it also
+    # relaxes the footage-starvation abort. FREE Pollinations tried first;
+    # paid Imagen only fires if Pollinations is unset/fails/capped. Any
+    # failure of both falls through to the stat card.
     if AI_IMAGE:
         ai_img = os.path.join(WORK, f"s{idx}_ai.png")
-        if _gemini_image(scene, ai_img):
+        provider = None
+        if _pollinations_image(scene, ai_img):
+            provider = "Pollinations (free)"
+        elif _gemini_image(scene, ai_img):
+            provider = "Imagen (paid)"
+        if provider:
             try:
                 run(["ffmpeg", "-y", "-loop", "1", "-i", ai_img, "-i", seg_mp3,
                      "-t", f"{seg_dur:.3f}", "-r", "30",
@@ -2623,7 +2691,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                      "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
                      "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
                 ARCHIVAL_SCENES += 1
-                print("  AI-generated illustration scene (Imagen + Ken Burns)")
+                print(f"  AI-generated illustration scene ({provider} + Ken Burns)")
                 return out
             except Exception as e:  # noqa: BLE001
                 print(f"  AI image render failed ({e}) — falling back to card")
