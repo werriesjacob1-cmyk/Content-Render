@@ -246,6 +246,40 @@ def test_validate_rejections():
     m["hook"] = "One planet's day lasts longer than its entire year."
     check(G.validate(m, "EXPLAIN") is None, "a concrete statement hook (no '?') is fine")
 
+    # BANNED WIND-UP OPENERS (2026-08-03, real TikTok analytics finding): the
+    # prompt banned "Did you know"/etc as hook openers from early on, but it
+    # was PROSE ONLY, never mechanically checked -- for the hook OR the
+    # caption. The actual flopped "Your Brain Heals Itself" video (137 views,
+    # 7.7s avg watch on a 38.6s video, 6.51% completion, 0 follows) shipped a
+    # TikTok caption opening "Did you know your mind can act like a
+    # pharmacy?" -- the literal banned pattern.
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "Did you know Venus spins backwards compared to every other planet."
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "Did you know" in err, f"a 'Did you know' hook opener is rejected ({err})")
+    for opener in ("Have you ever wondered why the sky turns orange at sunset.",
+                   "Imagine standing on a planet where the sun rises in the west.",
+                   "Here's why Venus spins backwards compared to every other planet."):
+        m2 = copy.deepcopy(FIX_ASTRO)
+        m2["hook"] = opener
+        err2 = G.validate(m2, "EXPLAIN")
+        check(err2 is not None and "banned wind-up phrase" in err2,
+              f"banned opener {opener[:20]!r}... is rejected ({err2})")
+    # the documented exception: "Ever wonder..." does NOT match "have you ever"
+    m3 = copy.deepcopy(FIX_ASTRO)
+    m3["hook"] = "Ever wonder why Venus spins backwards compared to every other planet."
+    check(G.validate(m3, "EXPLAIN") is None, "'Ever wonder...' stays the documented allowed exception")
+    # the SAME rule applies to captions[0] -- the actual TikTok post caption
+    # (repackage.py's base_cap), not just the spoken hook
+    m4 = copy.deepcopy(FIX_ASTRO)
+    m4["captions"] = ["Did you know your mind can act like a pharmacy?", "science fact", "wow"]
+    err4 = G.validate(m4, "EXPLAIN")
+    check(err4 is not None and "TikTok post caption" in err4,
+          f"a 'Did you know' CAPTION opener (not just hook) is rejected ({err4})")
+    m5 = copy.deepcopy(FIX_ASTRO)
+    m5["captions"] = ["Venus spins backwards compared to every other planet.", "science fact", "wow"]
+    check(G.validate(m5, "EXPLAIN") is None, "a clean caption opener passes")
+
     # TOO-FORMAL / "sounds like a textbook" (render-177 'Continents in Motion':
     # "But is the distance between New York and London fixed?" then a flat "No.")
     m = copy.deepcopy(FIX_PHYS)

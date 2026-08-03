@@ -703,6 +703,21 @@ _COMPARATIVE_WORD = (r"closer|farther|further|nearer|longer|shorter|bigger|small
 DANGLING_COMPARATIVE_RE = re.compile(
     rf"\b({_COMPARATIVE_WORD})\b(?!.*?\bthan\b)", re.I)
 
+# BANNED WIND-UP OPENERS (2026-08-03, real-analytics finding): the prompt has
+# banned "Did you know"/"Have you ever"/"Imagine"/"What if I told you"/
+# "Here's"/"This is" as first-line openers since early in this project's
+# history -- but it was PROSE ONLY, never mechanically enforced anywhere, for
+# either the hook OR the TikTok caption. The exact flopped video the user
+# showed real analytics for ("Your Brain Heals Itself" -- 137 views, 7.7s avg
+# watch on a 38.6s video, 6.51% completion, 0 follows) shipped a caption
+# (captions[0], which repackage.py uses as the literal TikTok post caption)
+# that opened "Did you know your mind can act like a pharmacy?" -- the exact
+# banned pattern, sitting in the text a scrolling viewer reads BEFORE they
+# even decide to tap play. "Ever wonder..." is deliberately NOT matched here
+# (doesn't contain "have you"), preserving the one documented exception.
+BANNED_HOOK_OPENER_RE = re.compile(
+    r"^\s*(did you know|have you ever|imagine|what if i told you|here'?s|this is)\b", re.I)
+
 # TOO-FORMAL / "SOUNDS LIKE A TEXTBOOK" — user feedback on 'Continents in Motion':
 # every word can be plain (no jargon) and the script can still sound too smart,
 # because the SENTENCE CONSTRUCTION is stiff, not the vocabulary. Three MECHANICAL,
@@ -2227,6 +2242,12 @@ def validate(m, job_name, fact=None):
                 f"concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity "
                 f"gap belongs in scene 2 or later, never the very first line); rewrite the hook "
                 f"as a direct claim and move the question, if needed, to a later scene")
+    bo = BANNED_HOOK_OPENER_RE.match(m["hook"])
+    if bo:
+        return (f"hook '{m['hook']}' opens with the banned wind-up phrase {bo.group(1)!r} — the "
+                f"prompt has always banned 'Did you know'/'Have you ever'/'Imagine'/'What if I "
+                f"told you'/'Here's'/'This is' as openers but this was never mechanically "
+                f"enforced; open cold on the shock instead, no wind-up")
 
     # scenes: clean and validate
     for i, s in enumerate(m["scenes"], 1):
@@ -2509,6 +2530,21 @@ def validate(m, job_name, fact=None):
 
     # captions / hashtags hygiene
     m["captions"] = [_clean(c) for c in m["captions"] if _clean(c)][:3] or [m["title"]]
+    # CAPTION[0] IS THE ACTUAL TIKTOK POST CAPTION (repackage.py's base_cap =
+    # caps[0]) -- the text a scrolling viewer reads BEFORE deciding to tap
+    # play, arguably as important as the spoken hook. It was never checked
+    # against the same banned-wind-up-opener rule as the hook (see
+    # BANNED_HOOK_OPENER_RE above); the exact flopped "Your Brain Heals
+    # Itself" video (137 views, 7.7s avg watch, 6.51% completion, 0 follows)
+    # shipped a caption opening "Did you know your mind can act like a
+    # pharmacy?" -- the literal banned pattern, just in a field nothing ever
+    # validated.
+    cap_bo = BANNED_HOOK_OPENER_RE.match(m["captions"][0])
+    if cap_bo:
+        return (f"caption '{m['captions'][0]}' (the actual TikTok post caption) opens with the "
+                f"banned wind-up phrase {cap_bo.group(1)!r} — same rule as the hook: this is the "
+                f"first text a scrolling viewer reads, it must not be a hedging question or a "
+                f"'did you know' wind-up either")
     tags = []
     for h in m["hashtags"]:
         h = _clean(h).lstrip("#")
