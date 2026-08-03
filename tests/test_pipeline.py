@@ -532,6 +532,15 @@ def test_final_qa():
           "healthy score -> no abort")
     check(M._qa_should_abort({"ran": False, "footage_matches_narration": 0}) is False,
           "judge did not run (ran:false, e.g. no key) -> fails OPEN, never aborts")
+    # pinned regression: two REAL renders shipped uncaught at exactly
+    # footage_match=5/10 with a named defect each time (the render-209 "night
+    # sky/night traffic... off-topic for human ancestry" case, and "The Real
+    # Life Zombie Fungus" showing generic mushrooms instead of cordyceps-on-
+    # an-ant) -- the floor must be high enough that 5 itself aborts, not just
+    # scores below it (the exact off-by-one this session shipped once already).
+    check(M.FINAL_QA_ABORT_FLOOR >= 6, "the floor is high enough that a 5/10 score actually aborts")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": 5}) is True,
+          "a real-world bad score (5/10) aborts, not just scores strictly below it")
     check(M._qa_should_abort({"ran": True, "error": "no JSON in reply"}) is False,
           "ran but no numeric score parsed -> fails OPEN, never aborts")
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": "n/a"}) is False,

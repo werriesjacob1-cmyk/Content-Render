@@ -905,11 +905,17 @@ FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
 # FLAG threshold used for the log line (6) -- this is the last line of
 # defense before a release goes out, so it only fires on a clear, blatant
 # mismatch (render 205/209 territory), not a borderline judge call.
-# RAISED 4 -> 5 (2026-08-02): real evidence from a pre-gate run that shipped
-# uncaught -- footage_match=5/10, judge's own words "several clips like the
-# starfield and night traffic are off-topic for human ancestry" -- is a
-# genuinely bad video, not a borderline one. 4 would have let it through.
-FINAL_QA_ABORT_FLOOR = int(os.environ.get("FINAL_QA_ABORT_FLOOR") or "5")
+# RAISED 4 -> 5 -> 6 (2026-08-02/03): real evidence from a pre-gate run that
+# shipped uncaught -- footage_match=5/10, judge's own words "several clips
+# like the starfield and night traffic are off-topic for human ancestry" --
+# is a genuinely bad video, not a borderline one. The comparison below is
+# strict-less-than (a floor: scores AT OR ABOVE it pass), so raising this to
+# 5 was an off-by-one -- fm=5 < 5 is False, so that exact cited example
+# would STILL have shipped. Caught live: the very next run that hit fm=5
+# ("The Real Life Zombie Fungus" -- judge: "generic harvested mushrooms
+# rather than cordyceps erupting from an ant") published right through the
+# supposedly-raised gate. 6 is the value that actually blocks a 5.
+FINAL_QA_ABORT_FLOOR = int(os.environ.get("FINAL_QA_ABORT_FLOOR") or "6")
 
 
 def _qa_should_abort(qa_report):
