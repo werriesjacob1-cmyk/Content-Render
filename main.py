@@ -9,8 +9,19 @@ import os, sys, json, subprocess, shutil, wave, struct, re, time, urllib.request
 import random
 
 W, H = 1080, 1920
-FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 ROOT = os.path.dirname(os.path.abspath(__file__))
+# Bundled display font (fonts/Anton-Regular.ttf, SIL OFL — see fonts/OFL.txt).
+# 2026-08-03 craft-audit finding: EVERY text element in EVERY video (captions,
+# cover headline, stat-card numbers) was rendering in the Linux system-default
+# DejaVu Sans/Serif -- the exact "looks like nobody designed this" tell a real
+# editor would flag first. Anton is a bold condensed display face (the classic
+# TikTok/Reels caption look), vendored into the repo so it renders correctly on
+# a bare CI runner with no system font install step required. Used directly by
+# path for drawtext (FONT); the ASS caption filter needs the font DIRECTORY
+# (see the `fontsdir` on the `ass=` filter call) since libass resolves fonts by
+# family name, not by file path.
+FONT = os.path.join(ROOT, "fonts", "Anton-Regular.ttf")
+FONTS_DIR = os.path.join(ROOT, "fonts")
 WORK = os.path.join(ROOT, "work")
 OUT  = os.path.join(ROOT, "out")
 MUSIC = os.path.join(ROOT, "music.mp3")  # set per-profile below
@@ -1839,6 +1850,29 @@ def _diversify_scene_queries(scenes):
             seen[key] = seen.get(key, i)
 
 
+def _diversify_scene_motions(scenes):
+    """Force at least one 'pan' into a video whose LLM-picked motions never use
+    one (2026-08-03 craft-audit finding: 8 sampled real manifests included one
+    with 7 scenes as [zoom_in,zoom_out,zoom_out,zoom_in,zoom_out,zoom_out,
+    zoom_in] -- zoom-only for the entire ~40s). generate.py's validate() only
+    replaces an INVALID motion value; a valid-but-monotonous set passes
+    straight through untouched, and _motion_filter's own repeat-avoidance only
+    nudges the zoom ANCHOR on a repeat, never the move itself. Skips scene 1
+    (the hook gets its own punch-in treatment regardless of 'motion') and the
+    last scene (the payoff shouldn't rest on a pan). Purely additive — a
+    script that already varies motion is left untouched."""
+    if not isinstance(scenes, list) or len(scenes) < 5:
+        return
+    if any(sc.get("motion") == "pan" for sc in scenes):
+        return
+    i = max(1, min(len(scenes) - 2, (len(scenes) * 2) // 3))
+    old = scenes[i].get("motion")
+    scenes[i]["motion"] = "pan"
+    print(f"  [motion] scene {i + 1} had no 'pan' anywhere in this video's motion "
+          f"sequence (was all zoom/static) — diversified scene {i + 1} from "
+          f"'{old}' to 'pan'")
+
+
 # ---------- AI-GENERATED ILLUSTRATIONS (paid Gemini / Imagen) ----------
 # When real footage AND archival stills both fail for a scene, generate an EXACT,
 # on-topic vertical image instead of dropping to a plain text card — the single
@@ -2169,7 +2203,15 @@ VIBE_TWEAKS = {
     "visceral": {"contrast": 0.06, "saturation": 0.08, "brightness": -0.01, "zoom_mult": 1.20, "clip_mult": 0.80, "subclip_bonus": 1},
     "eerie":    {"contrast": 0.02, "saturation": -0.10, "brightness": -0.04, "zoom_mult": 0.75, "clip_mult": 1.25, "subclip_bonus": -1},
     "peaceful": {"contrast": -0.04, "saturation": -0.06, "brightness": 0.02, "zoom_mult": 0.60, "clip_mult": 1.40, "subclip_bonus": -2},
-    "awe":      {"contrast": 0.00, "saturation": 0.00, "brightness": 0.00, "zoom_mult": 1.00, "clip_mult": 1.00, "subclip_bonus": 0},
+    # 2026-08-03 craft-audit finding: "awe" was ALL ZEROS -- a true no-op, not a
+    # deliberate "epic wonder" choice, and 3 of the last 8 real manifests landed
+    # on it, so roughly a third of recent videos got ZERO grade/pacing variation
+    # from this entire system despite it working correctly on every other vibe.
+    # Gave it its own modest identity instead: a touch more contrast for a
+    # cinematic look, a slightly slower/bigger zoom and longer holds ("sweeping
+    # majestic" per the fal-prompt description above) — distinct from flat
+    # baseline but nowhere near as extreme as "chaotic" or "peaceful".
+    "awe":      {"contrast": 0.04, "saturation": 0.02, "brightness": 0.00, "zoom_mult": 1.10, "clip_mult": 1.10, "subclip_bonus": 0},
 }
 
 
@@ -2937,6 +2979,69 @@ def make_cover(video, m, dest):
         return False
 
 
+def _seamless_loop_bed(src, dst, xf=1.5):
+    """Rewrite `src` into a track that loops with NO audible restart, for the
+    -stream_loop -1 mix in main() (2026-08-03 craft-audit finding: the committed
+    music_*.mp3 beds are short ~8s loops — ffprobe confirms music_science.mp3 =
+    8.05s — so a ~40s video restarts the track audibly ~5 times with a hard
+    jump at every seam, the classic "amateur" tell). Standard crossfade-loop
+    technique: split the track into head (first xf sec), tail (last xf sec) and
+    mid (everything between); crossfade tail-into-head to build a `seam`, then
+    output mid+seam as ONE loop unit. This loops perfectly because `mid` starts
+    exactly where the original `head` ends, and `seam` ends with the original
+    `head` at full volume — so mid->seam->mid->seam... is continuous audio with
+    no jump, not just a shorter loop with the same click.
+
+    Each piece is rendered to its OWN temp file with a separate ffmpeg pass
+    (rather than one filter_complex with atrim branches sharing one input) —
+    acrossfade fed two branches split from the same source stalls/produces zero
+    frames in this ffmpeg build; independently-decoded files don't have that
+    problem. `xf` is clamped to the *actual* decoded head/tail duration (mp3
+    frame-boundary seeking can shave a little off the requested trim) with a
+    safety margin, since acrossfade silently emits nothing if `d` exceeds
+    either input's real length. Fails open: any error, or a track too short to
+    safely crossfade, returns `src` unchanged (old hard-loop behaviour) —
+    never blocks the render."""
+    try:
+        d = ffprobe_dur(src) or 0
+        xf = min(xf, d / 4.0)
+        if d <= xf * 3 or xf < 0.2:
+            return src  # too short to crossfade safely — loop as-is
+        tail_start = d - xf
+        head_wav = dst + ".head.wav"
+        tail_wav = dst + ".tail.wav"
+        mid_wav  = dst + ".mid.wav"
+        seam_wav = dst + ".seam.wav"
+        run(["ffmpeg", "-y", "-i", src, "-filter_complex",
+             f"[0:a]atrim=0:{xf:.3f},asetpts=PTS-STARTPTS[o]", "-map", "[o]", head_wav])
+        run(["ffmpeg", "-y", "-i", src, "-filter_complex",
+             f"[0:a]atrim={tail_start:.3f}:{d:.3f},asetpts=PTS-STARTPTS[o]", "-map", "[o]", tail_wav])
+        run(["ffmpeg", "-y", "-i", src, "-filter_complex",
+             f"[0:a]atrim={xf:.3f}:{tail_start:.3f},asetpts=PTS-STARTPTS[o]", "-map", "[o]", mid_wav])
+        # clamp the crossfade length to what actually got decoded, minus a
+        # safety margin, so acrossfade never receives d >= either input's length
+        real_xf = min(xf, (ffprobe_dur(head_wav) or 0), (ffprobe_dur(tail_wav) or 0)) - 0.05
+        if real_xf < 0.2:
+            return src
+        run(["ffmpeg", "-y", "-i", tail_wav, "-i", head_wav, "-filter_complex",
+             f"[0:a][1:a]acrossfade=d={real_xf:.3f}:c1=tri:c2=tri[o]", "-map", "[o]", seam_wav])
+        run(["ffmpeg", "-y", "-i", mid_wav, "-i", seam_wav, "-filter_complex",
+             "[0:a][1:a]concat=n=2:v=0:a=1[o]", "-map", "[o]", dst])
+        ok = (ffprobe_dur(dst) or 0) > 1.0
+        for tmp in (head_wav, tail_wav, mid_wav, seam_wav):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+        if ok:
+            print(f"  [music] built a seamless {ffprobe_dur(dst):.1f}s loop unit "
+                  f"(was a hard {d:.1f}s loop with an audible restart)")
+            return dst
+    except Exception as e:  # noqa: BLE001 — never block the render over this
+        print(f"  [music] seamless-loop build failed ({e}) — looping raw track")
+    return src
+
+
 # ---------- MUSIC BED ----------
 def _ensure_music_bed(duration):
     """Path to a music bed so every video has one instead of dead silence (the
@@ -2955,13 +3060,18 @@ def _ensure_music_bed(duration):
         dst = os.path.join(WORK, "music_url.mp3")
         try:
             _download(url, dst)
-            if (ffprobe_dur(dst) or 0) > 1.0:
-                print(f"[music] using MUSIC_URL track ({ffprobe_dur(dst):.0f}s): {url[:60]}")
+            bd = ffprobe_dur(dst) or 0
+            if bd > 1.0:
+                print(f"[music] using MUSIC_URL track ({bd:.0f}s): {url[:60]}")
+                if bd < (duration or 40):
+                    return _seamless_loop_bed(dst, os.path.join(WORK, "music_url_loop.mp3"))
                 return dst
             print("[music] MUSIC_URL did not fetch usable audio — falling back")
         except Exception as e:  # noqa: BLE001
             print(f"[music] MUSIC_URL fetch failed ({e}) — falling back")
     if os.path.exists(MUSIC):
+        if (ffprobe_dur(MUSIC) or 0) < (duration or 40):
+            return _seamless_loop_bed(MUSIC, os.path.join(WORK, "music_bed_loop.mp3"))
         return MUSIC
     bed = os.path.join(WORK, "bed.wav")
     d = max(4.0, float(duration or 40) + 1.0)
@@ -2987,6 +3097,11 @@ def _ensure_music_bed(duration):
 # it") and, with the same-photo fake-cuts removed, there are far fewer real cuts to
 # punctuate anyway. Opt back in per-render with SFX_CUTS=1.
 SFX_CUTS = os.getenv("SFX_CUTS", "0") != "0"
+# Sidechain-duck the music bed under the voice (see the final mix in main()).
+# ON by default, unlike SFX_CUTS — this is a standard, near-universal mixing
+# technique (not a stylistic add-on the user might dislike the way the cut
+# whooshes turned out to be). Kept env-gated for an easy A/B or rollback.
+MUSIC_DUCK = os.getenv("MUSIC_DUCK", "1") != "0"
 
 
 def _make_cut_whooshes(cut_times, total_dur, dest):
@@ -3078,6 +3193,7 @@ def main():
     segments = split_audio(full_mp3, m["scenes"], WORK)
 
     _diversify_scene_queries(m["scenes"])
+    _diversify_scene_motions(m["scenes"])
 
     scene_files = []
     for i, (sc, (seg_path, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
@@ -3161,7 +3277,18 @@ def main():
     # lives ONLY on the cover thumbnail (make_cover), where it belongs.
     build_ass(m["scenes"], segments, actual_durs, ass, headline="")
     body_dur = ffprobe_dur(body)
-    fade_out_start = max(0.0, body_dur - 0.3)
+    # ENDING HOLD (2026-08-03 craft-audit finding): the fade-out used to start
+    # 0.3s before the LAST WORD's own audio ended — the payoff line got zero
+    # beat to land before cutting to black, the "no intentional ending" tell a
+    # real editor would flag. tpad clones the final video frame and apad appends
+    # silence to the voice track for ENDING_HOLD extra seconds (the music bed,
+    # mixed in later from a separately-looped input, naturally keeps playing
+    # under the hold), then a slightly longer, gentler fade runs across that
+    # held tail instead of stacking right on top of the final spoken word.
+    ENDING_HOLD = float(os.getenv("ENDING_HOLD_SECONDS", "0.7"))
+    padded_dur = body_dur + ENDING_HOLD
+    fade_dur = min(0.6, ENDING_HOLD + 0.2)
+    fade_out_start = max(0.0, padded_dur - fade_dur)
     # NO separate hook title-card. It used to burn the hook text across the top
     # for the first 2.6s, but now that the karaoke captions are word-synced they
     # already show the hook one word at a time — the card on top read as TWO sets
@@ -3176,9 +3303,11 @@ def main():
     # of black at the top (every fraction counts for retention). Keep the fade-OUT
     # at the end — the last frame isn't used as a thumbnail.
     run(["ffmpeg", "-y", "-i", body,
-         "-vf", (f"ass='{ass}',"
-                 f"fade=t=out:st={fade_out_start:.2f}:d=0.3"),
-         "-c:v", "libx264", "-c:a", "copy", "-pix_fmt", "yuv420p", captioned])
+         "-vf", (f"tpad=stop_mode=clone:stop_duration={ENDING_HOLD:.2f},"
+                 f"ass='{ass}':fontsdir='{FONTS_DIR}',"
+                 f"fade=t=out:st={fade_out_start:.2f}:d={fade_dur:.2f}"),
+         "-af", f"apad=pad_dur={ENDING_HOLD:.2f}",
+         "-c:v", "libx264", "-c:a", "aac", "-pix_fmt", "yuv420p", captioned])
 
     # SOUND DESIGN — signature intro sting (subtle brand mark). Generated with
     # ffmpeg (no external asset): two low partials a fifth apart (98/147 Hz) with
@@ -3215,11 +3344,24 @@ def main():
     _vbv_max = os.environ.get("UPLOAD_MAXRATE", "1000k")
     VBV = ["-maxrate", _vbv_max, "-bufsize", "2000k"]
     ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
-    bed_path = _ensure_music_bed(body_dur)
+    bed_path = _ensure_music_bed(padded_dur)
     if bed_path:
         print(f"[music] mixing bed under voice ({os.path.basename(bed_path)}, vibe={CURRENT_VIBE})")
         ff_inputs += ["-stream_loop", "-1", "-i", bed_path]
-        filt.append(f"[{idx}:a]{_vibe_music_filter()}[m]")
+        if MUSIC_DUCK:
+            # SIDECHAIN DUCKING (2026-08-03 craft-audit finding): the mix used to
+            # be a flat, constant music_vol for the ENTIRE runtime — the same
+            # level whether the narrator was mid-sentence or between scenes, the
+            # classic "amateur" mix tell (real editors duck the bed under voice).
+            # sidechaincompress keys the music's gain off the VOICE track ([0:a]):
+            # it ducks a few extra dB while the narrator is actually talking and
+            # lets the bed breathe back up to its tuned baseline in the gaps
+            # between lines, instead of one dead-flat level throughout.
+            filt.append(f"[{idx}:a]{_vibe_music_filter()}[m_raw]")
+            filt.append(f"[m_raw][0:a]sidechaincompress=threshold=0.05:ratio=6:"
+                        f"attack=25:release=400:makeup=1[m]")
+        else:
+            filt.append(f"[{idx}:a]{_vibe_music_filter()}[m]")
         labels.append("[m]"); idx += 1
     else:
         print("[music] no bed this run — narration only")

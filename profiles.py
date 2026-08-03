@@ -18,7 +18,10 @@ PROFILES = {
         "voice_settings": {"stability": 0.55, "similarity_boost": 0.80, "style": 0.20, "use_speaker_boost": True},
         "edge_voice": "en-GB-RyanNeural",   # deeper British fallback to match Daniel if ElevenLabs is unavailable
         # captions
-        "cap_font": "DejaVu Sans",
+        # "Anton" = the bundled bold condensed display font (fonts/Anton-Regular.ttf,
+        # main.py FONTS_DIR/fontsdir) -- replaces the DejaVu system-default fallback
+        # that every text element on the channel was silently rendering in.
+        "cap_font": "Anton",
         "cap_size": 120,
         "cap_y": 760,                 # eye level
         "cap_primary": "&H00FFFFFF",  # white

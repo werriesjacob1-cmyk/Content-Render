@@ -1218,6 +1218,14 @@ STORY ENGINE (the #1 ranking signal is completion — earn every second):
   in a single scene — a long
   run-on scene wedged between short punchy ones is jarring and reads as choppy, not varied. Vary
   scene length a little for rhythm, but no scene should be dramatically longer than its neighbors.
+- ACTUALLY VARY THE RHYTHM (not just in theory): real videos from this channel keep landing every
+  scene within 1-2 words of every other scene (e.g. 14,14,15,16,16,15,10) — technically "varied" but
+  reads as one flat metronome beat for the whole video, not a paced edit. Deliberately drop in at
+  least one SHORT stinger beat (3-6 words, its own scene) right after a big reveal or the payoff —
+  a one-line gut-punch that lands harder BECAUSE it's short next to longer setup scenes around it.
+  GOOD: "...and that pressure would crush a submarine instantly." / "Nothing survives that deep." (a
+  6-word stinger scene right after the explanation). BAD: every scene running 12-16 words with no
+  short beat anywhere — technically fine, reads as monotone.
 - BREATHING ROOM: this is spoken narration, not a wall of text — each scene is its own sentence with
   a natural beat before the next one starts. The video should feel PACED, not like it never stops
   talking. If you can't say a scene's line out loud in one comfortable breath, it's too long or too

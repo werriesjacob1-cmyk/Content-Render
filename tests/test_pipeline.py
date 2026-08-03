@@ -493,6 +493,39 @@ def test_diversify_queries():
     check(sc3[3]["search_query"].strip() != "", "empty query gets populated")
 
 
+# --------------------------------------------------------------------------
+# 3b. _diversify_scene_motions: no video is zoom-only for its whole runtime
+# --------------------------------------------------------------------------
+def test_diversify_motions():
+    section("main._diversify_scene_motions: a zoom-only video gets at least one pan")
+    import copy
+
+    # FIX_ASTRO's scenes() helper defaults every scene to zoom_in -- the exact
+    # render-215-audit shape (a real manifest cycled only zoom_in/zoom_out for
+    # all 7 scenes, never once picking 'pan')
+    sc = copy.deepcopy(FIX_ASTRO["scenes"])
+    check(all(s["motion"] == "zoom_in" for s in sc), "sanity: fixture is zoom-only")
+    M._diversify_scene_motions(sc)
+    check(any(s["motion"] == "pan" for s in sc), "a 'pan' was introduced somewhere")
+    check(sc[0]["motion"] != "pan", "the hook (scene 1) is never touched")
+    check(sc[-1]["motion"] != "pan", "the payoff (last scene) is never touched")
+
+    # a script that already varies motion is left untouched
+    sc2 = copy.deepcopy(FIX_ASTRO["scenes"])
+    sc2[3]["motion"] = "pan"
+    before = [s["motion"] for s in sc2]
+    M._diversify_scene_motions(sc2)
+    after = [s["motion"] for s in sc2]
+    check(before == after, "a video that already uses 'pan' is left unchanged")
+
+    # short videos (<5 scenes) are left alone -- not enough runtime for a
+    # forced pan to read as anything but arbitrary
+    sc3 = copy.deepcopy(FIX_ASTRO["scenes"])[:4]
+    before3 = [s["motion"] for s in sc3]
+    M._diversify_scene_motions(sc3)
+    check([s["motion"] for s in sc3] == before3, "under-5-scene videos are untouched")
+
+
 def test_footage_intent_anchors_on_subject():
     section("main._footage_intent: footage anchors on the literal subject, not the metaphor")
     # the run-66 hook: metaphorical voiceover, concrete forest search_query. The
@@ -1399,7 +1432,14 @@ def test_apply_vibe():
         M.PROFILE["grade"] = base_grade
         M.CLIP_SECONDS, M.MAX_SUBCLIPS = 1.9, 6
         clip_s, subclips = M._apply_vibe("some-invented-vibe")
-        check((clip_s, subclips) == (1.9, 6), "unknown vibe -> 'awe' entry, all deltas zero, no change")
+        # 2026-08-03: "awe" (the fallback for an unknown/invalid vibe) used to be
+        # all-zero deltas -- a true no-op that silently gave ~1/3 of real videos
+        # (whichever landed on "awe") zero vibe variation at all. Gave it its own
+        # mild "epic/sweeping" identity instead (see VIBE_TWEAKS), so even the
+        # fallback case now nudges pacing/grade a little, just far less than the
+        # more extreme vibes.
+        check(1.9 < clip_s < 2.2, f"awe/unknown -> a MILD slow-down, not zero ({clip_s:.2f}s)")
+        check(subclips == 6, f"awe/unknown -> subclip count unchanged ({subclips})")
 
         M.CLIP_SECONDS, M.MAX_SUBCLIPS = 0.95, 2
         M._apply_vibe("peaceful")
@@ -1933,6 +1973,7 @@ def main():
     test_validate_rejections()
     test_content_alignment()
     test_diversify_queries()
+    test_diversify_motions()
     test_footage_intent_anchors_on_subject()
     test_local_footage_relevance()
     test_final_qa()
