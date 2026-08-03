@@ -1,96 +1,96 @@
 {
-  "title": "The Shortest War in History",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "shortest war",
-  "metaphor": "briefest historical conflict",
-  "vibe": "tense",
-  "hook": "How could a full-scale war between nations end in just 38 minutes?",
-  "hook_headline": "THE 38-MINUTE WAR",
-  "script": "A full-scale war between Britain and Zanzibar broke out without any warning. The conflict was over before most citizens even realized it had started. In 1896, British warships shelled the palace of Zanzibar with high explosive artillery. The defenders returned fire using bronze cannons Queen Victoria had personally given them. In 38 minutes, Zanzibar lost five hundred men while Britain suffered zero deaths. Arranging the formal ceasefire actually took longer than the fighting itself. This meant Zanzibar was forced to pay Britain for the exact shells that destroyed them.",
+  "title": "What Happens When Lightning Hits Sand",
+  "viewer_job": "REFRAME",
+  "keyword": "lightning glass",
+  "metaphor": "frozen electricity in sand",
+  "vibe": "awe",
+  "hook": "You think lightning vanishes the instant it hits the earth.",
+  "hook_headline": "LIGHTNING LEAVES BONES",
+  "script": "You think lightning vanishes the instant it hits the earth. What if you could reach into the sand and pull out its actual shape? When electricity strikes, heat five times hotter than the sun melts quartz sand instantly. Trapped moisture vaporizes into steam, blasting open a hollow tube of natural glass. Geologists call this subterranean frozen scar a fulgurite. Some of these glass roots branch meters into the soil, recording one microsecond. Long after the thunder fades, the lightning is still down there.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "A full-scale war between Britain and Zanzibar broke out without any warning.",
-      "on_screen_text": "the shortest war",
-      "search_query": "vintage naval flag",
+      "duration": 5,
+      "voiceover": "You think lightning vanishes the instant it hits the earth.",
+      "on_screen_text": "lightning glass",
+      "search_query": "lightning bolt strike ground",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "The conflict was over before most citizens even realized it had started.",
-      "on_screen_text": "how brief",
-      "search_query": "antique map close up",
-      "motion": "zoom_in",
+      "voiceover": "What if you could reach into the sand and pull out its actual shape?",
+      "on_screen_text": "holding lightning",
+      "search_query": "hand picking up sand dunes",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "In 1896, British warships shelled the palace of Zanzibar with high explosive artillery.",
-      "on_screen_text": "1896 naval shelling",
-      "search_query": "historic warship sea",
+      "voiceover": "When electricity strikes, heat five times hotter than the sun melts quartz sand instantly.",
+      "on_screen_text": "hotter than sun",
+      "search_query": "extreme plasma lightning strike",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "The defenders returned fire using bronze cannons Queen Victoria had personally given them.",
-      "on_screen_text": "royal gift weapons",
-      "search_query": "old naval cannon",
+      "duration": 6,
+      "voiceover": "Trapped moisture vaporizes into steam, blasting open a hollow tube of natural glass.",
+      "on_screen_text": "hollow glass tube",
+      "search_query": "molten glass formation",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "In 38 minutes, Zanzibar lost five hundred men while Britain suffered zero deaths.",
-      "on_screen_text": "38 minutes",
-      "search_query": "old fort by the sea",
+      "duration": 4,
+      "voiceover": "Geologists call this subterranean frozen scar a fulgurite.",
+      "on_screen_text": "the fulgurite",
+      "search_query": "fulgurite glass specimen close up",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "Arranging the formal ceasefire actually took longer than the fighting itself.",
-      "on_screen_text": "ceasefire delay",
-      "search_query": "hourglass sand falling",
-      "motion": "zoom_in",
+      "voiceover": "Some of these glass roots branch meters into the soil, recording one microsecond.",
+      "on_screen_text": "buried in soil",
+      "search_query": "sand excavation roots underground",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "This meant Zanzibar was forced to pay Britain for the exact shells that destroyed them.",
-      "on_screen_text": "billed for shells",
-      "search_query": "vintage warship smoke",
+      "voiceover": "Long after the thunder fades, the lightning is still down there.",
+      "on_screen_text": "frozen forever",
+      "search_query": "desert storm dark lightning clouds",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Was the shortest war in history a genuine battle or an execution? What do you think?",
-    "In 1896, thirty-eight minutes changed an empire forever.",
-    "Zanzibar was forced to pay for every bullet used against them."
+    "Have you ever found lightning glass in the desert? \u26a1\ufe0f",
+    "How fulgurite tubes form underground when lightning hits quartz sand.",
+    "The subterranean heat reaches five times hotter than the sun."
   ],
   "hashtags": [
-    "#history",
-    "#military",
-    "#facts",
-    "#britain",
-    "#zanzibar",
-    "#science"
+    "#science",
+    "#geology",
+    "#nature",
+    "#lightning",
+    "#earth",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-03_the-shortest-war-in-history",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "history"
+  "video_id": "science_2026-08-03_what-happens-when-lightning-hits-sand",
+  "cta_style": "LOOP",
+  "domain": "geology"
 }

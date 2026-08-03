@@ -1,31 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-01_the-sea-cucumber-s-regrowing-brain",
-      "metaphor": "sea cucumber marvel",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "The Sea Cucumber's Regrowing Brain",
-      "fact_id": "underwater_brain",
-      "domain": "neurology",
-      "hook": "Imagine if you could regrow your brain in a week.",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 7.0,
-        "payoff": 6.0,
-        "rewatch": 5.0,
-        "clarity": 8.0,
-        "coherence": 7.0,
-        "overall": 6.86
-      }
-    },
-    {
       "video_id": "science_2026-08-01_cosmic-origins-of-gold",
       "metaphor": "stellar collisions",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -359,6 +334,32 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-03_what-happens-when-lightning-hits-sand",
+      "metaphor": "frozen electricity in sand",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "MYTH_FLIP",
+      "title": "What Happens When Lightning Hits Sand",
+      "fact_id": "fulgurite_lightning_glass",
+      "domain": "geology",
+      "hook": "You think lightning vanishes the instant it hits the earth.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.57
       }
     }
   ]
