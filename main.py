@@ -36,6 +36,13 @@ BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
 
 USED_FOOTAGE_PATH = os.path.join(ROOT, f"used_footage_{PAGE}.json")
 USED_FOOTAGE_CAP = 500  # oldest ids fall off once a channel has used this many clips
+# Same file generate.py writes history to (memory_<page>.json). main.py never
+# touched this before -- the final-QA verdict (audio-listening judge over the
+# ASSEMBLED video) was written only to the ephemeral out/qa_report.json release
+# asset and never fed back here, so a repeatedly-weak fact/domain (e.g. footage
+# judged 9/10 mid-render but 4/10 by final QA) left no trace for future runs to
+# learn from. See _persist_qa_to_memory.
+MEMORY_PATH = os.path.join(ROOT, f"memory_{PAGE}.json")
 
 _used_video_ids = set()   # in-run dedup (fast lookups) + prior runs' history, loaded at startup
 _used_history = []        # ordered record, written back to disk so dedup survives across runs
@@ -1105,6 +1112,36 @@ def _final_qa_check(video, m):
         except Exception:  # noqa: BLE001
             pass
     return report
+
+
+def _persist_qa_to_memory(video_id, qa_report):
+    """Write the final-QA verdict back into memory_<page>.json's history entry
+    for this video, alongside the script-level `quality` rubric generate.py
+    already stores there. Best-effort: a missing/malformed memory file or an
+    entry not found (shouldn't happen -- generate.py always writes the entry
+    before main.py runs) must never break the render."""
+    if not video_id or not qa_report.get("ran"):
+        return
+    try:
+        with open(MEMORY_PATH) as f:
+            data = json.load(f)
+        history = data.get("history", [])
+        for h in history:
+            if h.get("video_id") == video_id:
+                h["final_qa"] = {
+                    "footage_matches_narration": qa_report.get("footage_matches_narration"),
+                    "visual_variety": qa_report.get("visual_variety"),
+                    "caption_legible": qa_report.get("caption_legible"),
+                    "narration_flow": qa_report.get("narration_flow"),
+                    "biggest_issue": qa_report.get("biggest_issue", ""),
+                    "audio_judged": qa_report.get("audio_judged", False),
+                    "aborted": _qa_should_abort(qa_report),
+                }
+                with open(MEMORY_PATH, "w") as f:
+                    json.dump(data, f, indent=2)
+                return
+    except Exception as e:  # noqa: BLE001 — best-effort, must never break the render
+        print(f"[final-qa] could not persist to memory ({type(e).__name__}: {str(e)[:120]})")
 
 
 def _groq_judge(intent, candidates, _allow_retry=True):
@@ -3510,6 +3547,7 @@ def main():
     if not make_cover(cover_src, m, os.path.join(OUT, "cover.jpg")) and cover_src is not body:
         make_cover(body, m, os.path.join(OUT, "cover.jpg"))
     qa_report = _final_qa_check(final, m)
+    _persist_qa_to_memory(m.get("video_id", ""), qa_report)
     if _qa_should_abort(qa_report):
         fm, nf = qa_report.get("footage_matches_narration"), qa_report.get("narration_flow")
         reasons = []

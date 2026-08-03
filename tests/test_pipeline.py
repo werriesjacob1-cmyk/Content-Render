@@ -736,6 +736,64 @@ def test_final_qa():
           "no audio judged this run (narration_flow absent) -> only footage gates, fails open on flow")
 
 
+def test_persist_qa_to_memory():
+    section("main._persist_qa_to_memory: final-QA verdict written back into memory_<page>.json")
+    # Previously the final-QA verdict (footage_matches_narration, narration_flow,
+    # etc.) only ever reached the ephemeral out/qa_report.json release asset --
+    # generate.py's memory_<page>.json history (which DOES keep the script-level
+    # `quality` rubric per video) never saw it, so a repeatedly-weak fact/domain
+    # left no trace for future runs to learn from.
+    import tempfile, json as _json
+    _mem_bak = M.MEMORY_PATH
+    tmpdir = tempfile.mkdtemp()
+    M.MEMORY_PATH = os.path.join(tmpdir, "memory_test.json")
+    try:
+        history = [
+            {"video_id": "science_2026-01-01_older-video", "title": "Older Video"},
+            {"video_id": "science_2026-01-02_target-video", "title": "Target Video", "quality": {"overall": 7.4}},
+        ]
+        with open(M.MEMORY_PATH, "w") as f:
+            _json.dump({"history": history}, f)
+
+        qa = {"ran": True, "footage_matches_narration": 4, "visual_variety": 7,
+              "caption_legible": 7, "narration_flow": 7, "audio_judged": True,
+              "biggest_issue": "Final frame shows an unrelated aerial shot."}
+        M._persist_qa_to_memory("science_2026-01-02_target-video", qa)
+        saved = _json.load(open(M.MEMORY_PATH))["history"]
+        target = next(h for h in saved if h["video_id"] == "science_2026-01-02_target-video")
+        check("final_qa" in target, "matching history entry gains a final_qa sub-dict")
+        check(target["final_qa"]["footage_matches_narration"] == 4,
+              "footage_matches_narration carried through verbatim")
+        check(target["final_qa"]["aborted"] is True,
+              "a score that would abort the run is flagged aborted:true in memory too")
+        check(target["quality"]["overall"] == 7.4,
+              "the pre-existing script-level quality rubric is untouched, not overwritten")
+        older = next(h for h in saved if h["video_id"] == "science_2026-01-01_older-video")
+        check("final_qa" not in older, "only the matching video_id's entry is touched")
+
+        # a healthy score is persisted too (not just abort cases), with aborted:false
+        M._persist_qa_to_memory("science_2026-01-01_older-video",
+                                 {"ran": True, "footage_matches_narration": 9})
+        saved2 = _json.load(open(M.MEMORY_PATH))["history"]
+        older2 = next(h for h in saved2 if h["video_id"] == "science_2026-01-01_older-video")
+        check(older2["final_qa"]["aborted"] is False, "healthy score persists with aborted:false")
+
+        # no-op cases must never raise or corrupt the file
+        before = _json.load(open(M.MEMORY_PATH))
+        M._persist_qa_to_memory("", qa)
+        M._persist_qa_to_memory("science_2026-01-02_target-video", {"ran": False})
+        M._persist_qa_to_memory("no_such_video_id", qa)
+        after = _json.load(open(M.MEMORY_PATH))
+        check(before == after, "empty video_id / ran:false / unmatched video_id are silent no-ops")
+
+        # missing memory file entirely -> must not raise
+        M.MEMORY_PATH = os.path.join(tmpdir, "does_not_exist.json")
+        M._persist_qa_to_memory("science_2026-01-02_target-video", qa)
+        check(not os.path.exists(M.MEMORY_PATH), "missing memory file -> silent no-op, never created from scratch")
+    finally:
+        M.MEMORY_PATH = _mem_bak
+
+
 def test_vibe_and_hybrid_footage_mode():
     section("generate.py: _normalize_vibe / _assign_footage_mode (mood-matched pacing + hero AI shots)")
     m = {"vibe": "chaotic"}
@@ -2209,6 +2267,7 @@ def main():
     test_footage_intent_anchors_on_subject()
     test_local_footage_relevance()
     test_final_qa()
+    test_persist_qa_to_memory()
     test_vibe_and_hybrid_footage_mode()
     test_keywords_from_text()
     test_prefix_starts_and_chars()
