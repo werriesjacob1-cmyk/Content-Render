@@ -16,6 +16,84 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-08-03 — free footage sources, final-QA memory persistence, funding crisis
+Driven by "photos are boring, we need free relevant video" + a real live incident with
+paid-provider funding. Branch `main` directly (established pattern this session — the
+render.yml cron runs off `main`, so fixes land there, not a feature branch). All
+test-verified (**849 zero-quota checks**, up from 825).
+
+- **ElevenLabs CONFIRMED WORKING** (render 223, commit f1e5926): the user re-updated the
+  secret and it finally cleared — `ElevenLabs SUCCESS (91 word timings)`. The long-running
+  "still 401ing after the key update" saga from prior sessions is resolved; no code change
+  needed, it was purely a stale/wrong key value.
+- **Final-QA verdict now persisted to memory** (`main._persist_qa_to_memory`, called right
+  after `_final_qa_check()` in `main()`): the audio-listening judge's report
+  (footage_matches_narration, narration_flow, visual_variety, biggest_issue) previously
+  only reached the ephemeral `out/qa_report.json` release asset; now it's merged into
+  `memory_<page>.json`'s history entry for that video_id (both on the abort AND success
+  path), so a repeatedly-weak fact/domain leaves a trace for future sessions to learn from.
+  `render.yml`'s "Commit footage dedup history" step now also stages `memory_*.json`.
+- **Pollinations.ai (free Flux) as the AI-illustration provider, tried BEFORE paid Imagen**
+  (`main._pollinations_image`, gated on `POLLINATIONS_API_KEY` — free signup at
+  enter.pollinations.ai, no billing ever; user has set the secret). Genuinely free image
+  API, no per-call cost, unlike the existing Imagen fallback (billed per image, capped at
+  `MAX_AI_IMAGES`). Imagen now only fires if Pollinations is unset/fails/capped. Shared
+  subject-anchored prompt (`_illustration_prompt`) extracted so both providers stay
+  anchored on the scene's literal `search_query`, not a metaphorical voiceover line.
+- **iNaturalist as the FIRST archival-still source**, ahead of Openverse/Wikimedia
+  (`main._inaturalist_image`). No API key, explicitly automation-friendly (unlike Pixabay
+  — see below). For the (mostly animal/plant) topic bank, a real species-verified
+  observation photo beats a generic keyword-matched still. **Live-tested before building**:
+  most iNaturalist observations are `cc-by-nc` (non-commercial, unusable on a monetized
+  channel) — the query's `photo_license` filter is NOT trusted alone;
+  `_inaturalist_safe_photo_url` re-checks each candidate PHOTO's own `license_code` before
+  download (pure/testable helper).
+- **Ruled out after live research, not just docs**: Pixabay's API terms explicitly
+  prohibit automated/unattended calls (exactly what our CI cron is — confirmed live, not
+  assumed); Higgsfield has no free-tier API/CLI access at all (paid Creator-plan-only,
+  and its free tier is watermarked besides); Pollinations' own VIDEO endpoint is
+  paid-gated (Pollen credits), only its image endpoint is genuinely free. Also live-tested
+  the ALREADY-integrated Wikimedia video source against real scene queries and confirmed
+  its recall is genuinely thin ("octopus swimming" → 0 hits, "shrimp claw macro" → 0
+  hits) — the free-video ceiling is close to already reached with Pexels/NASA/
+  Wikimedia/Archive; that's WHY fal.ai AI-video gap-fill exists, not a gap in what's wired up.
+- **`FAL_MAX_CLIPS` raised 2 → 4** (repo Variable, zero code change — user set it). fal.ai
+  is a real, funded account (`$14.44` balance confirmed via the user's own dashboard,
+  `~$0.18/day` burn at the old cap) — doubling the cap roughly doubles burn to `~$0.36/day`
+  (~40 days runway), spending an already-committed balance to directly convert more weak
+  scenes into real AI video instead of a still, which is the one lever that actually
+  answers "we need more real video" (Pollinations/iNaturalist only improve the STILLS tier).
+- **GEMINI FUNDING CRISIS (live incident, resolved)**: mid-session, Gemini started 429ing
+  on EVERY model + grounded search, with the code's own RPM self-heal (`_gemini_retry_delay`
+  / `GEMINI_RPM_MAX_WAIT`) never firing — meaning Google returned no/long `retryDelay`, the
+  signature of real exhaustion, not a transient per-minute burst. Checked
+  `aistudio.google.com/usage` → "Default Gemini Project" credit balance was **-$0.01**
+  (the earlier ~$10 top-up fully drawn down — July's total usage was only ~$0.50, so this
+  wasn't a spend spike, just a low balance finally hitting zero after this session's own
+  extra manually-triggered renders on top of the 2x/day cron). User added **$10** to
+  Gemini; a render was immediately triggered to confirm generation recovers. **This is the
+  key lesson for future sessions: Gemini is CHEAP (~$0.50/month at normal cadence) but NOT
+  unlimited even on the paid tier — check `aistudio.google.com/usage` FIRST on any
+  suspicious wall of 429s before assuming it's a code/quota-config bug.**
+- **OpenRouter remains fully depleted** (`anthropic/claude-sonnet-5` / `openai/gpt-5` both
+  hard 402 "can only afford ~70 tokens" on every render this session) — user explicitly
+  declined to re-fund it ("I don't want to fund OPENROUTER again unless absolutely
+  necessary"), reasoning: the quality-floor gate means a degraded writer produces MORE
+  ABORTS (fewer videos shipped), not worse videos that actually publish — a cadence cost,
+  not a quality cost, and Gemini being funded again may make OpenRouter unnecessary since
+  it was only added as a backstop for Gemini's free-tier unreliability in the first place.
+  Do NOT recommend re-funding OpenRouter without the user raising it first.
+
+**NOT yet render-verified end-to-end**: everything above (Gemini recovery, FAL_MAX_CLIPS=4,
+Pollinations, iNaturalist, final-QA memory persistence) landed in code/config across several
+renders that each aborted before exercising all of it in one pass (one aborted at final-QA
+before the memory-persistence code existed; one aborted at generation before Pollinations/FAL
+raise could be tested). A render was triggered immediately after the Gemini top-up — if this
+session is gone, a NEW session must check that render's logs for: `[model] using gemini:...`
+succeeding without a 429 wall, up to 4 `[fal] AI video clip` lines, either
+`"Pollinations (free) + Ken Burns"` or `"iNaturalist CC image + Ken Burns"` appearing,
+`ElevenLabs SUCCESS`, and a `final_qa` sub-dict in the newest `memory_science.json` entry.
+
 ## Overnight batch — 2026-07-25/26 (POP + reliability + content quality)
 Long session driven by LIVE TikTok analytics + user feedback. All merged to main
 (PRs #23–#31+), 159 zero-quota checks. Shipped:
