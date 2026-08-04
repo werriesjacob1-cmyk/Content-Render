@@ -2297,6 +2297,41 @@ def test_subclip_plan():
     check(M._extra_scene_clips({}, 0, set(), "/tmp/x") == [], "need<=0 -> no extra clips (no network)")
 
 
+def test_rank_gemini_models_prefers_full_over_lite():
+    section("generate._rank_gemini_models: full-quality models rank ABOVE Lite variants (render-2026-08-04 bug)")
+    # The exact real-world case that exposed the bug: the OLD ranking sorted
+    # purely on whether a name contained "-latest", so the deliberately weaker/
+    # cheaper 'lite' model ranked ABOVE a full, numbered model just because both
+    # happened to carry a -latest-style tag. A real render's rescue attempt then
+    # burned its one shot on the Lite model while the stronger one was never
+    # tried in either generation cycle that run.
+    ranked = G._rank_gemini_models(["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-3.6-flash"])
+    check(ranked[0] == "gemini-flash-latest", "the -latest full-quality alias still leads")
+    check(ranked.index("gemini-3.6-flash") < ranked.index("gemini-flash-lite-latest"),
+          "a full, numbered model ranks ABOVE the Lite variant, regardless of -latest tagging")
+    check("lite" not in ranked[0], "the very first pick is never a lite model when a full one exists")
+
+    # a lite model is still USABLE (never dropped) -- it's a last resort, not banned
+    check(set(ranked) == {"gemini-flash-latest", "gemini-flash-lite-latest", "gemini-3.6-flash"},
+          "no model is dropped, only reordered")
+
+    # preview/exp ids stay lowest priority even when also tagged -latest (the old
+    # code's OWN documented intent -- 'stable over preview/exp' -- which it broke
+    # for any preview/exp id that also happened to contain -latest)
+    ranked2 = G._rank_gemini_models(["gemini-2.5-flash-preview-latest", "gemini-flash-latest", "gemini-3.6-flash"])
+    check(ranked2[-1] == "gemini-2.5-flash-preview-latest",
+          "a preview id ranks LAST even though it also contains -latest")
+
+    # numbered-stable models, newest first, when there's no -latest alias at all
+    ranked3 = G._rank_gemini_models(["gemini-2.0-flash", "gemini-3.6-flash", "gemini-2.5-flash"])
+    check(ranked3[0] == "gemini-3.6-flash", "newest numbered id leads when nothing is tagged -latest")
+
+    # a lite-only list still returns something usable (never empty)
+    check(G._rank_gemini_models(["gemini-flash-lite-latest"]) == ["gemini-flash-lite-latest"],
+          "lite-only input isn't discarded, just the only option")
+    check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2376,6 +2411,7 @@ def main():
     test_inject_missing_key_terms()
     test_near_miss_injects_missing_key_term()
     test_subclip_plan()
+    test_rank_gemini_models_prefers_full_over_lite()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
     test_call_groq_empty_response_falls_through()

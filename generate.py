@@ -93,6 +93,39 @@ GEMINI_MODELS_FALLBACK = [m.strip() for m in os.environ.get(
 _GEMINI_MODELS_CACHE = None
 
 
+def _rank_gemini_models(lst):
+    """Pure ranking helper for gemini_models(): FULL-quality models first, "lite"
+    variants (deliberately smaller/weaker, optimized for speed over quality) last
+    — regardless of "-latest" tagging. Within each quality tier, "-latest" aliases
+    are tried before a numbered/stable id, then newest numbered id first.
+
+    2026-08-04 bug found via a real render's logs: the OLD ranking sorted purely
+    on whether a name CONTAINED "-latest", so 'gemini-flash-lite-latest' (Lite —
+    explicitly the weaker/cheaper tier) ranked ABOVE 'gemini-3.6-flash' (a full,
+    numbered, non-lite model) purely because both happened to be tagged -latest
+    the same way. A real generation run's rescue attempt burned its one shot on
+    the Lite model while gemini-3.6-flash was never tried at all in either
+    generation cycle. Unstable (preview/exp) ids are still ranked lowest overall,
+    matching this function's own long-standing documented intent ('stable over
+    preview/exp') that the old code violated for any preview/exp id also tagged
+    -latest."""
+    def _is_lite(n):
+        return "lite" in n
+
+    def _is_unstable(n):
+        return "preview" in n or "exp" in n
+
+    def _sort_tier(tier):
+        latest = [n for n in tier if "-latest" in n]
+        stable = sorted({n for n in tier if "-latest" not in n}, reverse=True)
+        return latest + stable
+
+    full = [n for n in lst if not _is_lite(n) and not _is_unstable(n)]
+    lite = [n for n in lst if _is_lite(n) and not _is_unstable(n)]
+    unstable = [n for n in lst if _is_unstable(n)]
+    return _sort_tier(full) + _sort_tier(lite) + _sort_tier(unstable)
+
+
 def gemini_models():
     """Models THIS key can call for generateContent, discovered live (newest flash
     first). Google restricts older ids on new keys, so a hardcoded value 404s;
@@ -121,13 +154,9 @@ def gemini_models():
             if any(b in nm for b in ("vision", "thinking", "image", "tts", "embedding", "aqa", "learnlm")):
                 continue
             (flash if "flash" in nm else other).append(nm)
-        # prefer flash (cheap/fast), stable over preview/exp, newest id first
-        def _rank(lst):
-            stable = [n for n in lst if "preview" not in n and "exp" not in n and "-latest" not in n]
-            latest = [n for n in lst if "-latest" in n]
-            rest = [n for n in lst if n not in stable and n not in latest]
-            return latest + sorted(set(stable), reverse=True) + sorted(set(rest), reverse=True)
-        picked = _rank(flash) or _rank(other)
+        # prefer flash (cheap/fast); within that, full-quality over lite, stable
+        # over preview/exp, newest id first (see _rank_gemini_models).
+        picked = _rank_gemini_models(flash) or _rank_gemini_models(other)
         _GEMINI_MODELS_CACHE = picked[:3] or GEMINI_MODELS_FALLBACK
         if picked:
             print(f"  [model] gemini models available to this key: {_GEMINI_MODELS_CACHE}")
