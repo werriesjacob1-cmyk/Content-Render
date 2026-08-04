@@ -367,6 +367,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.29
+      },
+      "final_qa": {
+        "footage_matches_narration": 5,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Several stock clips lack direct visual relevance to nitinol wire applications.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
