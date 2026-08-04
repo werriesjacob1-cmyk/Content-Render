@@ -780,5 +780,16 @@
     "Biologists spent decades assuming the loud bang was physical claw-on-claw impact until 2000, when physicist Detlef Lohse and his team at the University of Twente filmed the snap at 40,000 frames per second, proving the sound occurs hundreds of microseconds after the claw closes when the cavitation bubble implodes.",
     "Although physicists can measure the 4,700\u00b0C hot spot inside the collapsed bubble, the exact atomic mechanism of its 'sonoluminescence'\u2014how mechanical fluid dynamics convert into a flash of light at the quantum level\u2014remains an unresolved mystery in modern physics.",
     "To survive their own acoustic blasts, snapping shrimp evolved an 'orbital hood'\u2014a transparent, helmet-like extension of their carapace over their eyes and brain that traps water to damp shockwaves by up to 28%, a mechanism now studied by bioengineers to improve human military helmets against blast trauma."
+  ],
+  "f35956293f94e1da": [
+    "The difference in time dilation between your head and feet is approximately 38.7 nanoseconds per year due to the 33 centimetres height difference.",
+    "The mechanism behind this phenomenon is the gravitational redshift, where the weaker gravitational field at higher altitudes results in a faster passage of time, as described by the equivalence principle in general relativity.",
+    "The extreme case of this effect can be observed in the Hafele-Keating experiment, where atomic clocks on commercial airliners were found to have run faster than identical clocks on the ground by about 2.5 nanoseconds over a 10-day period.",
+    "Counterintuitively, if you were to move to a higher altitude, the decrease in gravitational time dilation would be partially offset by the increase in time dilation due to the higher velocity of the Earth's rotation at that altitude.",
+    "To put the 33 centimetres height difference into perspective, the time dilation effect is equivalent to a 1-centimetre height difference resulting in about 1.1 nanoseconds of time difference over a year.",
+    "The real consequence of this effect is that GPS satellites, which orbit at an altitude of approximately 20,000 kilometres, would run faster than clocks on Earth by about 38 microseconds per day if not corrected, resulting in positional errors of up to 10 kilometres per day.",
+    "The concept of gravitational time dilation was first proposed by Albert Einstein in 1907, but it wasn't until the 1950s that physicists like Hermann Bondi and Joseph Lense began exploring its implications in detail.",
+    "Despite the precise measurements of gravitational time dilation, scientists still can't fully explain the observed anomalies in the gravitational redshift of white dwarfs, which seem to be affected by an unknown mechanism that is not accounted for by current theories.",
+    "The weird specific fact that the gravitational time dilation effect is not symmetrical, meaning that time passes faster at higher altitudes but also slower near massive objects, is exemplified by the fact that a clock at the top of Mount Everest would run about 39 nanoseconds faster than a clock at sea level over the course of a year, but a clock on the surface of a neutron star would run slower than a clock on Earth due to the intense gravitational field."
   ]
 }
