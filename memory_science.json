@@ -390,6 +390,15 @@
         "clarity": 8.0,
         "coherence": 8.0,
         "overall": 7.14
+      },
+      "final_qa": {
+        "footage_matches_narration": 5,
+        "visual_variety": 8,
+        "caption_legible": 10,
+        "narration_flow": 9,
+        "biggest_issue": "Several stock clips like a child holding a giant rose or kids playing dress-up feel off-topic for a serious space science topic.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
