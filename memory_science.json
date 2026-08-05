@@ -377,6 +377,15 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.71
+      },
+      "final_qa": {
+        "footage_matches_narration": 9,
+        "visual_variety": 8,
+        "caption_legible": 8,
+        "narration_flow": 10,
+        "biggest_issue": "Frame 1 contains garbled, unreadable text baked into the source video footage.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
