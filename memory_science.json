@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-01_the-bacteria-that-eats-plastic",
-      "metaphor": "trash transformation",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Bacteria That Eats Plastic",
-      "fact_id": "plastic_eating_bacteria",
-      "domain": "biology",
-      "hook": "Could bacteria learn to digest our rubbish?",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 8.0,
-        "escalation": 6.0,
-        "payoff": 7.0,
-        "rewatch": 5.0,
-        "clarity": 7.0,
-        "coherence": 8.0,
-        "overall": 6.86
-      }
-    },
-    {
       "video_id": "science_2026-08-02_the-hidden-truth-behind-the-smell-of-rai",
       "metaphor": "bacterial signal trap",
       "viewer_job": "MYTH_BUSTER",
@@ -376,6 +350,33 @@
         "biggest_issue": "Several stock clips lack direct visual relevance to nitinol wire applications.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-08-05_why-water-breaks-the-rules-of-physics",
+      "metaphor": "water freezing paradox",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "Why Water Breaks the Rules of Physics",
+      "fact_id": "water_expands_ice",
+      "domain": "chemistry",
+      "hook": "Every ice cube in your glass is breaking a fundamental law of physics.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.71
       }
     }
   ]

@@ -1,88 +1,88 @@
 {
-  "title": "The Metal That Remembers Its Shape",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "shape memory alloy",
-  "metaphor": "living metal wire",
-  "vibe": "eerie",
-  "hook": "A crushed metal wire is expanding right now inside thousands of human hearts.",
-  "hook_headline": "METAL INSIDE YOUR HEART",
-  "script": "A crushed metal wire is expanding right now inside thousands of human hearts. How can a crumpled piece of metal heal itself the instant it gets warm? This shape memory alloy called nitinol always returns to shape without breaking atomic bonds. A thin cold strand can lift a hundred pounds the second heat hits it. While normal metals soften in fire, heat actually makes this alloy twice as stiff. These metals unfold inside clogged arteries, flexing smoothly with every single heartbeat. It is an inanimate metal behaving like living muscle, remembering who it was.",
+  "title": "Why Water Breaks the Rules of Physics",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "why ice floats",
+  "metaphor": "water freezing paradox",
+  "vibe": "awe",
+  "hook": "Every ice cube in your glass is breaking a fundamental law of physics.",
+  "hook_headline": "ICE BREAKS PHYSICS",
+  "script": "Every ice cube in your glass is breaking a fundamental law of physics. Almost every liquid shrinks when freezing, so why does water expand and float? As water freezes, its hydrogen bonds lock into open rings, making ice less dense. Trapped ice expands with over thirty thousand pounds of pressure per square inch. That easily shatters solid mountain rock. If ice sank instead, lakes and oceans would freeze solid from the bottom up. Life on Earth depends on a simple substance that refuses to sink.",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "A crushed metal wire is expanding right now inside thousands of human hearts.",
-      "on_screen_text": "INSIDE YOUR BODY",
-      "search_query": "medical heartbeat monitor screen",
+      "duration": 4,
+      "voiceover": "Every ice cube in your glass is breaking a fundamental law of physics.",
+      "on_screen_text": "BREAKING PHYSICS",
+      "search_query": "ice floating water",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "How can a crumpled piece of metal heal itself the instant it gets warm?",
-      "on_screen_text": "HEALS WITH HEAT",
-      "search_query": "metal wire bending",
-      "motion": "zoom_out",
+      "voiceover": "Almost every liquid shrinks when freezing, so why does water expand and float?",
+      "on_screen_text": "WHY ICE FLOATS",
+      "search_query": "frozen lake surface",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 6,
-      "voiceover": "This shape memory alloy called nitinol always returns to shape without breaking atomic bonds.",
-      "on_screen_text": "SHAPE MEMORY ALLOY",
-      "search_query": "heated metal glow",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "As water freezes, its hydrogen bonds lock into open rings, making ice less dense.",
+      "on_screen_text": "LESS DENSE STRUCTURE",
+      "search_query": "cracked ice macro",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "A thin cold strand can lift a hundred pounds the second heat hits it.",
-      "on_screen_text": "IMPOSSIBLE STRENGTH",
-      "search_query": "heavy weight hanging cable",
+      "voiceover": "Trapped ice expands with over thirty thousand pounds of pressure per square inch.",
+      "on_screen_text": "OUTWARD ICE PRESSURE",
+      "search_query": "mountain cliff rock crack",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "While normal metals soften in fire, heat actually makes this alloy twice as stiff.",
-      "on_screen_text": "TWICE AS STIFF",
-      "search_query": "flame heating metal spring",
+      "duration": 3,
+      "voiceover": "That easily shatters solid mountain rock.",
+      "on_screen_text": "SHATTERING SOLID ROCK",
+      "search_query": "ice expanding crack rock",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "These metals unfold inside clogged arteries, flexing smoothly with every single heartbeat.",
-      "on_screen_text": "FLEXES WITH HEARTBEATS",
-      "search_query": "eyeglasses frame closeup",
-      "motion": "zoom_in",
+      "voiceover": "If ice sank instead, lakes and oceans would freeze solid from the bottom up.",
+      "on_screen_text": "FREEZING BOTTOM UP",
+      "search_query": "frozen ocean aerial",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "It is an inanimate metal behaving like living muscle, remembering who it was.",
-      "on_screen_text": "ALIVE LIKE MUSCLE",
-      "search_query": "human hand holding metal spring",
+      "voiceover": "Life on Earth depends on a simple substance that refuses to sink.",
+      "on_screen_text": "LIFE DEPENDS ON FLOATING",
+      "search_query": "underwater ice surface sun",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Would you trust a shape memory alloy inside your own body?",
-    "Nitinol doesn't break its bonds when bent\u2014heat snaps it back into shape instantly.",
-    "A 1 millimeter wire of nitinol can lift 100 pounds just by getting warm."
+    "Why ice floats is one of the stranger glitches in physics. What would happen if solid ice sank instead?",
+    "Water reaches maximum density at four degrees Celsius, keeping deep lakes liquid under frozen surfaces.",
+    "Without this floating ice anomaly, aquatic ecosystems across the northern hemisphere would cease to exist."
   ],
   "hashtags": [
-    "#science",
-    "#engineering",
     "#physics",
-    "#materials",
-    "#technology",
+    "#science",
+    "#nature",
+    "#ice",
+    "#facts",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-03_the-metal-that-remembers-its-shape",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "materials"
+  "video_id": "science_2026-08-05_why-water-breaks-the-rules-of-physics",
+  "cta_style": "LOOP",
+  "domain": "chemistry"
 }
