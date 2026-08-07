@@ -414,6 +414,15 @@
         "clarity": 8.0,
         "coherence": 7.0,
         "overall": 8.0
+      },
+      "final_qa": {
+        "footage_matches_narration": 6,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Some initial frames feel loosely related to the brain-computer interface subject matter.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
