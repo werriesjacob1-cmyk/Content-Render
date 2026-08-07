@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_the-animal-that-refuses-to-die",
-      "metaphor": "zero oxygen survival",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "COMMENT",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Animal That Refuses to Die",
-      "fact_id": "naked_mole_rat",
-      "domain": "animals",
-      "hook": "Your body suffocates in minutes without air, but one creature ignores oxygen entirely.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 8.0,
-        "overall": 7.71
-      }
-    },
-    {
       "video_id": "science_2026-08-02_the-secret-underground-network-of-trees",
       "metaphor": "forest underground network",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -400,6 +374,36 @@
         "biggest_issue": "none",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
+      "metaphor": "pitch drop experiment",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "Part 1: The Solid That Is Secretly A Liquid",
+      "fact_id": "pitch_drop_experiment",
+      "domain": "physics",
+      "hook": "Black tar shatters like glass, but it is secretly dripping right now.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "The Universe You Can't See",
+        "part": 1
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.0
       }
     }
   ]

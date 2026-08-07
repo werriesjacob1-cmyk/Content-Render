@@ -1,88 +1,88 @@
 {
-  "title": "The Organ That Grows Back",
-  "viewer_job": "MYTH_BUSTER",
-  "keyword": "organ regeneration",
-  "metaphor": "self repairing human body",
-  "vibe": "visceral",
-  "hook": "Your liver is the only solid organ that can literally grow itself back.",
-  "hook_headline": "THE REGENERATING ORGAN",
-  "script": "Your liver is the only solid organ that can literally grow itself back. So what happens when surgeons cut away 65 percent of it? Within 8 to 10 weeks, both pieces regrow into full working organs. Instead of regrowing its original shape like a lizard, it swells into a smooth mass. At peak speed, it builds tissue faster than a developing human fetus. Scar tissue never takes over. An invisible biological sensor stops the expansion the exact second it reaches size.",
+  "title": "Part 1: The Solid That Is Secretly A Liquid",
+  "viewer_job": "REFRAME",
+  "keyword": "slowest fluid",
+  "metaphor": "pitch drop experiment",
+  "vibe": "awe",
+  "hook": "Black tar shatters like glass, but it is secretly dripping right now.",
+  "hook_headline": "IS IT SOLID OR LIQUID?",
+  "script": "Black tar shatters like glass, but it is secretly dripping right now. So why has this exact same substance been running since 1927 as a slow liquid? Under sudden force, its internal structure locks tight, so it looks solid. But given enough time, the material creeps downward, forming one drop per decade. It flows billions of times slower than water, making it the slowest fluid on Earth. A scientist watched it for decades and died right before it fell. To this dark fluid, a human life passes in a single drop.",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
-      "voiceover": "Your liver is the only solid organ that can literally grow itself back.",
-      "on_screen_text": "REGENERATING ORGAN",
-      "search_query": "surgeons operating room",
+      "duration": 4,
+      "voiceover": "Black tar shatters like glass, but it is secretly dripping right now.",
+      "on_screen_text": "PART 1: SECRET LIQUID",
+      "search_query": "hammer striking black asphalt",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 5,
-      "voiceover": "So what happens when surgeons cut away 65 percent of it?",
-      "on_screen_text": "REMOVING 65 PERCENT",
-      "search_query": "medical team surgery",
-      "motion": "static",
+      "voiceover": "So why has this exact same substance been running since 1927 as a slow liquid?",
+      "on_screen_text": "RUNNING SINCE 1927",
+      "search_query": "laboratory glass jar",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Within 8 to 10 weeks, both pieces regrow into full working organs.",
-      "on_screen_text": "8 TO 10 WEEKS",
-      "search_query": "hospital corridor walking",
+      "voiceover": "Under sudden force, its internal structure locks tight, so it looks solid.",
+      "on_screen_text": "LOOKS SOLID",
+      "search_query": "viscous liquid pouring",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "Instead of regrowing its original shape like a lizard, it swells into a smooth mass.",
-      "on_screen_text": "NOT A LIZARD TAIL",
-      "search_query": "lizard sitting on rock",
-      "motion": "zoom_in",
+      "voiceover": "But given enough time, the material creeps downward, forming one drop per decade.",
+      "on_screen_text": "ONE DROP PER DECADE",
+      "search_query": "thick black tar dripping",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "At peak speed, it builds tissue faster than a developing human fetus.",
-      "on_screen_text": "FASTER THAN A FETUS",
-      "search_query": "newborn baby sleeping",
+      "voiceover": "It flows billions of times slower than water, making it the slowest fluid on Earth.",
+      "on_screen_text": "THE SLOWEST FLUID",
+      "search_query": "slow motion drip",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 3,
-      "voiceover": "Scar tissue never takes over.",
-      "on_screen_text": "NO SCAR TISSUE",
-      "search_query": "patient recovering in hospital bed",
-      "motion": "static",
+      "duration": 5,
+      "voiceover": "A scientist watched it for decades and died right before it fell.",
+      "on_screen_text": "DECADES OF WAITING",
+      "search_query": "old laboratory room",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "An invisible biological sensor stops the expansion the exact second it reaches size.",
-      "on_screen_text": "THE PERFECT SENSOR",
-      "search_query": "doctor examining scan screen",
+      "duration": 5,
+      "voiceover": "To this dark fluid, a human life passes in a single drop.",
+      "on_screen_text": "A SINGLE DROP",
+      "search_query": "molasses pouring slow",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Would you donate part of your liver to save a stranger? Organ regeneration makes it possible.",
-    "Did you know human tissue could rebuild this fast?",
-    "The human body is stranger than it sounds."
+    "Part 1: Is this black tar a solid or liquid? The answer takes decades. #science",
+    "It looks solid enough to shatter with a hammer, but it is actually the slowest fluid on Earth.",
+    "Follow for Part 2 of The Universe You Can't See."
   ],
   "hashtags": [
-    "#biology",
     "#science",
-    "#medicine",
-    "#humanbody",
+    "#physics",
+    "#nature",
     "#facts",
+    "#wonder",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-07_the-organ-that-grows-back",
-  "cta_style": "LOOP",
-  "domain": "body"
+  "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "physics"
 }
