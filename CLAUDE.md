@@ -16,6 +16,41 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Overnight session 2026-08-04 to 08-07 — first render-verified successes + one more real bug
+Continuation of the same overnight push (multi-day due to session gaps, not separate work).
+The 2x/day cron kept firing on its own per the "no more triggered renders" instruction; two
+of those runs SUCCEEDED and were downloaded + watched frame-by-frame end to end for the
+first time this session (previous renders all aborted before reaching main.py).
+
+- **Render 233, "The Organ That Grows Back"** (commit 57d50e2, 37.4s, body/visceral):
+  **A-/B+**. Every one of 7 scenes landed real Pexels footage (judge 6-9/10), ElevenLabs
+  succeeded (81 word timings), captions tight (QA judge 10/10), payoff is a genuine
+  mechanism ("an invisible biological sensor stops the expansion") not a number. Two fal
+  AI-video attempts (scenes 1 and 7) were CORRECTLY rejected by the vision-relevance check
+  (0/10, 2/10) and fell back to strong stock -- the safety net worked. Real flaw: the
+  payoff scene's stock footage (generic hospital/brain-scan imagery) isn't literally
+  liver-specific -- inherent to how hard "an invisible sensor" is to film, not a bug.
+- **Render 230, "Why Water Breaks the Rules of Physics"** (commit 61a81b0, 40.5s,
+  chemistry/awe): **A-/B+ with one real, now-fixed defect.** Scored a clean 7.71/10 on
+  attempt 3 (no rescue needed) -- the tightest script reviewed this session, genuine
+  escalation ending on a resonant idea. ElevenLabs succeeded (85 word timings). BUT: the
+  fal AI hero shot accepted for scene 1 ("ice floating water") had garbled, hallucinated
+  pseudo-text baked into the frame (visible on inspection: "...ATE", "FE БSLMAA",
+  overlapping the caption) -- exactly what the final-QA judge's own report flagged
+  ("Frame 1 contains garbled, unreadable text baked into the source video footage"), but
+  nothing upstream screened for it before shipping.
+- **Fixed the garbled-text gap**: `main._fal_clip_relevant`'s vision check only ever asked
+  Gemini "does this match the subject" -- never "is the frame itself clean". Text
+  hallucination is a well-known, SEPARATE AI-video failure mode from subject accuracy (this
+  exact clip would have scored well on relevance alone). Extended the same single-frame
+  check with an independent `garbled_text` field and reject on EITHER failure now.
+  Extracted the decision into a pure `_fal_clip_verdict()` (unit-tested without mocking the
+  network call, matching this session's established pattern). **880 zero-quota checks
+  passing (+8)**, pushed to `main`.
+- Both videos' full final.mp4 sent to the user directly (SendUserFile) alongside a written
+  rubric-based rating -- this is the first time in the session a complete render→watch→
+  rate→fix loop closed all the way through on real render output, not just logs.
+
 ## Overnight session 2026-08-04 — real-render bug hunt after the Gemini top-up
 Driven by "run render, then rate every aspect honestly" + "work through the night."
 Two renders right after the Gemini top-up (runs 30942748084, 30947501802, both
