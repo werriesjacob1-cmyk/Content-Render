@@ -2268,16 +2268,41 @@ def _fal_prompt(scene):
             f"no text, no words, no captions, no watermark, no logo.")
 
 
+def _fal_clip_verdict(verdict):
+    """Pure helper (no network): given the parsed vision-check JSON
+    ({"score": 0-10, "garbled_text": bool}), decide whether to accept the
+    clip. Returns (accept: bool, reason: str) -- reason is a human-readable
+    rejection cause when accept is False, else ''. Two INDEPENDENT failure
+    modes checked here: a low relevance score, OR hallucinated on-screen text
+    regardless of score -- a clip can be perfectly on-subject and still be
+    unusable because of garbled text baked into the frame (see
+    _fal_clip_relevant's docstring for the real render that exposed this)."""
+    score = int(verdict.get("score", 10))
+    if score < FAL_RELEVANCE_FLOOR:
+        return False, f"{score}/10 relevance"
+    if bool(verdict.get("garbled_text", False)):
+        return False, "garbled/hallucinated text detected in frame"
+    return True, ""
+
+
 def _fal_clip_relevant(scene, clip_path):
     """Single-frame Gemini vision check: does a fal.ai-generated clip actually
-    show what it was asked for? Text-to-video generation can hallucinate a
-    completely unrelated subject even on a successful, well-formed API
-    response (see the darkness check above and _fal_video's caller for why
-    a 200 response alone proves nothing about CONTENT). Fails OPEN (returns
-    True) whenever judging itself is unavailable/broken/unparseable -- this
-    must never be the reason a render aborts or a fal clip is wrongly
-    rejected; it only rejects on a CONFIDENT low score. Reuses the same
-    bounded-thinking-budget fix as _gemini_vision_pick/_final_qa_check
+    show what it was asked for, AND is it free of hallucinated on-screen text?
+    Text-to-video generation can hallucinate a completely unrelated subject
+    even on a successful, well-formed API response (see the darkness check
+    above and _fal_video's caller for why a 200 response alone proves nothing
+    about CONTENT). It can ALSO hallucinate garbled, nonsensical text/writing
+    baked into an otherwise on-topic frame -- a real render shipped an
+    accepted 'ice floating water' hero shot (right subject, would have scored
+    well on relevance alone) with garbled pseudo-Cyrillic text burned across
+    the middle of the frame, directly under the caption. The two checks are
+    independent: a clip can be perfectly on-subject and still be unusable
+    because of hallucinated text, so this rejects on EITHER failure, not just
+    a low relevance score. Fails OPEN (returns True) whenever judging itself
+    is unavailable/broken/unparseable -- this must never be the reason a
+    render aborts or a fal clip is wrongly rejected; it only rejects on a
+    CONFIDENT low score or a CONFIDENT text-hallucination flag. Reuses the
+    same bounded-thinking-budget fix as _gemini_vision_pick/_final_qa_check
     (thinkingBudget=0 400s once image parts are attached)."""
     key = os.environ.get("GEMINI_API_KEY", "")
     if not (VISION_JUDGE and key):
@@ -2293,7 +2318,14 @@ def _fal_clip_relevant(scene, clip_path):
             {"text": (f"Does this image LITERALLY show: \"{intent}\"? Score 0-10 -- "
                       f"8-10 = clearly, literally shows the subject; 4-7 = related but "
                       f"not an exact match; 0-3 = a completely different, unrelated "
-                      f"subject. Return ONLY JSON: {{\"score\": <0-10>}}.")},
+                      f"subject.\n"
+                      f"Separately: does the image contain any GARBLED, nonsensical, or "
+                      f"unreadable text/writing/lettering baked into the footage itself "
+                      f"(not a caption overlay -- text that is PART of the scene, e.g. on "
+                      f"a sign, screen, or floating across the frame)? This is a known "
+                      f"AI-video-generation artifact and makes a clip unusable even if the "
+                      f"subject is otherwise correct.\n"
+                      f"Return ONLY JSON: {{\"score\": <0-10>, \"garbled_text\": true|false}}.")},
             {"inline_data": {"mime_type": "image/jpeg",
                              "data": base64.b64encode(open(frame_path, "rb").read()).decode()}},
         ]
@@ -2314,9 +2346,10 @@ def _fal_clip_relevant(scene, clip_path):
         m = re.search(r"\{.*\}", txt, re.S)
         if not m:
             return True   # unparseable reply -- fail open, don't block on a judging hiccup
-        score = int(json.loads(m.group(0)).get("score", 10))
-        if score < FAL_RELEVANCE_FLOOR:
-            print(f"  [fal] vision check: {score}/10 against {intent!r} -- rejecting")
+        verdict = json.loads(m.group(0))
+        accept, reason = _fal_clip_verdict(verdict)
+        if not accept:
+            print(f"  [fal] vision check: {reason} against {intent!r} -- rejecting")
             return False
         return True
     except Exception as e:  # noqa: BLE001 - a broken check must never block a render

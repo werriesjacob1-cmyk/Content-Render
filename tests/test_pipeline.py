@@ -1324,6 +1324,36 @@ def test_vision_call_budget():
             os.environ["GEMINI_API_KEY"] = prev_key
 
 
+def test_fal_clip_verdict_rejects_garbled_text_independent_of_score():
+    section("main._fal_clip_verdict: garbled-text rejection is INDEPENDENT of relevance score (render-2026-08-05)")
+    # Real render: a fal hero shot for 'ice floating water' was accepted --
+    # right subject, would have scored well on relevance alone -- but had
+    # garbled pseudo-Cyrillic text baked into the frame, unrelated to the
+    # subject-match check entirely. The two checks must be independent: a
+    # perfect-subject clip with garbled text must still be rejected.
+    accept, reason = M._fal_clip_verdict({"score": 9, "garbled_text": True})
+    check(accept is False, "high relevance score (9/10) does NOT save a clip with garbled text")
+    check("garbled" in reason.lower(), f"rejection reason names garbled text ({reason!r})")
+
+    accept, reason = M._fal_clip_verdict({"score": 10, "garbled_text": True})
+    check(accept is False, "even a perfect 10/10 relevance score is rejected if garbled_text is true")
+
+    # a low score still rejects on its own, same as before this change
+    accept, reason = M._fal_clip_verdict({"score": M.FAL_RELEVANCE_FLOOR - 1, "garbled_text": False})
+    check(accept is False, "low relevance score alone still rejects (unchanged behavior)")
+    check("garbled" not in reason.lower(), "low-score rejection reason does not mention garbled text")
+
+    # the clean-pass case: good score, no garbled text
+    accept, reason = M._fal_clip_verdict({"score": 9, "garbled_text": False})
+    check(accept is True and reason == "", "good score + no garbled text -> accepted, empty reason")
+
+    # missing keys must fail safe (never crash, never silently reject)
+    accept, reason = M._fal_clip_verdict({})
+    check(accept is True, "missing 'score' defaults to 10 (accept), missing 'garbled_text' defaults to False")
+    accept, reason = M._fal_clip_verdict({"score": 9})
+    check(accept is True, "garbled_text absent (not just false) -> treated as no garbled text")
+
+
 def test_fal_clip_relevant():
     section("main._fal_clip_relevant: fal hero/gap-fill clips now get a relevance check (render 205)")
     # Render 205 asked fal for "naked mole rat close up" and got a boat, then a
@@ -2411,6 +2441,7 @@ def main():
     test_critique_script_merges_gain_and_score()
     test_shadow_lift_filter()
     test_vision_call_budget()
+    test_fal_clip_verdict_rejects_garbled_text_independent_of_score()
     test_fal_clip_relevant()
     test_hook_headline_event()
     test_caption_autoshrink()
