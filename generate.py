@@ -615,10 +615,11 @@ CTA_ENDING_RULES = {
     ),
     "COMMENT": (
         "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
-        "question ('Team A or Team B?', 'Would you or no?') or state a claim people will actually "
+        "question ('Team A or Team B?', 'Real or myth?') or state a claim people will actually "
         "want to argue with ('and that means everything you learned about X is wrong') -- something "
-        "a real person would stop and type a reply to, not a rhetorical throwaway. Do not also tell "
-        "them to save or share in this line."
+        "a real person would stop and type a reply to, not a rhetorical throwaway. NEVER phrase this "
+        "as 'Did you know' / 'Have you ever' -- those are banned wind-up openers everywhere in this "
+        "script, not just the hook. Do not also tell them to save or share in this line."
     ),
     "SHARE": (
         "ENDING STYLE FOR THIS VIDEO: SHARE TRIGGER. The final line must hand the viewer a concrete, "
@@ -1468,9 +1469,12 @@ SAVES (5x a like) — THIS COMES FROM THE CONTENT, NOT A COMMAND:
 
 COMMENTS (binary questions outperform — easiest to answer, drive depth):
 - Independent of the ending style above, plant ONE line somewhere in the script that provokes a
-  reply: either a BINARY question ("Team A or Team B?", "Did you know this — yes or no?") OR a claim
-  people will argue with ("no way", "that's not true"). (If this video's ending style is COMMENT,
-  the ending line itself can serve as this beat — don't force a second one.)
+  reply: either a BINARY question ("Team A or Team B?", "Real or myth?") OR a claim people will
+  argue with ("no way", "that's not true"). NEVER phrase this as "Did you know" / "Have you ever" —
+  those are BANNED wind-up openers everywhere in this script, not just the hook (see CONTENT rules
+  below); a binary question is still a direct, front-loaded claim-or-choice, not a wind-up. (If this
+  video's ending style is COMMENT, the ending line itself can serve as this beat — don't force a
+  second one.)
 - Put a binary/question version in the FIRST caption too (comments often come from the caption).
 
 CONTENT (CRITICAL):
