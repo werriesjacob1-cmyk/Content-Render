@@ -391,7 +391,16 @@
         "used_whatif": true
       },
       "series": null,
-      "quality": null
+      "quality": null,
+      "final_qa": {
+        "footage_matches_narration": 8,
+        "visual_variety": 8,
+        "caption_legible": 10,
+        "narration_flow": 9,
+        "biggest_issue": "none",
+        "audio_judged": true,
+        "aborted": false
+      }
     }
   ]
 }
