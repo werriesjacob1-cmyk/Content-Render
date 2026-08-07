@@ -16,6 +16,62 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Overnight session 2026-08-04 — real-render bug hunt after the Gemini top-up
+Driven by "run render, then rate every aspect honestly" + "work through the night."
+Two renders right after the Gemini top-up (runs 30942748084, 30947501802, both
+commit c7b37dd) still ABORTED — correctly, per the quality gate, but the logs
+exposed three concrete, fixable bugs (not just inherent model variance). All
+fixed same night, test-verified (**872 zero-quota checks**, up from 857), pushed
+directly to `main` between renders (pushing never triggers a render — safe to do
+without the user's live confirmation each time).
+
+- **Gemini model ranking bug, CONFIRMED both broken and then fixed live**: the
+  first render still showed `gemini_models()` picking `gemini-flash-lite-latest`
+  (deliberately weaker/cheaper) over `gemini-3.6-flash` (full, non-lite) for a
+  rescue attempt, because the old ranking sorted purely on whether a name
+  contained `"-latest"` with no idea "lite" is a quality-tier signal, not a
+  freshness tag. Extracted `_rank_gemini_models()` (pure, unit-tested): full
+  models before ANY lite variant regardless of `-latest` tagging; preview/exp
+  ids stay lowest even when `-latest`-tagged (the function's own stated intent
+  the old code silently broke). **Confirmed working in the very next render**:
+  discovery returned `['gemini-flash-latest', 'gemini-3.6-flash',
+  'gemini-3.5-flash']` — no lite model in the top 3 at all.
+- **Prompt self-contradiction (real recurring failure)**: gemini-flash-latest
+  opened a caption with "Did you know" TWICE in one generation cycle, correctly
+  caught both times by `BANNED_HOOK_OPENER_RE` (burning two attempts) — despite
+  the prompt explicitly banning that exact phrase. Root cause found nine lines
+  above the ban: the COMMENTS engagement rule's own worked example for a
+  "binary question" was literally `'Did you know this — yes or no?'` — a
+  positive example using the exact banned phrase. A second copy of the same
+  rule (`CTA_ENDING_RULES["COMMENT"]`) had a different but also broken example
+  (`'Would you or no?'`, not even a complete question). Fixed both to `'Real or
+  myth?'` — a model pattern-matches a concrete positive example much more than
+  an abstract ban nine lines away.
+- **`UNSTOCKABLE_Q` false-positive on physical "___ system(s)" queries**: two
+  renders rejected perfectly filmable queries — `'solar system planets'`,
+  `'tree root system soil'` — as "un-filmable" because the regex banned the
+  bare word "system(s)" anywhere (added for the render-181 "resilient
+  communication systems" incident, an ABSTRACT system with nothing physical to
+  film). Fixed with a negative-lookbehind exemption list (solar/root/river/
+  weather/mountain/cave/reef/canyon) for known-physical systems, leaving every
+  abstract/functional system (nervous, digestive, communication, economic...)
+  banned exactly as before. Verified against BOTH the two real false-positive
+  queries AND the original render-181 regression test in the same test run.
+- **Also cleaned up stale docs**: CLAUDE.md's "Known pending improvements" list
+  had two items that were actually already shipped in earlier sessions
+  (footage brightness lift, series/binge architecture) — removed, with a note
+  to cross-check this section against actual code rather than trust it blindly.
+
+**Still not render-verified end-to-end**: neither render reached `main.py` (both
+aborted at script generation), so Pollinations/iNaturalist/the FAL cap raise/
+final-QA memory persistence from the prior session remain unexercised by a
+successful run. A NEW session (or the next cron) should check the next
+completed render's logs for all of the 2026-08-03 session's still-unverified
+items PLUS confirm these three fixes hold: no Lite Gemini model used unless
+nothing stronger is available, no "Did you know" mechanical rejections, and no
+"un-filmable terms" rejection on a query that's actually a real physical
+subject.
+
 ## Session 2026-08-03 — free footage sources, final-QA memory persistence, funding crisis
 Driven by "photos are boring, we need free relevant video" + a real live incident with
 paid-provider funding. Branch `main` directly (established pattern this session — the
@@ -428,12 +484,14 @@ Watched every render frame-by-frame and fixed the concrete flaw before the next.
 `reports/video_review_2026-07-15_overnight.md`.
 
 ## Known pending improvements (not yet done)
-- **Footage brightness filter**: a few clips came out dark (night-side Earth,
-  dark ocean). Add a min-brightness reject in footage selection or lift the grade.
 - **Multi-word phrase captions**: blocked on ASS `WrapStyle: 2` (no wrap) + wide
   font — needs a font-size/wrap change, best verified with a real render.
-- Idea 2 (series/binge architecture: numbered series + cross-video callbacks) is
-  PARTIAL — see PLATFORM.md.
+- (2026-08-04 cleanup: removed two stale items from this list that were actually
+  already shipped — the footage brightness filter is `main._shadow_lift_filter`/
+  `_clip_too_dark`, and the series/binge architecture is BUILT per PLATFORM.md.
+  If you're reading this file to catch up, don't trust this section blindly —
+  cross-check against the actual code before treating anything here as truly
+  outstanding.)
 
 ## Cross-session note
 Scheduled `send_later`/trigger reminders are tied to the session that made them;
