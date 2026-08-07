@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_you-can-see-time-travel-with-your-own-ey",
-      "metaphor": "seeing time directly",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "CHALLENGE",
-      "title": "You Can See Time Travel With Your Own Eyes",
-      "fact_id": "andromeda_time",
-      "domain": "space",
-      "hook": "Name the farthest object you can see with your naked eye right now.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 5.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 5.0,
-        "clarity": 8.0,
-        "coherence": 9.0,
-        "overall": 7.0
-      }
-    },
-    {
       "video_id": "science_2026-08-02_the-animal-that-refuses-to-die",
       "metaphor": "zero oxygen survival",
       "viewer_job": "MYTH_BUSTER",
@@ -400,6 +374,24 @@
         "audio_judged": true,
         "aborted": true
       }
+    },
+    {
+      "video_id": "science_2026-08-07_the-organ-that-grows-back",
+      "metaphor": "self repairing human body",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Organ That Grows Back",
+      "fact_id": "liver_regrows",
+      "domain": "body",
+      "hook": "Your liver is the only solid organ that can literally grow itself back.",
+      "vibe": "visceral",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": null
     }
   ]
 }

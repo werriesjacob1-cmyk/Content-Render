@@ -1,96 +1,87 @@
 {
-  "title": "What Actually Happens to a Body in Space?",
-  "viewer_job": "REFRAME",
-  "keyword": "surviving space",
-  "metaphor": "vacuum boiling effect",
-  "vibe": "eerie",
-  "hook": "Part 1: A boiling kettle and an astronaut share the exact same nightmare.",
-  "hook_headline": "YOU HAVE 15 SECONDS",
-  "script": "Part 1: A boiling kettle and an astronaut share the exact same nightmare. What actually happens if an airlock flings you into space? You do not freeze solid or explode like movies always promised. Instead, exposure to vacuum instantly removes all surrounding pressure. This triggers ebullism, making water in your body boil at room temperature. In a 1966 NASA test, a subject felt saliva bubbling on his tongue. You keep just 15 seconds of consciousness before oxygen leaves your blood. Could you stay calm for those 15 seconds? Follow for part 2.",
+  "title": "The Organ That Grows Back",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "organ regeneration",
+  "metaphor": "self repairing human body",
+  "vibe": "visceral",
+  "hook": "Your liver is the only solid organ that can literally grow itself back.",
+  "hook_headline": "THE REGENERATING ORGAN",
+  "script": "Your liver is the only solid organ that can literally grow itself back. So what happens when surgeons cut away 65 percent of it? Within 8 to 10 weeks, both pieces regrow into full working organs. Instead of regrowing its original shape like a lizard, it swells into a smooth mass. At peak speed, it builds tissue faster than a developing human fetus. Scar tissue never takes over. An invisible biological sensor stops the expansion the exact second it reaches size.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "Part 1: A boiling kettle and an astronaut share the exact same nightmare.",
-      "on_screen_text": "Part 1: Surviving Space",
-      "search_query": "boiling water kettle",
+      "duration": 5,
+      "voiceover": "Your liver is the only solid organ that can literally grow itself back.",
+      "on_screen_text": "REGENERATING ORGAN",
+      "search_query": "surgeons operating room",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What actually happens if an airlock flings you into space?",
-      "on_screen_text": "Airlock Burst",
-      "search_query": "astronaut floating outer space",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "So what happens when surgeons cut away 65 percent of it?",
+      "on_screen_text": "REMOVING 65 PERCENT",
+      "search_query": "medical team surgery",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "You do not freeze solid or explode like movies always promised.",
-      "on_screen_text": "Hollywood Is Wrong",
-      "search_query": "space helmet reflection",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "Within 8 to 10 weeks, both pieces regrow into full working organs.",
+      "on_screen_text": "8 TO 10 WEEKS",
+      "search_query": "hospital corridor walking",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Instead, exposure to vacuum instantly removes all surrounding pressure.",
-      "on_screen_text": "Zero Pressure Vacuum",
-      "search_query": "outer space stars",
+      "duration": 5,
+      "voiceover": "Instead of regrowing its original shape like a lizard, it swells into a smooth mass.",
+      "on_screen_text": "NOT A LIZARD TAIL",
+      "search_query": "lizard sitting on rock",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "This triggers ebullism, making water in your body boil at room temperature.",
-      "on_screen_text": "Ebullism Effect",
-      "search_query": "water boiling close up",
+      "duration": 5,
+      "voiceover": "At peak speed, it builds tissue faster than a developing human fetus.",
+      "on_screen_text": "FASTER THAN A FETUS",
+      "search_query": "newborn baby sleeping",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 5,
-      "voiceover": "In a 1966 NASA test, a subject felt saliva bubbling on his tongue.",
-      "on_screen_text": "1966 NASA Test",
-      "search_query": "astronaut training chamber",
+      "duration": 3,
+      "voiceover": "Scar tissue never takes over.",
+      "on_screen_text": "NO SCAR TISSUE",
+      "search_query": "patient recovering in hospital bed",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "You keep just 15 seconds of consciousness before oxygen leaves your blood.",
-      "on_screen_text": "15 Seconds Left",
-      "search_query": "astronaut spacewalk",
+      "duration": 6,
+      "voiceover": "An invisible biological sensor stops the expansion the exact second it reaches size.",
+      "on_screen_text": "THE PERFECT SENSOR",
+      "search_query": "doctor examining scan screen",
       "motion": "zoom_out",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "Could you stay calm for those 15 seconds? Follow for part 2.",
-      "on_screen_text": "The Universe You Can't",
-      "search_query": "deep space galaxy",
-      "motion": "zoom_in",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Part 1 of The Universe You Can't See: could you survive 15 seconds in the vacuum of space \u2014 yes or no?",
-    "Ebullism makes liquids boil at body temperature when exposed to a vacuum.",
-    "Follow so you don't miss Part 2 of this series."
+    "Would you donate part of your liver to save a stranger? Organ regeneration makes it possible.",
+    "Did you know human tissue could rebuild this fast?",
+    "The human body is stranger than it sounds."
   ],
   "hashtags": [
-    "#space",
+    "#biology",
     "#science",
-    "#nasa",
-    "#astronomy",
+    "#medicine",
+    "#humanbody",
     "#facts",
     "#learnontiktok"
   ],
@@ -99,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-05_what-actually-happens-to-a-body-in-space",
-  "cta_style": "COMMENT",
-  "domain": "space"
+  "video_id": "science_2026-08-07_the-organ-that-grows-back",
+  "cta_style": "LOOP",
+  "domain": "body"
 }
