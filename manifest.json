@@ -1,88 +1,88 @@
 {
-  "title": "Part 1: The Solid That Is Secretly A Liquid",
-  "viewer_job": "REFRAME",
-  "keyword": "slowest fluid",
-  "metaphor": "pitch drop experiment",
-  "vibe": "awe",
-  "hook": "Black tar shatters like glass, but it is secretly dripping right now.",
-  "hook_headline": "IS IT SOLID OR LIQUID?",
-  "script": "Black tar shatters like glass, but it is secretly dripping right now. So why has this exact same substance been running since 1927 as a slow liquid? Under sudden force, its internal structure locks tight, so it looks solid. But given enough time, the material creeps downward, forming one drop per decade. It flows billions of times slower than water, making it the slowest fluid on Earth. A scientist watched it for decades and died right before it fell. To this dark fluid, a human life passes in a single drop.",
+  "title": "How Machines Learn Your Brain Code",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "thought control",
+  "metaphor": "merging brain with machine",
+  "vibe": "eerie",
+  "hook": "A drop of fruit juice in 1969 created the first brain-computer interface.",
+  "hook_headline": "JUICE CAN CONTROL COMPUTERS",
+  "script": "A drop of fruit juice in 1969 created the first brain-computer interface. Could direct thought control actually let paralyzed patients speak through machines? Reading brainwaves using non-invasive EEG is like recording a whisper from outside a packed stadium. Implanted sensors bypass this noise by measuring single voltage spikes from potassium ions. In modern trials, paralyzed patients reached sixty-two words per minute with astonishing precision. But the machine does not learn you; your brain alters its own code to match the device. Your nervous system rewires itself just to feed the machine its next drop.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Black tar shatters like glass, but it is secretly dripping right now.",
-      "on_screen_text": "PART 1: SECRET LIQUID",
-      "search_query": "hammer striking black asphalt",
+      "voiceover": "A drop of fruit juice in 1969 created the first brain-computer interface.",
+      "on_screen_text": "Fruit juice thought control",
+      "search_query": "rhesus monkey laboratory",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "So why has this exact same substance been running since 1927 as a slow liquid?",
-      "on_screen_text": "RUNNING SINCE 1927",
-      "search_query": "laboratory glass jar",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "Could direct thought control actually let paralyzed patients speak through machines?",
+      "on_screen_text": "Can thoughts speak?",
+      "search_query": "thought-controlled robot",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Under sudden force, its internal structure locks tight, so it looks solid.",
-      "on_screen_text": "LOOKS SOLID",
-      "search_query": "viscous liquid pouring",
+      "voiceover": "Reading brainwaves using non-invasive EEG is like recording a whisper from outside a packed stadium.",
+      "on_screen_text": "EEG stadium whisper",
+      "search_query": "EEG headset",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "But given enough time, the material creeps downward, forming one drop per decade.",
-      "on_screen_text": "ONE DROP PER DECADE",
-      "search_query": "thick black tar dripping",
-      "motion": "pan",
+      "voiceover": "Implanted sensors bypass this noise by measuring single voltage spikes from potassium ions.",
+      "on_screen_text": "Measuring ion spikes",
+      "search_query": "brain-computer interface demo",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 5,
-      "voiceover": "It flows billions of times slower than water, making it the slowest fluid on Earth.",
-      "on_screen_text": "THE SLOWEST FLUID",
-      "search_query": "slow motion drip",
+      "voiceover": "In modern trials, paralyzed patients reached sixty-two words per minute with astonishing precision.",
+      "on_screen_text": "62 words per minute",
+      "search_query": "person typing computer screen",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "A scientist watched it for decades and died right before it fell.",
-      "on_screen_text": "DECADES OF WAITING",
-      "search_query": "old laboratory room",
-      "motion": "zoom_in",
+      "voiceover": "But the machine does not learn you; your brain alters its own code to match the device.",
+      "on_screen_text": "Brain alters code",
+      "search_query": "glowing neural network synapse",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "To this dark fluid, a human life passes in a single drop.",
-      "on_screen_text": "A SINGLE DROP",
-      "search_query": "molasses pouring slow",
-      "motion": "zoom_out",
+      "voiceover": "Your nervous system rewires itself just to feed the machine its next drop.",
+      "on_screen_text": "Feeding the machine",
+      "search_query": "human brain close up",
+      "motion": "static",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Part 1: Is this black tar a solid or liquid? The answer takes decades. #science",
-    "It looks solid enough to shatter with a hammer, but it is actually the slowest fluid on Earth.",
-    "Follow for Part 2 of The Universe You Can't See."
+    "Would you let a machine rewrite your neural code for total thought control?",
+    "How brain-computer interfaces actually work inside human neurons.",
+    "The strange biology behind direct mind-to-machine connection."
   ],
   "hashtags": [
     "#science",
-    "#physics",
-    "#nature",
-    "#facts",
-    "#wonder",
+    "#tech",
+    "#brain",
+    "#neuroscience",
+    "#future",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "physics"
+  "video_id": "science_2026-08-07_how-machines-learn-your-brain-code",
+  "cta_style": "LOOP",
+  "domain": "neurology"
 }

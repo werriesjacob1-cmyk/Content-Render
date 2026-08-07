@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_the-secret-underground-network-of-trees",
-      "metaphor": "forest underground network",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "The Secret Underground Network of Trees",
-      "fact_id": "wood_wide_web",
-      "domain": "plants",
-      "hook": "How does a dying tree pump remaining sugar to a neighboring sapling?",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.0
-      }
-    },
-    {
       "video_id": "science_2026-08-02_the-collapsing-family-tree",
       "metaphor": "collapsing family tree",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -413,6 +387,33 @@
         "biggest_issue": "Multiple visuals feature irrelevant subjects like cement mixers and blue lab chemicals rather than pitch.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-08-07_how-machines-learn-your-brain-code",
+      "metaphor": "merging brain with machine",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "COMPARISON_COLLISION",
+      "title": "How Machines Learn Your Brain Code",
+      "fact_id": "brain_computer_interfaces",
+      "domain": "neurology",
+      "hook": "A drop of fruit juice in 1969 created the first brain-computer interface.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 8.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 9.0,
+        "clarity": 8.0,
+        "coherence": 7.0,
+        "overall": 8.0
       }
     }
   ]
