@@ -2297,6 +2297,33 @@ def test_subclip_plan():
     check(M._extra_scene_clips({}, 0, set(), "/tmp/x") == [], "need<=0 -> no extra clips (no network)")
 
 
+def test_unstockable_query_exempts_physical_systems():
+    section("generate.UNSTOCKABLE_Q: physical '___ system(s)' exempted, abstract ones still banned (render-2026-08-04)")
+    # Two real renders rejected perfectly filmable queries as "un-filmable"
+    # because the bare word "system(s)" was banned everywhere. 'solar system
+    # planets' and 'tree root system soil' both name a literal, physical,
+    # genuinely photographable thing -- stock libraries handle these fine.
+    filmable = ["solar system planets", "tree root system soil", "river system delta",
+                "weather system storm clouds", "mountain system range", "solar system"]
+    for q in filmable:
+        check(not G.UNSTOCKABLE_Q.search(q), f"{q!r} is filmable, must NOT be flagged un-filmable")
+    # the actual failure mode this check exists for -- an ABSTRACT/FUNCTIONAL
+    # system with nothing physical to point a camera at -- must still be
+    # caught. render-181 regression: "resilient communication systems"
+    # rendered as a lingering generic abstract network-graphic; this exact
+    # case must stay banned, not just body/anatomy systems.
+    unfilmable = ["resilient communication systems", "human nervous system",
+                  "digestive system anatomy", "economic systems collapse"]
+    for q in unfilmable:
+        check(G.UNSTOCKABLE_Q.search(q) is not None, f"{q!r} (abstract system) must still be flagged un-filmable")
+    # pre-existing jargon bans (fungal terms, organs, anatomy, quantum) untouched by this fix
+    check(G.UNSTOCKABLE_Q.search("human organs regrowing") is not None, "organs still banned (unchanged)")
+    check(G.UNSTOCKABLE_Q.search("fungal hyphae soil dirt") is not None, "hyphae still banned (unchanged)")
+    check(G.UNSTOCKABLE_Q.search("fungus mycelium underground macro") is not None, "mycelium still banned (unchanged)")
+    check(G.UNSTOCKABLE_Q.search("human stomach anatomy") is not None, "anatomy still banned (unchanged)")
+    check(G.UNSTOCKABLE_Q.search("quantum entanglement lab") is not None, "quantum still banned (unchanged)")
+
+
 def test_rank_gemini_models_prefers_full_over_lite():
     section("generate._rank_gemini_models: full-quality models rank ABOVE Lite variants (render-2026-08-04 bug)")
     # The exact real-world case that exposed the bug: the OLD ranking sorted
@@ -2411,6 +2438,7 @@ def main():
     test_inject_missing_key_terms()
     test_near_miss_injects_missing_key_term()
     test_subclip_plan()
+    test_unstockable_query_exempts_physical_systems()
     test_rank_gemini_models_prefers_full_over_lite()
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()

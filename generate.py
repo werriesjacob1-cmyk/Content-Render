@@ -1978,9 +1978,22 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
                     r"swallow|drink|eat|ingest|knife|blade|razor|shatter|explode|explosion)\b", re.I)
 
 # terms free stock libraries can't actually satisfy — searches for them degrade
-# into random flesh/lab/texture close-ups (see the belly-button incident)
+# into random flesh/lab/texture close-ups (see the belly-button incident).
+# "systems?" stays banned by default (render-181: "resilient communication
+# systems" rendered as a lingering generic abstract network-graphic — most
+# uses of the word name an ABSTRACT/FUNCTIONAL system with nothing physical to
+# point a camera at: nervous system, communication systems, economic systems).
+# 2026-08-04: two real renders showed the bare ban is too broad the OTHER way
+# too -- it also rejected 'solar system planets' and 'tree root system soil',
+# which name a literal, physical, genuinely photographable thing. Exempt just
+# those known-physical "___ system(s)" phrases via a negative lookbehind
+# rather than trying to enumerate every abstract system instead (the list of
+# abstract systems is unbounded; the list of physical ones stock libraries
+# actually carry good footage for is short and known).
 UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organs?|cells?|microscop\w*|diagrams?|x-?ray|molecul\w*|"
-                           r"atoms?|quantum|abstracts?|concept\w*|systems?|"
+                           r"atoms?|quantum|abstracts?|concept\w*|"
+                           r"(?<!solar )(?<!root )(?<!river )(?<!weather )(?<!mountain )"
+                           r"(?<!cave )(?<!reef )(?<!canyon )systems?|"
                            # jargon that returns nothing filmable (or a random
                            # texture the judge then rates a false match — the
                            # "rhizomorphs -> orange brick wall" miss). Say the
