@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_the-collapsing-family-tree",
-      "metaphor": "collapsing family tree",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "The Collapsing Family Tree",
-      "fact_id": "everyone_is_your_ancestor",
-      "domain": "math",
-      "hook": "Pick any total stranger on Earth \u2014 how far back until your family trees collide?",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.14
-      }
-    },
-    {
       "video_id": "science_2026-08-02_microbes-are-thinking",
       "metaphor": "single celled brain",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -423,6 +397,33 @@
         "biggest_issue": "Some initial frames feel loosely related to the brain-computer interface subject matter.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-08-08_the-flammable-ocean-floor",
+      "metaphor": "ocean floor gas ice",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "MYTH_FLIP",
+      "title": "The Flammable Ocean Floor",
+      "fact_id": "frozen_methane",
+      "domain": "geology",
+      "hook": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.0
       }
     }
   ]
