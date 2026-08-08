@@ -424,6 +424,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.0
+      },
+      "final_qa": {
+        "footage_matches_narration": 6,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "The abstract city graphic in the final frame feels disconnected from deep sea methane deposits.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
