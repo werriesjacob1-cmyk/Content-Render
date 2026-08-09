@@ -1,105 +1,87 @@
 {
-  "title": "The Flammable Ocean Floor",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "frozen methane",
-  "metaphor": "ocean floor gas ice",
+  "title": "Venus: Where a Day Outlasts a Year",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "venus time",
+  "metaphor": "planet's broken clock",
   "vibe": "eerie",
-  "hook": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
-  "hook_headline": "OCEAN FLOOR IS ON FIRE",
-  "script": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice. What happens if climate change thaws these frozen methane deposits under the sea? A block the size of a washing machine expands to fill a two-story home. These deposits hold ten times more carbon than our entire atmosphere. As oceans warm, the solid seabed loses its grip. The ocean floor literally liquefies. Collapsing slopes can sever the subsea cables carrying almost all internet traffic. Our world sits on a thin crust holding back a trapped sea of gas.",
+  "hook": "Your calendar on Venus would tear itself apart.",
+  "hook_headline": "ONE DAY = LONGER THAN A YEAR",
+  "script": "Your calendar on Venus would tear itself apart. What if you tried to live out a single year there? You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year. The Sun there rises in the west and sets in the east, spinning backward like a broken music box. That retrograde spin is why a day so long feels like it bends time itself. The air would crush you long before you noticed.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
-      "on_screen_text": "FLAMMABLE OCEAN ICE",
-      "search_query": "frozen methane bubbles",
+      "voiceover": "Your calendar on Venus would tear itself apart.",
+      "on_screen_text": "VENUS TIME",
+      "search_query": "planet venus surface",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What happens if climate change thaws these frozen methane deposits under the sea?",
-      "on_screen_text": "THAWING SEABED",
-      "search_query": "ocean floor methane",
-      "motion": "static",
+      "duration": 6,
+      "voiceover": "What if you tried to live out a single year there?",
+      "on_screen_text": "BROKEN CLOCK",
+      "search_query": "planets orbiting sun",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "A block the size of a washing machine expands to fill a two-story home.",
-      "on_screen_text": "RAPID EXPANSION",
-      "search_query": "methane hydrate",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year.",
+      "on_screen_text": "243 VS 225",
+      "search_query": "planet venus surface",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "These deposits hold ten times more carbon than our entire atmosphere.",
-      "on_screen_text": "10X ATMOSPHERE",
-      "search_query": "deep ocean water surface",
-      "motion": "static",
+      "voiceover": "The Sun there rises in the west and sets in the east, spinning backward like a broken music box.",
+      "on_screen_text": "WEST TO EAST",
+      "search_query": "space planet rotation",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 3,
-      "voiceover": "As oceans warm, the solid seabed loses its grip.",
-      "on_screen_text": "SEABED FAILS",
-      "search_query": "underwater ocean seabed",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "That retrograde spin is why a day so long feels like it bends time itself.",
+      "on_screen_text": "TIME BENDS",
+      "search_query": "planet venus surface",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 2,
-      "voiceover": "The ocean floor literally liquefies.",
-      "on_screen_text": "LIQUEFIED SEAFLOOR",
-      "search_query": "underwater landslide ocean",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 7,
       "duration": 4,
-      "voiceover": "Collapsing slopes can sever the subsea cables carrying almost all internet traffic.",
-      "on_screen_text": "INTERNET CABLES AT RISK",
-      "search_query": "fiber optic cable ocean",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 5,
-      "voiceover": "Our world sits on a thin crust holding back a trapped sea of gas.",
-      "on_screen_text": "TRAPPED SEA OF GAS",
-      "search_query": "planet earth space view",
-      "motion": "zoom_out",
+      "voiceover": "The air would crush you long before you noticed.",
+      "on_screen_text": "CRUSHING AIR",
+      "search_query": "planet venus surface",
+      "motion": "static",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "What happens if frozen methane on the ocean floor thaws? Is climate change melting the seabed?",
-    "Deep beneath the ocean floor, massive deposits of frozen methane gas sit under immense pressure.",
-    "There is over 10 times more carbon trapped under the ocean floor than in our entire atmosphere."
+    "What if your calendar on Venus tore itself apart? #venustime",
+    "A day there is longer than its year. Real.",
+    "Team Sunrise in the west? Or east?"
   ],
   "hashtags": [
-    "#methane",
-    "#ocean",
-    "#climate",
+    "#venus",
+    "#spacefacts",
+    "#timewarp",
+    "#planets",
     "#science",
-    "#deepsea",
-    "#earth"
+    "#astronomy"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-08_the-flammable-ocean-floor",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "geology"
+  "video_id": "science_2026-08-09_venus-where-a-day-outlasts-a-year",
+  "cta_style": "LOOP",
+  "domain": "space"
 }

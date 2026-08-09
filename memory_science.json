@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_microbes-are-thinking",
-      "metaphor": "single celled brain",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "COMMENT",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "Microbes Are Thinking",
-      "fact_id": "microbe_intelligence",
-      "domain": "biology",
-      "hook": "Right now, microbes inside your mouth are actively predicting your next move.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 8.0,
-        "coherence": 8.0,
-        "overall": 8.14
-      }
-    },
-    {
       "video_id": "science_2026-08-02_the-strange-power-of-fake-medicine",
       "metaphor": "brain healing mind cure",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -433,6 +407,33 @@
         "biggest_issue": "The abstract city graphic in the final frame feels disconnected from deep sea methane deposits.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-08-09_venus-where-a-day-outlasts-a-year",
+      "metaphor": "planet's broken clock",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "Venus: Where a Day Outlasts a Year",
+      "fact_id": "venus_day",
+      "domain": "space",
+      "hook": "Your calendar on Venus would tear itself apart.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 6,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 9.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.71
       }
     }
   ]
