@@ -4896,6 +4896,186 @@
         "mycorrhizal relationships",
         "ecosystem health"
       ]
+    },
+    {
+      "id": "microbe_memory",
+      "domain": "microbiology",
+      "fact": "Some microbes can retain memories of their environment and adjust their behavior accordingly. This ability is crucial for their survival in changing ecosystems.",
+      "angle": "adaptation",
+      "key_terms": [
+        "microbes",
+        "memory",
+        "environment"
+      ],
+      "whatif": "What if these microbes could teach us about adapting to our own changing world? Could we learn from their ability to remember and adjust?",
+      "wow": "Some of these microbes can even pass on their memories to their offspring, creating a form of microbial culture.",
+      "queries": [
+        "microbes in extreme environments",
+        "microbial memory",
+        "environmental adaptation"
+      ]
+    },
+    {
+      "id": "linguistic_shift",
+      "domain": "language",
+      "fact": "The order of words in a sentence can completely flip the meaning, and some languages have dedicated words for such shifts. This can lead to humorous misunderstandings when translating.",
+      "angle": "Context",
+      "key_terms": [
+        "Syntax",
+        "Semantics",
+        "Linguistics"
+      ],
+      "whatif": "What if the structure of our language influences how we think about time and space? Could it be that our grammar shapes our very perception of reality?",
+      "wow": "Research has shown that certain linguistic structures can affect our ability to save money or even influence our political views.",
+      "queries": [
+        "people speaking different languages",
+        "brain scans of bilingual people",
+        "language structure examples"
+      ]
+    },
+    {
+      "id": "echo_location",
+      "domain": "biology",
+      "fact": "Some animals can locate objects in their environment by making sounds and listening for the echoes. This biological sonar is used for navigation and hunting.",
+      "angle": "Adaptation",
+      "key_terms": [
+        "Echolocation",
+        "Biology",
+        "Navigation"
+      ],
+      "whatif": "What if humans could develop a similar ability to navigate through darkness or detect hidden objects using sound waves?",
+      "wow": "Dolphins and bats are known to use this technique, and scientists are studying how to apply this principle to human technology.",
+      "queries": [
+        "dolphins using echolocation",
+        "bats flying in darkness",
+        "biological sonar experiments"
+      ]
+    },
+    {
+      "id": "forest_intelligence",
+      "domain": "ecology",
+      "fact": "Forests are interconnected networks of trees and fungi that communicate and cooperate with each other. This network can be thought of as a single, intelligent organism.",
+      "angle": "Interconnectedness",
+      "key_terms": [
+        "Forest",
+        "Ecology",
+        "Intelligence"
+      ],
+      "whatif": "What if forests hold the key to understanding collective intelligence and cooperation, and how could this insight be applied to human societies?",
+      "wow": "Research has revealed that trees can warn each other of dangers and even share nutrients through their roots, demonstrating a complex social structure.",
+      "queries": [
+        "forest ecosystems",
+        "tree communication",
+        "fungal networks"
+      ]
+    },
+    {
+      "id": "language_shift",
+      "domain": "language",
+      "fact": "Our brains can rewire themselves to learn a new language in just a few months, even if we're adults. This process can change the structure of our brain.",
+      "angle": "Neuroplasticity",
+      "key_terms": [
+        "neuroplasticity",
+        "language learning",
+        "brain structure"
+      ],
+      "whatif": "What if we could harness this ability to learn any new skill quickly? How would our lives change?",
+      "wow": "Some people can even become fluent in a new language after a near-death experience, which triggers a sudden change in brain function.",
+      "queries": [
+        "brain plasticity footage",
+        "language learning before and after",
+        "neuroplasticity experiments"
+      ]
+    },
+    {
+      "id": "glowing_forest",
+      "domain": "nature",
+      "fact": "There are forests where the trees and plants emit a glowing light due to a chemical reaction. This phenomenon can create an ethereal landscape.",
+      "angle": "Bioluminescence",
+      "key_terms": [
+        "glowing forest",
+        "bioluminescence",
+        "chemical reaction"
+      ],
+      "whatif": "What if we could harness this ability to create sustainable, glowing cities? How would it change urban life?",
+      "wow": "Some of these forests are so bright that they can be seen from space, making them a wonder of the natural world.",
+      "queries": [
+        "glowing forest footage",
+        "bioluminescent trees",
+        "forest at night"
+      ]
+    },
+    {
+      "id": "brain_computer",
+      "domain": "neuroscience",
+      "fact": "Brain-computer interfaces (BCIs) are systems that allow people to control devices with their thoughts, potentially revolutionizing the treatment of paralysis and other neurological disorders. They can even allow people to 'type' messages with their minds.",
+      "angle": "Neurotechnology",
+      "key_terms": [
+        "brain-computer interface",
+        "neurological disorder",
+        "thought control"
+      ],
+      "whatif": "What if BCIs could be used to enhance human cognition and abilities, beyond just treating disorders? How would it change the future of work and education?",
+      "wow": "Some BCIs can even read brain signals to predict a person's intentions, allowing for seamless interaction with devices.",
+      "queries": [
+        "brain-computer interface demo",
+        "neurotechnology research",
+        "thought control experiment"
+      ]
+    },
+    {
+      "id": "linguistic_relativity",
+      "domain": "language",
+      "fact": "The language we speak can influence the way we think and perceive the world. Different languages have different grammatical structures and vocabularies that shape our thoughts.",
+      "angle": "thoughtprovoking",
+      "key_terms": [
+        "language",
+        "thought",
+        "perception"
+      ],
+      "whatif": "What if the language we speak determines how we see the world? What if some languages hold the key to new perspectives and ideas?",
+      "wow": "For example, the Himba language has specific words for colors like 'bluish-green', which has been shown to improve speakers' ability to distinguish between similar shades.",
+      "queries": [
+        "language comparison",
+        "linguistic relativity",
+        "Himba language"
+      ]
+    },
+    {
+      "id": "gut_brain_axis",
+      "domain": "neuroscience",
+      "fact": "Our gut and brain are connected through the vagus nerve, which allows them to communicate with each other. This is known as the gut-brain axis.",
+      "angle": "intriguing",
+      "key_terms": [
+        "gut",
+        "brain",
+        "vagus nerve"
+      ],
+      "whatif": "What if our gut was influencing our mood and cognitive function? What if we could 'feed' our brain through our gut?",
+      "wow": "For example, certain gut bacteria have been shown to produce neurotransmitters that can affect our mood and behavior.",
+      "queries": [
+        "gut brain connection",
+        "vagus nerve",
+        "gut bacteria"
+      ]
+    },
+    {
+      "id": "brain_waves",
+      "domain": "neuroscience",
+      "fact": "Our brain waves can change in response to different states of consciousness, such as relaxation, attention, or sleep.",
+      "angle": "intriguing",
+      "key_terms": [
+        "brain waves",
+        "consciousness",
+        "states"
+      ],
+      "whatif": "What if we could control our brain waves to achieve specific states of mind? What if we could 'tune in' to our brain's frequencies?",
+      "wow": "For example, studies have shown that alpha brain waves are associated with relaxation and closed eyes, while beta waves are associated with attention and focus.",
+      "queries": [
+        "brain waves",
+        "consciousness",
+        "states of mind"
+      ]
     }
   ]
 }
