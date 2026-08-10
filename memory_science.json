@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-02_the-strange-power-of-fake-medicine",
-      "metaphor": "brain healing mind cure",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "The Strange Power of Fake Medicine",
-      "fact_id": "placebo_effect",
-      "domain": "psychology",
-      "hook": "Every time you take medicine, your brain might respond by healing you alone.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.0
-      }
-    },
-    {
       "video_id": "science_2026-08-03_the-real-life-zombie-fungus",
       "metaphor": "biological puppet master",
       "viewer_job": "REFRAME",
@@ -434,6 +408,36 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.71
+      }
+    },
+    {
+      "video_id": "science_2026-08-10_the-animal-that-poops-in-cubes",
+      "metaphor": "cube poop",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Animal That Poops in Cubes",
+      "fact_id": "wombat_cube_poop",
+      "domain": "animals",
+      "hook": "Your poop isn\u2019t the only shape that matters.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "Rule-Breaking Animals",
+        "part": 1
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 6.0,
+        "payoff": 7.0,
+        "rewatch": 5.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.14
       }
     }
   ]
