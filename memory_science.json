@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-03_the-real-life-zombie-fungus",
-      "metaphor": "biological puppet master",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "MYTH_FLIP",
-      "title": "The Real Life Zombie Fungus",
-      "fact_id": "zombie_ant_fungus",
-      "domain": "fungi",
-      "hook": "You think zombie parasites hijack the brain, but this fungus leaves it completely untouched.",
-      "vibe": "visceral",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 7.0,
-        "payoff": 7.0,
-        "rewatch": 6.0,
-        "clarity": 8.0,
-        "coherence": 8.0,
-        "overall": 7.0
-      }
-    },
-    {
       "video_id": "science_2026-08-03_why-ocean-currents-shape-our-world",
       "metaphor": "underwater planetary climate engines",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -438,6 +412,33 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-12_your-head-ages-faster-than-your-feet",
+      "metaphor": "gravity\u2019s trick",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "COMPARISON_COLLISION",
+      "title": "Your head ages faster than your feet",
+      "fact_id": "head_ages_faster",
+      "domain": "physics",
+      "hook": "Your head is ticking faster than your feet right now.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 7.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 5.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.0
       }
     }
   ]
