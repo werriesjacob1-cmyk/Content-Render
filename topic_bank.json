@@ -5076,6 +5076,60 @@
         "consciousness",
         "states of mind"
       ]
+    },
+    {
+      "id": "brain_reboot",
+      "domain": "neuroscience",
+      "fact": "Our brains can reboot and reorganize themselves after a stroke or injury. This process can even help people regain lost skills.",
+      "angle": "resilience",
+      "key_terms": [
+        "neuroplasticity",
+        "recovery",
+        "brain"
+      ],
+      "whatif": "What if we could harness this power to improve learning and memory? Could we reboot our brains to become smarter and more efficient?",
+      "wow": "Some people have even regained the ability to speak and walk after being in a coma for years.",
+      "queries": [
+        "brain injury recovery",
+        "neuroplasticity examples",
+        "stroke rehabilitation"
+      ]
+    },
+    {
+      "id": "language_learning",
+      "domain": "language",
+      "fact": "Babies as young as six months old can distinguish between different languages. They can even recognize the rhythm and melody of their native language.",
+      "angle": "development",
+      "key_terms": [
+        "language acquisition",
+        "baby development",
+        "linguistics"
+      ],
+      "whatif": "What if we could tap into this natural ability to learn languages? Could we create more effective language learning methods for adults?",
+      "wow": "Some studies have shown that babies can learn multiple languages simultaneously without getting them mixed up.",
+      "queries": [
+        "baby language development",
+        "language learning methods",
+        "linguistics research"
+      ]
+    },
+    {
+      "id": "gut_brain_connection",
+      "domain": "neuroscience",
+      "fact": "Our gut and brain are connected through the vagus nerve, which allows for bidirectional communication. This connection can influence our mood, appetite, and even cognitive function.",
+      "angle": "wellness",
+      "key_terms": [
+        "gut brain connection",
+        "vagus nerve",
+        "neuroscience research"
+      ],
+      "whatif": "What if we could harness this connection to improve our mental and physical health? Could we use this knowledge to develop new treatments for neurological disorders?",
+      "wow": "Some studies have shown that the gut microbiome can even produce neurotransmitters that influence our mood and behavior.",
+      "queries": [
+        "gut brain connection research",
+        "vagus nerve examples",
+        "neuroscience innovations"
+      ]
     }
   ]
 }
