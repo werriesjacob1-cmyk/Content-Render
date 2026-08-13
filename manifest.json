@@ -1,105 +1,105 @@
 {
-  "title": "Your head ages faster than your feet",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "time bending",
-  "metaphor": "gravity\u2019s trick",
+  "title": "Your fingerprints aren't in your genes",
+  "viewer_job": "REFRAME",
+  "keyword": "identical twins fingerprints",
+  "metaphor": "womb's random art",
   "vibe": "eerie",
-  "hook": "Your head is ticking faster than your feet right now.",
-  "hook_headline": "TIME BENDS INSIDE YOU",
-  "script": "Your feet are stuck in the past. Your head ages faster, because the higher you are, the weaker gravity pulls. So why does standing up make your head tick faster than your feet? Atomic clocks, raised just 33 centimetres apart, proved this time warp. Here\u2019s how: weaker gravity at your head makes time flow slightly quicker. The effect is tiny\u2014about 90 billionths of a second over 80 years\u2014but it\u2019s real. So if you lay flat forever, your head and feet would age almost in sync. GPS satellites orbit so high they\u2019d be useless without correcting for this same bend.",
+  "hook": "Right now, your fingertips are pressing against your past.",
+  "hook_headline": "TWINS SHARE NOTHING",
+  "script": "Right now, your fingertips are pressing against your past. Identical twins share the same DNA, yet their different fingerprints? The ridges on your fingertips are shaped by tiny random forces as you press against the womb, not in your genes. The Vasilev quadruplets\u2019 identical DNA couldn\u2019t write the same prints. The pressure on your skin varies by as little as 1-2 mmHg to create unique ridges. Your phone is unlocking a pattern that isn\u2019t even written in your genes. The one mark police use to tell people apart is decided by randomness, not heredity. So if someone asks, whose fingerprint is this?",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "Your feet are stuck in the past.",
-      "on_screen_text": "TIME BENDS",
-      "search_query": "feet standing floor",
+      "duration": 3,
+      "voiceover": "Right now, your fingertips are pressing against your past.",
+      "on_screen_text": "YOUR PAST",
+      "search_query": "fingertip pressed on glass",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "Your head ages faster, because the higher you are, the weaker gravity pulls.",
-      "on_screen_text": "HIGHER = FASTER",
-      "search_query": "skyscraper looking up",
-      "motion": "zoom_out",
+      "duration": 3,
+      "voiceover": "Identical twins share the same DNA, yet their different fingerprints?",
+      "on_screen_text": "SAME DNA",
+      "search_query": "identical twins faces",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "So why does standing up make your head tick faster than your feet?",
-      "on_screen_text": "WHY?",
-      "search_query": "atomic clock laboratory",
-      "motion": "zoom_in",
+      "duration": 3,
+      "voiceover": "The ridges on your fingertips are shaped by tiny random forces as you press against the womb, not in your genes.",
+      "on_screen_text": "RANDOM FORCES",
+      "search_query": "fingertip ridges macro",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "Atomic clocks, raised just 33 centimetres apart, proved this time warp.",
-      "on_screen_text": "33 CM PROOF",
-      "search_query": "atomic clock close up",
+      "voiceover": "The Vasilev quadruplets\u2019 identical DNA couldn\u2019t write the same prints.",
+      "on_screen_text": "VASILEV TWINS",
+      "search_query": "newborn baby hand",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "Here\u2019s how: weaker gravity at your head makes time flow slightly quicker.",
-      "on_screen_text": "WEAKER GRAVITY",
-      "search_query": "mountain climber summit",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "The pressure on your skin varies by as little as 1-2 mmHg to create unique ridges.",
+      "on_screen_text": "1-2 mmHg",
+      "search_query": "fingertip ridges macro",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "The effect is tiny\u2014about 90 billionths of a second over 80 years\u2014but it\u2019s real.",
-      "on_screen_text": "90 BILLIONTHS",
-      "search_query": "stopwatch close up",
-      "motion": "zoom_in",
+      "voiceover": "Your phone is unlocking a pattern that isn\u2019t even written in your genes.",
+      "on_screen_text": "NOT IN DNA",
+      "search_query": "smartphone fingerprint unlock",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "So if you lay flat forever, your head and feet would age almost in sync.",
-      "on_screen_text": "LAY FLAT = SYNC",
-      "search_query": "person lying down",
+      "duration": 3,
+      "voiceover": "The one mark police use to tell people apart is decided by randomness, not heredity.",
+      "on_screen_text": "RANDOM MARK",
+      "search_query": "police fingerprint close up",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 8,
-      "duration": 6,
-      "voiceover": "GPS satellites orbit so high they\u2019d be useless without correcting for this same bend.",
-      "on_screen_text": "GPS FIXES IT",
-      "search_query": "satellite orbiting earth",
-      "motion": "pan",
+      "duration": 3,
+      "voiceover": "So if someone asks, whose fingerprint is this?",
+      "on_screen_text": "WHOSE?",
+      "search_query": "fingerprint close up",
+      "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "What if you spent your whole life lying flat? #timebending",
-    "Why does standing up speed up your head?",
-    "GPS satellites fix gravity\u2019s time trick daily"
+    "Your identical twins aren\u2019t your fingerprints\u2014whose IS yours?",
+    "The mark police use to ID you isn\u2019t in your genes",
+    "Real science: identical twins have different fingerprints"
   ],
   "hashtags": [
-    "#time",
-    "#space",
-    "#physics",
-    "#gravity",
     "#science",
-    "#facts"
+    "#genes",
+    "#twins",
+    "#forensics",
+    "#womb",
+    "#identity"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-12_your-head-ages-faster-than-your-feet",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "physics"
+  "video_id": "science_2026-08-13_your-fingerprints-aren-t-in-your-genes",
+  "cta_style": "COMMENT",
+  "domain": "body"
 }

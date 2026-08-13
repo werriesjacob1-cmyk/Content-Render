@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-03_why-ocean-currents-shape-our-world",
-      "metaphor": "underwater planetary climate engines",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "Why Ocean Currents Shape Our World",
-      "fact_id": "ocean_current_patterns",
-      "domain": "oceanography",
-      "hook": "How do ocean currents keep London mild while Calgary at the same latitude freezes?",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 8.0,
-        "overall": 7.86
-      }
-    },
-    {
       "video_id": "science_2026-08-03_the-shortest-war-in-history",
       "metaphor": "briefest historical conflict",
       "viewer_job": "MYTH_BUSTER",
@@ -439,6 +413,33 @@
         "clarity": 9.0,
         "coherence": 8.0,
         "overall": 7.0
+      }
+    },
+    {
+      "video_id": "science_2026-08-13_your-fingerprints-aren-t-in-your-genes",
+      "metaphor": "womb's random art",
+      "viewer_job": "REFRAME",
+      "cta_style": "COMMENT",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "Your fingerprints aren't in your genes",
+      "fact_id": "twin_fingerprints",
+      "domain": "body",
+      "hook": "Right now, your fingertips are pressing against your past.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 7.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.14
       }
     }
   ]
