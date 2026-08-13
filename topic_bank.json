@@ -5130,6 +5130,618 @@
         "vagus nerve examples",
         "neuroscience innovations"
       ]
+    },
+    {
+      "id": "electric_bacteria",
+      "domain": "microbiology",
+      "fact": "Certain bacteria can generate electricity, allowing them to power small devices and even clean up pollutants in the environment. These bacteria use special proteins to harness energy from their surroundings.",
+      "angle": "microbial_power",
+      "key_terms": [
+        "electric",
+        "bacteria",
+        "energy"
+      ],
+      "whatif": "What if we could harness this ability to develop new sustainable energy solutions? What would be the implications for our reliance on fossil fuels?",
+      "wow": "In fact, scientists have discovered that these electric bacteria can even form complex networks, allowing them to work together to generate more electricity.",
+      "queries": [
+        "electric bacteria footage",
+        "microbial fuel cell",
+        "bacterial electricity"
+      ]
+    },
+    {
+      "id": "sea_slug_intelligence",
+      "domain": "marine_biology",
+      "fact": "Sea slugs are highly intelligent creatures that can solve complex puzzles and even learn from experience. They have been observed using tools and communicating with each other in complex ways.",
+      "angle": "animal_intelligence",
+      "key_terms": [
+        "sea",
+        "slug",
+        "intelligence"
+      ],
+      "whatif": "What if we could learn more about the intelligence of sea slugs and how they adapt to their environment? What would be the implications for our understanding of animal cognition?",
+      "wow": "In fact, scientists have discovered that sea slugs can even retain memories of their environment and adjust their behavior accordingly, a ability that is rare in the animal kingdom.",
+      "queries": [
+        "sea slug footage",
+        "slug intelligence",
+        "marine animal cognition"
+      ]
+    },
+    {
+      "id": "neurorejuvenation",
+      "domain": "neuroscience",
+      "fact": "Neurorejuvenation is the process by which the brain regenerates and restores itself, leading to improved cognitive function and overall brain health.",
+      "angle": "brain",
+      "key_terms": [
+        "neurorejuvenation",
+        "brain regeneration",
+        "cognitive function"
+      ],
+      "whatif": "What if neurorejuvenation could be harnessed to prevent or reverse age-related cognitive decline and neurodegenerative diseases? What would be the potential benefits and challenges?",
+      "wow": "In fact, scientists have already discovered that certain lifestyle interventions, such as exercise and meditation, can promote neurorejuvenation and improve cognitive function in older adults.",
+      "queries": [
+        "neurorejuvenation",
+        "brain regeneration",
+        "cognitive function"
+      ]
+    },
+    {
+      "id": "neural_synchronization",
+      "domain": "neuroscience",
+      "fact": "Neural synchronization refers to the process by which brain waves become synchronized between individuals, allowing for enhanced communication and cooperation.",
+      "angle": "brain",
+      "key_terms": [
+        "neural synchronization",
+        "brain waves",
+        "communication"
+      ],
+      "whatif": "What if neural synchronization could be harnessed to enhance teamwork and collaboration, allowing us to work together more effectively and achieve greater success? What would be the potential benefits and challenges?",
+      "wow": "In fact, studies have shown that neural synchronization can be enhanced through practices such as meditation and mindfulness, and that it is associated with improved cognitive function and social skills.",
+      "queries": [
+        "neural synchronization",
+        "brain waves",
+        "communication"
+      ]
+    },
+    {
+      "id": "geological_oscillations",
+      "domain": "earth",
+      "fact": "The Earth's crust is constantly oscillating due to the movement of tectonic plates, creating a rhythmic pattern that can be felt in the planet's gravitational field. This phenomenon is known as the 'geological hum'.",
+      "angle": "Vibrations",
+      "key_terms": [
+        "oscillations",
+        "tectonic",
+        "geological hum"
+      ],
+      "whatif": "What if we could harness the energy from these geological oscillations to create new forms of sustainable power?",
+      "wow": "The geological hum is so powerful that it can be detected from space, and is thought to be responsible for the formation of certain geological features.",
+      "queries": [
+        "geological hum detection",
+        "tectonic plate movement patterns",
+        "earth's gravitational field oscillations"
+      ]
+    },
+    {
+      "id": "chemical_signaling",
+      "domain": "chemistry",
+      "fact": "Plants and animals use chemical signals to communicate with each other, and even with other species. These signals can be used to warn of predators, attract mates, or even coordinate behavior.",
+      "angle": "Communication",
+      "key_terms": [
+        "chemical signals",
+        "plant communication",
+        "animal behavior"
+      ],
+      "whatif": "What if we could use chemical signaling to create new forms of sustainable agriculture or even conservation efforts?",
+      "wow": "Some plants can release chemical signals that attract specific species of insects to pollinate them, while others can release signals that repel predators.",
+      "queries": [
+        "plant chemical signals",
+        "animal pheromones",
+        "chemical communication in nature"
+      ]
+    },
+    {
+      "id": "weather_pattern_disruptions",
+      "domain": "earth",
+      "fact": "Weather patterns can be disrupted by even small changes in the environment, such as the introduction of a new species or the construction of a building. This can have significant effects on local ecosystems and even global climate patterns.",
+      "angle": "Disruptions",
+      "key_terms": [
+        "weather patterns",
+        "environmental disruptions",
+        "climate change"
+      ],
+      "whatif": "What if we could use this knowledge to create more accurate weather forecasts or even mitigate the effects of climate change?",
+      "wow": "A single large building can disrupt local wind patterns, causing changes in temperature and precipitation patterns.",
+      "queries": [
+        "weather pattern disruptions",
+        "environmental impact on weather",
+        "climate change effects on local ecosystems"
+      ]
+    },
+    {
+      "id": "mathematical_optimization",
+      "domain": "math",
+      "fact": "Mathematical optimization techniques can be used to solve complex problems in fields such as logistics, finance, and even biology. These techniques can help find the most efficient solutions to complex problems.",
+      "angle": "Optimization",
+      "key_terms": [
+        "mathematical optimization",
+        "logistics",
+        "finance"
+      ],
+      "whatif": "What if we could use mathematical optimization to create more efficient systems for resource allocation or even disease treatment?",
+      "wow": "Mathematical optimization can be used to optimize the delivery routes of trucks, reducing fuel consumption and lowering emissions.",
+      "queries": [
+        "mathematical optimization techniques",
+        "logistics optimization",
+        "finance optimization"
+      ]
+    },
+    {
+      "id": "light_refraction",
+      "domain": "light",
+      "fact": "Light can be refracted, or bent, as it passes through different materials, creating a range of optical effects. This can be used to create new forms of optical technology or even art.",
+      "angle": "Refraction",
+      "key_terms": [
+        "light refraction",
+        "optical effects",
+        "optical technology"
+      ],
+      "whatif": "What if we could use light refraction to create new forms of sustainable energy or even advanced medical imaging techniques?",
+      "wow": "Some materials can bend light in such a way that it becomes invisible, creating a 'cloak of invisibility' effect.",
+      "queries": [
+        "light refraction patterns",
+        "optical effects in nature",
+        "optical technology advancements"
+      ]
+    },
+    {
+      "id": "historical_preservation",
+      "domain": "history",
+      "fact": "Historical preservation efforts can help protect cultural heritage sites and artifacts from damage or destruction. This can include techniques such as conservation, restoration, and even digital preservation.",
+      "angle": "Preservation",
+      "key_terms": [
+        "historical preservation",
+        "cultural heritage",
+        "conservation"
+      ],
+      "whatif": "What if we could use historical preservation to create new forms of cultural exchange or even education?",
+      "wow": "Some historical artifacts can be preserved for thousands of years using advanced conservation techniques, allowing future generations to learn from the past.",
+      "queries": [
+        "historical preservation techniques",
+        "cultural heritage sites",
+        "digital preservation methods"
+      ]
+    },
+    {
+      "id": "geological_formation",
+      "domain": "earth",
+      "fact": "Geological formations can be created through a range of processes, including erosion, sedimentation, and even tectonic activity. These formations can provide valuable insights into the Earth's history and even the formation of other planets.",
+      "angle": "Formation",
+      "key_terms": [
+        "geological formations",
+        "erosion",
+        "sedimentation"
+      ],
+      "whatif": "What if we could use geological formations to create new forms of sustainable resource extraction or even planetary exploration?",
+      "wow": "Some geological formations can be dated back billions of years, providing a window into the Earth's ancient past.",
+      "queries": [
+        "geological formation processes",
+        "erosion patterns",
+        "sedimentation techniques"
+      ]
+    },
+    {
+      "id": "sensory_adaptation",
+      "domain": "senses",
+      "fact": "Our senses can adapt to different environments and situations, allowing us to perceive and respond to the world around us. This can include adaptations such as changes in sensitivity or even the development of new senses.",
+      "angle": "Adaptation",
+      "key_terms": [
+        "sensory adaptation",
+        "perception",
+        "environment"
+      ],
+      "whatif": "What if we could use sensory adaptation to create new forms of therapy or even advanced prosthetic technology?",
+      "wow": "Some people can develop a sense of echolocation, using sound waves to navigate their environment.",
+      "queries": [
+        "sensory adaptation techniques",
+        "perception and environment",
+        "prosthetic technology advancements"
+      ]
+    },
+    {
+      "id": "weather_forecasting",
+      "domain": "earth",
+      "fact": "Weather forecasting can be used to predict and prepare for severe weather events, such as hurricanes or tornadoes. This can involve the use of advanced computer models, satellite imagery, and even ground-based sensors.",
+      "angle": "Forecasting",
+      "key_terms": [
+        "weather forecasting",
+        "severe weather",
+        "prediction"
+      ],
+      "whatif": "What if we could use weather forecasting to create new forms of disaster preparedness or even climate change mitigation?",
+      "wow": "Some weather forecasting models can predict the exact path and intensity of a hurricane days in advance, allowing for evacuations and other preparations.",
+      "queries": [
+        "weather forecasting techniques",
+        "severe weather prediction",
+        "disaster preparedness methods"
+      ]
+    },
+    {
+      "id": "atmospheric_optics",
+      "domain": "light",
+      "fact": "Certain atmospheric conditions can create the illusion of a 'sun dog', where a second sun appears in the sky. This is caused by the refraction of light through ice crystals.",
+      "angle": "optics",
+      "key_terms": [
+        "sun dog",
+        "atmospheric optics",
+        "refraction"
+      ],
+      "whatif": "What if we could harness this phenomenon to create new forms of optical communication?",
+      "wow": "The sun dog can appear to be as bright as the actual sun, causing confusion for observers!",
+      "queries": [
+        "sun dog phenomenon",
+        "atmospheric optics",
+        "ice crystal refraction"
+      ]
+    },
+    {
+      "id": "chemical_camouflage",
+      "domain": "chemistry",
+      "fact": "Some animals can change their chemical composition to blend in with their surroundings, making them nearly undetectable. This is known as 'chemical camouflage'.",
+      "angle": "stealth",
+      "key_terms": [
+        "chemical camouflage",
+        "stealth",
+        "animal adaptation"
+      ],
+      "whatif": "What if we could develop materials that could change their chemical composition to adapt to different environments?",
+      "wow": "Some animals can even change their scent to match that of their predators, making them nearly invisible!",
+      "queries": [
+        "chemical camouflage",
+        "animal adaptation",
+        "stealth technology"
+      ]
+    },
+    {
+      "id": "mathematical_patterns",
+      "domain": "math",
+      "fact": "Certain mathematical patterns can be found in nature, such as the Fibonacci sequence in the arrangement of leaves on a stem. This is known as 'biomathematics'.",
+      "angle": "patterns",
+      "key_terms": [
+        "biomathematics",
+        "Fibonacci sequence",
+        "natural patterns"
+      ],
+      "whatif": "What if we could use these patterns to develop more efficient algorithms and codes?",
+      "wow": "The Fibonacci sequence can be found in everything from the arrangement of branches on a tree to the structure of DNA!",
+      "queries": [
+        "biomathematics",
+        "Fibonacci sequence",
+        "natural patterns"
+      ]
+    },
+    {
+      "id": "geological_history",
+      "domain": "earth",
+      "fact": "The Earth's geological history can be read in the layers of rock that make up the planet's crust. This is known as 'geological stratigraphy'.",
+      "angle": "history",
+      "key_terms": [
+        "geological stratigraphy",
+        "Earth's history",
+        "rock layers"
+      ],
+      "whatif": "What if we could use this information to predict future geological events and natural disasters?",
+      "wow": "The layers of rock can reveal information about the Earth's climate, oceans, and even the evolution of life on the planet!",
+      "queries": [
+        "geological stratigraphy",
+        "Earth's history",
+        "rock layers"
+      ]
+    },
+    {
+      "id": "fungal_intelligence",
+      "domain": "fungi",
+      "fact": "Some fungi can solve complex problems, such as navigating through mazes, and can even exhibit a form of intelligence. This is known as 'fungal intelligence'.",
+      "angle": "intelligence",
+      "key_terms": [
+        "fungal intelligence",
+        "problem solving",
+        "maze navigation"
+      ],
+      "whatif": "What if we could harness this property to develop more efficient algorithms and artificial intelligence systems?",
+      "wow": "Some fungi can even learn from experience and adapt to new situations, making them one of the most intelligent organisms on the planet!",
+      "queries": [
+        "fungal intelligence",
+        "problem solving",
+        "maze navigation"
+      ]
+    },
+    {
+      "id": "sensory_perception",
+      "domain": "senses",
+      "fact": "Some animals can perceive their environment in ways that are beyond human capabilities, such as the ability to see in multiple spectrums or hear ultrasonic sounds. This is known as 'sensory perception'.",
+      "angle": "perception",
+      "key_terms": [
+        "sensory perception",
+        "animal senses",
+        "multispectral vision"
+      ],
+      "whatif": "What if we could develop technology that could mimic these sensory capabilities to create more efficient sensing systems?",
+      "wow": "Some animals can even perceive the Earth's magnetic field, making them one of the most sensitive organisms on the planet!",
+      "queries": [
+        "sensory perception",
+        "animal senses",
+        "multispectral vision"
+      ]
+    },
+    {
+      "id": "solar_sail",
+      "domain": "physics",
+      "fact": "A giant sail can be propelled through space using only sunlight, allowing for faster travel to other planets. This concept has been tested and proven to be effective.",
+      "angle": "space",
+      "key_terms": [
+        "solar",
+        "sail",
+        "space"
+      ],
+      "whatif": "What if we could harness the power of sunlight to travel to distant galaxies? Could we use this technology to explore the universe more efficiently?",
+      "wow": "The speed of a solar sail can reach up to 200,000 miles per hour, making it one of the fastest ways to travel through space.",
+      "queries": [
+        "solar sail in space",
+        "spacecraft propelled by sunlight",
+        "solar sail technology"
+      ]
+    },
+    {
+      "id": "fungal_highway",
+      "domain": "biology",
+      "fact": "Fungi have a vast network of underground highways that allow them to transport nutrients and information across vast distances. This network is so complex that it can even help trees communicate with each other.",
+      "angle": "fungi",
+      "key_terms": [
+        "fungal",
+        "highway",
+        "network"
+      ],
+      "whatif": "What if we could harness the power of fungal networks to create more efficient communication systems? Could we use this technology to improve our own communication networks?",
+      "wow": "The fungal highway can stretch for miles, allowing fungi to share nutrients and information with other organisms in the network.",
+      "queries": [
+        "fungal network",
+        "underground fungal highway",
+        "fungal communication"
+      ]
+    },
+    {
+      "id": "geological_memory",
+      "domain": "earth",
+      "fact": "The Earth's geological history is recorded in the layers of rock that make up its crust, allowing us to read the history of the planet like a book. This record can provide valuable insights into the Earth's past and help us understand its evolution.",
+      "angle": "geology",
+      "key_terms": [
+        "geological",
+        "memory",
+        "rock"
+      ],
+      "whatif": "What if we could use the geological record to predict future earthquakes and volcanic eruptions? Could we use this information to improve our understanding of the Earth's internal dynamics?",
+      "wow": "The geological record can reveal the history of the Earth's climate, including periods of extreme warming and cooling, allowing us to better understand the planet's evolution.",
+      "queries": [
+        "geological record",
+        "rock layers",
+        "earth's history"
+      ]
+    },
+    {
+      "id": "chemical_telepathy",
+      "domain": "chemistry",
+      "fact": "Certain organisms can communicate with each other through chemical signals, allowing them to coordinate their behavior and work together to achieve complex tasks. This phenomenon has been observed in various species, including insects and animals.",
+      "angle": "chemistry",
+      "key_terms": [
+        "chemical",
+        "telepathy",
+        "signals"
+      ],
+      "whatif": "What if we could harness the power of chemical telepathy to create new communication systems? Could we use this technology to improve our understanding of animal behavior and social interactions?",
+      "wow": "The chemical signals used by these organisms can be so specific that they can convey complex information, including the location of food sources and potential threats.",
+      "queries": [
+        "chemical signals",
+        "telepathy in nature",
+        "chemical communication"
+      ]
+    },
+    {
+      "id": "mathematical_code",
+      "domain": "mathematics",
+      "fact": "The universe is governed by a set of mathematical codes that underlie all of its workings, from the laws of physics to the patterns of biology. These codes can be used to understand and predict the behavior of complex systems.",
+      "angle": "math",
+      "key_terms": [
+        "mathematical",
+        "code",
+        "universe"
+      ],
+      "whatif": "What if we could crack the mathematical code of the universe? Could we use this knowledge to create new technologies and improve our understanding of the cosmos?",
+      "wow": "The mathematical code of the universe can be used to predict the behavior of complex systems, including the stock market and the weather.",
+      "queries": [
+        "mathematical code",
+        "universe pattern",
+        "cosmic math"
+      ]
+    },
+    {
+      "id": "chemical_memory",
+      "domain": "chemistry",
+      "fact": "Certain organisms can store memories in the form of chemical signals, allowing them to recall past events and adapt to their environment. This phenomenon has been observed in various species, including insects and animals.",
+      "angle": "chemistry",
+      "key_terms": [
+        "chemical",
+        "memory",
+        "signals"
+      ],
+      "whatif": "What if we could harness the power of chemical memory to create new forms of data storage? Could we use this technology to improve our understanding of animal behavior and social interactions?",
+      "wow": "The chemical signals used by these organisms can be so specific that they can convey complex information, including the location of food sources and potential threats.",
+      "queries": [
+        "chemical memory",
+        "signal storage",
+        "biological recall"
+      ]
+    },
+    {
+      "id": "memory_masters",
+      "domain": "psychology",
+      "fact": "Some people have an exceptional ability to remember certain types of information, such as numbers or faces. This is due to a combination of genetic and environmental factors that affect the development of the brain's memory systems.",
+      "angle": "memory",
+      "key_terms": [
+        "memory",
+        "exceptional ability",
+        "brain development"
+      ],
+      "whatif": "What if we could unlock the secrets of these memory masters and develop new techniques for improving memory in everyone? Could we use this to create more effective methods for learning and education?",
+      "wow": "Some people can remember thousands of numbers or faces, and can even recall entire conversations or events from years ago.",
+      "queries": [
+        "exceptional memory",
+        "memory techniques",
+        "brain development and memory"
+      ]
+    },
+    {
+      "id": "glowing_waves",
+      "domain": "ocean",
+      "fact": "Certain types of waves can produce a glowing or bioluminescent effect when they break on the shore. This is due to the presence of special types of plankton that emit light when they are disturbed.",
+      "angle": "bioluminescence",
+      "key_terms": [
+        "bioluminescence",
+        "ocean waves",
+        "plankton"
+      ],
+      "whatif": "What if we could harness this property to create new types of sustainable lighting or energy sources? Could we use this to create more efficient ways of generating light?",
+      "wow": "The glowing waves can be seen in certain parts of the world, and can produce a dazzling display of light and color that can be seen from miles away.",
+      "queries": [
+        "bioluminescent waves",
+        "glowing ocean",
+        "plankton and bioluminescence"
+      ]
+    },
+    {
+      "id": "fractal_rivers",
+      "domain": "earth",
+      "fact": "Rivers can flow in a fractal pattern, with smaller tributaries branching off from larger ones in a self-similar pattern. This creates a network of rivers that can be described using mathematical equations.",
+      "angle": "fractals",
+      "key_terms": [
+        "fractals",
+        "rivers",
+        "geology"
+      ],
+      "whatif": "What if we could use these patterns to create more efficient systems for water management and conservation? Could we apply this to other areas of life, like urban planning or engineering?",
+      "wow": "The fractal pattern of rivers can be seen in the way that smaller tributaries branch off from larger ones, creating a complex network of waterways that can be thousands of miles long.",
+      "queries": [
+        "fractal rivers",
+        "river networks",
+        "geology of rivers"
+      ]
+    },
+    {
+      "id": "electric_ants",
+      "domain": "biology",
+      "fact": "Certain types of ants can generate electricity using special types of cells in their bodies. This is used for communication and navigation, and can even be used to stun predators.",
+      "angle": "electricity",
+      "key_terms": [
+        "electricity",
+        "ants",
+        "biological electricity"
+      ],
+      "whatif": "What if we could harness this property to create new types of sustainable energy sources? Could we use this to create more efficient ways of generating electricity?",
+      "wow": "The electric ants can generate enough electricity to power small devices, and can even use this to communicate with other ants over long distances.",
+      "queries": [
+        "electric ants",
+        "biological electricity",
+        "ant communication"
+      ]
+    },
+    {
+      "id": "mathematical_flowers",
+      "domain": "mathematics",
+      "fact": "Flowers can grow in a mathematical pattern, with petals and sepals arranged in a specific geometric shape. This creates a beautiful and intricate pattern that can be described using mathematical equations.",
+      "angle": "patterns",
+      "key_terms": [
+        "mathematics",
+        "flowers",
+        "geometry"
+      ],
+      "whatif": "What if we could use these patterns to create more efficient systems for growth and development? Could we apply this to other areas of life, like urban planning or engineering?",
+      "wow": "The mathematical pattern of flowers can be seen in the way that petals and sepals are arranged, creating a complex and beautiful pattern that can be found in nature.",
+      "queries": [
+        "mathematical flowers",
+        "flower patterns",
+        "geometry of flowers"
+      ]
+    },
+    {
+      "id": "singing_rivers",
+      "domain": "earth",
+      "fact": "Some rivers can create a singing or whistling sound as they flow, due to the unique shape and structure of their channels. This phenomenon is known as 'singing rivers'.",
+      "angle": "Acoustics",
+      "key_terms": [
+        "singing rivers",
+        "whistling sound",
+        "channel shape"
+      ],
+      "whatif": "What if we could harness the power of singing rivers to create new forms of renewable energy? Could we use the vibrations from the river to generate electricity?",
+      "wow": "Some singing rivers can even produce a wide range of tones and frequencies, almost like a natural musical instrument.",
+      "queries": [
+        "singing rivers",
+        "whistling river sounds",
+        "geological acoustics"
+      ]
+    },
+    {
+      "id": "mathematical_clouds",
+      "domain": "mathematics",
+      "fact": "Clouds can form in mathematical patterns, with shapes and structures that reflect the underlying geometry of the atmosphere. This phenomenon is known as 'mathematical clouds'.",
+      "angle": "Geometry",
+      "key_terms": [
+        "mathematical clouds",
+        "geometric patterns",
+        "atmospheric geometry"
+      ],
+      "whatif": "What if we could use mathematical clouds to better understand and predict weather patterns? Could we develop new methods for forecasting and climate modeling?",
+      "wow": "Some mathematical clouds can even create intricate and complex patterns, almost like a natural work of art.",
+      "queries": [
+        "mathematical clouds",
+        "geometric cloud patterns",
+        "atmospheric geometry"
+      ]
+    },
+    {
+      "id": "solar_sails",
+      "domain": "physics",
+      "fact": "Solar sails can propel a spacecraft using only the pressure of sunlight, allowing for efficient and sustainable space travel. This phenomenon is known as 'solar sailing'.",
+      "angle": "Solar Power",
+      "key_terms": [
+        "solar sails",
+        "spacecraft propulsion",
+        "solar power"
+      ],
+      "whatif": "What if we could use solar sails to explore the outer reaches of the solar system? Could we develop new methods for interplanetary travel?",
+      "wow": "Some solar sails can even accelerate a spacecraft to high speeds, allowing for rapid transit times and efficient exploration of the solar system.",
+      "queries": [
+        "solar sails",
+        "spacecraft propulsion",
+        "solar power"
+      ]
+    },
+    {
+      "id": "bioluminescent_waves",
+      "domain": "biology",
+      "fact": "Certain waves can glow with a bright blue or green light, due to the presence of bioluminescent organisms. This phenomenon is known as 'bioluminescent waves'.",
+      "angle": "Bioluminescence",
+      "key_terms": [
+        "bioluminescent waves",
+        "glowing waves",
+        "bioluminescent organisms"
+      ],
+      "whatif": "What if we could harness the power of bioluminescent waves to create new forms of sustainable lighting? Could we use the organisms to develop new lighting technologies?",
+      "wow": "Some bioluminescent waves can even respond to sound or movement, creating a dynamic and interactive display of light and color.",
+      "queries": [
+        "bioluminescent waves",
+        "glowing waves",
+        "bioluminescent organisms"
+      ]
     }
   ]
 }
