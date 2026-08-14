@@ -5742,6 +5742,114 @@
         "glowing waves",
         "bioluminescent organisms"
       ]
+    },
+    {
+      "id": "sonic_booms",
+      "domain": "physics",
+      "fact": "When an object breaks the sound barrier, it creates a sonic boom that can be heard for miles. This boom is caused by the object's shockwave compressing and then expanding the air around it.",
+      "angle": "speed",
+      "key_terms": [
+        "sound",
+        "barrier",
+        "boom"
+      ],
+      "whatif": "What if we could harness the energy of sonic booms to create new forms of propulsion? Could we use this to power spacecraft?",
+      "wow": "The sonic boom created by a spacecraft re-entering the Earth's atmosphere can be so powerful that it can shatter windows and damage buildings.",
+      "queries": [
+        "sonic boom footage",
+        "sound barrier broken",
+        "spacecraft re-entry"
+      ]
+    },
+    {
+      "id": "fungal_highways",
+      "domain": "biology",
+      "fact": "Fungi have a vast network of underground highways that allow them to communicate and share resources with each other. This phenomenon can be seen in the way fungi grow and develop over time.",
+      "angle": "network",
+      "key_terms": [
+        "fungal",
+        "highways",
+        "network"
+      ],
+      "whatif": "What if we could harness the power of fungal highways to create new forms of sustainable agriculture? Could we use this to improve crop yields?",
+      "wow": "Some fungi can even use their highways to break down complex organic matter, creating a new form of sustainable waste management.",
+      "queries": [
+        "fungal networks",
+        "underground highways",
+        "sustainable agriculture"
+      ]
+    },
+    {
+      "id": "mathematical_waves",
+      "domain": "math",
+      "fact": "Waves can be described using mathematical equations, which can be used to predict their behavior and patterns. This mathematical understanding of waves has led to breakthroughs in fields such as oceanography and engineering.",
+      "angle": "physics",
+      "key_terms": [
+        "waves",
+        "math",
+        "patterns"
+      ],
+      "whatif": "What if we could use mathematical equations to predict and prevent natural disasters such as tsunamis and hurricanes? Could we use this knowledge to create more effective warning systems?",
+      "wow": "Some waves can reach heights of over 100 feet, making them a powerful force of nature that demands respect.",
+      "queries": [
+        "wave patterns",
+        "mathematical waves",
+        "ocean waves"
+      ]
+    },
+    {
+      "id": "glowing_mushrooms",
+      "domain": "biology",
+      "fact": "Certain mushrooms can glow in the dark, using a chemical reaction to produce light. This bioluminescence is used to attract prey and communicate with other mushrooms.",
+      "angle": "bioluminescence",
+      "key_terms": [
+        "glowing",
+        "mushrooms",
+        "bioluminescence"
+      ],
+      "whatif": "What if we could use this bioluminescent power to create sustainable lighting for our homes and cities? Could we use this technology to reduce our reliance on fossil fuels?",
+      "wow": "Some of these glowing mushrooms can be found in the deepest, darkest forests, making them a truly rare and exotic sight.",
+      "queries": [
+        "glowing mushrooms",
+        "bioluminescent fungi",
+        "forest floor"
+      ]
+    },
+    {
+      "id": "mathematical_animals",
+      "domain": "math",
+      "fact": "Certain animals, such as bees and ants, use mathematical patterns to navigate and communicate with each other. This mathematical understanding has led to breakthroughs in fields such as biology and computer science.",
+      "angle": "zoology",
+      "key_terms": [
+        "animals",
+        "math",
+        "patterns"
+      ],
+      "whatif": "What if we could use mathematical equations to predict and understand animal behavior? Could we use this knowledge to create more effective conservation strategies?",
+      "wow": "Some animals can use mathematical patterns to navigate complex environments and find food, making them a truly impressive and resilient species.",
+      "queries": [
+        "animal navigation",
+        "math in nature",
+        "zoology"
+      ]
+    },
+    {
+      "id": "electric_fish",
+      "domain": "biology",
+      "fact": "Certain fish, such as electric eels, can generate electricity to power their own movements and functions. This ability has led to breakthroughs in fields such as bioengineering and medicine.",
+      "angle": "biotechnology",
+      "key_terms": [
+        "electric",
+        "fish",
+        "power"
+      ],
+      "whatif": "What if we could harness this electrical power to create new sources of sustainable energy? Could we use this technology to power our homes and devices?",
+      "wow": "Some of these electric fish can produce enough electricity to power a small device, making them a potentially game-changing technology.",
+      "queries": [
+        "electric fish",
+        "bioelectricity",
+        "aquatic energy"
+      ]
     }
   ]
 }
