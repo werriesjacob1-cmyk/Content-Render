@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-03_the-shortest-war-in-history",
-      "metaphor": "briefest historical conflict",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "IMPOSSIBLE_FACT",
-      "title": "The Shortest War in History",
-      "fact_id": "shortest_war",
-      "domain": "history",
-      "hook": "How could a full-scale war between nations end in just 38 minutes?",
-      "vibe": "tense",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 7.71
-      }
-    },
-    {
       "video_id": "science_2026-08-03_what-happens-when-lightning-hits-sand",
       "metaphor": "frozen electricity in sand",
       "viewer_job": "REFRAME",
@@ -439,6 +413,33 @@
         "rewatch": 7.0,
         "clarity": 9.0,
         "coherence": 9.0,
+        "overall": 8.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
+      "metaphor": "the hidden hunters",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "STAKES_SCENARIO",
+      "title": "Spiders Out-Eat All of Us",
+      "fact_id": "spider_biomass",
+      "domain": "biology",
+      "hook": "Spiders in your walls eat more meat every year than you do.",
+      "vibe": "eerie",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 8.0,
+        "surprise": 9.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 6.0,
+        "clarity": 9.0,
+        "coherence": 10.0,
         "overall": 8.14
       }
     }

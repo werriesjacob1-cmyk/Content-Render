@@ -1,105 +1,96 @@
 {
-  "title": "Your fingerprints aren't in your genes",
-  "viewer_job": "REFRAME",
-  "keyword": "identical twins fingerprints",
-  "metaphor": "womb's random art",
+  "title": "Spiders Out-Eat All of Us",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "spider diet",
+  "metaphor": "the hidden hunters",
   "vibe": "eerie",
-  "hook": "Right now, your fingertips are pressing against your past.",
-  "hook_headline": "TWINS SHARE NOTHING",
-  "script": "Right now, your fingertips are pressing against your past. Identical twins share the same DNA, yet their different fingerprints? The ridges on your fingertips are shaped by tiny random forces as you press against the womb, not in your genes. The Vasilev quadruplets\u2019 identical DNA couldn\u2019t write the same prints. The pressure on your skin varies by as little as 1-2 mmHg to create unique ridges. Your phone is unlocking a pattern that isn\u2019t even written in your genes. The one mark police use to tell people apart is decided by randomness, not heredity. So if someone asks, whose fingerprint is this?",
+  "hook": "Spiders in your walls eat more meat every year than you do.",
+  "hook_headline": "SPIDERS OUT-EAT HUMANS?",
+  "script": "Spiders in your walls eat more meat every year than you do. Could the small creatures in the corners of your home really out-eat all of humanity? Yes. Add up every spider on Earth and the meat they catch each year outweighs all the meat and fish eaten by all people combined. These tiny predators inject digestive enzymes into their prey and then suck out the resulting liquid meal. That\u2019s why a Goliath Birdeater tarantula can devour a hummingbird whole. Their combined weight is around 25 million tons\u2014more than 478,000 blue whales. And you are almost never more than a few feet from one.",
   "scenes": [
     {
       "id": 1,
-      "duration": 3,
-      "voiceover": "Right now, your fingertips are pressing against your past.",
-      "on_screen_text": "YOUR PAST",
-      "search_query": "fingertip pressed on glass",
+      "duration": 4,
+      "voiceover": "Spiders in your walls eat more meat every year than you do.",
+      "on_screen_text": "SPIDERS OUT-EAT YOU",
+      "search_query": "spider close up macro",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "Identical twins share the same DNA, yet their different fingerprints?",
-      "on_screen_text": "SAME DNA",
-      "search_query": "identical twins faces",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "Could the small creatures in the corners of your home really out-eat all of humanity?",
+      "on_screen_text": "IS THIS TRUE?",
+      "search_query": "spider in web garden",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 3,
-      "voiceover": "The ridges on your fingertips are shaped by tiny random forces as you press against the womb, not in your genes.",
-      "on_screen_text": "RANDOM FORCES",
-      "search_query": "fingertip ridges macro",
-      "motion": "pan",
+      "duration": 4,
+      "voiceover": "Yes. Add up every spider on Earth and the meat they catch each year outweighs all the meat and fish eaten by all people combined.",
+      "on_screen_text": "400-800M TONS",
+      "search_query": "orb weaver spider",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 4,
-      "voiceover": "The Vasilev quadruplets\u2019 identical DNA couldn\u2019t write the same prints.",
-      "on_screen_text": "VASILEV TWINS",
-      "search_query": "newborn baby hand",
+      "voiceover": "These tiny predators inject digestive enzymes into their prey and then suck out the resulting liquid meal.",
+      "on_screen_text": "EXTRACTORIAL DIGESTION",
+      "search_query": "spider spinning web",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "The pressure on your skin varies by as little as 1-2 mmHg to create unique ridges.",
-      "on_screen_text": "1-2 mmHg",
-      "search_query": "fingertip ridges macro",
-      "motion": "zoom_out",
+      "voiceover": "That\u2019s why a Goliath Birdeater tarantula can devour a hummingbird whole.",
+      "on_screen_text": "BIRD-EATER!",
+      "search_query": "tarantula close up",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 4,
-      "voiceover": "Your phone is unlocking a pattern that isn\u2019t even written in your genes.",
-      "on_screen_text": "NOT IN DNA",
-      "search_query": "smartphone fingerprint unlock",
-      "motion": "zoom_out",
+      "voiceover": "Their combined weight is around 25 million tons\u2014more than 478,000 blue whales.",
+      "on_screen_text": "25M TONS",
+      "search_query": "spider web dew",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 3,
-      "voiceover": "The one mark police use to tell people apart is decided by randomness, not heredity.",
-      "on_screen_text": "RANDOM MARK",
-      "search_query": "police fingerprint close up",
-      "motion": "static",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 3,
-      "voiceover": "So if someone asks, whose fingerprint is this?",
-      "on_screen_text": "WHOSE?",
-      "search_query": "fingerprint close up",
+      "duration": 4,
+      "voiceover": "And you are almost never more than a few feet from one.",
+      "on_screen_text": "ALWAYS NEARBY",
+      "search_query": "dew on spider web",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Your identical twins aren\u2019t your fingerprints\u2014whose IS yours?",
-    "The mark police use to ID you isn\u2019t in your genes",
-    "Real science: identical twins have different fingerprints"
+    "Spiders eat more meat than humans every year. Real or myth?",
+    "How many spiders are there in your home right now?",
+    "The hidden hunters of your walls"
   ],
   "hashtags": [
+    "#spiders",
+    "#nature",
     "#science",
-    "#genes",
-    "#twins",
-    "#forensics",
-    "#womb",
-    "#identity"
+    "#animals",
+    "#weird",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-13_your-fingerprints-aren-t-in-your-genes",
-  "cta_style": "COMMENT",
-  "domain": "body"
+  "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "biology"
 }
