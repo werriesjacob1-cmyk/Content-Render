@@ -5850,6 +5850,24 @@
         "bioelectricity",
         "aquatic energy"
       ]
+    },
+    {
+      "id": "mathematical_rivers",
+      "domain": "earth",
+      "fact": "Rivers can flow in a fractal pattern, with smaller tributaries branching off from the main river in a self-similar pattern. This phenomenon is known as 'fractal rivers'.",
+      "angle": "Geometry",
+      "key_terms": [
+        "fractal rivers",
+        "mathematics",
+        "geology"
+      ],
+      "whatif": "What if we could use mathematical patterns to understand and predict river flow and erosion?",
+      "wow": "The fractal pattern of rivers can be seen in everything from the shape of river deltas to the structure of river networks.",
+      "queries": [
+        "fractal rivers",
+        "mathematical rivers",
+        "geology"
+      ]
     }
   ]
 }
