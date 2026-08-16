@@ -5868,6 +5868,402 @@
         "mathematical rivers",
         "geology"
       ]
+    },
+    {
+      "id": "self_healing_materials",
+      "domain": "materials_science",
+      "fact": "Some materials can self-heal, repairing cracks and damages through the use of special chemicals and microorganisms. This property can be used to create more durable and sustainable materials.",
+      "angle": "materials",
+      "key_terms": [
+        "self-healing materials",
+        "materials science",
+        "sustainability"
+      ],
+      "whatif": "What if we could develop self-healing materials for use in construction and manufacturing? What if we could create materials that can repair themselves automatically?",
+      "wow": "Some self-healing materials can repair themselves in a matter of seconds, making them a truly revolutionary and game-changing technology.",
+      "queries": [
+        "self-healing materials",
+        "materials science",
+        "sustainable materials"
+      ]
+    },
+    {
+      "id": "underwater_volcanoes",
+      "domain": "earth",
+      "fact": "There are underwater volcanoes that exist beneath the ocean's surface, erupting with molten lava and ash. These volcanoes can be found in oceans around the world.",
+      "angle": "geology",
+      "key_terms": [
+        "underwater volcanoes",
+        "geology",
+        "oceanography"
+      ],
+      "whatif": "What if we could explore these underwater volcanoes and learn more about the Earth's geology? What if we could use them to study the Earth's internal dynamics?",
+      "wow": "Some underwater volcanoes can be up to 10,000 feet tall, making them a truly massive and awe-inspiring phenomenon.",
+      "queries": [
+        "underwater volcanoes",
+        "oceanography",
+        "geology"
+      ]
+    },
+    {
+      "id": "hidden_pattern",
+      "domain": "mathematics",
+      "fact": "The arrangement of leaves on a stem follows a mathematical pattern, with each leaf placed at a specific angle to maximize exposure to sunlight. This pattern is found in many plants and is essential for their growth.",
+      "angle": "botany",
+      "key_terms": [
+        "leaves",
+        "stem",
+        "pattern"
+      ],
+      "whatif": "What if this pattern could be applied to other areas, such as the arrangement of solar panels or satellite dishes? Could it lead to more efficient energy collection?",
+      "wow": "This pattern is known as phyllotaxis and is found in over 80% of plant species, from tiny herbs to giant trees.",
+      "queries": [
+        "time lapse of plant growth",
+        "phyllotaxis pattern in nature",
+        "leaf arrangement on stems"
+      ]
+    },
+    {
+      "id": "sound_science",
+      "domain": "materials_science",
+      "fact": "Certain materials can be made to produce sound when exposed to specific frequencies of light. This phenomenon is known as photoacoustics and has potential applications in fields such as medicine and materials testing.",
+      "angle": "acoustics",
+      "key_terms": [
+        "photoacoustics",
+        "materials",
+        "sound"
+      ],
+      "whatif": "What if this technology could be used to create new types of musical instruments or sound-producing devices? Could it lead to new forms of artistic expression?",
+      "wow": "Researchers have already used photoacoustics to create devices that can produce sound waves with frequencies above 100 MHz, which is beyond the range of human hearing.",
+      "queries": [
+        "photoacoustic effect in materials",
+        "sound waves in solids",
+        "laser induced sound"
+      ]
+    },
+    {
+      "id": "underwater_cities",
+      "domain": "materials_science",
+      "fact": "Scientists have discovered a type of coral that can create its own 'cement' to build complex underwater structures. This discovery has led to the development of new materials and techniques for building underwater.",
+      "angle": "architecture",
+      "key_terms": [
+        "coral",
+        "cement",
+        "underwater"
+      ],
+      "whatif": "What if this technology could be used to create entire underwater cities or habitats for humans? Could it lead to a new era of oceanic exploration and settlement?",
+      "wow": "The coral's 'cement' is made from a combination of calcium carbonate and other minerals, and is strong enough to support the weight of entire buildings.",
+      "queries": [
+        "coral reef formation",
+        "underwater construction",
+        "oceanic architecture"
+      ]
+    },
+    {
+      "id": "fractal_nature",
+      "domain": "mathematics",
+      "fact": "Fractals are found throughout nature, from the branching of trees to the flow of rivers. These patterns are created by the repetition of simple rules and can be used to model and understand complex systems.",
+      "angle": "ecology",
+      "key_terms": [
+        "fractals",
+        "nature",
+        "patterns"
+      ],
+      "whatif": "What if fractals could be used to predict and prevent natural disasters such as earthquakes and hurricanes? Could they lead to a better understanding of the underlying mechanisms?",
+      "wow": "Fractals have been used to model the structure of everything from Romanesco broccoli to the coastlines of countries, and have led to breakthroughs in fields such as medicine and finance.",
+      "queries": [
+        "fractals in nature",
+        "Romanesco broccoli",
+        "coastline geometry"
+      ]
+    },
+    {
+      "id": "memory_mushrooms",
+      "domain": "mathematics",
+      "fact": "Certain species of mushrooms have been found to have a unique property that allows them to 'remember' and adapt to their environment. This property is known as 'fungal intelligence' and has led to breakthroughs in fields such as computer science and robotics.",
+      "angle": "artificial_intelligence",
+      "key_terms": [
+        "mushrooms",
+        "fungal intelligence",
+        "adaptation"
+      ],
+      "whatif": "What if this fungal intelligence could be used to create more efficient and adaptable computer systems? Could it lead to a new era of artificial intelligence?",
+      "wow": "Researchers have already used fungal intelligence to create robots that can navigate and adapt to complex environments, and have even used it to develop new types of computer algorithms.",
+      "queries": [
+        "fungal intelligence",
+        "mushroom adaptation",
+        "robotics"
+      ]
+    },
+    {
+      "id": "nanoscale_materials",
+      "domain": "materials_science",
+      "fact": "Scientists have developed materials that can be manipulated at the nanoscale to create unique properties and structures. These materials have potential applications in fields such as medicine, energy, and electronics.",
+      "angle": "nanotechnology",
+      "key_terms": [
+        "nanoscale",
+        "materials",
+        "properties"
+      ],
+      "whatif": "What if these materials could be used to create new types of medical implants or devices that can interact with the body at the nanoscale? Could it lead to breakthroughs in the treatment of diseases?",
+      "wow": "Researchers have already used nanoscale materials to create devices that can detect and treat diseases at the molecular level, and have even used them to develop new types of solar cells and batteries.",
+      "queries": [
+        "nanoscale materials",
+        "nanotechnology",
+        "medical implants"
+      ]
+    },
+    {
+      "id": "complex_systems",
+      "domain": "mathematics",
+      "fact": "Complex systems such as economies and societies can be understood and predicted using mathematical models and simulations. These models have been used to study and understand a wide range of phenomena, from the behavior of financial markets to the spread of diseases.",
+      "angle": "economics",
+      "key_terms": [
+        "complex systems",
+        "mathematical models",
+        "simulations"
+      ],
+      "whatif": "What if these mathematical models could be used to predict and prevent economic crashes and crises? Could it lead to a new era of economic stability and prosperity?",
+      "wow": "Researchers have already used mathematical models to predict and understand the behavior of complex systems such as traffic flow and social networks, and have even used them to develop new types of economic policies and interventions.",
+      "queries": [
+        "complex systems",
+        "mathematical models",
+        "economic simulations"
+      ]
+    },
+    {
+      "id": "shape_memory_alloys",
+      "domain": "materials_science",
+      "fact": "Shape memory alloys can change shape in response to temperature changes, returning to their original shape when heated or cooled. This property makes them useful for applications such as actuators and sensors.",
+      "angle": "innovation",
+      "key_terms": [
+        "shape memory alloys",
+        "temperature",
+        "actuators"
+      ],
+      "whatif": "What if shape memory alloys could be used to create self-deploying structures, such as satellites or bridges? Could they be used to improve the efficiency of mechanical systems?",
+      "wow": "These alloys can change shape in a matter of seconds, and can be programmed to remember specific shapes and temperatures.",
+      "queries": [
+        "shape memory alloy in action",
+        "temperature responsive materials",
+        "self deploying structures"
+      ]
+    },
+    {
+      "id": "glowing_caves",
+      "domain": "earth",
+      "fact": "Glowing caves exist, where certain types of fungi or bacteria emit a glowing light. This phenomenon can be found in certain parts of the world, such as the caves of New Zealand.",
+      "angle": "nature",
+      "key_terms": [
+        "glowing caves",
+        "fungi",
+        "bacteria"
+      ],
+      "whatif": "What if glowing caves could be used to create sustainable light sources for rural communities? Could they be used to promote eco-tourism?",
+      "wow": "Some of these caves are so bright that they can be seen from miles away, and have become a popular destination for tourists.",
+      "queries": [
+        "glowing cave in new zealand",
+        "bioluminescent fungi",
+        "cave at night"
+      ]
+    },
+    {
+      "id": "metamaterials",
+      "domain": "materials_science",
+      "fact": "Metamaterials have properties that are not found in nature, such as negative refractive index or perfect absorption. This makes them useful for applications such as optics, acoustics, and electromagnetics.",
+      "angle": "innovation",
+      "key_terms": [
+        "metamaterials",
+        "negative refractive index",
+        "perfect absorption"
+      ],
+      "whatif": "What if metamaterials could be used to create more efficient solar cells, or to develop new medical treatments? Could they be used to improve the performance of electronic devices?",
+      "wow": "These materials can be engineered to have specific properties, such as conductivity, strength, or optical activity, making them useful for a wide range of applications.",
+      "queries": [
+        "metamaterials in optics",
+        "negative refractive index",
+        "perfect absorption materials"
+      ]
+    },
+    {
+      "id": "chemical_senses",
+      "domain": "senses",
+      "fact": "Some animals can perceive their environment through chemical senses, allowing them to detect subtle changes in their surroundings. This is known as chemosensation.",
+      "angle": "smell",
+      "key_terms": [
+        "chemosensation",
+        "smell",
+        "taste"
+      ],
+      "whatif": "What if we could develop technologies that allow humans to perceive their environment through chemosensation? Could we use this sense to detect diseases or environmental pollutants?",
+      "wow": "Some species of sharks can even use chemosensation to detect the presence of prey, allowing them to track their quarry through the water.",
+      "queries": [
+        "chemosensation",
+        "smell",
+        "taste"
+      ]
+    },
+    {
+      "id": "fractal_forests",
+      "domain": "math",
+      "fact": "Forests can be described using fractal geometry, with tree branches and roots following a self-similar pattern. This allows forests to maximize their exposure to sunlight and water.",
+      "angle": "forests",
+      "key_terms": [
+        "fractals",
+        "forests",
+        "geometry"
+      ],
+      "whatif": "What if we could use fractal geometry to create more efficient forest management systems? Could we use this concept to promote sustainable forestry practices?",
+      "wow": "Some forests can even exhibit fractal properties at multiple scales, from the branching of individual trees to the pattern of entire ecosystems.",
+      "queries": [
+        "fractal forests",
+        "geometry",
+        "tree branching"
+      ]
+    },
+    {
+      "id": "forest_networks",
+      "domain": "earth",
+      "fact": "Forests can be described using fractal geometry, with tree branches and roots forming complex networks. These networks can be used to understand and describe the structure and function of ecosystems.",
+      "angle": "complexity",
+      "key_terms": [
+        "forests",
+        "fractals",
+        "networks"
+      ],
+      "whatif": "What if these networks could be used to create more sustainable ecosystems? What if they hold the key to understanding how to create more efficient systems?",
+      "wow": "Some of these networks can cover thousands of acres, making them one of the largest and most complex biological networks on the planet.",
+      "queries": [
+        "forest networks",
+        "fractals",
+        "ecosystems"
+      ]
+    },
+    {
+      "id": "ice_circle_formation",
+      "domain": "earth",
+      "fact": "Ice circles are rare natural phenomena that occur when a layer of ice forms on a body of water, and then breaks off into a circular shape. This can happen due to temperature fluctuations and wind patterns.",
+      "angle": "formation",
+      "key_terms": [
+        "ice",
+        "circle",
+        "formation"
+      ],
+      "whatif": "What if we could use this knowledge to create more efficient systems for predicting and preventing ice formation in certain areas? Could it be used to improve navigation?",
+      "wow": "Some ice circles can be up to 15 feet in diameter, making them a breathtaking sight in the frozen landscape.",
+      "queries": [
+        "ice circle formation",
+        "frozen lake footage",
+        "glacier calving"
+      ]
+    },
+    {
+      "id": "seismic_activity",
+      "domain": "earth",
+      "fact": "The Earth's crust is constantly oscillating due to the movement of tectonic plates, creating seismic activity that can be detected thousands of miles away.",
+      "angle": "seismic",
+      "key_terms": [
+        "seismic",
+        "activity",
+        "tectonic"
+      ],
+      "whatif": "What if we could use this knowledge to create more accurate systems for predicting earthquakes? Could it be used to save lives?",
+      "wow": "Some seismic activity can be so powerful that it can create waves that can be detected on the other side of the planet.",
+      "queries": [
+        "seismic activity",
+        "earthquake footage",
+        "tectonic plate movement"
+      ]
+    },
+    {
+      "id": "fog_formation",
+      "domain": "meteorology",
+      "fact": "Fog can form when warm air meets a cool surface, causing the water vapor to condense into tiny droplets. This can create a range of fascinating optical effects.",
+      "angle": "formation",
+      "key_terms": [
+        "fog",
+        "formation",
+        "condensation"
+      ],
+      "whatif": "What if we could use this knowledge to create more efficient systems for predicting and preventing fog? Could it be used to improve transportation safety?",
+      "wow": "Some fog can be so dense that it can reduce visibility to just a few feet, making it a major hazard for drivers and pilots.",
+      "queries": [
+        "fog formation",
+        "foggy landscape footage",
+        "cloud condensation"
+      ]
+    },
+    {
+      "id": "cave_formation",
+      "domain": "earth",
+      "fact": "Caves can form through a range of processes, including erosion, volcanic activity, and tectonic movement. This can create a range of fascinating geological formations.",
+      "angle": "formation",
+      "key_terms": [
+        "cave",
+        "formation",
+        "geology"
+      ],
+      "whatif": "What if we could use this knowledge to create more efficient systems for exploring and mapping caves? Could it be used to discover new species?",
+      "wow": "Some caves can be so large that they can contain entire ecosystems, including rivers, lakes, and even forests.",
+      "queries": [
+        "cave formation",
+        "cave exploration footage",
+        "geological formations"
+      ]
+    },
+    {
+      "id": "frozen_carbonsink",
+      "domain": "earth",
+      "fact": "There is a type of frozen ground that stores massive amounts of carbon, which can be released as the ground thaws. This process can accelerate climate change.",
+      "angle": "Climate",
+      "key_terms": [
+        "permafrost",
+        "carbon",
+        "thaw"
+      ],
+      "whatif": "What if this frozen carbon sink were to thaw at an unprecedented rate, releasing enormous amounts of carbon into the atmosphere?",
+      "wow": "The amount of carbon stored in this frozen ground is so vast that it could raise global temperatures by several degrees if released.",
+      "queries": [
+        "frozen tundra",
+        "permafrost thaw",
+        "arctic carbon sink"
+      ]
+    },
+    {
+      "id": "sound_healing",
+      "domain": "senses",
+      "fact": "Certain sound frequencies can heal damaged tissues and reduce inflammation in the body. This phenomenon has been observed in various studies.",
+      "angle": "Healing",
+      "key_terms": [
+        "sound",
+        "frequency",
+        "healing"
+      ],
+      "whatif": "What if sound could be used as a non-invasive treatment for a wide range of medical conditions, from wounds to neurological disorders?",
+      "wow": "The human body can actually repair itself in response to specific sound frequencies, which can be tailored to target specific health issues.",
+      "queries": [
+        "sound healing therapy",
+        "frequency medicine",
+        "vibrational healing"
+      ]
+    },
+    {
+      "id": "atmospheric_water",
+      "domain": "earth",
+      "fact": "The atmosphere can hold massive amounts of water vapor, which can be extracted and used as a source of clean drinking water. This technology has the potential to alleviate global water shortages.",
+      "angle": "Sustainability",
+      "key_terms": [
+        "atmospheric water",
+        "water vapor",
+        "sustainability"
+      ],
+      "whatif": "What if atmospheric water harvesting could become a viable solution for communities struggling with water scarcity, providing a reliable and sustainable source of clean water?",
+      "wow": "The amount of water vapor in the atmosphere is so vast that it could meet the drinking water needs of the entire global population, if harnessed effectively.",
+      "queries": [
+        "atmospheric water harvesting",
+        "water vapor extraction",
+        "sustainable water solutions"
+      ]
     }
   ]
 }
