@@ -1,88 +1,88 @@
 {
-  "title": "Spiders Out-Eat All of Us",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "spider diet",
-  "metaphor": "the hidden hunters",
-  "vibe": "eerie",
-  "hook": "Spiders in your walls eat more meat every year than you do.",
-  "hook_headline": "SPIDERS OUT-EAT HUMANS?",
-  "script": "Spiders in your walls eat more meat every year than you do. Could the small creatures in the corners of your home really out-eat all of humanity? Yes. Add up every spider on Earth and the meat they catch each year outweighs all the meat and fish eaten by all people combined. These tiny predators inject digestive enzymes into their prey and then suck out the resulting liquid meal. That\u2019s why a Goliath Birdeater tarantula can devour a hummingbird whole. Their combined weight is around 25 million tons\u2014more than 478,000 blue whales. And you are almost never more than a few feet from one.",
+  "title": "Light that doesn\u2019t move",
+  "viewer_job": "REFRAME",
+  "keyword": "frozen light",
+  "metaphor": "stopped sunbeams",
+  "vibe": "awe",
+  "hook": "A sunbeam can be trapped in a jar.",
+  "hook_headline": "YOU CAN FREEZE LIGHT",
+  "script": "A sunbeam can be trapped in a jar. What if the fastest thing in the universe could be made to crawl? By chilling atoms to near absolute zero, physicists slowed a light beam to about the pace of a rush-hour cyclist. They used Electromagnetically Induced Transparency to open a window in potassium-40 gas. Suddenly, light stumbled into a medium where it no longer obeyed its own rules. The beam crept forward at 4.57 metres a second, slower than a brisk walk. But here\u2019s the even wilder part: they\u2019ve frozen a pulse of light in place, stored it, and released it again moments later.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Spiders in your walls eat more meat every year than you do.",
-      "on_screen_text": "SPIDERS OUT-EAT YOU",
-      "search_query": "spider close up macro",
+      "voiceover": "A sunbeam can be trapped in a jar.",
+      "on_screen_text": "FROZEN LIGHT",
+      "search_query": "laser beam trapped",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "Could the small creatures in the corners of your home really out-eat all of humanity?",
-      "on_screen_text": "IS THIS TRUE?",
-      "search_query": "spider in web garden",
-      "motion": "pan",
+      "duration": 3,
+      "voiceover": "What if the fastest thing in the universe could be made to crawl?",
+      "on_screen_text": "HOW SLOW?",
+      "search_query": "cyclist speed",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Yes. Add up every spider on Earth and the meat they catch each year outweighs all the meat and fish eaten by all people combined.",
-      "on_screen_text": "400-800M TONS",
-      "search_query": "orb weaver spider",
-      "motion": "static",
+      "voiceover": "By chilling atoms to near absolute zero, physicists slowed a light beam to about the pace of a rush-hour cyclist.",
+      "on_screen_text": "ATOMS IN ICE",
+      "search_query": "laser lab cold",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "These tiny predators inject digestive enzymes into their prey and then suck out the resulting liquid meal.",
-      "on_screen_text": "EXTRACTORIAL DIGESTION",
-      "search_query": "spider spinning web",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "They used Electromagnetically Induced Transparency to open a window in potassium-40 gas.",
+      "on_screen_text": "EIT WINDOW",
+      "search_query": "purple laser gas",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 4,
-      "voiceover": "That\u2019s why a Goliath Birdeater tarantula can devour a hummingbird whole.",
-      "on_screen_text": "BIRD-EATER!",
-      "search_query": "tarantula close up",
-      "motion": "static",
+      "voiceover": "Suddenly, light stumbled into a medium where it no longer obeyed its own rules.",
+      "on_screen_text": "BROKEN RULES",
+      "search_query": "light ray bending",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "Their combined weight is around 25 million tons\u2014more than 478,000 blue whales.",
-      "on_screen_text": "25M TONS",
-      "search_query": "spider web dew",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "The beam crept forward at 4.57 metres a second, slower than a brisk walk.",
+      "on_screen_text": "4.57 M/S",
+      "search_query": "laser pointer slow",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "And you are almost never more than a few feet from one.",
-      "on_screen_text": "ALWAYS NEARBY",
-      "search_query": "dew on spider web",
-      "motion": "zoom_out",
+      "voiceover": "But here\u2019s the even wilder part: they\u2019ve frozen a pulse of light in place, stored it, and released it again moments later.",
+      "on_screen_text": "SUNBEAM IN JAR",
+      "search_query": "stopped light pulse",
+      "motion": "static",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Spiders eat more meat than humans every year. Real or myth?",
-    "How many spiders are there in your home right now?",
-    "The hidden hunters of your walls"
+    "Frozen light exists\u2026 have you seen it?",
+    "Light slowed to bicycle speed",
+    "Can you trap sunlight?"
   ],
   "hashtags": [
-    "#spiders",
-    "#nature",
+    "#physics",
+    "#light",
     "#science",
-    "#animals",
-    "#weird",
+    "#quantum",
+    "#chemistry",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "biology"
+  "video_id": "science_2026-08-16_light-that-doesn-t-move",
+  "cta_style": "LOOP",
+  "domain": "light"
 }

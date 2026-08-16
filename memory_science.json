@@ -1,32 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-03_what-happens-when-lightning-hits-sand",
-      "metaphor": "frozen electricity in sand",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "MYTH_FLIP",
-      "title": "What Happens When Lightning Hits Sand",
-      "fact_id": "fulgurite_lightning_glass",
-      "domain": "geology",
-      "hook": "You think lightning vanishes the instant it hits the earth.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 6.0,
-        "escalation": 8.0,
-        "payoff": 7.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 7.57
-      }
-    },
-    {
       "video_id": "science_2026-08-03_rule-breaking-animals-part-1-the-pistol-",
       "metaphor": "underwater heat flash",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -441,6 +415,33 @@
         "clarity": 9.0,
         "coherence": 10.0,
         "overall": 8.14
+      }
+    },
+    {
+      "video_id": "science_2026-08-16_light-that-doesn-t-move",
+      "metaphor": "stopped sunbeams",
+      "viewer_job": "REFRAME",
+      "cta_style": "LOOP",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "Light that doesn\u2019t move",
+      "fact_id": "slow_light_lab",
+      "domain": "light",
+      "hook": "A sunbeam can be trapped in a jar.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 9.0,
+        "payoff": 6.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.86
       }
     }
   ]
