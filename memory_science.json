@@ -1,36 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-03_rule-breaking-animals-part-1-the-pistol-",
-      "metaphor": "underwater heat flash",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "COMMENT",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "Rule-Breaking Animals Part 1: The Pistol Shrimp",
-      "fact_id": "pistol_shrimp_bubble",
-      "domain": "animals",
-      "hook": "Part one: This tiny creature punches water hard enough to make it glow.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": {
-        "name": "Rule-Breaking Animals",
-        "part": 1
-      },
-      "quality": {
-        "hook": 6.0,
-        "surprise": 6.0,
-        "escalation": 9.0,
-        "payoff": 6.0,
-        "rewatch": 8.0,
-        "clarity": 8.0,
-        "coherence": 9.0,
-        "overall": 7.43
-      }
-    },
-    {
       "video_id": "science_2026-08-03_the-metal-that-remembers-its-shape",
       "metaphor": "living metal wire",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -443,6 +413,27 @@
         "coherence": 8.0,
         "overall": 7.86
       }
+    },
+    {
+      "video_id": "science_2026-09-01_lightning-storms-the-hidden-power-you-ne",
+      "metaphor": "invisible energy",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "COMMENT",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "Lightning Storms: The Hidden Power You Never See",
+      "fact_id": "lightning_storm",
+      "domain": "atmosphere",
+      "hook": "Your phone just got hit by a bolt from the sky.",
+      "vibe": "tense",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "Weird Science, Real Life",
+        "part": 1
+      },
+      "quality": null
     }
   ]
 }

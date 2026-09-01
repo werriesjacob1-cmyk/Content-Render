@@ -1,0 +1,105 @@
+{
+  "title": "Lightning Storms: The Hidden Power You Never See",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "lightning storms",
+  "metaphor": "invisible energy",
+  "vibe": "tense",
+  "hook": "Your phone just got hit by a bolt from the sky.",
+  "hook_headline": "YOUR PHONE JUST GOT HIT",
+  "script": "Your phone just got hit by a bolt from the sky. What if we could turn that same force into power? Lightning isn\u2019t just light \u2014 it\u2019s a massive electrical discharge, hotter than the surface of the Sun. The Empire State Building is struck 25 times a year. Each bolt carries enough energy to power your house for three months. But the real surprise is where that energy ends up. Storms don\u2019t just ground their power \u2014 they shoot it upward. Sprites and blue jets leap 100 kilometers into the air, rewiring the sky itself. And that means everything you know about weather is wrong.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Your phone just got hit by a bolt from the sky.",
+      "on_screen_text": "UNEXPECTED HIT",
+      "search_query": "lightning strike close up",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 5,
+      "voiceover": "What if we could turn that same force into power?",
+      "on_screen_text": "REAL POWER?",
+      "search_query": "storm clouds dark sky",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "Lightning isn\u2019t just light \u2014 it\u2019s a massive electrical discharge, hotter than the surface of the Sun.",
+      "on_screen_text": "HOTTER THAN SUN",
+      "search_query": "lightning bolt slow motion",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "The Empire State Building is struck 25 times a year.",
+      "on_screen_text": "25 STRIKES",
+      "search_query": "empire state lightning strike",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 5,
+      "voiceover": "Each bolt carries enough energy to power your house for three months.",
+      "on_screen_text": "3 MONTHS POWER",
+      "search_query": "power lines city storm",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "But the real surprise is where that energy ends up.",
+      "on_screen_text": "UPWARD SURPRISE",
+      "search_query": "blue jet lightning",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "Sprites and blue jets leap 100 kilometers into the air, rewiring the sky itself.",
+      "on_screen_text": "REWIRING SKY",
+      "search_query": "sprites storm clouds",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 8,
+      "duration": 3,
+      "voiceover": "And that means everything you know about weather is wrong.",
+      "on_screen_text": "MYTH BUSTED",
+      "search_query": "storm clouds time lapse",
+      "motion": "pan",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "What if lightning could power YOUR home? Part 1 of 'Weird Science, Real Life'. Can it be done?",
+    "Lightning storms release 30,000\u00b0C bolts \u2014 5x hotter than the Sun.",
+    "Real or myth: storms only send power down, not up?"
+  ],
+  "hashtags": [
+    "#lightning",
+    "#science",
+    "#weather",
+    "#energy",
+    "#mythbuster",
+    "#space"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-09-01_lightning-storms-the-hidden-power-you-ne",
+  "cta_style": "COMMENT",
+  "domain": "atmosphere"
+}
