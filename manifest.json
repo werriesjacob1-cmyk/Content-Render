@@ -1,96 +1,105 @@
 {
-  "title": "Light that doesn\u2019t move",
-  "viewer_job": "REFRAME",
-  "keyword": "frozen light",
-  "metaphor": "stopped sunbeams",
-  "vibe": "awe",
-  "hook": "A sunbeam can be trapped in a jar.",
-  "hook_headline": "YOU CAN FREEZE LIGHT",
-  "script": "A sunbeam can be trapped in a jar. What if the fastest thing in the universe could be made to crawl? By chilling atoms to near absolute zero, physicists slowed a light beam to about the pace of a rush-hour cyclist. They used Electromagnetically Induced Transparency to open a window in potassium-40 gas. Suddenly, light stumbled into a medium where it no longer obeyed its own rules. The beam crept forward at 4.57 metres a second, slower than a brisk walk. But here\u2019s the even wilder part: they\u2019ve frozen a pulse of light in place, stored it, and released it again moments later.",
+  "title": "Lightning Storms: The Hidden Power You Never See",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "lightning storms",
+  "metaphor": "invisible energy",
+  "vibe": "tense",
+  "hook": "Your phone just got hit by a bolt from the sky.",
+  "hook_headline": "YOUR PHONE JUST GOT HIT",
+  "script": "Your phone just got hit by a bolt from the sky. What if we could turn that same force into power? Lightning isn\u2019t just light \u2014 it\u2019s a massive electrical discharge, hotter than the surface of the Sun. The Empire State Building is struck 25 times a year. Each bolt carries enough energy to power your house for three months. But the real surprise is where that energy ends up. Storms don\u2019t just ground their power \u2014 they shoot it upward. Sprites and blue jets leap 100 kilometers into the air, rewiring the sky itself. And that means everything you know about weather is wrong.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A sunbeam can be trapped in a jar.",
-      "on_screen_text": "FROZEN LIGHT",
-      "search_query": "laser beam trapped",
+      "voiceover": "Your phone just got hit by a bolt from the sky.",
+      "on_screen_text": "UNEXPECTED HIT",
+      "search_query": "lightning strike close up",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 3,
-      "voiceover": "What if the fastest thing in the universe could be made to crawl?",
-      "on_screen_text": "HOW SLOW?",
-      "search_query": "cyclist speed",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "What if we could turn that same force into power?",
+      "on_screen_text": "REAL POWER?",
+      "search_query": "storm clouds dark sky",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "By chilling atoms to near absolute zero, physicists slowed a light beam to about the pace of a rush-hour cyclist.",
-      "on_screen_text": "ATOMS IN ICE",
-      "search_query": "laser lab cold",
+      "duration": 5,
+      "voiceover": "Lightning isn\u2019t just light \u2014 it\u2019s a massive electrical discharge, hotter than the surface of the Sun.",
+      "on_screen_text": "HOTTER THAN SUN",
+      "search_query": "lightning bolt slow motion",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "They used Electromagnetically Induced Transparency to open a window in potassium-40 gas.",
-      "on_screen_text": "EIT WINDOW",
-      "search_query": "purple laser gas",
-      "motion": "pan",
+      "duration": 4,
+      "voiceover": "The Empire State Building is struck 25 times a year.",
+      "on_screen_text": "25 STRIKES",
+      "search_query": "empire state lightning strike",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 4,
-      "voiceover": "Suddenly, light stumbled into a medium where it no longer obeyed its own rules.",
-      "on_screen_text": "BROKEN RULES",
-      "search_query": "light ray bending",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "Each bolt carries enough energy to power your house for three months.",
+      "on_screen_text": "3 MONTHS POWER",
+      "search_query": "power lines city storm",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "The beam crept forward at 4.57 metres a second, slower than a brisk walk.",
-      "on_screen_text": "4.57 M/S",
-      "search_query": "laser pointer slow",
-      "motion": "pan",
+      "voiceover": "But the real surprise is where that energy ends up.",
+      "on_screen_text": "UPWARD SURPRISE",
+      "search_query": "blue jet lightning",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "But here\u2019s the even wilder part: they\u2019ve frozen a pulse of light in place, stored it, and released it again moments later.",
-      "on_screen_text": "SUNBEAM IN JAR",
-      "search_query": "stopped light pulse",
-      "motion": "static",
+      "duration": 5,
+      "voiceover": "Sprites and blue jets leap 100 kilometers into the air, rewiring the sky itself.",
+      "on_screen_text": "REWIRING SKY",
+      "search_query": "sprites storm clouds",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 8,
+      "duration": 3,
+      "voiceover": "And that means everything you know about weather is wrong.",
+      "on_screen_text": "MYTH BUSTED",
+      "search_query": "storm clouds time lapse",
+      "motion": "pan",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Frozen light exists\u2026 have you seen it?",
-    "Light slowed to bicycle speed",
-    "Can you trap sunlight?"
+    "What if lightning could power YOUR home? Part 1 of 'Weird Science, Real Life'. Can it be done?",
+    "Lightning storms release 30,000\u00b0C bolts \u2014 5x hotter than the Sun.",
+    "Real or myth: storms only send power down, not up?"
   ],
   "hashtags": [
-    "#physics",
-    "#light",
+    "#lightning",
     "#science",
-    "#quantum",
-    "#chemistry",
-    "#learnontiktok"
+    "#weather",
+    "#energy",
+    "#mythbuster",
+    "#space"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-08-16_light-that-doesn-t-move",
-  "cta_style": "LOOP",
-  "domain": "light"
+  "video_id": "science_2026-09-01_lightning-storms-the-hidden-power-you-ne",
+  "cta_style": "COMMENT",
+  "domain": "atmosphere"
 }
