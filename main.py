@@ -7,6 +7,7 @@ hook overlay (first 2s), background music bed, no-repeat footage.
 
 import os, sys, json, subprocess, shutil, wave, struct, re, time, urllib.request, urllib.parse, urllib.error
 import random
+import scientific_media as SCI_MEDIA
 
 W, H = 1080, 1920
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -1268,7 +1269,29 @@ def _coverr_candidates(query):
 
 
 def _gather_candidates(query):
-    return (_pexels_candidates(query)
+    """Build the footage pool.
+
+    Quality-first change: NASA SVS is not an outage fallback. For subjects that
+    SVS can plausibly visualize (space/Earth/climate/atmosphere/ocean), its real
+    scientific movies COMPETE with Pexels so the judge can choose authentic
+    evidence instead of being forced to accept generic stock merely because
+    Pexels returned something.
+    """
+    pexels = _pexels_candidates(query)
+    if SCI_MEDIA.svs_relevant(query):
+        try:
+            svs = SCI_MEDIA.svs_candidates(query, used_ids=_used_video_ids, limit=3)
+        except Exception as e:  # fully fail-soft; never let an external source break render
+            print(f"  NASA SVS failed: {e}")
+            svs = []
+        if svs:
+            print(f"  NASA SVS: {len(svs)} authentic scientific candidate(s) competing with stock")
+            # Put authentic visualizations first for deterministic/keyword fast
+            # paths, while retaining enough Pexels choices for a human-looking
+            # shot when the scientific visualization is not the right beat.
+            return svs + pexels[:8]
+
+    return (pexels
             or _nasa_candidates(query)
             or _wikimedia_candidates(query)   # no key: archival/scientific clips
             or _archive_candidates(query)     # no key: Internet Archive documentary film
@@ -2811,11 +2834,27 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # microscopy, diagrams, historical photos). Any one gives a documentary
         # look no generic-stock page has.
         still_provider = None
-        if _inaturalist_image(_q, img):
+
+        # EXACT SCIENTIFIC STRUCTURE before generic image search: when the scene
+        # is explicitly about a small molecule/chemical, PubChem can show the
+        # actual 2D/3D structure. That is materially better evidence than a
+        # generic lab beaker, pills, or blue "molecule" stock illustration.
+        if SCI_MEDIA.pubchem_relevant(_q):
+            _pc_img = os.path.join(WORK, f"s{idx}_pubchem.png")
+            try:
+                _pc_name = SCI_MEDIA.pubchem_image(_q, _pc_img)
+            except Exception as e:
+                print(f"  PubChem failed: {e}")
+                _pc_name = None
+            if _pc_name:
+                img = _pc_img
+                still_provider = f"PubChem ({_pc_name})"
+
+        if not still_provider and _inaturalist_image(_q, img):
             still_provider = "iNaturalist"
-        elif _openverse_image(_q, img):
+        elif not still_provider and _openverse_image(_q, img):
             still_provider = "Openverse"
-        elif _wikimedia_image(_q, img):
+        elif not still_provider and _wikimedia_image(_q, img):
             still_provider = "Wikimedia"
         if still_provider:
             try:
