@@ -1,0 +1,46 @@
+name: branch-recon
+
+# GENERIC one-off diagnostic runner: checks out an arbitrary branch/SHA and
+# runs a script from it, so a diagnostic script written on an EXPERIMENT
+# branch (which doesn't otherwise have GROQ_API_KEY/other secret access --
+# only workflows registered on the default branch can be dispatched) can
+# still get real live evidence without merging that branch's application
+# code into main. Same category and intent as groq_healthcheck.yml -- a
+# manual-dispatch-only diagnostic tool, not part of the render/publish
+# pipeline. It does NOT touch render.yml, does NOT merge anything, does NOT
+# render or publish.
+#
+# First use (2026-09-03): running wr2_recon.py from
+# claude/writer-v2-experiment to gather live evidence for the WRITER_V2
+# mega-prompt decomposition experiment (real Groq token usage, structured-
+# output viability, Compound/Compound-mini research-stage viability, Orpheus
+# voice reconnaissance) before any of that branch's code is judged ready to
+# merge.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or SHA to check out"
+        required: true
+      script:
+        description: "Python script path (relative to repo root) to run from that ref"
+        required: true
+        default: "wr2_recon.py"
+
+jobs:
+  recon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run recon script
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python "${{ github.event.inputs.script }}"
