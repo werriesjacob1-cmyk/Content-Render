@@ -36,15 +36,7 @@ jobs:
           cat /tmp/models.json
           echo
           echo "--- model IDs this key can see (if listing succeeded) ---"
-          python3 -c "
-import json
-try:
-    data = json.load(open('/tmp/models.json'))
-    ids = sorted(m.get('id','?') for m in data.get('data', []))
-    print('\n'.join(ids) if ids else '(no data[] field / empty list)')
-except Exception as e:
-    print(f'(could not parse as model list JSON: {e})')
-"
+          python3 -c "import json,sys; d=json.load(open('/tmp/models.json')); print('\n'.join(sorted(m.get('id','?') for m in d.get('data',[])) or ['(no data[] field / empty list)']))" || echo "(could not parse /tmp/models.json as a model list)"
 
       - name: Minimal completion — llama-3.3-70b-versatile
         env:
