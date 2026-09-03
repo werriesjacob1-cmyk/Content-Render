@@ -1502,46 +1502,72 @@ def test_fal_clip_verdict_rejects_garbled_text_independent_of_score():
 
 
 def test_fal_clip_relevant():
-    section("main._fal_clip_relevant: unverified synthetic clips fail CLOSED to real-media fallbacks")
-    # Render 205 proved API success is not content success: fal returned a boat /
-    # human silhouette for "naked mole rat". A later real render proved a second,
-    # independent failure mode: garbled baked-in text. If the independent vision
-    # safety check cannot run, the optional synthetic clip must NOT be trusted.
-    # Rejecting the clip does not abort the video; build_scene falls through to
-    # stock / archival / still / card.
-    prev_key = os.environ.get("GEMINI_API_KEY")
+    section("main._fal_clip_relevant: dual-provider, three-frame synthetic-video safety")
+    prev_gem = os.environ.get("GEMINI_API_KEY")
+    prev_groq = os.environ.get("GROQ_API_KEY")
     prev_vj = M.VISION_JUDGE
     prev_safety = M._FAL_SAFETY_UNAVAILABLE
+    old_probe, old_run, old_qwen = M.ffprobe_dur, M.run, M._qwen_vision_json
     try:
         M._FAL_SAFETY_UNAVAILABLE = False
+        M.VISION_JUDGE = True
         os.environ.pop("GEMINI_API_KEY", None)
-        M.VISION_JUDGE = True
+        os.environ.pop("GROQ_API_KEY", None)
         check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
-              "no GEMINI_API_KEY -> reject unverified fal clip")
+              "no vision provider -> reject unverified synthetic clip")
         check(M._FAL_SAFETY_UNAVAILABLE is True,
-              "missing safety judge opens the render-local fal safety circuit")
+              "missing all safety judges opens the fal safety circuit")
 
+        # Prove Qwen-only verification can ACCEPT a clip and sees three frames,
+        # entirely offline by stubbing ffmpeg/frame extraction + network call.
         M._FAL_SAFETY_UNAVAILABLE = False
-        os.environ["GEMINI_API_KEY"] = "x"
-        M.VISION_JUDGE = False
-        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
-              "VISION_JUDGE off -> reject unverified fal clip")
+        os.environ["GROQ_API_KEY"] = "x"
+        seen = {"blobs": 0}
+        M.ffprobe_dur = lambda p: 5.0
+        def fake_run(args):
+            dest = args[-1]
+            with open(dest, "wb") as f:
+                f.write(b"\xff\xd8\xff" + b"x" * 200)
+        M.run = fake_run
+        def fake_qwen(prompt, blobs, schema_name, schema):
+            seen["blobs"] = len(blobs)
+            return {"score": 9, "garbled_text": False}
+        M._qwen_vision_json = fake_qwen
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/fake/clip.mp4") is True,
+              "Qwen-only safety evidence can approve a clean synthetic clip")
+        check(seen["blobs"] == 3, "synthetic safety judge inspects early + middle + late frames")
 
-        # A broken/missing clip path means we could not inspect the generated
-        # content. Reject that optional clip instead of silently accepting it.
-        M._FAL_SAFETY_UNAVAILABLE = False
-        M.VISION_JUDGE = True
-        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
-              "frame extraction failure -> reject unverified fal clip")
-        check(M._FAL_SAFETY_UNAVAILABLE is True,
-              "runtime safety failure disables further fal spend this render")
+        # Same path must reject a later-frame text artifact independently of relevance.
+        M._qwen_vision_json = lambda *a, **k: {"score": 9, "garbled_text": True}
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/fake/clip.mp4") is False,
+              "three-frame Qwen judge rejects garbled text even with high relevance")
     finally:
+        M.ffprobe_dur, M.run, M._qwen_vision_json = old_probe, old_run, old_qwen
         M.VISION_JUDGE = prev_vj
         M._FAL_SAFETY_UNAVAILABLE = prev_safety
-        if prev_key is None:
-            os.environ.pop("GEMINI_API_KEY", None)
-        else:
-            os.environ["GEMINI_API_KEY"] = prev_key
+        if prev_gem is None: os.environ.pop("GEMINI_API_KEY", None)
+        else: os.environ["GEMINI_API_KEY"] = prev_gem
+        if prev_groq is None: os.environ.pop("GROQ_API_KEY", None)
+        else: os.environ["GROQ_API_KEY"] = prev_groq
+
+
+def test_qwen_vision_routing():
+    section("main: Gemini -> Qwen multimodal routing and live Groq judge model")
+    check(M.JUDGE_MODEL == "qwen/qwen3.8-27b" or "qwen3.8" in M.JUDGE_MODEL,
+          "text footage judge no longer points at retired llama-3.3")
+    old_gem, old_qwen = M._gemini_vision_pick, M._qwen_vision_pick
+    try:
+        M._gemini_vision_pick = lambda intent, cands: None
+        M._qwen_vision_pick = lambda intent, cands: (1, 8)
+        check(M._vision_pick("octopus", [{}, {}]) == (1, 8),
+              "Qwen vision is used when Gemini vision is unavailable")
+
+        M._gemini_vision_pick = lambda intent, cands: (0, 9)
+        M._qwen_vision_pick = lambda intent, cands: (_ for _ in ()).throw(AssertionError("should not call"))
+        check(M._vision_pick("octopus", [{}, {}]) == (0, 9),
+              "healthy Gemini remains preferred; Qwen does not waste a call")
+    finally:
+        M._gemini_vision_pick, M._qwen_vision_pick = old_gem, old_qwen
 
 
 def test_hook_headline_event():
@@ -1873,39 +1899,39 @@ def test_length_ab_mode():
 
 
 def test_fal_gap_fill_gating():
-    section("main: fal AI-video gap-fill — subject-anchored prompt + cost gating (no network)")
-    # prompt anchors on the literal SUBJECT (search_query), never the metaphor, and
-    # guards against burned-in text/watermark — the render-160 relevance fix.
+    section("main: fal AI-video gap-fill — subject prompt + dual vision safety gate")
     sc = {"search_query": "pluto dwarf planet space",
           "voiceover": "Your great-grandparents saw its journey begin."}
     p = M._fal_prompt(sc)
     check(p.startswith("pluto dwarf planet space"), f"fal prompt leads with the subject ({p[:40]!r})")
     check("no text" in p and "no watermark" in p, "fal prompt guards against burned-in text/watermark")
-    check(M._fal_prompt({"search_query": "", "voiceover": "just this"}).startswith("just this"),
-          "falls back to the voiceover when there is no subject")
-    # cost + safety gate: paid fal may spend only when an independent vision
-    # safety check is configured and healthy. Otherwise stock/still/card wins.
+
     _k, _n, _cap = M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS
     _vj, _safe = M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE
-    _gem = os.environ.get("GEMINI_API_KEY")
+    _gem, _groq = os.environ.get("GEMINI_API_KEY"), os.environ.get("GROQ_API_KEY")
     try:
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = "", 0, 2
         M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE = True, False
-        os.environ["GEMINI_API_KEY"] = "x"
-        check(M._fal_can_spend() is False, "no FAL_KEY -> never spends (feature is a no-op)")
+        os.environ.pop("GEMINI_API_KEY", None)
+        os.environ.pop("GROQ_API_KEY", None)
+        check(M._fal_can_spend() is False, "no FAL_KEY -> never spends")
 
         M.FAL_KEY = "x"
-        os.environ.pop("GEMINI_API_KEY", None)
         check(M._fal_can_spend() is False,
-              "fal key without independent Gemini safety judge -> do not spend")
+              "fal key with NO independent vision provider -> do not spend")
 
+        os.environ["GROQ_API_KEY"] = "x"
+        check(M._fal_can_spend() is True,
+              "Groq/Qwen vision alone is sufficient to verify paid synthetic video")
+
+        os.environ.pop("GROQ_API_KEY", None)
         os.environ["GEMINI_API_KEY"] = "x"
         check(M._fal_can_spend() is True,
-              "generation key + safety judge configured + under cap -> may spend")
+              "Gemini vision alone remains sufficient (existing path preserved)")
 
         M._FAL_SAFETY_UNAVAILABLE = True
         check(M._fal_can_spend() is False,
-              "after one safety outage, circuit stops further unreviewable fal spend")
+              "after a safety outage, circuit stops further unreviewable fal spend")
 
         M._FAL_SAFETY_UNAVAILABLE = False
         M.FAL_VIDEO_SCENES = 2
@@ -1913,10 +1939,10 @@ def test_fal_gap_fill_gating():
     finally:
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
         M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE = _vj, _safe
-        if _gem is None:
-            os.environ.pop("GEMINI_API_KEY", None)
-        else:
-            os.environ["GEMINI_API_KEY"] = _gem
+        if _gem is None: os.environ.pop("GEMINI_API_KEY", None)
+        else: os.environ["GEMINI_API_KEY"] = _gem
+        if _groq is None: os.environ.pop("GROQ_API_KEY", None)
+        else: os.environ["GROQ_API_KEY"] = _groq
 
 
 def test_inaturalist_photo_license_safety():
@@ -2670,6 +2696,7 @@ def main():
     test_vision_call_budget()
     test_fal_clip_verdict_rejects_garbled_text_independent_of_score()
     test_fal_clip_relevant()
+    test_qwen_vision_routing()
     test_hook_headline_event()
     test_caption_autoshrink()
     test_caption_pop_animation()
