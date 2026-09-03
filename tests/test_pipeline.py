@@ -41,6 +41,7 @@ import generate as G
 import expand_bank as E
 import funnel as F
 import repackage as R
+import scientific_media as SM
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2615,6 +2616,83 @@ def test_rank_gemini_models_prefers_full_over_lite():
     check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
 
 
+def test_scientific_media_products():
+    section("scientific media: NASA SVS competes with stock + PubChem exact structures")
+
+    # NASA-SVS routing should be targeted, not a network call on every scene.
+    check(SM.svs_relevant("sea surface temperature current visualization") is True,
+          "SVS recognizes Earth/ocean visualization queries")
+    check(SM.svs_relevant("neutron star rotation") is True,
+          "SVS recognizes space-science queries")
+    check(SM.svs_relevant("person eating burger kitchen") is False,
+          "SVS skips ordinary lifestyle stock queries")
+    check(SM._clean_svs_query("cinematic 4k lightning storm slow motion") == "lightning storm",
+          "SVS query strips stock-video decoration")
+
+    # Given multiple resolutions of the same NASA visualization, prefer an HD
+    # source over a giant 4K master so CI doesn't download huge files needlessly.
+    page = {
+        "main_video": {"id": 1, "url": "https://x/huge.mp4", "media_type": "Movie",
+                       "width": 4096, "height": 2160, "pixels": 8847360},
+        "media_groups": [{"items": [
+            {"media": {"id": 2, "url": "https://x/1080.mp4", "media_type": "Movie",
+                       "width": 1920, "height": 1080, "pixels": 2073600}},
+            {"media": {"id": 3, "url": "https://x/tiny.mp4", "media_type": "Movie",
+                       "width": 640, "height": 360, "pixels": 230400}},
+        ]}],
+    }
+    check(SM._best_svs_movie(page)["id"] == 2,
+          "SVS chooses practical HD media instead of 4K master/tiny preview")
+
+    # PubChem routing/normalization: exact small molecules should resolve from
+    # scene-like queries, while ordinary non-chemistry footage stays untouched.
+    check("hydrochloric acid" in SM.chemical_name_candidates(
+        "hydrochloric acid stomach close up"),
+        "PubChem extracts hydrochloric acid from a scene-style query")
+    check("dopamine" in SM.chemical_name_candidates("dopamine molecule inside brain"),
+          "PubChem extracts a named neurotransmitter")
+    check(SM.pubchem_relevant("dopamine molecule inside brain") is True,
+          "named molecule routes to PubChem")
+    check(SM.pubchem_relevant("person running through forest") is False,
+          "ordinary footage does not route to PubChem")
+
+    # Network-free PubChem download contract using a stubbed PNG response.
+    old_bytes = SM._http_bytes
+    try:
+        fake_png = b"\x89PNG\r\n\x1a\n" + b"x" * 200
+        SM._http_bytes = lambda url, timeout=10.0: (fake_png, "image/png")
+        with tempfile.TemporaryDirectory() as td:
+            dest = os.path.join(td, "dopamine.png")
+            resolved = SM.pubchem_image("dopamine molecule", dest)
+            check(resolved == "dopamine", "PubChem returns the resolved compound name")
+            check(os.path.exists(dest) and open(dest, "rb").read(8) == b"\x89PNG\r\n\x1a\n",
+                  "PubChem writes a real PNG payload")
+    finally:
+        SM._http_bytes = old_bytes
+
+    # Critical integration behavior: Pexels must no longer suppress authentic
+    # scientific footage merely because it returned a generic stock result.
+    old_pexels = M._pexels_candidates
+    old_svs_rel = SM.svs_relevant
+    old_svs = SM.svs_candidates
+    try:
+        M._pexels_candidates = lambda q: [
+            {"id": 10, "url": "https://x/stock.mp4", "desc": "generic ocean waves", "source": "Pexels"}
+        ]
+        SM.svs_relevant = lambda q: True
+        SM.svs_candidates = lambda q, used_ids=None, limit=3: [
+            {"id": "svs:99", "url": "https://x/science.mp4",
+             "desc": "NASA sea surface temperature current visualization", "source": "NASA SVS"}
+        ]
+        pool = M._gather_candidates("sea surface temperature current")
+        check(len(pool) == 2 and pool[0]["source"] == "NASA SVS" and pool[1]["source"] == "Pexels",
+              "authentic NASA SVS media competes with Pexels instead of being hidden behind it")
+    finally:
+        M._pexels_candidates = old_pexels
+        SM.svs_relevant = old_svs_rel
+        SM.svs_candidates = old_svs
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2689,6 +2767,7 @@ def main():
     test_vibe_matched_captions()
     test_vibe_music_filter()
     test_vibe_sting_freqs()
+    test_scientific_media_products()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
