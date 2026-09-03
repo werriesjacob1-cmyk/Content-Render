@@ -223,6 +223,28 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "generic 'save this' command rejected")
 
+    # shipped Sep-1 failure: COMMENT mode encouraged a generic pseudo-payoff
+    # ("everything you know about weather is wrong") instead of landing a real
+    # scientific implication. This must be mechanically rejected.
+    m = copy.deepcopy(FIX_ASTRO)
+    m["scenes"][-1]["voiceover"] = "And that means everything you know about weather is wrong."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "generic pseudo-payoff" in err,
+          f"generic 'everything you know is wrong' ending rejected ({err})")
+
+    # shipped Sep-1 hook shape: a hypothetical catastrophe stated as though it
+    # literally just happened to the viewer. Conditional stakes remain allowed.
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "Your phone just got hit by a bolt from the sky."
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "hypothetical stakes" in err,
+          f"fabricated present-tense stakes hook rejected ({err})")
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "If lightning hits your phone, the damage starts before you react."
+    err = G.validate(m, "EXPLAIN")
+    check(err is None, f"explicitly conditional high-stakes hook remains allowed ({err})")
+
     # abstract perception-vs-reality hook
     m = copy.deepcopy(FIX_ASTRO)
     m["hook"] = "You are seeing it as it was, not as it is."
@@ -366,6 +388,24 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "'send this to a friend' command ending rejected")
     check("SHARE" not in G.CTA_STYLES, "SHARE command-ending style removed from rotation")
+
+    # The reference-worthy regex was intended only for scripts WITHOUT a bank
+    # fact, but the implementation accidentally applied it to every script,
+    # pressuring verified science videos to jam in a number/comparison. Prove
+    # the scope: with the regex forced to match nothing, a non-bank script fails
+    # that gate while a bank-backed script is allowed to rely on verified fact
+    # and key-term machinery instead.
+    _rw_orig = G.REFERENCE_WORTHY_RE
+    try:
+        G.REFERENCE_WORTHY_RE = re.compile(r"(?!x)x")
+        no_fact = G.validate(copy.deepcopy(FIX_BIO), "EXPLAIN", fact=None)
+        with_fact = G.validate(copy.deepcopy(FIX_BIO), "EXPLAIN", fact={"domain": "biology"})
+        check(no_fact is not None and "reference-worthy" in no_fact,
+              f"non-bank script still requires a reference-worthy detail ({no_fact})")
+        check(with_fact is None,
+              f"bank-backed script is not forced to add an arbitrary number/comparison ({with_fact})")
+    finally:
+        G.REFERENCE_WORTHY_RE = _rw_orig
 
     # contradictory COUNT of a discrete named thing (7 moons vs 12 moons) is a
     # real fabrication and must still be rejected by the contradiction guard.
