@@ -908,13 +908,11 @@ def _gemini_vision_pick(intent, candidates):
 # needed on every render so far: sample the finished, CAPTIONED video, hand it
 # to Gemini vision with the full script, and get a holistic verdict logged
 # right in the render output (and written to out/qa_report.json, shipped as a
-# release asset) — so a bad video is FLAGGED without anyone downloading and
-# watching it by hand first. Best-effort and NEVER blocking: a QA failure or
-# unavailability never fails the render. This is a VISIBILITY tool, not a new
-# quality gate — a hard gate here risks blocking a genuinely good video on a
-# single vision-judge false negative, and weak SCRIPTS are already blocked
-# pre-render; this adds eyes on the one thing nothing currently checks, which
-# is whether the assembled result actually matches what was intended.
+# release asset) — so the assembled artifact itself is judged before a release.
+# This is a QUALITY GATE, not merely a visibility tool. A confident bad verdict
+# aborts, and so does missing/unparseable judge evidence while FINAL_QA is enabled:
+# "we could not inspect the product" is an evidence failure, not permission to
+# ship. The cron may retry later; consistency outranks cadence.
 FINAL_QA = os.environ.get("FINAL_QA", "1") != "0"
 FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
 # Hard publish gate: a CONFIDENT (judge actually ran + returned a number) low
@@ -952,16 +950,24 @@ FINAL_QA_FLOW_FLOOR = int(os.environ.get("FINAL_QA_FLOW_FLOOR") or "6")
 
 
 def _qa_should_abort(qa_report):
-    """True on a CONFIDENT low footage_matches_narration OR narration_flow
-    score (the judge actually ran and returned a number below its floor). Any
-    failure to judge (no key, bad reply, exception) fails OPEN -- never blocks
-    a publish just because the best-effort QA call itself broke."""
-    if not qa_report.get("ran"):
+    """True when enabled final-QA is unavailable, malformed, or below a floor.
+
+    FINAL_QA=0 remains an explicit operator opt-out. Otherwise the assembled
+    video must have usable artifact-level evidence before it can be considered
+    successful. An unavailable reviewer is not evidence that the artifact is good.
+    """
+    if not FINAL_QA:
         return False
+    if not qa_report.get("ran"):
+        return True
     fm = qa_report.get("footage_matches_narration")
-    if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+    if not isinstance(fm, (int, float)):
+        return True
+    if fm < FINAL_QA_ABORT_FLOOR:
         return True
     nf = qa_report.get("narration_flow")
+    if qa_report.get("audio_judged") and not isinstance(nf, (int, float)):
+        return True
     if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
         return True
     return False
@@ -1003,13 +1009,12 @@ def _extract_qa_frames(video, n, dest_dir):
 
 
 def _final_qa_check(video, m):
-    """Best-effort holistic sanity check on the ASSEMBLED, captioned video —
-    never raises. Always writes out/qa_report.json (shipped as a release
-    asset) and prints a single [final-qa] summary line so a bad video is
-    visible in the render log without anyone downloading and watching it.
-    Returns the report dict; the caller gates publishing on a confidently low
-    footage_matches_narration OR narration_flow score (see FINAL_QA_ABORT_FLOOR
-    / FINAL_QA_FLOW_FLOOR).
+    """Holistic sanity check on the ASSEMBLED, captioned video.
+
+    The function itself never raises and always writes out/qa_report.json, but
+    its caller treats ran:false / malformed evidence as a failed quality gate
+    while FINAL_QA is enabled. The caller requires usable artifact evidence as
+    well as the numeric floors (FINAL_QA_ABORT_FLOOR / FINAL_QA_FLOW_FLOOR).
 
     2026-08-03: the judge now LISTENS to the actual voice track (full_vo.mp3,
     the raw TTS output from earlier in this same render — still on disk, WORK
@@ -1103,7 +1108,7 @@ def _final_qa_check(video, m):
         nf_part = f" flow={nf}/10" if have_audio else ""
         print(f"[final-qa] {flag} footage_match={fm}/10 variety={vv}/10 captions={cl}/10{nf_part} "
               f"issue={issue!r} ({len(frames)} frames sampled{', +audio' if have_audio else ''})")
-    except Exception as e:  # noqa: BLE001 — best-effort, must never break the render
+    except Exception as e:  # noqa: BLE001 — report failure; caller enforces the gate
         print(f"[final-qa] unavailable ({type(e).__name__}: {str(e)[:150]})")
         report = {"ran": False, "error": str(e)[:200]}
     finally:
@@ -3749,14 +3754,20 @@ def main():
     if _qa_should_abort(qa_report):
         fm, nf = qa_report.get("footage_matches_narration"), qa_report.get("narration_flow")
         reasons = []
-        if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+        if not qa_report.get("ran"):
+            reasons.append(f"final QA unavailable ({qa_report.get('error', 'judge did not run')})")
+        elif not isinstance(fm, (int, float)):
+            reasons.append("footage_matches_narration score missing/malformed")
+        elif fm < FINAL_QA_ABORT_FLOOR:
             reasons.append(f"footage_matches_narration={fm}/10 (< {FINAL_QA_ABORT_FLOOR})")
-        if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
+        if qa_report.get("audio_judged") and not isinstance(nf, (int, float)):
+            reasons.append("narration_flow score missing/malformed")
+        elif isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
             reasons.append(f"narration_flow={nf}/10 (< {FINAL_QA_FLOW_FLOOR})")
-        print(f"ERROR: final QA judged the ASSEMBLED video below the publish bar: "
+        print(f"ERROR: final assembled-video QA did not clear the publish bar: "
               f"{'; '.join(reasons)} — issue={qa_report.get('biggest_issue', '')!r}. "
-              f"Aborting so a blatant footage mismatch or bad-sounding narration is never "
-              f"published; retry re-renders/re-writes it.")
+              f"Aborting rather than release an unverified or demonstrably weak artifact; "
+              f"consistency over cadence.")
         sys.exit(1)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
