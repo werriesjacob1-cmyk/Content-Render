@@ -508,8 +508,10 @@ VIEWER_JOBS = [
      "verifiable mechanism (how/why something actually works). The payoff rewires their mental model. "
      "End so they think 'I'll never see X the same way.' NOT vague philosophy — a concrete fact."),
     ("SOCIAL_CURRENCY",
-     "Built around ONE stunning, TRUE, specific number or comparison (with the actual figure) so striking "
-     "the viewer repeats it to sound smart. Must include a real measurable fact, not a feeling."),
+     "Built around ONE stunning, TRUE, specific scientific idea, mechanism, or comparison the viewer "
+     "would repeat because it changes how they see something. A number is OPTIONAL and belongs only when "
+     "it is verified, meaningful, and makes the idea clearer — never add a statistic just to make the "
+     "script feel impressive. Strip the number away: the core thought should still be worth repeating."),
     ("EXISTENTIAL_CHILL",
      "Take a REAL, specific scientific fact about reality/the body/time/the universe that happens to be "
      "awe-inducing, and explain the actual science of it. The chill comes from a TRUE mechanism, not from "
@@ -580,13 +582,11 @@ HOOK_FRAMES = [
      "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
      "collision itself is the hook; the curiosity is 'wait, how are those two even related?'"),
     ("STAKES_SCENARIO",
-     "Open on a high-stakes 'what happens if this happens to YOU' scenario — survival, danger, or "
-     "the viewer's own body under extreme conditions (e.g. 'An airlock bursts and you're sucked into "
-     "space — you have about fifteen seconds'). Life-or-death stakes happening to the VIEWER means "
-     "they physically cannot scroll until they see how it ends. This is the channel's HIGHEST-"
-     "retention hook shape, proven in analytics: 2.5x the average watch time and 4x the completion "
-     "rate of a passive 'how many / can you see' question. Frame the fact as a consequence the "
-     "viewer would live through, not a trivia question they can shrug off."),
+     "Open on a high-stakes scenario ONLY when it is directly supported by the verified science and "
+     "physically plausible. If the event is hypothetical, SAY SO with conditional framing ('If...', "
+     "'Suppose...', 'An airlock bursts...') — NEVER falsely tell the viewer an accident just happened "
+     "to them ('your phone just got hit by lightning'). Do not invent danger merely to raise stakes. "
+     "Use the viewer perspective only when it clarifies a real consequence the science actually supports."),
 ]
 
 CTA_ENDING_RULES = {
@@ -615,12 +615,13 @@ CTA_ENDING_RULES = {
         "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
     ),
     "COMMENT": (
-        "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
-        "question ('Team A or Team B?', 'Real or myth?') or state a claim people will actually "
-        "want to argue with ('and that means everything you learned about X is wrong') -- something "
-        "a real person would stop and type a reply to, not a rhetorical throwaway. NEVER phrase this "
-        "as 'Did you know' / 'Have you ever' -- those are banned wind-up openers everywhere in this "
-        "script, not just the hook. Do not also tell them to save or share in this line."
+        "ENDING STYLE FOR THIS VIDEO: EARNED DISCUSSION. End with a SPECIFIC question or disputed "
+        "scientific implication that follows directly from what the video proved. Prefer a concrete "
+        "choice, mechanism, consequence, or misconception the viewer now has enough information to "
+        "answer. BANNED: generic outrage/reframe clichés such as 'everything you know/learned about X "
+        "is wrong', 'myth busted', 'this changes everything', or 'you've been lied to'. Those create "
+        "cheap comments but make the page sound like an AI content farm. NEVER phrase this as "
+        "'Did you know' / 'Have you ever', and never tell them to save/share."
     ),
     "SHARE": (
         "ENDING STYLE FOR THIS VIDEO: SHARE TRIGGER. The final line must hand the viewer a concrete, "
@@ -640,8 +641,9 @@ CTA_RUBRIC_HINTS = {
                     "('save', 'screenshot', 'remember', 'look up' are all disqualifying)?",
     "LOOP": "does the ending loop back cleanly to the hook/opening image so a replay feels seamless, "
             "with no bolted-on CTA language?",
-    "COMMENT": "does the ending pose a real binary question or arguable claim a viewer would "
-               "actually reply to?",
+    "COMMENT": "does the ending invite a response through a SPECIFIC scientific choice, mechanism, "
+               "consequence, or misconception the video actually earned — with zero generic "
+               "'everything you know is wrong' / 'myth busted' outrage bait?",
     "SHARE": "does the ending give a specific, identity-relevant reason to send this to one "
              "particular kind of person, tied to the fact just taught?",
 }
@@ -654,8 +656,9 @@ CTA_PUNCHUP_RULES = {
                    "'remember', 'look up', 'keep this' are all banned. A thought, never an order.",
     "LOOP": "Final line: a NEW resonant thought that echoes the hook's feeling/image so a replay feels "
             "seamless — but must NOT restate the hook's fact or repeat its exact words/number. No CTA language.",
-    "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
-               "viewer would type a reply to.",
+    "COMMENT": "Final line: a specific scientific question/implication the viewer can answer or "
+               "argue from the evidence just shown. No generic 'everything you know is wrong', "
+               "'myth busted', 'this changes everything', or fake-outrage phrasing.",
     "SHARE": "Final line: a specific, identity-relevant reason to send this to one particular kind "
              "of person, tied to the fact just taught.",
 }
@@ -683,6 +686,25 @@ GENERIC_SAVE_CMD = re.compile(
     r"|\btag (a|the|your|someone|that)\b"
     r"|\bshow (this|it) to (the|a|your|someone)\b"
     r"|\bsend (this|it) to the (friend|person|one)\b",
+    re.I)
+
+# Generic pseudo-payoffs that sound dramatic but communicate no new scientific
+# idea. The Sep-1 lightning script ended "everything you know about weather is
+# wrong" because COMMENT mode explicitly encouraged that phrasing. These lines
+# are now rejected mechanically so a scorer cannot wave them through.
+GENERIC_REFRAME_CLICHE_RE = re.compile(
+    r"\beverything you (know|learned|thought|were taught) about .{1,50} (is|was) wrong\b"
+    r"|^\s*myth busted[.!]?\s*$"
+    r"|\bthis changes everything\b"
+    r"|\byou(?:'|’)ve been lied to\b",
+    re.I)
+
+# A high-stakes hook may be conditional ("If an airlock bursts...") but must not
+# fabricate an accident as though it literally just happened to the viewer.
+# This catches the shipped Sep-1 shape: "Your phone just got hit by a bolt..."
+FALSE_PRESENT_STAKES_RE = re.compile(
+    r"^\s*(?:your\b|you\b).{0,60}\b(?:just got|was just|has just been)\s+"
+    r"(?:hit|struck|electrocuted|shot|crushed|blown up|exploded|ruptured|killed)\b",
     re.I)
 
 # A "save-worthy" moment is engineered into the CONTENT, not just the ending:
@@ -2311,6 +2333,11 @@ def validate(m, job_name, fact=None):
                 f"told you'/'Here's'/'This is' as openers but this was never mechanically "
                 f"enforced; open cold on the shock instead, no wind-up")
 
+    if FALSE_PRESENT_STAKES_RE.search(m["hook"]):
+        return (f"hook '{m['hook']}' falsely states a high-stakes accident as though it literally "
+                f"just happened to the viewer — hypothetical stakes must be conditional ('If...', "
+                f"'Suppose...'), never fabricated present-tense danger")
+
     # HOOK_HEADLINE (2026-08-03): the burned-on COVER text -- what a scrolling
     # viewer sees in the profile grid before they ever hear a word, arguably
     # the single highest-leverage piece of text in the whole video. Nothing
@@ -2448,6 +2475,11 @@ def validate(m, job_name, fact=None):
                 "('save this so you...') — the ending must earn a save through "
                 "content, not a command; see this video's assigned CTA style")
 
+    ending = m["scenes"][-1]["voiceover"].strip() if m["scenes"] else ""
+    if GENERIC_REFRAME_CLICHE_RE.search(ending):
+        return (f"final line {ending!r} is a generic pseudo-payoff / outrage cliché — "
+                f"end on a specific scientific implication, mechanism, or question the video earned")
+
     # CTA overhaul guard 2: save-worthiness must be engineered into the
     # CONTENT, not just claimed by the ending. Require at least one concrete,
     # specific, reference-worthy detail somewhere in the script (a real
@@ -2455,9 +2487,9 @@ def validate(m, job_name, fact=None):
     # viewer could actually repeat or look up again. Bank-fact videos already
     # clear this via mandatory key_terms; this catches jobs/scripts with no
     # bank fact behind them (e.g. HOW_TO, or a MYTH_BUSTER with no fact_id).
-    if not REFERENCE_WORTHY_RE.search(full_blob):
-        return ("no reference-worthy / 'screenshot-this' detail found anywhere in the "
-                "script — include a specific number, rule of thumb, or vivid comparison "
+    if not fact and not REFERENCE_WORTHY_RE.search(full_blob):
+        return ("no reference-worthy / 'screenshot-this' detail found anywhere in this "
+                "non-bank script — include a specific rule of thumb or vivid comparison "
                 "a viewer would actually want to remember or reuse")
 
     # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
