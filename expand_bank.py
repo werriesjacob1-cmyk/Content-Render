@@ -57,8 +57,7 @@ VAGUE_FACT_RE = re.compile(
 SPECIFICITY_RE = re.compile(
     r"\d|\b(because|due to|through|when|causes?|contains?|produces?|converts?|"
     r"absorbs?|reflects?|expands?|contracts?|rotates?|orbits?|releases?|forms?|"
-    r"detects?|generates?|breaks down|freezes?|boils?|moves?|travels?)\b"
-    r"|\b[A-Z][a-z]{2,}\b",
+    r"detects?|generates?|breaks down|freezes?|boils?|moves?|travels?)\b",
     re.I)
 
 
