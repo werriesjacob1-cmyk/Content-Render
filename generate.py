@@ -917,10 +917,17 @@ RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
 # read as the same kind of video and dodged the recent-domain dedup entirely.
 DOMAIN_FAMILIES = {
     "geology": "earth", "earth": "earth", "weather": "earth", "atmosphere": "earth",
+    "meteorology": "earth",
     "ocean": "ocean", "oceanography": "ocean", "marine": "ocean",
+    "marine_biology": "ocean", "marinebiology": "ocean",
     "fungi": "fungi", "mycology": "fungi",
     "plants": "plants", "botany": "plants",
     "space": "space", "astronomy": "space",
+    "ecology": "nature", "microbiology": "biology", "zoology": "animals",
+    "neuroscience": "neurology",
+    "mathematics": "math",
+    "materials_science": "materials",
+    "linguistics": "language", "language": "language",
 }
 def _domain_family(domain):
     return DOMAIN_FAMILIES.get(domain, domain)
