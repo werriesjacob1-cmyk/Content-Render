@@ -1,0 +1,74 @@
+name: still-visual-bakeoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Exact science still prompt shared across selected image models"
+        required: true
+        default: "A scientifically plausible, photorealistic peacock mantis shrimp in side profile underwater, appendage clearly visible and anatomically coherent, vertical documentary composition, natural reef lighting, no text, no labels, no fantasy anatomy."
+        type: string
+      models:
+        description: "Comma-separated current still aliases"
+        required: true
+        default: "seedream5_pro,gpt_image2,nano_banana2,qwen_image3,ideogram4"
+        type: string
+      max_budget_usd:
+        description: "HARD pre-call ceiling in USD"
+        required: true
+        default: "0.50"
+        type: string
+      plan_only:
+        description: "Zero-spend dry plan; no provider calls"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: still-visual-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FAL client for paid mode only
+        if: ${{ !inputs.plan_only }}
+        run: pip install fal-client
+
+      - name: Run budget-guarded still lab
+        env:
+          STILL_PROMPT: ${{ inputs.prompt }}
+          STILL_MODELS: ${{ inputs.models }}
+          STILL_MAX_BUDGET: ${{ inputs.max_budget_usd }}
+          PLAN_ONLY: ${{ inputs.plan_only }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
+        run: |
+          set -euo pipefail
+          EXTRA=""
+          if [ "$PLAN_ONLY" = "true" ]; then EXTRA="--plan-only"; fi
+          python still_model_bakeoff.py \
+            --prompt "$STILL_PROMPT" \
+            --models "$STILL_MODELS" \
+            --max-budget-usd "$STILL_MAX_BUDGET" \
+            --out-dir still_bakeoff \
+            $EXTRA
+
+      - name: Upload private plan/candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: still-visual-bakeoff-${{ github.run_id }}
+          path: still_bakeoff/
+          if-no-files-found: error
+          retention-days: 7
