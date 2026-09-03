@@ -1442,6 +1442,25 @@ def test_bank_expander():
     ok = E.accept_fact(good, have_ids, have_norms)
     check(ok is not None, "a strong novel fact is accepted")
     check(ok and ok["id"] == "new_fact", "id is sanitized to snake_case")
+    # Generic application-fantasy WHATIFs caused bank drift toward "harness this
+    # to build technology" instead of curiosity about the science itself.
+    app = {**good, "id":"app1",
+           "whatif":"What if we could harness fungal networks to create new communication technologies?"}
+    check(E.accept_fact(app, have_ids, have_norms) is None,
+          "generic 'What if we could harness/create technology' entry rejected")
+
+    # Broad overview statements are topic descriptions, not scroll-stopping facts.
+    vague = {**good, "id":"vague1",
+             "fact":"Forests are complex ecosystems that rely on a delicate balance of relationships.",
+             "whatif":"What happens underground when two trees compete for the same nutrients?"}
+    check(E.accept_fact(vague, have_ids, have_norms) is None,
+          "vague broad-overview fact with no concrete mechanism/specificity rejected")
+
+    # Curiosity questions about the actual phenomenon remain allowed.
+    curious = {**good, "id":"curious1",
+               "whatif":"What happens when one part of a giant fungus is damaged miles from another part?"}
+    check(E.accept_fact(curious, have_ids, have_norms) is not None,
+          "science-centered curiosity whatif remains allowed")
     # magnitude/scale facts are rejected
     mag = {**good, "id":"m1", "fact":"There are 10 times more bacteria than human cells in your body."}
     check(E.accept_fact(mag, have_ids, have_norms) is None, "'N times more' magnitude fact rejected")
