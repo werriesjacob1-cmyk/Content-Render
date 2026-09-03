@@ -25,10 +25,20 @@ up separately after reading this output.
 """
 import json
 import sys
+import time
 
 import generate as G
 import writer_v2 as W2
 import writer_v2_repair as WR
+
+# 2026-09-03 Phase 10 first attempt: 5 topics dispatched back-to-back
+# saturated Groq's 8000-TPM/minute cap almost immediately (each topic can
+# burn 5 calls x ~1500-3500 prompt tokens across retries) -- 3 of 5 topics
+# never even got a working initial draft. A real production render only
+# generates ONE video, so this contention is an artifact of THIS bakeoff's
+# own tight loop, not the architecture. Pace topics out so each one gets a
+# fresh-ish per-minute budget instead of inheriting the last topic's debt.
+INTER_TOPIC_DELAY_SECONDS = 45
 
 TOPIC_IDS = ["stomach_lining", "neutron_star_spoon", "mauna_kea", "chess_possible_games", "mantis_shrimp"]
 
@@ -113,7 +123,11 @@ def main():
     bank = {f["id"]: f for f in G.load_bank()}
     print(f"PHASE 10 LIVE BAKEOFF -- TOPICS: {TOPIC_IDS}")
     results = {}
-    for tid in TOPIC_IDS:
+    for i, tid in enumerate(TOPIC_IDS):
+        if i > 0:
+            print(f"\n[bakeoff] pacing {INTER_TOPIC_DELAY_SECONDS}s before next topic "
+                  f"(let the per-minute TPM budget recover)...")
+            time.sleep(INTER_TOPIC_DELAY_SECONDS)
         fact = bank.get(tid)
         if not fact:
             print(f"!! topic {tid} not found in bank, skipping")

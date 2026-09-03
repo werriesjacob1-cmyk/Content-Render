@@ -3580,11 +3580,15 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
     raw, structured = _v2_structured_call(prompt, writer_v2.WRITER_V2_SCHEMA, "writer_v2_output", calls)
     if raw is None:
         debug["error"] = "initial draft call failed on every provider"
+        debug["total_calls"] = len(calls)
+        debug["accepted"] = False
         return None, debug
     writer_out, err = _v2_parse_json_obj(raw)
     if err:
         debug["error"] = err
         debug["raw"] = (raw or "")[:500]
+        debug["total_calls"] = len(calls)
+        debug["accepted"] = False
         return None, debug
 
     candidates = []
@@ -3634,6 +3638,19 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
             round_info["repair_error"] = "repair call failed on every provider"
             break
         repair_out, rerr = _v2_parse_json_obj(rraw)
+        if rerr:
+            # the non-structured fallback path (structured output 429/failed)
+            # has no schema enforcement, and a model asked to "return the
+            # repairs" reasonably sometimes just returns a bare JSON array
+            # instead of {"repairs": [...]} -- confirmed live in the Phase 10
+            # bakeoff (2026-09-03). Accept that shape directly rather than
+            # aborting the round over a cosmetic envelope mismatch.
+            try:
+                bare = json.loads(rraw)
+                if isinstance(bare, list):
+                    repair_out, rerr = {"repairs": bare}, None
+            except Exception:  # noqa: BLE001
+                pass
         if rerr:
             round_info["repair_error"] = rerr
             break

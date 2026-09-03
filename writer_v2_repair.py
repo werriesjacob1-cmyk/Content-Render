@@ -619,7 +619,10 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
         f"Every returned beat needs voiceover + visual_intent (use \"\" for visual_intent on beat_index "
         f"0 or {num_beats + 1}) + source_claim_ids (the claim IDs that support the rewritten text)."
         + preserve_block
-        + "\n\nReturn ONLY valid JSON matching the given schema."
+        + "\n\nReturn ONLY valid JSON in EXACTLY this shape -- a single object with one key \"repairs\" "
+          "holding an array (never a bare array on its own, never anything else at the top level):\n"
+          '{"repairs": [{"beat_index": ' + str(target_beats[0] if target_beats else 0) + ', '
+          '"voiceover": "...", "visual_intent": "...", "source_claim_ids": ["claim_001"]}]}'
     )
 
 
