@@ -1491,6 +1491,25 @@ def test_bank_expander():
     ok = E.accept_fact(good, have_ids, have_norms)
     check(ok is not None, "a strong novel fact is accepted")
     check(ok and ok["id"] == "new_fact", "id is sanitized to snake_case")
+    # Generic application-fantasy WHATIFs caused bank drift toward "harness this
+    # to build technology" instead of curiosity about the science itself.
+    app = {**good, "id":"app1",
+           "whatif":"What if we could harness fungal networks to create new communication technologies?"}
+    check(E.accept_fact(app, have_ids, have_norms) is None,
+          "generic 'What if we could harness/create technology' entry rejected")
+
+    # Broad overview statements are topic descriptions, not scroll-stopping facts.
+    vague = {**good, "id":"vague1",
+             "fact":"Forests are complex ecosystems that rely on a delicate balance of relationships.",
+             "whatif":"What happens underground when two trees compete for the same nutrients?"}
+    check(E.accept_fact(vague, have_ids, have_norms) is None,
+          "vague broad-overview fact with no concrete mechanism/specificity rejected")
+
+    # Curiosity questions about the actual phenomenon remain allowed.
+    curious = {**good, "id":"curious1",
+               "whatif":"What happens when one part of a giant fungus is damaged miles from another part?"}
+    check(E.accept_fact(curious, have_ids, have_norms) is not None,
+          "science-centered curiosity whatif remains allowed")
     # magnitude/scale facts are rejected
     mag = {**good, "id":"m1", "fact":"There are 10 times more bacteria than human cells in your body."}
     check(E.accept_fact(mag, have_ids, have_norms) is None, "'N times more' magnitude fact rejected")
@@ -1563,6 +1582,32 @@ def test_topic_bank_integrity():
             if _difflib.SequenceMatcher(None, norms[i][1], norms[j][1]).ratio() > 0.62:
                 dupes.append((norms[i][0], norms[j][0]))
     check(not dupes, f"no two different fact ids are near-duplicate text (found: {dupes[:5]})")
+
+
+def test_runtime_topic_quarantine():
+    section("generate: weak current topic seeds are quarantined without deleting them")
+    bank = G.load_bank()
+    q = G.load_topic_quarantine()
+    bank_ids = {f.get("id") for f in bank}
+
+    check(len(q) >= 50, f"quarantine is materially populated ({len(q)} ids)")
+    check(q <= bank_ids, f"every quarantined id still exists in topic_bank.json ({len(q - bank_ids)} missing)")
+    check("starling_murmurations" in q, "unsupported starling gravity/stars seed is quarantined")
+    check("frozen_carbonite" in q, "science-fiction frozen-carbonite seed is quarantined")
+    check("magnetic_moon" in q, "overstated lunar-magnetism seed is quarantined")
+    check("memory_transplant" in q, "overstated sea-slug memory-transfer seed is quarantined")
+
+    selected = G.selectable_bank(bank, q)
+    selected_ids = {f.get("id") for f in selected}
+    check(not (selected_ids & q), "normal selector excludes every quarantined fact")
+    check(len(selected) < len(bank), f"selector shrinks the pool ({len(bank)} -> {len(selected)})")
+    check(len(selected) >= 180, f"still leaves a large diverse production pool ({len(selected)} facts)")
+
+    # Safety: quarantine corruption or an over-broad future list must never make
+    # generation impossible. If every fact is excluded, preserve old behavior.
+    all_ids = {f.get("id") for f in bank if f.get("id")}
+    fail_open = G.selectable_bank(bank, all_ids)
+    check(len(fail_open) == len(bank), "all-quarantined edge case fails open to the original bank")
 
 
 def test_caption_pop_animation():
@@ -2538,6 +2583,7 @@ def main():
     test_caption_pop_animation()
     test_bank_expander()
     test_topic_bank_integrity()
+    test_runtime_topic_quarantine()
     test_draft_is_weak()
     test_quality_floors_restored()
     test_cover_headline()
