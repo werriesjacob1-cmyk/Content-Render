@@ -150,20 +150,27 @@ def _extract_you_sources(payload: Mapping[str, Any]) -> tuple[EvidenceSource, ..
                         web_meta[url] = row
 
     out: list[EvidenceSource] = []
-    for row in citations:
+    for index, row in enumerate(citations, 1):
+        # Preserve provider citation positions exactly.  If an entry is
+        # malformed we keep an unverifiable placeholder instead of dropping it;
+        # otherwise [[3]] could accidentally become the original citation #4.
         if not isinstance(row, Mapping):
+            out.append(EvidenceSource(
+                source_id=f"src_invalid_{index}",
+                url="",
+                provider="you_answer",
+                metadata={"citation_index": index, "malformed": True},
+            ))
             continue
         url = str(row.get("source") or "").strip()
         excerpts_raw = row.get("excerpts")
         excerpts: tuple[str, ...] = ()
         if isinstance(excerpts_raw, Sequence) and not isinstance(excerpts_raw, (str, bytes)):
             excerpts = tuple(_norm(str(x)) for x in excerpts_raw if _norm(str(x)))
-        if not url or not excerpts:
-            continue
         meta = web_meta.get(url, {})
         title = str(meta.get("title") or "").strip()
         published = str(meta.get("page_age") or "").strip()
-        sid = _stable_id("src", url)
+        sid = _stable_id("src", url) if url else f"src_invalid_{index}"
         out.append(EvidenceSource(
             source_id=sid,
             url=url,
@@ -171,7 +178,10 @@ def _extract_you_sources(payload: Mapping[str, Any]) -> tuple[EvidenceSource, ..
             excerpts=excerpts,
             published_at=published,
             provider="you_answer",
-            metadata={"description": meta.get("description", "")} if meta else {},
+            metadata={
+                "description": meta.get("description", "") if meta else "",
+                "citation_index": index,
+            },
         ))
     return tuple(out)
 
