@@ -14,6 +14,15 @@ on:
           (anthropic/claude-sonnet-5). Does NOT touch the daily cron's model; for A/B testing a
           different writer without changing the permanent default."
         default: ""
+      certification_only:
+        description: "Run the REAL pipeline (script, TTS, footage, render, repackage, final-QA,
+          cover) but SKIP the GitHub Release + direct-Publer publish steps, so the finished video
+          only reaches this run's private Actions artifact for human review -- never a public
+          Release, never anything an external Zapier/Buffer hook on that Release event could pick
+          up. Only affects a manual dispatch with this box checked; the scheduled cron is
+          untouched (inputs.certification_only is unset there, so publish runs as normal)."
+        type: boolean
+        default: false
   schedule:
     # Once a day, 13:00 UTC. The "science" profile's intended posting window
     # is evening (7-10pm) in its audience's local time (see profiles.py
@@ -330,6 +339,11 @@ jobs:
         # GitHub" trigger -> "Buffer: Add to Queue" action fans the attached
         # cuts + captions out to every connected channel. Runs only on a
         # successful render (no always()), so a broken run never publishes.
+        # certification_only=true skips this step entirely -- the finished
+        # video still exists as this run's private Actions artifact (uploaded
+        # above) for human review, it just never becomes a public Release that
+        # an external Zapier hook could act on.
+        if: ${{ github.event.inputs.certification_only != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -368,8 +382,10 @@ jobs:
         # whenever Zapier's free task cap or Publer OAuth expires. Dormant unless the
         # PUBLER_* secrets are set (publish_publer.py exits 0 as a no-op), so nothing
         # changes for anyone not on Publer's Business plan. Never fails the run — the
-        # video is already on the Release regardless.
-        if: success()
+        # video is already on the Release regardless. Also skipped outright
+        # under certification_only, as belt-and-suspenders on top of the
+        # secrets already being unset -- see the Release step above.
+        if: ${{ success() && github.event.inputs.certification_only != 'true' }}
         env:
           PUBLER_API_KEY:      ${{ secrets.PUBLER_API_KEY }}
           PUBLER_WORKSPACE_ID: ${{ secrets.PUBLER_WORKSPACE_ID }}
