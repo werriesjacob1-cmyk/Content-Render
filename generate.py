@@ -261,13 +261,11 @@ TOGETHER_MODELS  = _models_env("TOGETHER_MODEL",  ["meta-llama/Llama-3.3-70B-Ins
 FIREWORKS_MODELS = _models_env("FIREWORKS_MODEL", ["accounts/fireworks/models/llama-v3p3-70b-instruct",
                                                    "accounts/fireworks/models/llama-v3p1-8b-instruct"])
 MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
-# GitHub Models (free, OpenAI-compatible): gpt-4o-mini is a genuinely strong
-# writer, separate free bucket, and we already run inside GitHub Actions. Prefer a
-# PAT with the models:read scope (GITHUB_MODELS_TOKEN); fall back to the built-in
-# GITHUB_TOKEN when the workflow grants `permissions: models: read`.
-GHM_KEY    = os.environ.get("GITHUB_MODELS_TOKEN", "") or os.environ.get("GITHUB_TOKEN", "")
-GHM_URL    = os.environ.get("GITHUB_MODELS_URL", "https://models.inference.ai.azure.com/chat/completions")
-GHM_MODELS = _models_env("GITHUB_MODELS_MODEL", ["gpt-4o-mini"])
+# GitHub Models was in the provider chain here (GHM_KEY/GHM_URL/GHM_MODELS +
+# _call_github_models) but was retired by GitHub on 2026-07-30 -- every call
+# started returning HTTP 401 "unauthorized: Server Error" regardless of token.
+# Removed 2026-09-03 rather than left as dead weight silently 401ing on every
+# render (SUPERCHAD audit + corroborated by earlier render logs).
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
 
 # ---------------------------------------------------------------------------
@@ -701,7 +699,6 @@ GENERIC_REFRAME_CLICHE_RE = re.compile(
 
 # A high-stakes hook may be conditional ("If an airlock bursts...") but must not
 # fabricate an accident as though it literally just happened to the viewer.
-# This catches the shipped Sep-1 shape: "Your phone just got hit by a bolt..."
 FALSE_PRESENT_STAKES_RE = re.compile(
     r"^\s*(?:your\b|you\b).{0,60}\b(?:just got|was just|has just been)\s+"
     r"(?:hit|struck|electrocuted|shot|crushed|blown up|exploded|ruptured|killed)\b",
@@ -1658,10 +1655,6 @@ def _call_mistral(model, prompt):
                                MISTRAL_KEY, model, prompt)
 
 
-def _call_github_models(model, prompt):
-    return _call_openai_compat(GHM_URL, GHM_KEY, model, prompt)
-
-
 def _call_cerebras(model, prompt):
     """Cerebras call with a per-minute-limit self-heal. Cerebras' free tier caps
     requests-per-minute, and one render's burst of generation calls trips it
@@ -1835,13 +1828,13 @@ def call_groq(prompt):
     global _WORKING_MODEL, _CONSEC_EXHAUSTIONS, _CIRCUIT_OPEN, _FORCE_GEMINI_GEN
     if _CIRCUIT_OPEN:
         raise RuntimeError("LLM circuit open — provider(s) rate-limited this run; failing fast")
-    # Order, 2026-08-03 (quality-first, not cost-first): OpenRouter now leads with
-    # Claude Sonnet 5 / GPT-5 (see the OPENROUTER_MODELS comment above) → GitHub →
-    # Groq's llama-3.3-70b-versatile → Together/Fireworks/Mistral → Cerebras
-    # gemma-4-31b (weakest, last resort — produces the escalation-4 near-misses
-    # that abort). Gemini (grounded, also frontier-tier) sits after this "free-ish"
-    # chain purely so its own paid quota isn't burned when OpenRouter alone would
-    # have written a great script anyway — NOT because it's a worse writer; set
+    # Order, 2026-08-03 (quality-first, not cost-first): OpenRouter leads with
+    # Claude Sonnet 5 / GPT-5 (see the OPENROUTER_MODELS comment above) → Groq's
+    # llama-3.3-70b-versatile → Together/Fireworks/Mistral → Cerebras gemma-4-31b
+    # (weakest, last resort — produces the escalation-4 near-misses that abort).
+    # Gemini (grounded, also frontier-tier) sits after this "free-ish" chain
+    # purely so its own paid quota isn't burned when OpenRouter alone would have
+    # written a great script anyway — NOT because it's a worse writer; set
     # GEMINI_GENERATION=1 to put it first instead. The point of this whole ladder
     # is "try a genuinely strong writer first, in every branch" — the OLD framing
     # here talked about "free-first to save money," which is exactly the
@@ -1849,23 +1842,26 @@ def call_groq(prompt):
     # script (Cerebras/Groq-8B) reaching QUALITY_HARD_FLOOR is a near-miss to be
     # tolerated on a bad day, never the goal.
     # render-217 bug (2026-08-03, caught same-day): with GEMINI_GENERATION=0,
-    # Gemini used to land at the very END of the chain -- behind github/groq/
-    # together/fireworks/mistral/cerebras, i.e. behind every WEAK backstop
-    # too. That's harmless on a normal day (OpenRouter's claude-sonnet-5/
+    # Gemini used to land at the very END of the chain -- behind every WEAK
+    # backstop too. That's harmless on a normal day (OpenRouter's claude-sonnet-5/
     # gpt-5 succeed and nothing else is even tried), but the first live-gen
     # verification render exposed exactly why it's wrong: the OpenRouter
     # account didn't have enough credit for claude-sonnet-5/gpt-5 (HTTP 402
     # "requires more credits") on THIS render, and llama-3.3-70b hit its
     # known intermittent empty-response flakiness the same run -- so
-    # generation fell through EVERY weak fallback (github gpt-4o-mini, groq,
-    # together, fireworks, mistral, cerebras gemma) before ever reaching
-    # Gemini, a strong/reliable/already-paid writer, and aborted. Gemini now
-    # sits right after OpenRouter, ahead of the weak-tier fallbacks, in BOTH
-    # orderings -- it's a second strong option, not a last resort.
+    # generation fell through EVERY weak fallback before ever reaching Gemini, a
+    # strong/reliable/already-paid writer, and aborted. Gemini now sits right
+    # after OpenRouter, ahead of the weak-tier fallbacks, in BOTH orderings --
+    # it's a second strong option, not a last resort.
+    # 2026-09-03: OpenRouter is now fully out of credit (hard 402 on every
+    # model, not refunded) — leading the chain with it costs one guaranteed-
+    # failed HTTP call per generation before falling through to Gemini right
+    # behind it. render.yml now sets GEMINI_GENERATION=1 so Gemini leads for
+    # real until OpenRouter is funded again; this default (used when the env
+    # var is unset, e.g. local/test runs) is left as documented above.
     _gemini_chain = [("gemini", m) for m in gemini_models()] if GEMINI_KEY else []
     _openrouter_chain = [("openrouter", m) for m in OPENROUTER_MODELS] if OPENROUTER_KEY else []
-    _weak_fallback_chain = (([("github", m) for m in GHM_MODELS] if GHM_KEY else []) +
-                   ([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) +
+    _weak_fallback_chain = (([("groq", m) for m in MODEL_CHAIN] if GROQ_KEY else []) +
                    ([("together", m) for m in TOGETHER_MODELS] if TOGETHER_KEY else []) +
                    ([("fireworks", m) for m in FIREWORKS_MODELS] if FIREWORKS_KEY else []) +
                    ([("mistral", m) for m in MISTRAL_MODELS] if MISTRAL_KEY else []) +
@@ -1909,8 +1905,6 @@ def call_groq(prompt):
                     out = _call_gemini(model, prompt)
                 elif prov == "openrouter":
                     out = _call_openrouter(model, prompt)
-                elif prov == "github":
-                    out = _call_github_models(model, prompt)
                 elif prov == "together":
                     out = _call_together(model, prompt)
                 elif prov == "fireworks":
@@ -3930,7 +3924,7 @@ def main():
                   f"shipping best-scoring attempt (overall {best_overall})")
 
     # --- Gemini quality-rescue (frugal escalation) ---------------------------
-    # The free providers (github:gpt-4o-mini / groq:llama) carry the COMMON case
+    # The free providers (groq:llama / cerebras:gemma) carry the COMMON case
     # at ~$0. But when the strongest free models are unavailable — e.g. after
     # OpenRouter dropped its free llama-3.3-70b and render 130 could only manage
     # overall 6.83 / surprise 4 on gpt-4o-mini — the free chain returns a
