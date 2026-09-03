@@ -45,6 +45,10 @@ TOPIC_IDS = ["stomach_lining", "neutron_star_spoon", "mauna_kea", "chess_possibl
 
 def _print_round(r):
     print(f"  -- round {r['round']} --")
+    print(f"     HOOK: {r.get('hook')}")
+    for i, b in enumerate(r.get("beats") or []):
+        print(f"     [{i + 1}] {b}")
+    print(f"     PAYOFF: {r.get('payoff')}")
     print(f"     traceability violations ({r['violation_count']}):")
     for v in r["violations"]:
         print(f"       beat {v['beat_index']}: {v['kind']} {v['value']!r} (cited: {v['cited_claim_ids']})")

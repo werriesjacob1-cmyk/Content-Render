@@ -3604,6 +3604,12 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
             "round": round_idx, "violation_count": len(violations),
             "violations": [v.to_dict() for v in violations[:20]],
             "validate_err": verr, "score": score,
+            # full text of this round's candidate -- needed for human editorial
+            # review even when the round never reaches acceptance (an aborted
+            # run's last round is still worth reading, not just its violation
+            # counts). Cheap: no extra network call, just what's already built.
+            "hook": m.get("hook"), "payoff": m.get("payoff"),
+            "beats": [s.get("voiceover") for s in m.get("scenes", [])],
         }
         debug["rounds"].append(round_info)
         candidates.append({"writer_out": writer_out, "manifest": m, "violations": violations,
