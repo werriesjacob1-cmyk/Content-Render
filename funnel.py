@@ -119,6 +119,8 @@ AFFILIATE_BY_DOMAIN = {
                   "angle": "the book on the wildest parts of the natural world"},
     "deep_time": {"kind": "book", "search": "Timefulness Marcia Bjornerud",
                   "angle": "the book that will wreck your sense of time"},
+    "language":   {"kind": "book", "search": "The Language Instinct Steven Pinker",
+                  "angle": "the book on the strange machinery behind human language"},
 }
 # Fallback for any domain not mapped above.
 AFFILIATE_DEFAULT = {"kind": "book", "search": "What If Randall Munroe",
