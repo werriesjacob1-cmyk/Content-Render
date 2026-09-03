@@ -908,13 +908,11 @@ def _gemini_vision_pick(intent, candidates):
 # needed on every render so far: sample the finished, CAPTIONED video, hand it
 # to Gemini vision with the full script, and get a holistic verdict logged
 # right in the render output (and written to out/qa_report.json, shipped as a
-# release asset) — so a bad video is FLAGGED without anyone downloading and
-# watching it by hand first. Best-effort and NEVER blocking: a QA failure or
-# unavailability never fails the render. This is a VISIBILITY tool, not a new
-# quality gate — a hard gate here risks blocking a genuinely good video on a
-# single vision-judge false negative, and weak SCRIPTS are already blocked
-# pre-render; this adds eyes on the one thing nothing currently checks, which
-# is whether the assembled result actually matches what was intended.
+# release asset) — so the assembled artifact itself is judged before a release.
+# This is a QUALITY GATE, not merely a visibility tool. A confident bad verdict
+# aborts, and so does missing/unparseable judge evidence while FINAL_QA is enabled:
+# "we could not inspect the product" is an evidence failure, not permission to
+# ship. The cron may retry later; consistency outranks cadence.
 FINAL_QA = os.environ.get("FINAL_QA", "1") != "0"
 FINAL_QA_FRAMES = int(os.environ.get("FINAL_QA_FRAMES", "8"))
 # Hard publish gate: a CONFIDENT (judge actually ran + returned a number) low
@@ -952,16 +950,24 @@ FINAL_QA_FLOW_FLOOR = int(os.environ.get("FINAL_QA_FLOW_FLOOR") or "6")
 
 
 def _qa_should_abort(qa_report):
-    """True on a CONFIDENT low footage_matches_narration OR narration_flow
-    score (the judge actually ran and returned a number below its floor). Any
-    failure to judge (no key, bad reply, exception) fails OPEN -- never blocks
-    a publish just because the best-effort QA call itself broke."""
-    if not qa_report.get("ran"):
+    """True when enabled final-QA is unavailable, malformed, or below a floor.
+
+    FINAL_QA=0 remains an explicit operator opt-out. Otherwise the assembled
+    video must have usable artifact-level evidence before it can be considered
+    successful. An unavailable reviewer is not evidence that the artifact is good.
+    """
+    if not FINAL_QA:
         return False
+    if not qa_report.get("ran"):
+        return True
     fm = qa_report.get("footage_matches_narration")
-    if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+    if not isinstance(fm, (int, float)):
+        return True
+    if fm < FINAL_QA_ABORT_FLOOR:
         return True
     nf = qa_report.get("narration_flow")
+    if qa_report.get("audio_judged") and not isinstance(nf, (int, float)):
+        return True
     if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
         return True
     return False
@@ -1003,13 +1009,12 @@ def _extract_qa_frames(video, n, dest_dir):
 
 
 def _final_qa_check(video, m):
-    """Best-effort holistic sanity check on the ASSEMBLED, captioned video —
-    never raises. Always writes out/qa_report.json (shipped as a release
-    asset) and prints a single [final-qa] summary line so a bad video is
-    visible in the render log without anyone downloading and watching it.
-    Returns the report dict; the caller gates publishing on a confidently low
-    footage_matches_narration OR narration_flow score (see FINAL_QA_ABORT_FLOOR
-    / FINAL_QA_FLOW_FLOOR).
+    """Holistic sanity check on the ASSEMBLED, captioned video.
+
+    The function itself never raises and always writes out/qa_report.json, but
+    its caller treats ran:false / malformed evidence as a failed quality gate
+    while FINAL_QA is enabled. The caller requires usable artifact evidence as
+    well as the numeric floors (FINAL_QA_ABORT_FLOOR / FINAL_QA_FLOW_FLOOR).
 
     2026-08-03: the judge now LISTENS to the actual voice track (full_vo.mp3,
     the raw TTS output from earlier in this same render — still on disk, WORK
@@ -1103,7 +1108,7 @@ def _final_qa_check(video, m):
         nf_part = f" flow={nf}/10" if have_audio else ""
         print(f"[final-qa] {flag} footage_match={fm}/10 variety={vv}/10 captions={cl}/10{nf_part} "
               f"issue={issue!r} ({len(frames)} frames sampled{', +audio' if have_audio else ''})")
-    except Exception as e:  # noqa: BLE001 — best-effort, must never break the render
+    except Exception as e:  # noqa: BLE001 — report failure; caller enforces the gate
         print(f"[final-qa] unavailable ({type(e).__name__}: {str(e)[:150]})")
         report = {"ran": False, "error": str(e)[:200]}
     finally:
@@ -2160,12 +2165,27 @@ FAL_VIDEO_MODEL = os.environ.get("FAL_VIDEO_MODEL") or "fal-ai/ltx-video"
 FAL_MAX_CLIPS = int(os.environ.get("FAL_MAX_CLIPS") or "2")            # per-video hard cost cap
 FAL_RELEVANCE_FLOOR = int(os.environ.get("FAL_RELEVANCE_FLOOR") or "5")  # stock score < this = replace
 FAL_VIDEO_SCENES = 0
+# fal clips are synthetic media with two observed failure modes that mechanical
+# checks cannot prove away: wrong-subject hallucinations and garbled baked-in text.
+# If the safety judge is unavailable, paying for more unreviewable clips in this
+# render is both lower-quality AND wasted spend. One failed safety check opens this
+# render-local circuit; stock/archival/still fallbacks remain available.
+_FAL_SAFETY_UNAVAILABLE = False
 
 
 def _fal_can_spend():
-    """True iff a paid fal key exists AND we're still under the per-video clip cap.
-    Pure/testable (no network) — the single gate that bounds fal spend."""
-    return bool(FAL_KEY) and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
+    """True iff fal can BOTH generate and verify another clip this render.
+
+    A paid synthetic clip is only useful when its independent Gemini vision safety
+    check can run. No Gemini key / VISION_JUDGE disabled / a safety-check outage
+    therefore disables fal BEFORE spending; after one runtime judge failure the
+    render-local circuit prevents repeatedly paying for clips we cannot verify.
+    """
+    return (bool(FAL_KEY)
+            and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
+            and VISION_JUDGE
+            and bool(os.environ.get("GEMINI_API_KEY", ""))
+            and not _FAL_SAFETY_UNAVAILABLE)
 
 
 # Camera/lighting descriptors per VIBE (see VIBE_TWEAKS above) so the AI hero
@@ -2298,20 +2318,25 @@ def _fal_clip_relevant(scene, clip_path):
     the middle of the frame, directly under the caption. The two checks are
     independent: a clip can be perfectly on-subject and still be unusable
     because of hallucinated text, so this rejects on EITHER failure, not just
-    a low relevance score. Fails OPEN (returns True) whenever judging itself
-    is unavailable/broken/unparseable -- this must never be the reason a
-    render aborts or a fal clip is wrongly rejected; it only rejects on a
-    CONFIDENT low score or a CONFIDENT text-hallucination flag. Reuses the
-    same bounded-thinking-budget fix as _gemini_vision_pick/_final_qa_check
-    (thinkingBudget=0 400s once image parts are attached)."""
+    a low relevance score. This safety check FAILS CLOSED for the synthetic clip:
+    if judging is unavailable/broken/unparseable, reject this fal clip and let the
+    caller fall back to real stock / archival / still / card. That is deliberately
+    different from aborting the whole render: an unverified AI clip is optional,
+    while the project's consistency-over-cadence rule says known synthetic-media
+    risk must not silently become trusted media. Reuses the same bounded-thinking-
+    budget fix as _gemini_vision_pick/_final_qa_check."""
+    global _FAL_SAFETY_UNAVAILABLE
     key = os.environ.get("GEMINI_API_KEY", "")
     if not (VISION_JUDGE and key):
-        return True
+        _FAL_SAFETY_UNAVAILABLE = True
+        return False
     frame_path = os.path.join(WORK, f"_fal_check_{os.path.basename(clip_path)}.jpg")
     try:
         run(["ffmpeg", "-y", "-i", clip_path, "-ss", "1.0", "-frames:v", "1", frame_path])
         if not os.path.exists(frame_path):
-            return True
+            _FAL_SAFETY_UNAVAILABLE = True
+            print("  [fal] safety check produced no frame — rejecting clip and disabling fal for this render")
+            return False
         intent = _footage_intent(scene)
         import base64
         parts = [
@@ -2345,16 +2370,19 @@ def _fal_clip_relevant(scene, clip_path):
         txt = data["candidates"][0]["content"]["parts"][0]["text"]
         m = re.search(r"\{.*\}", txt, re.S)
         if not m:
-            return True   # unparseable reply -- fail open, don't block on a judging hiccup
+            _FAL_SAFETY_UNAVAILABLE = True
+            print("  [fal] safety judge returned no parseable JSON — rejecting clip and disabling fal for this render")
+            return False
         verdict = json.loads(m.group(0))
         accept, reason = _fal_clip_verdict(verdict)
         if not accept:
             print(f"  [fal] vision check: {reason} against {intent!r} -- rejecting")
             return False
         return True
-    except Exception as e:  # noqa: BLE001 - a broken check must never block a render
-        print(f"  [fal] relevance check unavailable ({e}); accepting clip")
-        return True
+    except Exception as e:  # noqa: BLE001 - reject only this optional synthetic clip
+        _FAL_SAFETY_UNAVAILABLE = True
+        print(f"  [fal] safety check unavailable ({e}); rejecting clip and disabling fal for this render")
+        return False
     finally:
         try:
             os.remove(frame_path)
@@ -3726,14 +3754,20 @@ def main():
     if _qa_should_abort(qa_report):
         fm, nf = qa_report.get("footage_matches_narration"), qa_report.get("narration_flow")
         reasons = []
-        if isinstance(fm, (int, float)) and fm < FINAL_QA_ABORT_FLOOR:
+        if not qa_report.get("ran"):
+            reasons.append(f"final QA unavailable ({qa_report.get('error', 'judge did not run')})")
+        elif not isinstance(fm, (int, float)):
+            reasons.append("footage_matches_narration score missing/malformed")
+        elif fm < FINAL_QA_ABORT_FLOOR:
             reasons.append(f"footage_matches_narration={fm}/10 (< {FINAL_QA_ABORT_FLOOR})")
-        if isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
+        if qa_report.get("audio_judged") and not isinstance(nf, (int, float)):
+            reasons.append("narration_flow score missing/malformed")
+        elif isinstance(nf, (int, float)) and nf < FINAL_QA_FLOW_FLOOR:
             reasons.append(f"narration_flow={nf}/10 (< {FINAL_QA_FLOW_FLOOR})")
-        print(f"ERROR: final QA judged the ASSEMBLED video below the publish bar: "
+        print(f"ERROR: final assembled-video QA did not clear the publish bar: "
               f"{'; '.join(reasons)} — issue={qa_report.get('biggest_issue', '')!r}. "
-              f"Aborting so a blatant footage mismatch or bad-sounding narration is never "
-              f"published; retry re-renders/re-writes it.")
+              f"Aborting rather than release an unverified or demonstrably weak artifact; "
+              f"consistency over cadence.")
         sys.exit(1)
     print("DONE ->", final, f"({ffprobe_dur(final):.1f}s)")
 
