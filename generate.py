@@ -167,7 +167,14 @@ def gemini_models():
 # Path A: try strongest available model first; fall back automatically if blocked (403) or rate-limited.
 # llama-3.1-70b-versatile was DECOMMISSIONED by Groq (400 "model_decommissioned"),
 # so it too wasted a slot; dropped. 3.3-70b (quality) then 3.1-8b-instant (cheap).
-MODEL_CHAIN = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+# 2026-09-03: BOTH of those are now gone too -- confirmed live (fresh GROQ_API_KEY,
+# `.github/workflows/groq_healthcheck.yml`) that this account's actual model catalog
+# (GET /openai/v1/models, 200 OK) contains no llama-3.x chat model at all any more;
+# every render's HTTP 404 "model_not_found" was a genuinely retired model, not a bad
+# key (the key itself listed fine). Replaced with what the same key's catalog
+# confirmed AND a live 1-token completion returned HTTP 200 for: Groq's own
+# openai/gpt-oss-120b (quality) then openai/gpt-oss-20b (cheap/fast).
+MODEL_CHAIN = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 # THIRD free provider (backup to Gemini + Groq). Cerebras' free tier is far more
 # generous than Groq's (millions of tokens/day, high RPM) and serves the same
 # Llama models on an OpenAI-compatible endpoint, so it's the workhorse fallback
