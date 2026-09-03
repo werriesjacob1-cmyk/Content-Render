@@ -1,0 +1,73 @@
+name: groq-healthcheck
+
+# One-off diagnostic: confirm the current GROQ_API_KEY secret actually has
+# access to the model IDs generate.py's provider chain uses, WITHOUT running a
+# full render (no LLM script generation, no footage/TTS/ffmpeg spend). Live
+# render logs on 2026-09-03 showed both configured Groq models returning HTTP
+# 404 "model_not_found" even though those exact IDs are current per Groq's own
+# docs -- the working theory was a bad/revoked key, not a stale model ID. Run
+# this manually after rotating the secret to confirm the fix before spending a
+# real render on it.
+#
+# Manual dispatch only. Model listing is free; each completion call below
+# spends max_tokens=1 (a few tokens total, not a real generation).
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: List models this key can see
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::error::GROQ_API_KEY secret is not set"
+            exit 1
+          fi
+          echo "--- GET /openai/v1/models ---"
+          code=$(curl -s -o /tmp/models.json -w "%{http_code}" \
+            https://api.groq.com/openai/v1/models \
+            -H "Authorization: Bearer $GROQ_API_KEY")
+          echo "HTTP $code"
+          cat /tmp/models.json
+          echo
+          echo "--- model IDs this key can see (if listing succeeded) ---"
+          python3 -c "
+import json
+try:
+    data = json.load(open('/tmp/models.json'))
+    ids = sorted(m.get('id','?') for m in data.get('data', []))
+    print('\n'.join(ids) if ids else '(no data[] field / empty list)')
+except Exception as e:
+    print(f'(could not parse as model list JSON: {e})')
+"
+
+      - name: Minimal completion — llama-3.3-70b-versatile
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          echo "--- POST chat/completions model=llama-3.3-70b-versatile max_tokens=1 ---"
+          code=$(curl -s -o /tmp/r1.json -w "%{http_code}" \
+            https://api.groq.com/openai/v1/chat/completions \
+            -H "Authorization: Bearer $GROQ_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"llama-3.3-70b-versatile","messages":[{"role":"user","content":"hi"}],"max_tokens":1}')
+          echo "HTTP $code"
+          cat /tmp/r1.json
+
+      - name: Minimal completion — llama-3.1-8b-instant
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          echo "--- POST chat/completions model=llama-3.1-8b-instant max_tokens=1 ---"
+          code=$(curl -s -o /tmp/r2.json -w "%{http_code}" \
+            https://api.groq.com/openai/v1/chat/completions \
+            -H "Authorization: Bearer $GROQ_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"llama-3.1-8b-instant","messages":[{"role":"user","content":"hi"}],"max_tokens":1}')
+          echo "HTTP $code"
+          cat /tmp/r2.json
