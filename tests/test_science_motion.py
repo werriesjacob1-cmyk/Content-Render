@@ -15,7 +15,6 @@ from science_motion import (  # noqa: E402
     ScienceMotionSpec,
     TimelineMarker,
     compile_filtergraph,
-    enforce_budget if False else None,
     ffmpeg_command,
     provenance_manifest,
     render_science_motion,
