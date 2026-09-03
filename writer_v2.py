@@ -227,6 +227,8 @@ BANNED: vague philosophy, fortune-cookie lines, "everything you know/learned abo
 
 STRUCTURE: follow the BEAT PROGRESSION given below exactly, in order -- it is a genuinely different shape from a generic hook -> question -> fact-list -> twist, and the whole point of this treatment is that the page doesn't feel formulaic. Each beat is ONE sentence a narrator would actually say out loud, building on the beat before it, never restating an earlier beat's point.
 
+CURIOSITY GAP (hard requirement): the hook OR one of the first 3 beats must literally end in a question mark "?" -- a genuine question the story then actually answers by the payoff, not a rhetorical throwaway. A script with no "?" anywhere in the hook or first 3 beats is invalid. The hook itself does not have to be the question (it usually shouldn't be, per the HOOK rule above) -- put it in beat 1, 2, or 3 instead.
+
 Return ONLY valid JSON matching this exact shape, no markdown, no commentary:
 {"title": "...", "hook": "the first spoken line, 8-14 words", "beats": [{"voiceover": "one spoken sentence", "visual_intent": "the concrete filmable subject on screen for this beat -- a real thing, not a mood"}], "payoff": "the final beat's realization in one sentence -- a resonant thought, never a command like 'save this' and never a restatement of the hook"}"""
 

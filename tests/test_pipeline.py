@@ -2770,6 +2770,10 @@ def test_writer_v2_prompt_size():
           "the prompt explicitly surfaces the fact's own key_terms (caught live in the bakeoff: "
           "a draft used only 1/3 mandatory key terms)")
     check("at least 2" in prompt_kt.lower(), "the prompt explicitly requires naming at least 2 key_terms")
+    check('"?"' in W2.WRITER_V2_STATIC and "first 3 beats" in W2.WRITER_V2_STATIC,
+          "WRITER_V2_STATIC explicitly requires the hard curiosity-gap question mark "
+          "(caught live in the bakeoff: all 3 drafts failed 'whatif curiosity gap never opened' "
+          "once the connector/key_terms gaps were fixed)")
 
 
 def test_writer_v2_schema():
