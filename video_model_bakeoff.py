@@ -154,8 +154,10 @@ def main():
     ap.add_argument("--out-dir", default="video_bakeoff")
     args = ap.parse_args()
 
+    if not os.environ.get("FAL_KEY") and os.environ.get("FAL_API_KEY"):
+        os.environ["FAL_KEY"] = os.environ["FAL_API_KEY"]
     if not os.environ.get("FAL_KEY"):
-        raise SystemExit("FAL_KEY is required")
+        raise SystemExit("FAL_KEY or FAL_API_KEY is required")
     models = parse_models(args.models)
     os.makedirs(args.out_dir, exist_ok=True)
 
