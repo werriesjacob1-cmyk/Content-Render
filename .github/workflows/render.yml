@@ -45,8 +45,9 @@ permissions:
   contents: write   # the workflow commits manifest.json and used_footage_*.json
                      # back to the repo; without this the GITHUB_TOKEN defaults
                      # to read-only and every `git push` below silently no-ops.
-  models: read       # lets generate.py use the free GitHub Models API with the
-                     # built-in token (or set a GITHUB_MODELS_TOKEN PAT secret).
+                     # (GitHub Models' `models: read` permission was removed
+                     # 2026-09-03 -- that API was retired 2026-07-30 and every
+                     # call had been silently 401ing since.)
 
 concurrency:
   # Now that render.yml self-triggers on a schedule, it can overlap with a
@@ -119,17 +120,15 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # 2026-08-03: OFF. The recurring "clumsy/jumbled/doesn't make sense"
-          # narration complaints trace to the WRITER model, not to Gemini-vs-not.
-          # Gemini's auto-discovered model on this key is "gemini-flash-latest" /
-          # "gemini-3.5-flash" -- Google's FAST tier, not their strongest. The user
-          # said explicitly to stop optimizing for cost and use the strongest
-          # writer available: OpenRouter's default is now Claude Sonnet 5 / GPT-5
-          # (see OPENROUTER_MODEL below), which leads the chain when this is unset/
-          # "0". Gemini (still grounded, still has the vision footage judge) is the
-          # backstop for nights OpenRouter is unavailable. Set to "1" to restore
-          # Gemini-first.
-          GEMINI_GENERATION: "0"
+          # 2026-09-03: ON. Was "0" (OpenRouter-first) from 2026-08-03 while
+          # OpenRouter carried Claude Sonnet 5 / GPT-5 as the strongest writer
+          # available. OpenRouter is now fully out of credit -- every model 402s
+          # ("requires more credits") on every call, and the user has declined to
+          # refund it for now -- so leading the chain with it bought nothing but
+          # one guaranteed-failed HTTP call per generation before falling through.
+          # Gemini (grounded, still has the vision footage judge) is the true
+          # primary again until OpenRouter is refunded; flip back to "0" then.
+          GEMINI_GENERATION: "1"
           # Gemini's free tier has a far larger daily quota than Groq's; when set,
           # generate.py prefers it so renders stop aborting at this step. Optional
           # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
@@ -165,11 +164,6 @@ jobs:
           TOGETHER_MODEL:    ${{ vars.TOGETHER_MODEL }}
           FIREWORKS_MODEL:   ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL:     ${{ vars.MISTRAL_MODEL }}
-          # GitHub Models (free): a PAT with models:read is preferred; falls back
-          # to the built-in token via the `models: read` permission above.
-          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
-          GITHUB_TOKEN:        ${{ github.token }}
-          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
         run: |
           # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
           # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets

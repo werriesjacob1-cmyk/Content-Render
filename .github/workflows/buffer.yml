@@ -25,7 +25,6 @@ on:
 
 permissions:
   contents: write   # commits the queued manifests + memory back to the repo
-  models: read       # free GitHub Models API (or a GITHUB_MODELS_TOKEN PAT)
 
 concurrency:
   # share render-video's concurrency group so a buffer fill never races the
@@ -52,10 +51,10 @@ jobs:
       - name: Fill the buffer
         env:
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
-          # Matches render.yml (2026-08-03): OFF, so banked scripts get the same
-          # OpenRouter-Claude-Sonnet-5-first writer as live renders, not Gemini's
-          # fast/cheap tier. See render.yml's GEMINI_GENERATION comment.
-          GEMINI_GENERATION:  "0"
+          # Matches render.yml (2026-09-03): ON, since OpenRouter is fully out of
+          # credit (hard 402 on every model). See render.yml's GEMINI_GENERATION
+          # comment for the full history.
+          GEMINI_GENERATION:  "1"
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           CEREBRAS_API_KEY:   ${{ secrets.CEREBRAS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -65,9 +64,6 @@ jobs:
           TOGETHER_MODEL:     ${{ vars.TOGETHER_MODEL }}
           FIREWORKS_MODEL:    ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL:      ${{ vars.MISTRAL_MODEL }}
-          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
-          GITHUB_TOKEN:        ${{ github.token }}
-          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
         run: |
           COUNT="${{ github.event.inputs.count || '6' }}"
           echo "buffering up to $COUNT manifest(s)"
