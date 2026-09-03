@@ -3343,9 +3343,10 @@ def research_dossier(fact):
     specific, surprising, TRUE details about the same topic, so stage 2 can build
     each scene from a DIFFERENT real point instead of rephrasing the premise.
 
-    Returns a list of concrete fact strings (or [] on failure — the caller then
-    generates the old way, so this can never break a render). Best with the
-    Gemini free tier (reliable, high quota); degrades under Groq rate limits."""
+    Returns a list of concrete fact strings. Under the default GROUND_DOSSIER=1
+    policy, any grounding/key/quota failure returns [] so the writer must stay on
+    the base bank fact instead of silently expanding from model memory. Set
+    GROUND_DOSSIER=0 only as an explicit operator opt-out for experiments."""
     if not fact:
         return []
     topic = fact.get("fact") or fact.get("angle") or ""
@@ -3356,10 +3357,26 @@ def research_dossier(fact):
     # a fixed topic, so it doesn't go stale between runs.
     key = _dossier_key(fact)
     cache = _load_dossier_cache() if key else {}
+    # Provenance matters: legacy cache entries were bare lists, so we cannot
+    # tell whether they came from grounded Google Search or ordinary model
+    # memory. Under the default quality-first policy, only explicitly-grounded
+    # cache entries are trusted. GROUND_DOSSIER=0 is the operator's explicit
+    # opt-out and may reuse an ungrounded cache entry.
+    ground_required = os.getenv("GROUND_DOSSIER", "1") != "0"
     cached = cache.get(key)
-    if isinstance(cached, list) and len([f for f in cached if str(f).strip()]) >= 5:
-        print(f"  [research] dossier cache HIT ({len(cached)} angles) — no LLM call")
-        return [str(f).strip() for f in cached if str(f).strip()][:10]
+    cached_facts = []
+    cached_grounded = False
+    if isinstance(cached, dict):
+        cached_facts = [str(f).strip() for f in (cached.get("facts") or []) if str(f).strip()]
+        cached_grounded = cached.get("grounded") is True
+    elif isinstance(cached, list) and not ground_required:
+        # Backward compatibility only when the operator explicitly disabled
+        # grounding; unknown-provenance legacy lists are not trusted by default.
+        cached_facts = [str(f).strip() for f in cached if str(f).strip()]
+    if len(cached_facts) >= 5 and (cached_grounded or not ground_required):
+        provenance = "grounded" if cached_grounded else "ungrounded/operator-opt-out"
+        print(f"  [research] dossier cache HIT ({len(cached_facts)} angles, {provenance}) — no LLM call")
+        return cached_facts[:10]
     kt = ", ".join(fact.get("key_terms", []) or [])
     prompt = (
         "You are the researcher behind the most fascinating science videos on the internet "
@@ -3382,23 +3399,29 @@ def research_dossier(fact):
         'Return ONLY JSON: {"facts": ["...", "...", "...", "...", "...", "...", "...", "...", "..."]}'
     )
     try:
-        # GROUNDED RESEARCH: pull the facts from REAL Google Search results via
-        # Gemini's grounding tool so the dossier is sourced and accurate, not just
-        # the model's memory. Falls back to the ordinary (ungrounded) provider
-        # chain on any failure, so this never blocks a run.
-        raw = None
-        # Grounding is the one Gemini call that runs even on the free-first chain
-        # (it's Gemini-unique). It's cached per fact, so it's a ONE-TIME cost per
-        # topic — but GROUND_DOSSIER=0 skips it entirely for max frugality, falling
-        # back to the free provider chain (the topic_bank facts are already curated,
-        # so an ungrounded dossier is still solid).
-        if GEMINI_KEY and os.getenv("GROUND_DOSSIER", "1") != "0":
+        # GROUNDED RESEARCH is the default contract. Extra claims are allowed
+        # to enrich a script only when they came through Gemini's live Google
+        # Search grounding. A quota/network failure now returns [] (base fact
+        # only) instead of silently asking an ungrounded model to invent nine
+        # "TRUE" supporting facts. Consistency/accuracy beats filling eight
+        # scenes on a bad quota day.
+        if ground_required:
+            if not GEMINI_KEY:
+                print("  [research] grounded dossier required but GEMINI_API_KEY is unavailable — "
+                      "writing from the base fact only")
+                return []
             try:
                 raw = _call_gemini(gemini_models()[0], prompt, ground=True)
                 print("  [research] grounded on live Google Search")
             except Exception as e:  # noqa: BLE001
-                print(f"  [research] grounded search unavailable ({e}); using model knowledge")
-        if raw is None:
+                print(f"  [research] grounded search unavailable ({e}) — "
+                      f"NO ungrounded fallback; writing from the base fact only")
+                return []
+        else:
+            # Explicit operator opt-out for development/frugality experiments.
+            # Production defaults to grounding on, so this path is never entered
+            # merely because a provider happened to fail.
+            print("  [research] GROUND_DOSSIER=0 — explicit ungrounded research opt-out")
             raw = call_groq(prompt)
         data = json.loads(raw)
         facts = [str(x).strip() for x in (data.get("facts") or []) if str(x).strip()]
@@ -3406,7 +3429,7 @@ def research_dossier(fact):
         if facts:
             print(f"  [research] scientist-brain dossier: {len(facts)} distinct angles gathered")
             if key and len(facts) >= 5:  # only cache a genuinely full dossier
-                cache[key] = facts
+                cache[key] = {"facts": facts, "grounded": bool(ground_required)}
                 _save_dossier_cache(cache)
         return facts
     except Exception as e:
