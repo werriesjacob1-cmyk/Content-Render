@@ -954,6 +954,18 @@ def test_domain_family():
           "space/astronomy map to the same family")
     check(G._domain_family("ocean") != G._domain_family("earth"),
           "the new ocean family stays distinct from the earth family")
+    check(G._domain_family("marine_biology") == G._domain_family("marinebiology") == G._domain_family("ocean"),
+          "marine_biology spellings collapse into the ocean family")
+    check(G._domain_family("meteorology") == G._domain_family("weather"),
+          "meteorology collapses into the weather/earth family")
+    check(G._domain_family("ecology") == "nature" and G._domain_family("zoology") == "animals",
+          "ecology/zoology use existing nature/animals families")
+    check(G._domain_family("microbiology") == "biology" and G._domain_family("neuroscience") == "neurology",
+          "microbiology/neuroscience use existing biology/neurology families")
+    check(G._domain_family("mathematics") == "math" and G._domain_family("materials_science") == "materials",
+          "formal math/materials labels use existing creative families")
+    check(G._domain_family("linguistics") == G._domain_family("language") == "language",
+          "linguistics/language share one explicit family")
 
 
 def test_series_and_callback():
