@@ -688,8 +688,8 @@ def test_final_qa():
         if _key_bak is not None:
             os.environ["GEMINI_API_KEY"] = _key_bak
 
-    # publish gate (render 205/209: a blatant footage/narration mismatch must
-    # abort, not ship) -- fails OPEN on anything less than a confident low score
+    # publish gate: a blatant mismatch OR missing artifact-level evidence aborts.
+    # FINAL_QA=0 is the only explicit operator opt-out.
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": 1}) is True,
           "confident, blatantly low score (1/10) -> abort")
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": M.FINAL_QA_ABORT_FLOOR - 1}) is True,
@@ -698,8 +698,15 @@ def test_final_qa():
           "score AT the floor -> does not abort (only strictly below)")
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": 8}) is False,
           "healthy score -> no abort")
-    check(M._qa_should_abort({"ran": False, "footage_matches_narration": 0}) is False,
-          "judge did not run (ran:false, e.g. no key) -> fails OPEN, never aborts")
+    _fq = M.FINAL_QA
+    try:
+        M.FINAL_QA = False
+        check(M._qa_should_abort({"ran": False}) is False,
+              "explicit FINAL_QA=0 operator opt-out -> unavailable judge does not abort")
+    finally:
+        M.FINAL_QA = _fq
+    check(M._qa_should_abort({"ran": False, "footage_matches_narration": 0}) is True,
+          "judge did not run (ran:false, e.g. quota/key outage) -> fail CLOSED, aborts")
     # pinned regression: two REAL renders shipped uncaught at exactly
     # footage_match=5/10 with a named defect each time (the render-209 "night
     # sky/night traffic... off-topic for human ancestry" case, and "The Real
@@ -709,10 +716,10 @@ def test_final_qa():
     check(M.FINAL_QA_ABORT_FLOOR >= 6, "the floor is high enough that a 5/10 score actually aborts")
     check(M._qa_should_abort({"ran": True, "footage_matches_narration": 5}) is True,
           "a real-world bad score (5/10) aborts, not just scores strictly below it")
-    check(M._qa_should_abort({"ran": True, "error": "no JSON in reply"}) is False,
-          "ran but no numeric score parsed -> fails OPEN, never aborts")
-    check(M._qa_should_abort({"ran": True, "footage_matches_narration": "n/a"}) is False,
-          "non-numeric score value -> fails OPEN, never aborts")
+    check(M._qa_should_abort({"ran": True, "error": "no JSON in reply"}) is True,
+          "ran but no numeric footage score parsed -> fail CLOSED")
+    check(M._qa_should_abort({"ran": True, "footage_matches_narration": "n/a"}) is True,
+          "non-numeric footage score -> fail CLOSED")
 
     # 2026-08-03: narration_flow -- the judge now LISTENS to the actual voice
     # audio, not just text, so a script that reads fine on paper but sounds
@@ -1563,9 +1570,10 @@ def test_draft_is_weak():
     broken = {**strong, fk: floors[fk] - 1}
     check(G.draft_is_weak(thr + 1.0, broken) is True,
           f"high overall but {fk} below floor -> weak (rescue)")
-    # ungradable-but-clean (overall/quality None) -> NOT weak: leave it be, no spend
-    check(G.draft_is_weak(None, None) is False, "unscored clean script -> not weak (no rescue)")
-    check(G.draft_is_weak(8.0, None) is False, "quality None -> not weak")
+    # Missing creative-quality evidence is itself weak: structural validity is
+    # not permission to buffer/render an unscored script (Sep-1 regression).
+    check(G.draft_is_weak(None, None) is True, "unscored clean script -> weak / fail closed")
+    check(G.draft_is_weak(8.0, None) is True, "quality None -> weak / fail closed")
     # the force flag exists and defaults off so normal runs stay free-first
     check(G._FORCE_GEMINI_GEN is False, "_FORCE_GEMINI_GEN defaults off (free-first preserved)")
     # COHERENCE is a hard floor now (render-160 fix): a script that scores high on
