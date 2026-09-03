@@ -948,6 +948,11 @@ FINAL_QA_ABORT_FLOOR = int(os.environ.get("FINAL_QA_ABORT_FLOOR") or "6")
 # reach a release without a human having to catch it after the fact.
 FINAL_QA_FLOW_FLOOR = int(os.environ.get("FINAL_QA_FLOW_FLOOR") or "6")
 
+# Seconds to wait before the one retry on a transient final-QA call failure
+# (see _final_qa_check) -- short and fixed, since this is a single post-render
+# call, not the burst-RPM situation _gemini_retry_delay handles during generation.
+FINAL_QA_RETRY_DELAY = int(os.environ.get("FINAL_QA_RETRY_DELAY") or "5")
+
 
 def _qa_should_abort(qa_report):
     """True when enabled final-QA is unavailable, malformed, or below a floor.
@@ -1015,6 +1020,10 @@ def _final_qa_check(video, m):
     its caller treats ran:false / malformed evidence as a failed quality gate
     while FINAL_QA is enabled. The caller requires usable artifact evidence as
     well as the numeric floors (FINAL_QA_ABORT_FLOOR / FINAL_QA_FLOW_FLOOR).
+    The Gemini call itself gets ONE bounded retry (FINAL_QA_RETRY_DELAY) on
+    failure before this still reports ran:false -- a transient hiccup no
+    longer costs a whole aborted render, but exhausted evidence still fails
+    closed exactly as before.
 
     2026-08-03: the judge now LISTENS to the actual voice track (full_vo.mp3,
     the raw TTS output from earlier in this same render — still on disk, WORK
@@ -1089,15 +1098,32 @@ def _final_qa_check(video, m):
         rq = urllib.request.Request(url, data=body,
             headers={"Content-Type": "application/json", "x-goog-api-key": key,
                      "User-Agent": BROWSER_UA})
-        with urllib.request.urlopen(rq, timeout=60) as r:
-            data = json.loads(r.read().decode())
-        txt = data["candidates"][0]["content"]["parts"][0]["text"]
-        _match = re.search(r"\{.*\}", txt, re.S)
-        if _match is None:
-            print(f"[final-qa] unavailable (no JSON in reply: {txt[:80]!r})")
-            report = {"ran": False, "error": "no JSON in reply"}
-            return report
-        verdict = json.loads(_match.group(0))
+        # BOUNDED RETRY (2026-09-03): fail-closed (PR #36) means ran:false now
+        # ABORTS the whole release, so a single transient hiccup -- a dropped
+        # connection, a 5xx, or Gemini occasionally replying with no parseable
+        # JSON -- would waste an entire render on a problem that a retry fixes.
+        # One extra attempt after a short fixed pause, then still fail closed
+        # exactly as before if it ALSO fails -- this narrows what aborts to
+        # genuinely unavailable evidence, without reopening fail-closed itself.
+        verdict, last_err = None, None
+        for _attempt in range(2):
+            try:
+                with urllib.request.urlopen(rq, timeout=60) as r:
+                    data = json.loads(r.read().decode())
+                txt = data["candidates"][0]["content"]["parts"][0]["text"]
+                _match = re.search(r"\{.*\}", txt, re.S)
+                if _match is None:
+                    raise ValueError(f"no JSON in reply: {txt[:80]!r}")
+                verdict = json.loads(_match.group(0))
+                break
+            except Exception as e:  # noqa: BLE001 — retried once, then re-raised below
+                last_err = e
+                if _attempt == 0:
+                    print(f"[final-qa] attempt 1 failed ({type(e).__name__}: {str(e)[:120]}) "
+                          f"— retrying once in {FINAL_QA_RETRY_DELAY}s")
+                    time.sleep(FINAL_QA_RETRY_DELAY)
+        if verdict is None:
+            raise last_err
         report = {"ran": True, "frames_sampled": len(frames), "audio_judged": have_audio, **verdict}
         fm = verdict.get("footage_matches_narration")
         vv = verdict.get("visual_variety")
