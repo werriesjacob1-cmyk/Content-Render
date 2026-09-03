@@ -196,6 +196,7 @@ def build_story_packet(fact, dossier_facts=None, grounded=False):
         "source": "grounded via live Google Search" if grounded
                   else "topic_bank.json (curated, ungrounded this run)",
         "visual_opportunities": list(fact.get("queries", []) or []),
+        "key_terms": list(fact.get("key_terms", []) or []),
     }
 
 
@@ -222,7 +223,7 @@ HOOK (the first spoken line, 8-14 words):
 
 ACCURACY (non-negotiable): every claim, name, and number in the script must come from the STORY PACKET below or the base fact. Never invent a number. If unsure of a figure, describe the mechanism instead. Never state two different numbers for the same thing.
 
-BANNED: vague philosophy, fortune-cookie lines, "everything you know/learned about X is wrong", "myth busted", "this changes everything", "you've been lied to", stating a hypothetical danger as though it just literally happened to the viewer (a hypothetical must be conditional: "If..."/"Suppose..."), unexplained jargon, scientific notation spoken aloud (say "a billion billion", never "10^18").
+BANNED: vague philosophy, fortune-cookie lines, "everything you know/learned about X is wrong", "myth busted", "this changes everything", "you've been lied to", stating a hypothetical danger as though it just literally happened to the viewer (a hypothetical must be conditional: "If..."/"Suppose..."), unexplained jargon, scientific notation spoken aloud (say "a billion billion", never "10^18"). BANNED formal connector words in any beat -- nobody talks like this out loud: however, nevertheless, furthermore, consequently, notably, essentially, arguably, thus, hence, moreover, whereas. Say it plainly instead ("but", "so", "still").
 
 STRUCTURE: follow the BEAT PROGRESSION given below exactly, in order -- it is a genuinely different shape from a generic hook -> question -> fact-list -> twist, and the whole point of this treatment is that the page doesn't feel formulaic. Each beat is ONE sentence a narrator would actually say out loud, building on the beat before it, never restating an earlier beat's point.
 
@@ -255,6 +256,15 @@ def build_writer_prompt_v2(treatment_name, packet, avoid_topics=None,
     packet_lines.append(f"  Source: {packet.get('source', '')}")
     packet_block = "\n".join(packet_lines)
 
+    key_terms_block = ""
+    key_terms = packet.get("key_terms") or []
+    if key_terms:
+        key_terms_block = (
+            f"\n\nNAME THE REAL THING: across your beats, explicitly say AT LEAST 2 of these exact "
+            f"terms verbatim (say \"{key_terms[0]}\", never a vague paraphrase like \"a naturally "
+            f"occurring isotope\"): {key_terms}"
+        )
+
     visual_block = ""
     ve = visual_evidence or packet.get("visual_opportunities")
     if ve:
@@ -267,6 +277,7 @@ def build_writer_prompt_v2(treatment_name, packet, avoid_topics=None,
         + f"\n\nTHIS VIDEO'S TREATMENT: {treatment_name} -- write EXACTLY {len(t['beats'])} beats, in this order:\n"
         + beat_lines
         + "\n\n" + packet_block
+        + key_terms_block
         + visual_block
         + avoid_block
     )

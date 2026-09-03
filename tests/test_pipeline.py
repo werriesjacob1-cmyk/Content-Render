@@ -2692,6 +2692,7 @@ def test_writer_v2_story_packet():
         "angle": "a fallback mechanism description",
         "wow": "a further escalation detail as the wow field",
         "queries": ["subject one footage", "subject two footage"],
+        "key_terms": ["potassium-40", "half-life"],
     }
     dossier = [
         "This works because of a specific physical mechanism causing the effect.",
@@ -2710,6 +2711,7 @@ def test_writer_v2_story_packet():
     check(p["caveat"] == "", "grounded=True -> no caveat")
     check("Google Search" in p["source"], "grounded=True -> source says so")
     check(p["visual_opportunities"] == fact["queries"], "visual_opportunities carries the fact's own queries")
+    check(p["key_terms"] == fact["key_terms"], "packet carries the fact's own key_terms verbatim")
 
     # every field must trace to an input -- never fabricate new prose
     inputs = set(dossier) | {fact["fact"], fact["angle"], fact["wow"]}
@@ -2751,6 +2753,23 @@ def test_writer_v2_prompt_size():
           f"(prompt {v2_tok} + completion 2000 = {v2_tok + 2000})")
     check(WRITER_V2_STATIC_IS_STABLE := (W2.build_writer_prompt_v2(treatment, packet).startswith(W2.WRITER_V2_STATIC)),
           "the stable creative-contract prefix is genuinely first in the prompt (prompt-caching precondition)")
+
+    # both gaps the live script-only bakeoff actually caught (all 3 V2 drafts
+    # rejected by validate() on the first pass: 2/3 for a banned formal
+    # connector never named in the V2 prompt, 1/3 for never being told to use
+    # >=2 of the fact's own key_terms) must be closed in the prompt text.
+    for banned_word in ("however", "essentially", "furthermore", "nevertheless"):
+        check(banned_word in W2.WRITER_V2_STATIC.lower(),
+              f"WRITER_V2_STATIC explicitly bans the formal connector {banned_word!r} "
+              f"(caught live in the script-only bakeoff)")
+    fact_kt = {"key_terms": ["potassium-40", "half-life"]}
+    packet_kt = W2.build_story_packet(fact_kt, dossier_facts=[], grounded=False)
+    check(packet_kt["key_terms"] == ["potassium-40", "half-life"], "packet carries the fact's key_terms")
+    prompt_kt = W2.build_writer_prompt_v2(treatment, packet_kt)
+    check("potassium-40" in prompt_kt and "half-life" in prompt_kt,
+          "the prompt explicitly surfaces the fact's own key_terms (caught live in the bakeoff: "
+          "a draft used only 1/3 mandatory key terms)")
+    check("at least 2" in prompt_kt.lower(), "the prompt explicitly requires naming at least 2 key_terms")
 
 
 def test_writer_v2_schema():
