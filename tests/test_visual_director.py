@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Zero-network tests for visual_director.py."""\nimport os\nimport sys\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n
+"""Zero-network tests for visual_director.py."""
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from visual_director import (
     AssetCandidate,
     RightsInfo,
