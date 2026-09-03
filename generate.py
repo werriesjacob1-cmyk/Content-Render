@@ -10,6 +10,8 @@ Env: GROQ_API_KEY
 
 import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
 
+import writer_v2
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
@@ -3442,6 +3444,119 @@ def research_dossier(fact):
     except Exception as e:
         print(f"  [research] dossier unavailable ({e}); writing from the base fact only")
         return []
+
+
+# ---------------------------------------------------------------------------
+# WRITER V2 EXPERIMENT (WRITER_V2=1) -- 2026-09-03 mission. See writer_v2.py's
+# own module docstring for the full rationale (the legacy build_prompt() call
+# above measures ~10,043 est. tokens for a representative fact, already past
+# Groq's current 8,000 TPM cap before any completion budget, and produced
+# 3.4-5.3/10 drafts even when it DID get through -- both a capacity problem
+# and a quality problem). This does NOT replace the legacy path (still the
+# default, WRITER_V2 unset/"0"); it is a fully separate, independently
+# testable generation function callers opt into explicitly.
+# ---------------------------------------------------------------------------
+WRITER_V2 = os.environ.get("WRITER_V2", "0") == "1"
+
+
+def estimate_tokens(text):
+    """Cheap chars/4 heuristic (see writer_v2.estimate_tokens for the same
+    function + the live-evidence note on its accuracy). Exposed here too so
+    the LEGACY prompt's size can be logged/compared the same way."""
+    return len(text or "") // 4
+
+
+def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name="writer_v2_output"):
+    """Same contract as _call_openai_compat, but requests STRICT JSON-SCHEMA
+    structured output (response_format: json_schema) instead of the plain
+    json_object mode + a giant prose paragraph describing the manifest shape
+    + after-the-fact repair. Raises on any failure -- including the account/
+    model simply not supporting structured output -- exactly like every other
+    provider call here, so callers fall back the same way they already do."""
+    body = json.dumps({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+        "max_tokens": 2000,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": schema_name, "schema": schema, "strict": True},
+        },
+    }).encode()
+    req = urllib.request.Request(
+        url, data=body,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                 "User-Agent": "content-render/1.0"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        data = json.loads(r.read().decode())
+    msg = data["choices"][0]["message"]
+    out = msg.get("content") or msg.get("reasoning") or ""
+    if not out.strip():
+        raise ValueError("empty content from model")
+    return out, (data.get("usage") or {})
+
+
+def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
+                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
+    """The V2 generation experiment. Selects a treatment locally (zero extra
+    LLM call), builds a compact story packet from research_dossier()'s
+    existing fail-closed grounded call (reshaped, not re-asked), sends ONE
+    lean writer-only prompt, assembles the full manifest mechanically, and
+    scores it through the EXACT SAME validate()/score_script() gate the
+    legacy path uses -- this experiment does not touch the quality bar.
+
+    Returns (manifest_or_None, debug) -- debug always carries treatment,
+    prompt size (chars + estimated tokens), grounded/provenance, provider/
+    model, real API usage (when available -- includes Groq's own reported
+    prompt/completion token counts, the authoritative number vs the chars/4
+    estimate), whether structured output was used, and validate()'s verdict
+    or score_script()'s score."""
+    treatment = writer_v2.select_treatment((fact or {}).get("id"), recent_treatments)
+    dossier = research_dossier(fact) if fact else []
+    grounded = bool(dossier)  # research_dossier() only returns non-empty on a genuine grounded (or explicit ungrounded-opt-out) success -- see its own docstring
+    packet = writer_v2.build_story_packet(fact, dossier_facts=dossier, grounded=grounded)
+    prompt = writer_v2.build_writer_prompt_v2(treatment, packet, avoid_topics=avoid_topics,
+                                              visual_evidence=(fact or {}).get("queries"))
+    debug = {
+        "treatment": treatment, "prompt_chars": len(prompt), "prompt_tokens_est": estimate_tokens(prompt),
+        "grounded": grounded, "provider": None, "model": None, "usage": None, "structured": False,
+    }
+    raw, usage, provider, model, structured = None, None, None, None, False
+    if use_structured and GROQ_KEY:
+        model0 = MODEL_CHAIN[0]
+        try:
+            raw, usage = _call_openai_compat_structured(
+                "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, model0, prompt,
+                writer_v2.WRITER_V2_SCHEMA)
+            provider, model, structured = "groq", model0, True
+        except Exception as e:  # noqa: BLE001
+            print(f"  [writer-v2] structured output unavailable/failed ({e}); falling back to call_groq chain")
+    if raw is None:
+        try:
+            raw = call_groq(prompt)
+        except Exception as e:  # noqa: BLE001
+            debug["error"] = str(e)
+            return None, debug
+        provider, model = _WORKING_MODEL if _WORKING_MODEL else (None, None)
+    debug.update({"provider": provider, "model": model, "usage": usage, "structured": structured})
+    try:
+        writer_out = json.loads(raw)
+        if not isinstance(writer_out, dict):
+            raise ValueError(f"model returned a {type(writer_out).__name__}, not a JSON object")
+    except Exception as e:  # noqa: BLE001
+        debug["error"] = f"JSON parse failed: {e}"
+        debug["raw"] = (raw or "")[:500]
+        return None, debug
+    m = writer_v2.assemble_manifest_v2(writer_out, fact, treatment, job_name=job_name,
+                                       cta_style=cta_style, banned_query_re=UNSTOCKABLE_Q)
+    err = validate(m, job_name, fact=fact)
+    debug["validate_err"] = err
+    if err:
+        return None, debug
+    score = score_script(m, fact=fact, cta_style=cta_style)
+    debug["score"] = score
+    m["_quality"] = score
+    return m, debug
 
 
 def _trim_scene_to_cap(vo, cap):

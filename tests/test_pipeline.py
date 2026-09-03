@@ -41,6 +41,7 @@ import generate as G
 import expand_bank as E
 import funnel as F
 import repackage as R
+import writer_v2 as W2
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2641,6 +2642,197 @@ def test_429_wait_and_retry_helpers():
     check(G._parse_retry_secs("") is None, "empty body -> None")
 
 
+# --------------------------------------------------------------------------
+# writer_v2.py -- the V2 writer experiment (WRITER_V2=1 mission, 2026-09-03)
+# --------------------------------------------------------------------------
+def test_writer_v2_treatments():
+    section("writer_v2.TREATMENTS / select_treatment: structural diversity + deterministic zero-LLM selection")
+    check(len(W2.TREATMENTS) == 8, f"exactly 8 treatments defined ({len(W2.TREATMENTS)})")
+    for name, t in W2.TREATMENTS.items():
+        check(5 <= len(t["beats"]) <= 7, f"{name}: 5-7 beats ({len(t['beats'])})")
+        check(len(set(t["beats"])) == len(t["beats"]), f"{name}: no duplicate beat within itself")
+        check(t.get("default_vibe") in ("chaotic", "peaceful", "eerie", "awe", "visceral", "tense"),
+              f"{name}: default_vibe is a real vibe tag ({t.get('default_vibe')})")
+
+    # structural diversity: no two treatments share an identical beat sequence
+    # (the exact failure mode this replaces -- every story collapsing into the
+    # same hook->question->fact-list->twist shape)
+    seqs = [tuple(t["beats"]) for t in W2.TREATMENTS.values()]
+    check(len(set(seqs)) == len(seqs), "no two treatments have an identical beat sequence")
+
+    # deterministic + reproducible: same fact_id always -> same treatment
+    a = W2.select_treatment("wood_frog_freeze")
+    b = W2.select_treatment("wood_frog_freeze")
+    check(a == b, "select_treatment is deterministic for the same fact_id")
+    check(a in W2.TREATMENTS, "the selected treatment is a real treatment name")
+
+    # spreads across the set for different facts (not always the same one)
+    picks = {W2.select_treatment(f"fact_{i}") for i in range(40)}
+    check(len(picks) >= 5, f"select_treatment spreads across the treatment set ({len(picks)} distinct of 8)")
+
+    # avoids recently-used treatments
+    all_names = sorted(W2.TREATMENTS.keys())
+    avoid_all_but_one = all_names[1:]
+    picked = W2.select_treatment("some_fact", recent_treatments=avoid_all_but_one)
+    check(picked == all_names[0],
+          "excluding every treatment but one leaves exactly that one selectable")
+
+    # fail-open: if recent_treatments would exclude EVERY treatment, fall back
+    # to the full set rather than returning None (mirrors generate.selectable_bank)
+    picked_all_excluded = W2.select_treatment("some_fact", recent_treatments=all_names)
+    check(picked_all_excluded in W2.TREATMENTS,
+          "excluding every treatment fails OPEN to the full set, never returns nothing")
+
+
+def test_writer_v2_story_packet():
+    section("writer_v2.build_story_packet: compact, non-fabricated research summary")
+    fact = {
+        "id": "test_fact", "domain": "physics",
+        "fact": "The central verified claim about this topic.",
+        "angle": "a fallback mechanism description",
+        "wow": "a further escalation detail as the wow field",
+        "queries": ["subject one footage", "subject two footage"],
+    }
+    dossier = [
+        "This works because of a specific physical mechanism causing the effect.",
+        "A first supporting detail with its own concrete number.",
+        "A second supporting detail, also concrete.",
+        "This means the implication extends to everyday life as a result.",
+        "A third supporting detail nobody usually mentions.",
+    ]
+    p = W2.build_story_packet(fact, dossier_facts=dossier, grounded=True)
+    check(p["central_claim"] == fact["fact"], "central_claim anchors to the base fact, not model memory")
+    check("mechanism" in p["mechanism"].lower(), "mechanism field picks the dossier item naming the mechanism")
+    check(p["mechanism"] != p["surprising_implication"], "mechanism and implication are different picks")
+    check(len(p["supporting_facts"]) <= 3, "supporting_facts capped at 3")
+    check("implication" in p["surprising_implication"].lower() or p["surprising_implication"] == fact["wow"],
+          "surprising_implication picks the dossier item naming an implication (or falls back to wow)")
+    check(p["caveat"] == "", "grounded=True -> no caveat")
+    check("Google Search" in p["source"], "grounded=True -> source says so")
+    check(p["visual_opportunities"] == fact["queries"], "visual_opportunities carries the fact's own queries")
+
+    # every field must trace to an input -- never fabricate new prose
+    inputs = set(dossier) | {fact["fact"], fact["angle"], fact["wow"]}
+    check(p["central_claim"] in inputs and p["mechanism"] in inputs and p["surprising_implication"] in inputs,
+          "every packet field is drawn verbatim from an input, nothing invented")
+
+    # degraded path: no dossier at all (grounding unavailable) -> honest
+    # ungrounded provenance, still built entirely from the curated base fact
+    p2 = W2.build_story_packet(fact, dossier_facts=[], grounded=False)
+    check(p2["central_claim"] == fact["fact"], "no-dossier path still anchors to the base fact")
+    check(p2["mechanism"] == fact["angle"], "no-dossier path falls back to the fact's own angle for mechanism")
+    check(p2["supporting_facts"] == [fact["wow"]], "no-dossier path falls back to the fact's own wow as support")
+    check("not independently grounded" in p2["caveat"], "no-dossier path states its own degraded provenance honestly")
+    check("ungrounded" in p2["source"], "no-dossier path's source string says ungrounded, not silently grounded")
+
+    # totally empty fact -> no crash, no fabrication
+    p3 = W2.build_story_packet({}, dossier_facts=[], grounded=False)
+    check(p3["central_claim"] == "", "empty fact -> empty central_claim, not invented text")
+
+
+def test_writer_v2_prompt_size():
+    section("writer_v2.build_writer_prompt_v2 / estimate_tokens: the actual size-reduction claim")
+    fact = G.load_bank()[10]
+    dossier = ["A distinct verified facet of the topic with its own concrete detail."] * 7
+    legacy_prompt = G.build_prompt("CURIOSITY_ITCH", G.VIEWER_JOBS[0][1], "t1, t2, t3", fact=fact,
+                                   avoid_openers="Did you know, Have you ever", cta_style="SAVE_WORTHY",
+                                   dossier=dossier, hook_frame=G.HOOK_FRAMES[0])
+    packet = W2.build_story_packet(fact, dossier_facts=dossier, grounded=False)
+    treatment = W2.select_treatment(fact["id"])
+    v2_prompt = W2.build_writer_prompt_v2(treatment, packet, avoid_topics="t1, t2, t3",
+                                          visual_evidence=fact.get("queries"))
+    legacy_tok = G.estimate_tokens(legacy_prompt) if hasattr(G, "estimate_tokens") else len(legacy_prompt) // 4
+    v2_tok = W2.estimate_tokens(v2_prompt)
+    check(v2_tok < legacy_tok * 0.5, f"V2 prompt is under half the legacy size ({v2_tok} vs {legacy_tok} est. tokens)")
+    # the actual mission target: comfortably below Groq's 8000 TPM cap, with
+    # real headroom left for the completion budget (max_tokens=2000) too
+    check(v2_tok + 2000 < 8000 * 0.7,
+          f"V2 prompt + a 2000-token completion budget leaves >=30% headroom under Groq's 8000 TPM cap "
+          f"(prompt {v2_tok} + completion 2000 = {v2_tok + 2000})")
+    check(WRITER_V2_STATIC_IS_STABLE := (W2.build_writer_prompt_v2(treatment, packet).startswith(W2.WRITER_V2_STATIC)),
+          "the stable creative-contract prefix is genuinely first in the prompt (prompt-caching precondition)")
+
+
+def test_writer_v2_schema():
+    section("writer_v2.WRITER_V2_SCHEMA: shape sanity for structured-output calls")
+    s = W2.WRITER_V2_SCHEMA
+    check(s["type"] == "object", "schema root is an object")
+    check(set(s["required"]) == {"title", "hook", "beats", "payoff"}, "schema requires exactly the 4 writer fields")
+    check(s["additionalProperties"] is False, "schema rejects stray extra top-level fields (strict mode)")
+    beats_schema = s["properties"]["beats"]
+    check(beats_schema["minItems"] == 5 and beats_schema["maxItems"] == 7, "schema enforces 5-7 beats")
+    item = beats_schema["items"]
+    check(set(item["required"]) == {"voiceover", "visual_intent"}, "each beat requires voiceover + visual_intent")
+
+
+def test_writer_v2_assemble_manifest():
+    section("writer_v2.assemble_manifest_v2: downstream mechanical fields, and validate()-compatible shape")
+    fact = {"id": "test_fact", "domain": "physics", "key_terms": ["potassium-40", "half-life"],
+            "fact": "x", "wow": "y", "queries": ["subject footage"]}
+    writer_out = {
+        "title": "The Clock Inside Every Banana",
+        "hook": "Your banana is faintly radioactive right now.",
+        "beats": [
+            {"voiceover": "Bananas contain potassium, and a tiny slice of it is radioactive.",
+             "visual_intent": "close up of a banana being peeled"},
+            {"voiceover": "That radioactive potassium is called potassium-40.",
+             "visual_intent": "geiger counter clicking near fruit"},
+            {"voiceover": "Your own body has the same potassium in it, all the time.",
+             "visual_intent": "person eating a banana"},
+            {"voiceover": "So you are, quietly, a little bit radioactive too.",
+             "visual_intent": "silhouette of a person glowing faintly"},
+            {"voiceover": "It is far too small an amount to ever matter to your health.",
+             "visual_intent": "doctor reassuring gesture"},
+        ],
+        "payoff": "The radiation was never really about the banana. It was always about you.",
+    }
+    m = W2.assemble_manifest_v2(writer_out, fact, "HIDDEN_MECHANISM", banned_query_re=G.UNSTOCKABLE_Q)
+    for key in ("title", "viewer_job", "keyword", "metaphor", "vibe", "hook", "hook_headline",
+               "script", "scenes", "captions", "hashtags", "render", "treatment"):
+        check(key in m, f"assembled manifest carries legacy-schema field '{key}'")
+    check(len(m["scenes"]) == 5, "one scene per writer beat")
+    check(all(s["search_query"] and not G.UNSTOCKABLE_Q.search(s["search_query"]) for s in m["scenes"]),
+          "every derived search_query is non-empty and passes the SAME un-filmable-terms gate as production")
+    check(m["treatment"] == "HIDDEN_MECHANISM", "the manifest records which treatment was used")
+    check(m["vibe"] == W2.TREATMENTS["HIDDEN_MECHANISM"]["default_vibe"],
+          "vibe defaults to the treatment's own default")
+    check(len(m["hook_headline"]) <= 22, f"hook_headline fits the cover's character budget ({m['hook_headline']!r})")
+    check(m["hook_headline"] == m["hook_headline"].upper(), "hook_headline is ALL CAPS")
+    check([s["motion"] for s in m["scenes"]] == ["zoom_in", "zoom_out", "pan_left", "pan_right", "zoom_in"],
+          "motion cycles deterministically across scenes")
+    check(m["keyword"] == "potassium-40", "keyword derives from the fact's own key_terms")
+
+    # feed straight into the REAL production validator -- must not crash on
+    # this manifest shape, whatever the actual verdict is
+    try:
+        verdict = G.validate(m, "CURIOSITY_ITCH", fact=fact)
+        check(True, f"assembled V2 manifest is structurally acceptable to validate() (verdict: {verdict!r})")
+    except Exception as e:  # noqa: BLE001
+        check(False, f"assembled V2 manifest crashed validate(): {type(e).__name__}: {e}")
+
+
+def test_writer_v2_helpers():
+    section("writer_v2 mechanical helpers: search query / hook headline / motion / vibe")
+    check(W2.derive_search_query("a naked mole rat underground tunnel") == "naked mole rat underground tunnel",
+          "derive_search_query strips stopwords, keeps the filmable noun phrase")
+    check(W2.derive_search_query("") == "science footage", "empty visual_intent -> a safe non-empty fallback")
+    banned = G.UNSTOCKABLE_Q
+    q = W2.derive_search_query("the quantum molecular diagram of a cell", banned_re=banned)
+    check(not banned.search(q), "a banned-term visual_intent still yields a query that passes the banned-term gate")
+
+    check(W2.derive_hook_headline("Your stomach acid could dissolve a razor blade.") != "",
+          "derive_hook_headline produces non-empty output")
+    check(len(W2.derive_hook_headline("A" * 100)) <= 22, "derive_hook_headline respects max_chars even on long input")
+
+    check(W2.derive_vibe("CASE_FILE") == "tense", "derive_vibe reads the treatment's own default_vibe")
+    check(W2.derive_vibe("NOT_A_REAL_TREATMENT") == "awe", "unknown treatment -> safe default vibe, no crash")
+
+    kw, meta = W2.derive_keyword_metaphor({"key_terms": ["axolotl"]}, "The Animal That Never Grows Up")
+    check(kw == "axolotl", "keyword prefers the fact's first key_term")
+    kw2, meta2 = W2.derive_keyword_metaphor({}, "A Title With No Fact Behind It")
+    check(kw2 == "A Title With", "no key_terms -> keyword falls back to the title's first words")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -2704,6 +2896,12 @@ def main():
     test_call_groq_empty_response_falls_through()
     test_near_miss_repair_revalidates()
     test_near_miss_injects_missing_curiosity_gap()
+    test_writer_v2_treatments()
+    test_writer_v2_story_packet()
+    test_writer_v2_prompt_size()
+    test_writer_v2_schema()
+    test_writer_v2_assemble_manifest()
+    test_writer_v2_helpers()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 
