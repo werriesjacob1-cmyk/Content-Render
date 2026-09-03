@@ -1065,6 +1065,10 @@ def test_generate_helpers():
           "main writer prompt agrees with validate(): first beat is a statement, literal question comes later")
     check("the strongest hooks are a concrete question" not in p,
           "old contradictory question-hook instruction is gone")
+    check("quietly eerie documentary narrator" not in G.PAGE_IDENTITY,
+          "channel identity no longer hard-biases every topic toward eerie")
+    check("Eerie is one valid mood, NOT the channel default" in G.PAGE_IDENTITY,
+          "identity explicitly preserves emotional range instead of one monotone")
 
 
 # --------------------------------------------------------------------------
