@@ -1516,6 +1516,30 @@ def test_topic_bank_integrity():
     check(not dupes, f"no two different fact ids are near-duplicate text (found: {dupes[:5]})")
 
 
+def test_runtime_topic_quarantine():
+    section("generate: weak current topic seeds are quarantined without deleting them")
+    bank = G.load_bank()
+    q = G.load_topic_quarantine()
+    bank_ids = {f.get("id") for f in bank}
+
+    check(len(q) >= 50, f"quarantine is materially populated ({len(q)} ids)")
+    check(q <= bank_ids, f"every quarantined id still exists in topic_bank.json ({len(q - bank_ids)} missing)")
+    check("starling_murmurations" in q, "unsupported starling gravity/stars seed is quarantined")
+    check("frozen_carbonite" in q, "science-fiction frozen-carbonite seed is quarantined")
+
+    selected = G.selectable_bank(bank, q)
+    selected_ids = {f.get("id") for f in selected}
+    check(not (selected_ids & q), "normal selector excludes every quarantined fact")
+    check(len(selected) < len(bank), f"selector shrinks the pool ({len(bank)} -> {len(selected)})")
+    check(len(selected) >= 180, f"still leaves a large diverse production pool ({len(selected)} facts)")
+
+    # Safety: quarantine corruption or an over-broad future list must never make
+    # generation impossible. If every fact is excluded, preserve old behavior.
+    all_ids = {f.get("id") for f in bank if f.get("id")}
+    fail_open = G.selectable_bank(bank, all_ids)
+    check(len(fail_open) == len(bank), "all-quarantined edge case fails open to the original bank")
+
+
 def test_caption_pop_animation():
     section("main._event: kinetic pop-in (overshoot bounce) + bigger keyword pop")
     saved = set(M._KEYWORD_TOKENS)
@@ -2489,6 +2513,7 @@ def main():
     test_caption_pop_animation()
     test_bank_expander()
     test_topic_bank_integrity()
+    test_runtime_topic_quarantine()
     test_draft_is_weak()
     test_quality_floors_restored()
     test_cover_headline()
