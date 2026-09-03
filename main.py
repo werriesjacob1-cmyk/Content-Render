@@ -777,10 +777,11 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
     return None
 
 
-JUDGE_MODEL = "llama-3.3-70b-versatile"  # relevance scoring is a judgment call, not
-                                          # a cheap classification -- llama-3.1-8b-instant
-                                          # scored an ocean-waves clip 9/10 against a
-                                          # "humanity fits in a sugar cube" line in production
+# 2026-09-03: llama-3.3-70b-versatile is retired from this Groq account.
+# Qwen 3.8 27B is live on the same key and supports both text judgment and vision,
+# so one healthy model can cover the cheap relevance judge plus the visual fallback.
+JUDGE_MODEL = os.environ.get("GROQ_JUDGE_MODEL", "qwen/qwen3.8-27b")
+QWEN_VISION_MODEL = os.environ.get("GROQ_VISION_MODEL", "qwen/qwen3.8-27b")
 
 
 # Sentinels distinguishing WHY _groq_judge returned no numeric score, since
@@ -899,6 +900,127 @@ def _gemini_vision_pick(intent, candidates):
     except Exception as e:  # noqa: BLE001 - fall back to the text judge
         print(f"  [vision] judge unavailable ({e}); using text judge")
     return None
+
+
+def _qwen_vision_json(prompt, image_blobs, schema_name, schema):
+    """Groq/Qwen multimodal JSON-schema call. Returns parsed JSON or None.
+
+    Qwen 3.8 accepts up to 3 images per request; each image is ~2048 input
+    tokens, so this stays comfortably inside the account's 8k TPM ceiling for
+    one safety/selection call. Strict schema keeps the judge itself from becoming
+    another malformed-JSON failure mode.
+    """
+    key = os.environ.get("GROQ_API_KEY", "")
+    if not (VISION_JUDGE and key and image_blobs):
+        return None
+    import base64
+    content = [{"type": "text", "text": prompt}]
+    for raw in list(image_blobs)[:3]:
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": "data:image/jpeg;base64," + base64.b64encode(raw).decode()},
+        })
+    body = json.dumps({
+        "model": QWEN_VISION_MODEL,
+        "messages": [{"role": "user", "content": content}],
+        "temperature": 0,
+        "max_completion_tokens": 256,
+        "reasoning_effort": "none",
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": schema_name,
+                "strict": True,
+                "schema": schema,
+            },
+        },
+    }).encode()
+    try:
+        req = urllib.request.Request(
+            "https://api.groq.com/openai/v1/chat/completions",
+            data=body,
+            headers={"Authorization": f"Bearer {key}",
+                     "Content-Type": "application/json",
+                     "User-Agent": BROWSER_UA},
+        )
+        with urllib.request.urlopen(req, timeout=45) as r:
+            data = json.loads(r.read().decode())
+        txt = data["choices"][0]["message"].get("content") or ""
+        return json.loads(txt)
+    except Exception as e:  # fail-soft: caller can use text judge / reject optional AI
+        print(f"  [vision] Qwen unavailable ({e})")
+        return None
+
+
+def _qwen_vision_pick(intent, candidates):
+    """Fallback thumbnail picker using Groq Qwen 3.8 vision."""
+    global _VISION_CALLS
+    key = os.environ.get("GROQ_API_KEY", "")
+    if not (VISION_JUDGE and key):
+        return None
+    if VISION_CALL_BUDGET and _VISION_CALLS >= VISION_CALL_BUDGET:
+        return None
+    idxs = [i for i, c in enumerate(candidates) if c.get("image")][:3]
+    if len(idxs) < 2:
+        return None
+
+    blobs = []
+    for i in idxs:
+        try:
+            rq = urllib.request.Request(candidates[i]["image"], headers={"User-Agent": BROWSER_UA})
+            with urllib.request.urlopen(rq, timeout=20) as r:
+                blobs.append(r.read())
+        except Exception:
+            return None
+
+    _VISION_CALLS += 1
+    schema = {
+        "type": "object",
+        "properties": {
+            "best": {"type": "integer"},
+            "score": {"type": "integer"},
+        },
+        "required": ["best", "score"],
+        "additionalProperties": False,
+    }
+    prompt = (
+        f"Choosing footage for a science-video scene about: {intent!r}. "
+        f"You are seeing {len(idxs)} candidate thumbnails in order, numbered 0 through {len(idxs)-1}. "
+        "Pick the ONE that most literally shows the subject. Score 8-10 only for a clear literal "
+        "match; 4-7 for related but imperfect; 0-3 when generic/off-topic. Cap at 3 for watermarks, "
+        "dominant baked-in text, cartoons, or unrelated CGI/infographics. Do not force a winner."
+    )
+    out = _qwen_vision_json(prompt, blobs, "footage_pick", schema)
+    if not isinstance(out, dict):
+        return None
+    try:
+        best, score = int(out["best"]), int(out["score"])
+    except Exception:
+        return None
+    if 0 <= best < len(idxs):
+        score = max(0, min(10, score))
+        print(f"  [vision] Qwen picked clip index {idxs[best]} (match {score}/10) by thumbnail")
+        return idxs[best], score
+    return None
+
+
+def _vision_pick(intent, candidates):
+    """Quality-first multimodal judge: Gemini first, Qwen 3.8 fallback.
+
+    Gemini remains preferred while healthy. A Gemini daily-quota outage no
+    longer collapses visual selection to URL slugs; Groq's live multimodal model
+    gets a real look at the thumbnails instead.
+    """
+    out = _gemini_vision_pick(intent, candidates)
+    if out is not None:
+        return out
+    return _qwen_vision_pick(intent, candidates)
+
+
+def _vision_safety_available():
+    return bool(VISION_JUDGE and (
+        os.environ.get("GEMINI_API_KEY", "") or os.environ.get("GROQ_API_KEY", "")
+    ))
 
 
 # ---------- FINAL HOLISTIC QA (post-render sanity check) ----------
@@ -1475,7 +1597,7 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
                     print(f"  keyword-matched clip unusable ({e}) — falling to judge")
             # VISION FIRST: let Gemini actually look at the thumbnails and pick the
             # visual match; fall back to the text (slug) judge if vision is off/fails.
-            _vj = _gemini_vision_pick(intent, cands)
+            _vj = _vision_pick(intent, cands)
             idx, score = _vj if _vj is not None else _groq_judge(intent, cands)
             chosen = cands[idx]
             numeric = isinstance(score, int)
@@ -2200,17 +2322,16 @@ _FAL_SAFETY_UNAVAILABLE = False
 
 
 def _fal_can_spend():
-    """True iff fal can BOTH generate and verify another clip this render.
+    """True iff fal can BOTH generate and independently verify another clip.
 
-    A paid synthetic clip is only useful when its independent Gemini vision safety
-    check can run. No Gemini key / VISION_JUDGE disabled / a safety-check outage
-    therefore disables fal BEFORE spending; after one runtime judge failure the
-    render-local circuit prevents repeatedly paying for clips we cannot verify.
+    Gemini used to be the only safety judge, so a Gemini quota outage disabled
+    all synthetic hero footage. Qwen 3.8 vision on Groq is now a second
+    independent verifier; if neither vision provider is available we still fail
+    closed before spending.
     """
     return (bool(FAL_KEY)
             and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
-            and VISION_JUDGE
-            and bool(os.environ.get("GEMINI_API_KEY", ""))
+            and _vision_safety_available()
             and not _FAL_SAFETY_UNAVAILABLE)
 
 
@@ -2332,89 +2453,108 @@ def _fal_clip_verdict(verdict):
 
 
 def _fal_clip_relevant(scene, clip_path):
-    """Single-frame Gemini vision check: does a fal.ai-generated clip actually
-    show what it was asked for, AND is it free of hallucinated on-screen text?
-    Text-to-video generation can hallucinate a completely unrelated subject
-    even on a successful, well-formed API response (see the darkness check
-    above and _fal_video's caller for why a 200 response alone proves nothing
-    about CONTENT). It can ALSO hallucinate garbled, nonsensical text/writing
-    baked into an otherwise on-topic frame -- a real render shipped an
-    accepted 'ice floating water' hero shot (right subject, would have scored
-    well on relevance alone) with garbled pseudo-Cyrillic text burned across
-    the middle of the frame, directly under the caption. The two checks are
-    independent: a clip can be perfectly on-subject and still be unusable
-    because of hallucinated text, so this rejects on EITHER failure, not just
-    a low relevance score. This safety check FAILS CLOSED for the synthetic clip:
-    if judging is unavailable/broken/unparseable, reject this fal clip and let the
-    caller fall back to real stock / archival / still / card. That is deliberately
-    different from aborting the whole render: an unverified AI clip is optional,
-    while the project's consistency-over-cadence rule says known synthetic-media
-    risk must not silently become trusted media. Reuses the same bounded-thinking-
-    budget fix as _gemini_vision_pick/_final_qa_check."""
+    """Three-frame independent vision check for generated video.
+
+    A single snapshot can miss a subject mutation, broken anatomy, or baked-in
+    gibberish that appears later in the clip. Sample early/middle/late frames and
+    judge the sequence. Gemini is preferred; Qwen 3.8 is the fallback. If BOTH
+    are unavailable/unparseable, reject the optional synthetic clip and disable
+    further fal spend for this render.
+    """
     global _FAL_SAFETY_UNAVAILABLE
-    key = os.environ.get("GEMINI_API_KEY", "")
-    if not (VISION_JUDGE and key):
+    if not _vision_safety_available():
         _FAL_SAFETY_UNAVAILABLE = True
         return False
-    frame_path = os.path.join(WORK, f"_fal_check_{os.path.basename(clip_path)}.jpg")
+
+    dur = ffprobe_dur(clip_path) or 0
+    if dur <= 0:
+        return False
+    # Avoid exact first/last frames, where fades can create false negatives.
+    times = [max(0.15, dur * 0.20), max(0.2, dur * 0.50), max(0.25, dur * 0.80)]
+    frame_paths = []
     try:
-        run(["ffmpeg", "-y", "-i", clip_path, "-ss", "1.0", "-frames:v", "1", frame_path])
-        if not os.path.exists(frame_path):
+        for n, t in enumerate(times):
+            p = os.path.join(WORK, f"_fal_check_{n}_{os.path.basename(clip_path)}.jpg")
+            run(["ffmpeg", "-y", "-ss", f"{t:.3f}", "-i", clip_path, "-frames:v", "1", p])
+            if os.path.exists(p):
+                frame_paths.append(p)
+        if len(frame_paths) < 2:
             _FAL_SAFETY_UNAVAILABLE = True
-            print("  [fal] safety check produced no frame — rejecting clip and disabling fal for this render")
+            print("  [fal] safety check produced too few frames — rejecting clip and disabling fal for this render")
             return False
+
         intent = _footage_intent(scene)
-        import base64
-        parts = [
-            {"text": (f"Does this image LITERALLY show: \"{intent}\"? Score 0-10 -- "
-                      f"8-10 = clearly, literally shows the subject; 4-7 = related but "
-                      f"not an exact match; 0-3 = a completely different, unrelated "
-                      f"subject.\n"
-                      f"Separately: does the image contain any GARBLED, nonsensical, or "
-                      f"unreadable text/writing/lettering baked into the footage itself "
-                      f"(not a caption overlay -- text that is PART of the scene, e.g. on "
-                      f"a sign, screen, or floating across the frame)? This is a known "
-                      f"AI-video-generation artifact and makes a clip unusable even if the "
-                      f"subject is otherwise correct.\n"
-                      f"Return ONLY JSON: {{\"score\": <0-10>, \"garbled_text\": true|false}}.")},
-            {"inline_data": {"mime_type": "image/jpeg",
-                             "data": base64.b64encode(open(frame_path, "rb").read()).decode()}},
-        ]
-        # maxOutputTokens must comfortably exceed thinkingBudget (see the
-        # identical fix + explanation in _gemini_vision_pick above -- a
-        # budget smaller than the thinking allowance truncates the reply
-        # before any closing "}").
-        body = json.dumps({"contents": [{"parts": parts}],
-                           "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
-                                                "thinkingConfig": {"thinkingBudget": 512}}}).encode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
-        req = urllib.request.Request(url, data=body,
-            headers={"Content-Type": "application/json", "x-goog-api-key": key,
-                     "User-Agent": BROWSER_UA})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = json.loads(r.read().decode())
-        txt = data["candidates"][0]["content"]["parts"][0]["text"]
-        m = re.search(r"\{.*\}", txt, re.S)
-        if not m:
+        prompt = (
+            f"These are early, middle, and late frames from ONE AI-generated science-video clip. "
+            f"The clip is supposed to literally show: {intent!r}. Judge the WHOLE sequence, not just "
+            "the best frame. Give score 0-10 where 8-10 means the intended subject stays clearly and "
+            "consistently correct across the sampled frames; 4-7 means related/imperfect or subject "
+            "drift; 0-3 means wrong/unrelated. Also mark garbled_text=true if ANY frame contains "
+            "nonsensical/unreadable baked-in lettering, pseudo-text, or a corrupted sign/screen. "
+            "Normal real-world readable labels are not automatically garbled."
+        )
+
+        verdict = None
+        gem_key = os.environ.get("GEMINI_API_KEY", "")
+        if gem_key:
+            try:
+                import base64
+                parts = [{"text": prompt + "\nReturn ONLY JSON: {\"score\": <0-10>, \"garbled_text\": true|false}."}]
+                for p in frame_paths[:3]:
+                    parts.append({"inline_data": {"mime_type": "image/jpeg",
+                                                 "data": base64.b64encode(open(p, "rb").read()).decode()}})
+                body = json.dumps({"contents": [{"parts": parts}],
+                                   "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
+                                                        "thinkingConfig": {"thinkingBudget": 512}}}).encode()
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
+                req = urllib.request.Request(url, data=body,
+                    headers={"Content-Type": "application/json", "x-goog-api-key": gem_key,
+                             "User-Agent": BROWSER_UA})
+                with urllib.request.urlopen(req, timeout=35) as r:
+                    data = json.loads(r.read().decode())
+                txt = data["candidates"][0]["content"]["parts"][0]["text"]
+                m = re.search(r"\{.*\}", txt, re.S)
+                if m:
+                    verdict = json.loads(m.group(0))
+                    print("  [fal] safety judged by Gemini across 3 frames")
+            except Exception as e:
+                print(f"  [fal] Gemini safety unavailable ({e}); trying Qwen vision")
+
+        if verdict is None and os.environ.get("GROQ_API_KEY", ""):
+            blobs = [open(p, "rb").read() for p in frame_paths[:3]]
+            schema = {
+                "type": "object",
+                "properties": {
+                    "score": {"type": "integer"},
+                    "garbled_text": {"type": "boolean"},
+                },
+                "required": ["score", "garbled_text"],
+                "additionalProperties": False,
+            }
+            verdict = _qwen_vision_json(prompt, blobs, "fal_safety", schema)
+            if verdict is not None:
+                print("  [fal] safety judged by Qwen across 3 frames")
+
+        if verdict is None:
             _FAL_SAFETY_UNAVAILABLE = True
-            print("  [fal] safety judge returned no parseable JSON — rejecting clip and disabling fal for this render")
+            print("  [fal] no vision provider produced safety evidence — rejecting clip and disabling fal for this render")
             return False
-        verdict = json.loads(m.group(0))
+
         accept, reason = _fal_clip_verdict(verdict)
         if not accept:
             print(f"  [fal] vision check: {reason} against {intent!r} -- rejecting")
             return False
         return True
-    except Exception as e:  # noqa: BLE001 - reject only this optional synthetic clip
+    except Exception as e:
         _FAL_SAFETY_UNAVAILABLE = True
         print(f"  [fal] safety check unavailable ({e}); rejecting clip and disabling fal for this render")
         return False
     finally:
-        try:
-            os.remove(frame_path)
-        except Exception:  # noqa: BLE001
-            pass
-
+        for p in frame_paths:
+            try:
+                os.remove(p)
+            except Exception:
+                pass
 
 def _fal_video(scene, dest):
     """Generate an on-topic AI video clip for a scene via fal.ai. Returns True on
