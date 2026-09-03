@@ -16,6 +16,28 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-09-03 — ElevenLabs subscription canceled
+User canceled their ElevenLabs subscription (informed directly, not diagnosed from a
+render log). **No code fix required.** `main.py`'s `tts_full()` already has a graceful
+fallback chain (ElevenLabs → edge-tts → Piper), built and proven during the 2026-07-22
+resilience work below: a failed/quota_exceeded ElevenLabs call falls through to
+edge-tts automatically, which is already confirmed "markedly smoother than Piper" and
+free/unlimited.
+
+**Practical impact**: voice quality on every future render regresses from
+ElevenLabs-tier back to edge-tts-tier until/unless the subscription is renewed. This
+is expected, and matches the project's own "free tier only" standing goal reasserting
+itself — it is NOT a bug. **Do not treat a wall of ElevenLabs 401/quota_exceeded
+errors in future render logs as something to diagnose or fix** — a past session
+already burned real effort chasing this exact symptom before realizing it was purely
+an account-state issue, not a code problem (see the "still 401ing after the key
+update" saga referenced in the 2026-08-03 session notes below).
+
+Optional cleanup (not done, not urgent, user's call): the `ELEVENLABS_API_KEY` GitHub
+secret is now dead weight — every render wastes one doomed API call to it before
+falling through to edge-tts. Removing the secret would skip that wasted call and the
+log noise, but the pipeline works correctly either way, so this is cosmetic only.
+
 ## Overnight session 2026-08-04 to 08-07 — first render-verified successes + one more real bug
 Continuation of the same overnight push (multi-day due to session gaps, not separate work).
 The 2x/day cron kept firing on its own per the "no more triggered renders" instruction; two
@@ -308,7 +330,10 @@ funnel) → GitHub Release → Zapier → Buffer (Draft). Driven by
    (vs the 4.67-6.5 the free chain produced before aborting). A 429 from Gemini now
    falls through in ~3 log lines to OpenRouter — Gemini is NOT the bottleneck.
    NOTE: 160 also exposed that a high self-score can hide an INCOHERENT script — see
-   the coherence gate in the 2026-07-26 session notes below.
+   the coherence gate in the 2026-07-26 session notes below. **UPDATE 2026-08-03:
+   OpenRouter's paid credits are fully depleted (hard 402 on every model) and the
+   user has declined to re-fund it — do not recommend this without the user raising
+   it first (see the 2026-08-03 session notes).**
 3. **Cerebras** (`CEREBRAS_API_KEY`): models **auto-discovered** via `/v1/models`.
    Only `gemma-4-31b` returns clean JSON; `gpt-oss-*` and `zai-glm-*` reply with
    non-JSON reasoning and are excluded (`cerebras_models()` denylist). RPM-limited
@@ -324,17 +349,24 @@ same providers.
 ## Footage sources (free), chained in `main.py` `_gather_candidates()`
 Pexels (key) → NASA (no key) → **Wikimedia Commons** (no key, video + archival
 stills) → **Internet Archive** (no key, documentary film, 45 MB cap) → Coverr
-(dormant). Plus Openverse CC stills in the archival-still fallback. Within-video
-duplicate `search_query`s are diversified (`_diversify_scene_queries`).
+(dormant). Plus Openverse CC stills + **iNaturalist** (species-verified photos,
+license-rechecked) in the archival-still fallback, and **Pollinations.ai** (free
+Flux) + paid Imagen for AI-generated illustrations when even those fail — see the
+2026-08-03 session notes. Within-video duplicate `search_query`s are diversified
+(`_diversify_scene_queries`).
 
 ## Quality gates (in `generate.py`) — this is how "no bad videos" is enforced
 - `validate()` structural checks + `check_information_gain()` (LLM redundancy) +
-  `score_script()` rubric (hook/surprise/escalation/payoff/rewatch/clarity).
-- `QUALITY_CRITERION_FLOORS` (hook≥6, escalation≥7, payoff≥6) force regeneration.
+  `score_script()` rubric (hook/surprise/escalation/payoff/rewatch/clarity/coherence).
+- `QUALITY_CRITERION_FLOORS` (hook≥6, escalation≥7, payoff≥6, coherence≥7) force
+  regeneration.
 - **`QUALITY_HARD_FLOOR = 6.8`**: if the best attempt has a floor violation OR
   overall < 6.8, the run **ABORTS** (exit 1 → no render, no release). A
   clean-but-unscorable script still ships.
 - Degraded near-miss + unscorable → also aborts.
+- Past the script stage, `main.py`'s `_final_qa_check` re-judges the ASSEMBLED
+  video (footage match + narration flow, via audio+vision) and can still abort
+  publish even after a clean script — see 2026-08-03/04 session notes.
 
 ## The review rubric — judge EVERY generated video against the user's feedback
 Watch the actual video (extract frames + read the script). It must have:
@@ -354,14 +386,19 @@ Watch the actual video (extract frames + read the script). It must have:
 ## How to continue (the loop)
 1. Trigger a render (GitHub MCP `actions_run_trigger` run_workflow on
    `werriesjacob1-cmyk/content-render`, `render.yml`, ref `main`), or wait for the
-   daily cron.
+   daily cron. **Do NOT trigger manually without asking the user first** — they are
+   money-sensitive about Gemini/OpenRouter/fal usage (see the 2026-08-03/04 funding
+   sessions); let the 2x/day cron (09:00 + 19:00 UTC) drive cadence by default.
 2. Read the "Auto-generate a fresh video idea" step log. Confirm a strong provider
    carried it (`[model] using gemini:...` / `openrouter:...`) and it did NOT abort.
 3. If clean: download `out/final.mp4` from the run artifact, extract frames, WATCH
-   it, and write a verdict against the rubric above.
-4. Fix any concrete flaw in the prompt/code, commit, push, render again.
+   it, and write a verdict against the rubric above. Send the actual video file to
+   the user (SendUserFile), don't just describe it.
+4. Fix any concrete flaw in the prompt/code, commit, push (pushing never triggers a
+   render — always safe), render again on the next cron.
 5. Accumulate **4–5 clean videos across DIFFERENT topics/domains**, then ask the
-   user to review consistency before proposing to post.
+   user to review consistency before proposing to post. Renders 230 and 233
+   (2026-08-05/07) are the first two that cleared this bar — see notes above.
 
 ## Topic bank
 `topic_bank.json` — **104 verified facts across 20 domains** (2026-07-18: deduped
@@ -376,13 +413,17 @@ Domain selection now dedups by FAMILY (`DOMAIN_FAMILIES`: geology/earth/weather
 = one family) so two deep-earth videos don't run back-to-back.
 
 ## Zero-quota test suite — RUN THIS before shipping generate.py/main.py changes
-`GROQ_API_KEY=x python tests/test_pipeline.py` — **109 checks** over the trickiest
-PURE logic (caption content-alignment, footage `_footage_intent` anchoring,
-`_diversify_scene_queries`, timing, `validate()` across 5 topic fixtures + broken
-ones incl. the 7-scene floor, fast-fail-when-throttled, domain families,
-**`critique_script` merge, script-buffer FIFO/empty/malformed, `_xfade_offsets`
-math, `_shadow_lift_filter` brightness lift**). No ffmpeg, no network, no LLM.
-It already caught a real validate() false-positive.
+`GROQ_API_KEY=x python tests/test_pipeline.py` — **880+ checks** (grew steadily
+session over session; always check the actual count in the RESULT line, don't
+trust a stale number in this doc) over the trickiest PURE logic (caption
+content-alignment, footage `_footage_intent` anchoring, `_diversify_scene_queries`,
+timing, `validate()` across topic fixtures, fast-fail-when-throttled, domain
+families, `critique_script` merge, script-buffer FIFO/empty/malformed,
+`_xfade_offsets` math, `_shadow_lift_filter` brightness lift, Gemini model ranking,
+fal clip verdict/garbled-text rejection, iNaturalist license safety, and more).
+No ffmpeg, no network, no LLM. Established pattern: extract any hard-to-test
+network-touching decision into a small PURE function and unit-test that directly
+rather than mocking the network call.
 
 ## Resource-exhaustion resilience shipped 2026-07-22 (branch `claude/epic-edison-jybjd1`)
 Render 130 ("Pineapple: The Fruit That Digests You") came out 31s, robotic, weak
@@ -400,7 +441,8 @@ branch before/after merge to main):
   kept as the offline last-resort so a render never breaks if edge's endpoint
   403s. edge's slower cadence also lifts the ~31s stub toward ~38s. **`VOICE_ENGINE`
   env** (`edge` default / `piper`) lets the user A/B by ear — NEEDS the user's ears
-  to confirm which voice to lock.
+  to confirm which voice to lock. **This is the exact fallback chain that now
+  absorbs the 2026-09-03 ElevenLabs cancellation — see the top of this file.**
 - **Script: frugal Gemini quality-rescue** (`generate.py` `main()`). When the free
   chain's best draft is weak (`draft_is_weak()` = below `QUALITY_THRESHOLD` 7.5 OR
   a floor violation) and a paid Gemini key exists, spend ONE grounded Gemini
@@ -494,7 +536,11 @@ on smaller-context providers. Shipped (all test-verified, no render needed):
 ## Free-tier reality (be honest with the user about this)
 Nightly volume is capped by free daily quotas. A big batch/queue **accumulates
 over days** as quotas reset — it does NOT come from one night on free tier. The
-only fast unlock is a cheap paid LLM tier, which the user has declined for now.
+only fast unlock is a cheap paid LLM tier, which the user has declined for now
+(and OpenRouter's paid credits, once funded, are now depleted and not being
+renewed — see 2026-08-03 notes). ElevenLabs voice is also gone as of 2026-09-03 —
+see the top of this file. The pipeline is increasingly back to genuinely free-tier
+by choice, not by accident; don't propose paid upgrades without the user asking.
 
 ## Improvements shipped 2026-07-15/16 (branch `claude/epic-edison-jybjd1`)
 Watched every render frame-by-frame and fixed the concrete flaw before the next.
@@ -521,12 +567,21 @@ Watched every render frame-by-frame and fixed the concrete flaw before the next.
 ## Known pending improvements (not yet done)
 - **Multi-word phrase captions**: blocked on ASS `WrapStyle: 2` (no wrap) + wide
   font — needs a font-size/wrap change, best verified with a real render.
-- (2026-08-04 cleanup: removed two stale items from this list that were actually
-  already shipped — the footage brightness filter is `main._shadow_lift_filter`/
-  `_clip_too_dark`, and the series/binge architecture is BUILT per PLATFORM.md.
-  If you're reading this file to catch up, don't trust this section blindly —
+- **Publishing path unclear**: this file's own "Architecture" section above says
+  "GitHub Release → Zapier → Buffer", but `render.yml` actually has a
+  `Push draft to Publer (direct API, optional)` step (`PUBLER_API_KEY` /
+  `PUBLER_WORKSPACE_ID` / `PUBLER_ACCOUNT_IDS` secrets), described in its own
+  comment as "a DIRECT replacement for the Release -> Zapier -> Publer hop" —
+  i.e. the real downstream tool is **Publer**, not Buffer, and Buffer does not
+  appear anywhere in the actual code. As of the last render checked, the direct
+  Publer secrets were UNSET (the step no-ops). **Confirm with the user which
+  path is actually live** (Zapier→Publer, or the direct API once secrets are
+  set) and fix the stale "Buffer" wording in the Architecture section — not
+  done yet, flagging here so it isn't lost.
+- (2026-08-04 cleanup note, still valid: don't trust this section blindly —
   cross-check against the actual code before treating anything here as truly
-  outstanding.)
+  outstanding; two previously-listed items here were already shipped and had
+  to be removed.)
 
 ## Cross-session note
 Scheduled `send_later`/trigger reminders are tied to the session that made them;
