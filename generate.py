@@ -558,8 +558,10 @@ CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT"]
 # apply on top. One is picked per render in main(), avoiding the last one used.
 HOOK_FRAMES = [
     ("DIRECT_QUESTION",
-     "Open on a concrete question the viewer instantly starts answering in their head — name a "
-     "real thing in it (e.g. 'How much of what you taste is actually smell?'). Not abstract."),
+     "Legacy label, but DO NOT put a question mark in the first spoken line. Open with a concrete "
+     "shock statement that makes the viewer instantly ask a specific question in their head; put "
+     "the literal question in scene 2 if needed. Example: 'Most of what you call taste is actually "
+     "smell.' then 'So what happens when your nose is blocked?' Never open with the question itself."),
     ("MYTH_FLIP",
      "Open by stating a belief the viewer HOLDS, then flip it in the same breath (e.g. 'You were "
      "taught your tongue has taste zones — it doesn't'). The rest proves the correction."),
@@ -1252,10 +1254,11 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
 - STRUCTURE IT AS A TINY MYSTERY, not a list: open a real question the brain CANNOT ignore, build
   tension, then reveal. Each scene should make the viewer need the next one. A list of facts is
   boring even when every fact is true; a reveal with tension is not.
-- QUESTION HOOK the mind auto-answers: the strongest hooks are a concrete question the viewer starts
-  answering in their head ("How much of you isn't technically human?", "What's the oldest thing you'll
-  touch today?") — or a flat claim so specific it demands the 'how is that possible?' The brain can't
-  scroll past an open loop.
+- CREATE A QUESTION GAP WITHOUT OPENING ON A QUESTION: the first spoken line is a concrete shock
+  STATEMENT, never a wind-up question. It should make the viewer immediately ask "how?" or "why?" in
+  their own head; if the video's central curiosity needs an explicit '?', put that literal question in
+  scene 2 or 3. Example: "Most of what you call taste is actually smell." then "So what disappears
+  when your nose is blocked?" The brain gets an open loop without wasting the first beat on setup.
 - LEAVE THE PAGE, NOT JUST THE VIDEO, OPEN: the final line should quietly imply there is a whole world
   of this strangeness (this is one of many) — a resonant thought that makes them want the NEXT one.
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
