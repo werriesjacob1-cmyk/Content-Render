@@ -1056,6 +1056,15 @@ def test_generate_helpers():
           "near-duplicate metaphor flagged")
     check(G._metaphor_too_similar("a metal that melts in your hand", hist) is False,
           "distinct metaphor allowed")
+    frames = dict(G.HOOK_FRAMES)
+    dq = frames["DIRECT_QUESTION"]
+    check("DO NOT put a question mark" in dq and "scene 2" in dq,
+          "DIRECT_QUESTION legacy frame now creates a question-gap without violating the no-question hook gate")
+    p = G.build_prompt("REFRAME", "test", "none")
+    check("CREATE A QUESTION GAP WITHOUT OPENING ON A QUESTION" in p,
+          "main writer prompt agrees with validate(): first beat is a statement, literal question comes later")
+    check("the strongest hooks are a concrete question" not in p,
+          "old contradictory question-hook instruction is gone")
 
 
 # --------------------------------------------------------------------------
