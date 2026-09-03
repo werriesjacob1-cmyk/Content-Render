@@ -427,8 +427,16 @@ TRUSTED_SCIENCE_DOMAINS: tuple[str, ...] = (
 def research_with_fallback(
     query: str,
     providers: Sequence[Any],
+    *,
+    allow_review_only: bool = False,
 ) -> ResearchBundle | None:
-    """Return first mechanically grounded bundle; never silently downgrade."""
+    """Return the first research bundle safe for the requested use.
+
+    Default behavior is deliberately strict: a bundle must contain at least one
+    mechanically load-bearing claim.  Tool-evidence-only bundles (currently
+    Compound Mini) are useful for diagnostics but cannot silently become story
+    facts.  Callers may opt into those explicitly with allow_review_only=True.
+    """
 
     errors: list[str] = []
     for provider in providers:
@@ -440,7 +448,7 @@ def research_with_fallback(
         except Exception as e:  # provider boundary: fail-soft, recorded
             errors.append(f"{getattr(provider, 'name', type(provider).__name__)}: {type(e).__name__}: {e}")
             continue
-        if result.grounded:
+        if result.grounded and (result.load_bearing_claims() or allow_review_only):
             return result
         errors.append(f"{result.provider}: {result.grounding_reason}")
     return None
