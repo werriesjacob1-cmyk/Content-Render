@@ -2615,6 +2615,56 @@ def test_rank_gemini_models_prefers_full_over_lite():
     check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
 
 
+def test_qwen_vision_fallback_contract():
+    section("vision QA: Groq Qwen fallback keeps synthetic-media verification alive")
+
+    check(M.JUDGE_MODEL == os.environ.get("GROQ_TEXT_JUDGE_MODEL", "qwen/qwen3.6-27b"),
+          "text footage judge no longer points at retired llama-3.3")
+    check(M.GROQ_VISION_MODEL == os.environ.get("GROQ_VISION_MODEL", "qwen/qwen3.8-27b"),
+          "Groq visual fallback defaults to live Qwen 3.8")
+    check(M.GROQ_VISION_MAX_CANDS <= 3,
+          "Qwen visual fallback respects the 3-image cap")
+
+    old_gem = os.environ.get("GEMINI_API_KEY")
+    old_groq = os.environ.get("GROQ_API_KEY")
+    old_fal = M.FAL_KEY
+    old_safety = M._FAL_SAFETY_UNAVAILABLE
+    old_count = M.FAL_VIDEO_SCENES
+    old_max = M.FAL_MAX_CLIPS
+    old_vj = M.VISION_JUDGE
+    try:
+        os.environ.pop("GEMINI_API_KEY", None)
+        os.environ["GROQ_API_KEY"] = "x"
+        M.FAL_KEY = "fal-x"
+        M._FAL_SAFETY_UNAVAILABLE = False
+        M.FAL_VIDEO_SCENES = 0
+        M.FAL_MAX_CLIPS = 2
+        M.VISION_JUDGE = True
+        check(M._vision_backend_available() is True,
+              "Groq alone counts as an independent visual-review backend")
+        check(M._fal_can_spend() is True,
+              "fal generation is no longer disabled solely because Gemini is unavailable")
+        os.environ.pop("GROQ_API_KEY", None)
+        check(M._vision_backend_available() is False,
+              "no Gemini and no Groq means no visual reviewer")
+        check(M._fal_can_spend() is False,
+              "synthetic video still fails closed when no visual reviewer exists")
+    finally:
+        if old_gem is None:
+            os.environ.pop("GEMINI_API_KEY", None)
+        else:
+            os.environ["GEMINI_API_KEY"] = old_gem
+        if old_groq is None:
+            os.environ.pop("GROQ_API_KEY", None)
+        else:
+            os.environ["GROQ_API_KEY"] = old_groq
+        M.FAL_KEY = old_fal
+        M._FAL_SAFETY_UNAVAILABLE = old_safety
+        M.FAL_VIDEO_SCENES = old_count
+        M.FAL_MAX_CLIPS = old_max
+        M.VISION_JUDGE = old_vj
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2689,6 +2739,7 @@ def main():
     test_vibe_matched_captions()
     test_vibe_music_filter()
     test_vibe_sting_freqs()
+    test_qwen_vision_fallback_contract()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
