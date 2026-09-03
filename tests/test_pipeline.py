@@ -1136,7 +1136,14 @@ def test_research_dossier_requires_grounding():
             check(got4 == [], "legacy unknown-provenance dossier cache is ignored by default")
 
             # Explicit operator opt-out remains possible for experiments, but it
-            # must be a conscious env choice, never an outage fallback.
+            # must be a conscious env choice, never an outage fallback. Clear the
+            # cache first -- the legacy bare-list entry written just above would
+            # otherwise be a legitimate ungrounded-mode cache HIT (by design, see
+            # the "reuse an ungrounded cache entry" comment on ground_required
+            # above) and this sub-test would never actually exercise the live
+            # ungrounded call it's named for.
+            with open(G.DOSSIER_CACHE, "w") as fh:
+                _json.dump({}, fh)
             os.environ["GROUND_DOSSIER"] = "0"
             ungrounded_calls["n"] = 0
             got5 = G.research_dossier(fact)
