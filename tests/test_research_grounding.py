@@ -178,10 +178,12 @@ def test_fallback_never_returns_ungrounded():
     )
     check(research_with_fallback("q", [FakeProvider(weak, "weak")]) is None,
           "ungrounded provider result never silently accepted")
-    # Current fallback intentionally returns mechanically grounded bundles, even if
-    # claim extraction is provider-specific. Downstream uses load_bearing_claims().
     got = research_with_fallback("q", [FakeProvider(weak, "weak"), FakeProvider(review_only, "review")])
-    check(got is review_only, "grounded review bundle is returned explicitly, with zero load-bearing claims")
+    check(got is None, "review-only tool evidence cannot silently become story facts")
+    got_review = research_with_fallback(
+        "q", [FakeProvider(review_only, "review")], allow_review_only=True
+    )
+    check(got_review is review_only, "review-only evidence requires explicit opt-in")
 
 
 if __name__ == "__main__":
