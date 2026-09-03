@@ -1070,6 +1070,86 @@ def test_generate_helpers():
 # --------------------------------------------------------------------------
 # 6. fast-fail when all providers throttled (wall-clock budget work)
 # --------------------------------------------------------------------------
+def test_research_dossier_requires_grounding():
+    section("generate.research_dossier: extra science fails CLOSED when grounding is unavailable")
+    fact = {"id": "ground-test",
+            "fact": "GPS satellites require relativistic clock corrections.",
+            "angle": "relativity",
+            "key_terms": ["GPS", "relativity"]}
+    grounded_facts = [
+        "Grounded fact one has a concrete mechanism and enough detail.",
+        "Grounded fact two has a concrete mechanism and enough detail.",
+        "Grounded fact three has a concrete mechanism and enough detail.",
+        "Grounded fact four has a concrete mechanism and enough detail.",
+        "Grounded fact five has a concrete mechanism and enough detail.",
+    ]
+
+    old_cache = G.DOSSIER_CACHE
+    old_key = G.GEMINI_KEY
+    old_models = G._GEMINI_MODELS_CACHE
+    old_gem = G._call_gemini
+    old_llm = G.call_groq
+    old_env = os.environ.get("GROUND_DOSSIER")
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            G.DOSSIER_CACHE = os.path.join(td, "dossier.json")
+            G.GEMINI_KEY = "fake-key"
+            G._GEMINI_MODELS_CACHE = ["gemini-test"]
+            os.environ["GROUND_DOSSIER"] = "1"
+            ungrounded_calls = {"n": 0}
+
+            def _ungrounded(_prompt):
+                ungrounded_calls["n"] += 1
+                return _json.dumps({"facts": grounded_facts})
+
+            G.call_groq = _ungrounded
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("grounding down"))
+            got = G.research_dossier(fact)
+            check(got == [], "grounding outage -> [] / base fact only")
+            check(ungrounded_calls["n"] == 0,
+                  "grounding outage NEVER silently falls back to ordinary model memory")
+
+            # A successful grounded response is accepted and cached with explicit
+            # provenance, then reusable at zero quota.
+            G._call_gemini = lambda *a, **k: _json.dumps({"facts": grounded_facts})
+            got2 = G.research_dossier(fact)
+            check(got2 == grounded_facts, "grounded dossier accepted")
+            cache = _json.load(open(G.DOSSIER_CACHE))
+            key = G._dossier_key(fact)
+            check(isinstance(cache.get(key), dict) and cache[key].get("grounded") is True,
+                  "new dossier cache records grounded provenance")
+
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(AssertionError("cache hit must not call Gemini"))
+            got3 = G.research_dossier(fact)
+            check(got3 == grounded_facts, "grounded cache hit reuses facts with zero network calls")
+
+            # Legacy bare-list cache has unknown provenance; production grounding
+            # mode must not trust it.
+            with open(G.DOSSIER_CACHE, "w") as fh:
+                _json.dump({key: grounded_facts}, fh)
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("grounding down"))
+            got4 = G.research_dossier(fact)
+            check(got4 == [], "legacy unknown-provenance dossier cache is ignored by default")
+
+            # Explicit operator opt-out remains possible for experiments, but it
+            # must be a conscious env choice, never an outage fallback.
+            os.environ["GROUND_DOSSIER"] = "0"
+            ungrounded_calls["n"] = 0
+            got5 = G.research_dossier(fact)
+            check(got5 == grounded_facts and ungrounded_calls["n"] == 1,
+                  "GROUND_DOSSIER=0 explicitly enables ungrounded research")
+    finally:
+        G.DOSSIER_CACHE = old_cache
+        G.GEMINI_KEY = old_key
+        G._GEMINI_MODELS_CACHE = old_models
+        G._call_gemini = old_gem
+        G.call_groq = old_llm
+        if old_env is None:
+            os.environ.pop("GROUND_DOSSIER", None)
+        else:
+            os.environ["GROUND_DOSSIER"] = old_env
+
+
 def test_fast_fail_when_throttled():
     section("generate.py: throttled run fails fast (wall-clock budget + circuit skip)")
     # GEN_WALL_BUDGET_S sane
@@ -2570,6 +2650,7 @@ def main():
     test_series_and_callback()
     test_funnel_affiliate_coverage()
     test_generate_helpers()
+    test_research_dossier_requires_grounding()
     test_caption_function_word_grouping()
     test_script_buffer_queue()
     test_xfade_offsets_monotonic()
