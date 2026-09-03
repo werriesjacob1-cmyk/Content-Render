@@ -2833,6 +2833,44 @@ def test_writer_v2_helpers():
     check(kw2 == "A Title With", "no key_terms -> keyword falls back to the title's first words")
 
 
+def test_writer_v2_visual_scout():
+    section("writer_v2.visual_scout_score / rank_topics_by_visual_score: visual-first topic selection")
+    strong = {"domain": "ocean", "key_terms": ["bioluminescence", "deep sea"],
+              "queries": ["glowing jellyfish deep ocean", "bioluminescent plankton waves",
+                         "anglerfish deep sea light", "submarine deep ocean dive"]}
+    weak = {"domain": "psychology", "key_terms": ["confirmation bias"],
+            "queries": ["night sky stars"]}
+    s_strong = W2.visual_scout_score(strong, banned_re=G.UNSTOCKABLE_Q)
+    s_weak = W2.visual_scout_score(weak, banned_re=G.UNSTOCKABLE_Q)
+    check(s_strong["score"] > s_weak["score"],
+          f"a visually rich ocean topic scores above a visually thin abstract one "
+          f"({s_strong['score']} vs {s_weak['score']})")
+    check(s_strong["distinct_subjects"] >= 3, "4 distinct filmable queries -> distinct_subjects >= 3")
+    check(s_weak["generic_filler_hits"] >= 1, "a bare 'night sky stars' query is counted as generic filler")
+    check(0 <= s_strong["score"] <= 10 and 0 <= s_weak["score"] <= 10, "scores stay within the 0-10 band")
+    check(s_strong["verdict"] != s_weak["verdict"], "strong and weak topics get different verdict text")
+
+    # un-filmable (banned) queries must not count toward distinct_subjects
+    banned_only = {"domain": "body", "key_terms": [],
+                  "queries": ["cell diagram anatomy", "molecular structure abstract"]}
+    s_banned = W2.visual_scout_score(banned_only, banned_re=G.UNSTOCKABLE_Q)
+    check(s_banned["distinct_subjects"] == 0,
+          "queries that are entirely banned/un-filmable terms count as zero distinct subjects")
+
+    # empty fact -> no crash; the two query-driven sub-scores are both zero
+    # (domain_coverage/mechanism_visual fall back to neutral defaults on no
+    # data, so the overall score isn't necessarily 0, but nothing about
+    # "having visuals" can be true of a fact with no queries at all)
+    s_empty = W2.visual_scout_score({}, banned_re=G.UNSTOCKABLE_Q)
+    check(s_empty["hook_visual"] == 0 and s_empty["distinct_subjects"] == 0,
+          "a fact with no queries at all has zero hook_visual and zero distinct_subjects, not a crash")
+    check(s_empty["score"] < s_strong["score"], "the empty fact still scores well below a genuinely strong topic")
+
+    ranked = W2.rank_topics_by_visual_score([weak, strong], banned_re=G.UNSTOCKABLE_Q)
+    check(ranked[0][0] is strong, "rank_topics_by_visual_score puts the visually stronger topic first")
+    check(ranked[0][1]["score"] >= ranked[1][1]["score"], "ranking is actually sorted descending by score")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -2902,6 +2940,7 @@ def main():
     test_writer_v2_schema()
     test_writer_v2_assemble_manifest()
     test_writer_v2_helpers()
+    test_writer_v2_visual_scout()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 

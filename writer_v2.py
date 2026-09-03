@@ -436,3 +436,105 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
         "cta_style": cta_style,
         "payoff": writer_out.get("payoff", ""),
     }
+
+
+# ---------------------------------------------------------------------------
+# VISUAL SCOUT -- evaluate a candidate topic's real visual tellability BEFORE
+# writing it, so a scientifically interesting fact with terrible visual
+# evidence loses to an equally strong fact that can actually be SHOWN. Pure/
+# lightweight: works off the topic_bank fact's own `queries`/`key_terms`/
+# `domain` fields alone, no network probe, no renderer change. Estimates,
+# not guarantees -- the real gate is still what main.py's footage search
+# actually finds at render time.
+# ---------------------------------------------------------------------------
+GENERIC_FILLER_QUERIES = {
+    "night sky stars", "ocean waves", "abstract background", "close up hands",
+    "clock ticking", "digital data", "computer screen",
+}
+
+# Rough, historically-observed free-stock coverage tier by domain (see
+# CLAUDE.md's footage-source notes -- Wikimedia video recall confirmed thin
+# on several abstract/interior-body/psychology-style queries in real testing;
+# space/ocean/animals/earth/nature/weather have consistently deep Pexels/
+# NASA/Wikimedia coverage). A heuristic, not a live probe -- deliberately
+# conservative about domains with no direct evidence either way.
+_RICH_VISUAL_DOMAINS = {"space", "ocean", "animals", "earth", "nature", "weather",
+                        "geology", "plants", "physics", "materials"}
+_THIN_VISUAL_DOMAINS = {"psychology", "math", "mathematics", "language", "linguistics",
+                        "neurology", "neuroscience", "senses", "history"}
+
+_MECHANISM_ACTION_WORDS = ("moves", "grows", "flows", "erupts", "freezes", "glows",
+                           "breathes", "swims", "flies", "burns", "melts", "spins",
+                           "collapses", "explodes", "orbits", "rotates", "vibrates")
+
+
+def _filmable(q, banned_re=None):
+    words = (q or "").split()
+    if len(words) < 2:
+        return False
+    if banned_re is not None and banned_re.search(q):
+        return False
+    return True
+
+
+def visual_scout_score(fact, banned_re=None):
+    """Returns a dict: overall `score` (0-10) plus the four sub-questions the
+    mission specified (hook_visual, distinct_subjects, domain_coverage,
+    mechanism_visual), a generic-filler penalty count, and a short `verdict`.
+    Higher score = more likely to look genuinely edited rather than generic
+    B-roll wallpaper. `banned_re` should be generate.UNSTOCKABLE_Q so
+    'filmable' means the SAME thing here as it does in production."""
+    fact = fact or {}
+    queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
+    domain = (fact.get("domain") or "").lower()
+
+    filmable_queries = [q for q in queries if _filmable(q, banned_re)]
+    distinct = len({q.lower() for q in filmable_queries})
+
+    # 1. can we obtain a compelling hook/proof visual?
+    hook_visual = 10 if (queries and _filmable(queries[0], banned_re)) else (3 if queries else 0)
+    # 2. can we show 3+ visually distinct things?
+    distinct_subjects_score = min(10, distinct * 10 // 3)
+    # 3. is there real scientific/NASA/Wikimedia/etc. media for this domain?
+    if domain in _RICH_VISUAL_DOMAINS:
+        domain_coverage = 9
+    elif domain in _THIN_VISUAL_DOMAINS:
+        domain_coverage = 4
+    else:
+        domain_coverage = 6
+    # 4. can the mechanism itself be shown (an action, not just a static noun)?
+    key_terms = fact.get("key_terms") or []
+    mech_hit = any(a in " ".join(list(key_terms) + queries).lower() for a in _MECHANISM_ACTION_WORDS)
+    mechanism_visual = 8 if mech_hit else 5
+    # 5. would this devolve into generic B-roll?
+    generic_hits = sum(1 for q in queries if q.lower().strip() in GENERIC_FILLER_QUERIES)
+
+    score = (hook_visual * 0.3 + distinct_subjects_score * 0.3 +
+            domain_coverage * 0.2 + mechanism_visual * 0.2) - generic_hits * 1.5
+    score = max(0.0, min(10.0, round(score, 2)))
+
+    if score >= 7:
+        verdict = "strong -- likely to look genuinely edited, not generic B-roll"
+    elif score >= 4.5:
+        verdict = "workable -- will need careful footage selection"
+    else:
+        verdict = "weak -- real risk of generic/off-topic B-roll"
+
+    return {
+        "score": score,
+        "hook_visual": hook_visual,
+        "distinct_subjects": distinct,
+        "domain_coverage": domain_coverage,
+        "mechanism_visual": mechanism_visual,
+        "generic_filler_hits": generic_hits,
+        "verdict": verdict,
+    }
+
+
+def rank_topics_by_visual_score(facts, banned_re=None):
+    """Sorts candidate facts by visual_scout_score descending -- 'choose
+    visually tellable stories, then write them,' not the other way around.
+    Returns a list of (fact, score_dict) tuples."""
+    scored = [(f, visual_scout_score(f, banned_re)) for f in (facts or [])]
+    scored.sort(key=lambda pair: pair[1]["score"], reverse=True)
+    return scored
