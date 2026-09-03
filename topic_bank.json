@@ -4034,24 +4034,6 @@
       ]
     },
     {
-      "id": "atmospheric_river_impact",
-      "domain": "meteorology",
-      "fact": "Atmospheric rivers are long, narrow channels of moisture that flow through the air, bringing heavy rainfall to certain areas. They can have a significant impact on local ecosystems and weather patterns.",
-      "angle": "Weather Extreme",
-      "key_terms": [
-        "atmospheric rivers",
-        "moisture channels",
-        "heavy rainfall"
-      ],
-      "whatif": "What if we could predict and harness the power of atmospheric rivers to bring much-needed rainfall to drought-stricken areas? It could help alleviate water shortages and support local agriculture.",
-      "wow": "Atmospheric rivers can carry up to 15 times the average flow of the Mississippi River, making them a significant force in shaping our weather and climate.",
-      "queries": [
-        "atmospheric river footage",
-        "moisture channels in atmosphere",
-        "heavy rainfall events"
-      ]
-    },
-    {
       "id": "linguistic_isolation_effect",
       "domain": "linguistics",
       "fact": "There are languages that have been spoken in isolation for so long that they have developed unique grammatical structures and vocabularies that are unlike any other language. These languages can provide insights into the evolution of human language.",
@@ -4121,42 +4103,6 @@
         "morning glory cloud footage",
         "atmospheric phenomena examples",
         "tubular cloud formation"
-      ]
-    },
-    {
-      "id": "linguistic_cognitive_bias",
-      "domain": "linguistics",
-      "fact": "The language we speak can influence the way we think and perceive the world, with some languages having words and grammatical structures that shape our cognitive biases and attitudes. This can affect our behavior and decision-making.",
-      "angle": "Language Influence",
-      "key_terms": [
-        "linguistic relativity",
-        "cognitive bias",
-        "language influence"
-      ],
-      "whatif": "What if we could understand how language influences our thinking and use that knowledge to develop more nuanced and culturally sensitive communication strategies? It could help us build stronger relationships and more effective collaborations.",
-      "wow": "Some languages have words and grammatical structures that are so unique that they can influence the way their speakers think about time, space, and even causality, revealing the complex interplay between language and thought.",
-      "queries": [
-        "linguistic relativity examples",
-        "language influence on cognition",
-        "cognitive bias in language"
-      ]
-    },
-    {
-      "id": "marine_biology_migration",
-      "domain": "marinebiology",
-      "fact": "Some species of fish migrate across entire ocean basins, traveling thousands of miles each year to reach their spawning grounds. These migrations are crucial for the fish populations and the ecosystems they inhabit.",
-      "angle": "Ocean Migration",
-      "key_terms": [
-        "fish migration",
-        "ocean basins",
-        "spawning grounds"
-      ],
-      "whatif": "What if we could better understand the migration patterns of these fish and use that knowledge to develop more effective conservation strategies? It could help protect these species and the ecosystems they inhabit.",
-      "wow": "Some fish migrations are so impressive that they involve entire schools of fish traveling together, creating massive aggregations that can be seen from space and supporting the entire food chain in the ocean.",
-      "queries": [
-        "fish migration patterns",
-        "ocean basin migration",
-        "spawning grounds conservation"
       ]
     },
     {
@@ -4589,24 +4535,6 @@
         "sea cucumber intelligence",
         "sea cucumber problem solving",
         "sea cucumber communication"
-      ]
-    },
-    {
-      "id": "storm_intensity",
-      "domain": "marine_biology",
-      "fact": "Some storms can produce massive amounts of hail, with hailstones reaching the size of baseballs or even larger. These storms can cause significant damage to crops and infrastructure.",
-      "angle": "intense",
-      "key_terms": [
-        "storm intensity",
-        "hail",
-        "damage"
-      ],
-      "whatif": "What if these intense storms could be predicted and mitigated using advanced weather forecasting techniques? Could they be used to develop new forms of storm-resistant infrastructure?",
-      "wow": "The hailstones produced by these storms can be so large that they can weigh several pounds, and can cause significant damage to buildings and vehicles.",
-      "queries": [
-        "storm footage",
-        "hail damage",
-        "storm prediction"
       ]
     },
     {
@@ -5890,7 +5818,7 @@
     {
       "id": "underwater_volcanoes",
       "domain": "earth",
-      "fact": "There are underwater volcanoes that exist beneath the ocean's surface, erupting with molten lava and ash. These volcanoes can be found in oceans around the world.",
+      "fact": "Beneath the ocean surface, volcanoes erupt with molten lava and ash. These submarine volcanoes occur in oceans around the world.",
       "angle": "geology",
       "key_terms": [
         "underwater volcanoes",
