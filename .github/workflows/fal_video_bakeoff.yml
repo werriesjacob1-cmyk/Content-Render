@@ -1,0 +1,63 @@
+name: fal-video-bakeoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Science scene prompt — PAID comparison across selected FAL models"
+        required: true
+        default: "A real peacock mantis shrimp underwater strikes a snail shell. Extreme macro documentary footage: the appendage snaps forward, a cavitation bubble flashes and collapses beside the shell, water shockwave visible through suspended particles. Physically plausible marine biology, natural reef lighting, no text, no labels, no fantasy anatomy."
+        type: string
+      models:
+        description: "Aliases: ltx_current,hailuo23,grok_imagine,seedance2_fast"
+        required: false
+        default: "ltx_current,hailuo23,grok_imagine,seedance2_fast"
+        type: string
+      duration:
+        description: "Review duration in seconds"
+        required: false
+        default: "6"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fal-video-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FAL client
+        run: pip install fal-client
+
+      - name: Generate paid private comparison
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
+          BAKEOFF_PROMPT: ${{ inputs.prompt }}
+          BAKEOFF_MODELS: ${{ inputs.models }}
+          BAKEOFF_DURATION: ${{ inputs.duration }}
+        run: |
+          python video_model_bakeoff.py \
+            --prompt "$BAKEOFF_PROMPT" \
+            --models "$BAKEOFF_MODELS" \
+            --duration "$BAKEOFF_DURATION" \
+            --out-dir video_bakeoff
+
+      - name: Upload private comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: fal-video-bakeoff-${{ github.run_id }}
+          path: video_bakeoff/
+          if-no-files-found: error
+          retention-days: 7
