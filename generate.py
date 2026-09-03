@@ -267,6 +267,7 @@ MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
 # Removed 2026-09-03 rather than left as dead weight silently 401ing on every
 # render (SUPERCHAD audit + corroborated by earlier render logs).
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
+TOPIC_QUARANTINE_PATH = os.path.join(ROOT, "topic_quarantine.json")
 
 # ---------------------------------------------------------------------------
 # QUALITY RATCHET — pre-publish self-critique scoring (improvement loop, part 1)
@@ -493,6 +494,32 @@ def load_bank():
             return json.load(f).get("facts", [])
     except Exception:
         return []
+
+def load_topic_quarantine():
+    """IDs temporarily excluded from automatic selection.
+
+    The quarantine is deliberately data-driven and fail-open: deleting or
+    corrupting the file restores the old selector rather than bricking a run.
+    The entries remain in topic_bank.json for later review/repair.
+    """
+    try:
+        with open(TOPIC_QUARANTINE_PATH) as f:
+            data = json.load(f)
+        ids = data.get("ids", []) if isinstance(data, dict) else []
+        return {str(x).strip() for x in ids if str(x).strip()}
+    except Exception:
+        return set()
+
+
+def selectable_bank(facts, quarantined=None):
+    """Return the runtime-safe fact pool, preserving old behavior if a
+    quarantine would somehow exclude the entire bank."""
+    facts = list(facts or [])
+    q = load_topic_quarantine() if quarantined is None else set(quarantined)
+    if not q:
+        return facts
+    clean = [f for f in facts if f.get("id") not in q]
+    return clean or facts
 _WORKING_MODEL = None  # cached once we find one that responds
 # One-shot switch for the Gemini quality-rescue (main() sets it True for a single
 # grounded attempt when the free chain could only manage a weak draft, then clears
@@ -3697,9 +3724,15 @@ def main():
     # facts) doesn't ship back to back. Domain comes from the new memory field
     # with a bank lookup fallback for older entries that predate it. Filters
     # widen gracefully if they would empty the pool.
-    bank = load_bank()
+    bank_all = load_bank()
+    quarantined = load_topic_quarantine()
+    bank = selectable_bank(bank_all, quarantined)
+    if quarantined:
+        excluded = len(bank_all) - len(bank)
+        print(f"  [bank] runtime quarantine excludes {excluded} of {len(bank_all)} facts "
+              f"({len(bank)} eligible)")
     used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
-    _id_to_domain = {f["id"]: f.get("domain") for f in bank}
+    _id_to_domain = {f["id"]: f.get("domain") for f in bank_all}
     recent_families = set()
     for h in history[-RECENT_DOMAIN_WINDOW:]:
         d = h.get("domain") or _id_to_domain.get(h.get("fact_id"))
