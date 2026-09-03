@@ -11,6 +11,7 @@ Env: GROQ_API_KEY
 import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
 
 import writer_v2
+import writer_v2_repair as wr2_repair
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
@@ -3496,66 +3497,161 @@ def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name=
     return out, (data.get("usage") or {})
 
 
-def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
-                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
-    """The V2 generation experiment. Selects a treatment locally (zero extra
-    LLM call), builds a compact story packet from research_dossier()'s
-    existing fail-closed grounded call (reshaped, not re-asked), sends ONE
-    lean writer-only prompt, assembles the full manifest mechanically, and
-    scores it through the EXACT SAME validate()/score_script() gate the
-    legacy path uses -- this experiment does not touch the quality bar.
-
-    Returns (manifest_or_None, debug) -- debug always carries treatment,
-    prompt size (chars + estimated tokens), grounded/provenance, provider/
-    model, real API usage (when available -- includes Groq's own reported
-    prompt/completion token counts, the authoritative number vs the chars/4
-    estimate), whether structured output was used, and validate()'s verdict
-    or score_script()'s score."""
-    treatment = writer_v2.select_treatment((fact or {}).get("id"), recent_treatments)
-    dossier = research_dossier(fact) if fact else []
-    grounded = bool(dossier)  # research_dossier() only returns non-empty on a genuine grounded (or explicit ungrounded-opt-out) success -- see its own docstring
-    packet = writer_v2.build_story_packet(fact, dossier_facts=dossier, grounded=grounded)
-    prompt = writer_v2.build_writer_prompt_v2(treatment, packet, avoid_topics=avoid_topics,
-                                              visual_evidence=(fact or {}).get("queries"))
-    debug = {
-        "treatment": treatment, "prompt_chars": len(prompt), "prompt_tokens_est": estimate_tokens(prompt),
-        "grounded": grounded, "provider": None, "model": None, "usage": None, "structured": False,
-    }
-    raw, usage, provider, model, structured = None, None, None, None, False
-    if use_structured and GROQ_KEY:
+def _v2_structured_call(prompt, schema, schema_name, debug_calls):
+    """Shared structured-output-then-fallback call used by both the initial
+    draft and every critic/repair round. Tries Groq structured output first
+    (schema-enforced JSON, no markdown-fence repair needed); on any failure
+    falls back to the plain call_groq() provider chain (still asked for JSON
+    via the prompt text, parsed the normal way). Appends one entry to
+    debug_calls (mutated in place) recording provider/model/usage/structured
+    for every network call actually made, so callers can sum tokens/calls
+    across a whole repair loop. Returns (raw_text_or_None, structured_bool)."""
+    if GROQ_KEY:
         model0 = MODEL_CHAIN[0]
         try:
             raw, usage = _call_openai_compat_structured(
                 "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, model0, prompt,
-                writer_v2.WRITER_V2_SCHEMA)
-            provider, model, structured = "groq", model0, True
+                schema, schema_name=schema_name)
+            debug_calls.append({"provider": "groq", "model": model0, "usage": usage, "structured": True})
+            return raw, True
         except Exception as e:  # noqa: BLE001
-            print(f"  [writer-v2] structured output unavailable/failed ({e}); falling back to call_groq chain")
-    if raw is None:
-        try:
-            raw = call_groq(prompt)
-        except Exception as e:  # noqa: BLE001
-            debug["error"] = str(e)
-            return None, debug
-        provider, model = _WORKING_MODEL if _WORKING_MODEL else (None, None)
-    debug.update({"provider": provider, "model": model, "usage": usage, "structured": structured})
+            print(f"  [writer-v2] structured output unavailable/failed for {schema_name} ({e}); "
+                  f"falling back to call_groq chain")
     try:
-        writer_out = json.loads(raw)
-        if not isinstance(writer_out, dict):
-            raise ValueError(f"model returned a {type(writer_out).__name__}, not a JSON object")
+        raw = call_groq(prompt)
     except Exception as e:  # noqa: BLE001
-        debug["error"] = f"JSON parse failed: {e}"
+        debug_calls.append({"provider": None, "model": None, "usage": None, "structured": False,
+                            "error": str(e)})
+        return None, False
+    provider, model = _WORKING_MODEL if _WORKING_MODEL else (None, None)
+    debug_calls.append({"provider": provider, "model": model, "usage": None, "structured": False})
+    return raw, False
+
+
+def _v2_parse_json_obj(raw):
+    try:
+        obj = json.loads(raw)
+        if not isinstance(obj, dict):
+            raise ValueError(f"model returned a {type(obj).__name__}, not a JSON object")
+        return obj, None
+    except Exception as e:  # noqa: BLE001
+        return None, f"JSON parse failed: {e}"
+
+
+def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
+                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
+    """The V2 Content Brain: treatment selection (zero extra LLM call) + a
+    mechanical claim inventory (writer_v2.build_claim_inventory, from
+    research_dossier()'s existing fail-closed grounded call, reshaped not
+    re-asked) + a lean citation-aware writer prompt, then a BOUNDED targeted
+    repair loop (writer_v2_repair, 2026-09-03 traceability/repair mission):
+
+      draft -> check_traceability() (Phase 3, mechanical provenance floor)
+            -> validate()/score_script() (the SAME production quality gate
+               the legacy path uses -- never touched, never lowered)
+            -> a small independent creative critic (Phase 5)
+            -> classify_repair() (Phase 6 -- provenance violations always
+               outrank the critic's own diagnosis)
+            -> a targeted repair call touching ONLY the flagged beats
+      ...for up to writer_v2_repair.MAX_REPAIR_ROUNDS rounds, keeping every
+      candidate seen. The final result is select_best_candidate()'s pick: the
+      highest-scoring candidate with ZERO traceability violations AND a clean
+      validate() pass, or None (abort) if no round ever produced one -- a
+      failing-clean abort is success, per the standing quality-gate policy.
+
+    Returns (manifest_or_None, debug). debug always carries: treatment,
+    claim_inventory provenance, initial prompt size, every network call made
+    (provider/model/usage/structured, across draft+critic+repair rounds),
+    repair_rounds actually run, each round's traceability-violation count and
+    score, and the final accepted/aborted verdict."""
+    treatment = writer_v2.select_treatment((fact or {}).get("id"), recent_treatments)
+    dossier = research_dossier(fact) if fact else []
+    grounded = bool(dossier)  # research_dossier() only returns non-empty on a genuine grounded (or explicit ungrounded-opt-out) success -- see its own docstring
+    claim_inventory = writer_v2.build_claim_inventory(fact, dossier_facts=dossier, grounded=grounded)
+    prompt = writer_v2.build_writer_prompt_v2(treatment, claim_inventory, avoid_topics=avoid_topics,
+                                              visual_evidence=(fact or {}).get("queries"))
+    calls = []
+    debug = {
+        "treatment": treatment, "prompt_chars": len(prompt), "prompt_tokens_est": estimate_tokens(prompt),
+        "grounded": grounded, "provenance_note": claim_inventory.get("provenance_note"),
+        "claim_count": len(claim_inventory.get("claims") or []), "rounds": [], "calls": calls,
+    }
+
+    raw, structured = _v2_structured_call(prompt, writer_v2.WRITER_V2_SCHEMA, "writer_v2_output", calls)
+    if raw is None:
+        debug["error"] = "initial draft call failed on every provider"
+        return None, debug
+    writer_out, err = _v2_parse_json_obj(raw)
+    if err:
+        debug["error"] = err
         debug["raw"] = (raw or "")[:500]
         return None, debug
-    m = writer_v2.assemble_manifest_v2(writer_out, fact, treatment, job_name=job_name,
-                                       cta_style=cta_style, banned_query_re=UNSTOCKABLE_Q)
-    err = validate(m, job_name, fact=fact)
-    debug["validate_err"] = err
-    if err:
+
+    candidates = []
+    round_idx = 0
+    while True:
+        num_beats = len(writer_out.get("beats") or [])
+        violations = wr2_repair.check_traceability(writer_out, claim_inventory)
+        m = writer_v2.assemble_manifest_v2(writer_out, fact, treatment, job_name=job_name,
+                                           cta_style=cta_style, banned_query_re=UNSTOCKABLE_Q)
+        verr = validate(m, job_name, fact=fact)
+        score = None if verr else score_script(m, fact=fact, cta_style=cta_style)
+        round_info = {
+            "round": round_idx, "violation_count": len(violations),
+            "violations": [v.to_dict() for v in violations[:20]],
+            "validate_err": verr, "score": score,
+        }
+        debug["rounds"].append(round_info)
+        candidates.append({"writer_out": writer_out, "manifest": m, "violations": violations,
+                           "validate_err": verr, "score": score})
+
+        if round_idx >= wr2_repair.MAX_REPAIR_ROUNDS:
+            break
+
+        # Even a mechanically-clean, validate()-passing draft still gets ONE
+        # critic look (below) rather than an early return here: a high
+        # score_script() total can hide a structurally-repairable issue (see
+        # the 2026-07-26 Pluto coherence-gate precedent) that only a craft
+        # judge, not the rubric, would catch. classify_repair() still only
+        # acts on it if the critic actually names something concrete.
+
+        critic_prompt = wr2_repair.build_critic_prompt(writer_out, claim_inventory, violations)
+        craw, _ = _v2_structured_call(critic_prompt, wr2_repair.CRITIC_SCHEMA, "critic_verdict", calls)
+        critic_verdict, cerr = (None, "critic call failed")
+        if craw is not None:
+            critic_verdict, cerr = _v2_parse_json_obj(craw)
+        round_info["critic_error"] = cerr
+        round_info["critic_verdict"] = critic_verdict
+
+        plan = wr2_repair.classify_repair(critic_verdict, violations, num_beats)
+        round_info["repair_plan"] = plan
+        if plan["repair_type"] == "NONE":
+            break  # nothing actionable -- stop spending rounds, let selection decide
+
+        repair_prompt = wr2_repair.build_repair_prompt(writer_out, claim_inventory, treatment, plan)
+        rraw, _ = _v2_structured_call(repair_prompt, wr2_repair.REPAIR_SCHEMA, "repair_output", calls)
+        if rraw is None:
+            round_info["repair_error"] = "repair call failed on every provider"
+            break
+        repair_out, rerr = _v2_parse_json_obj(rraw)
+        if rerr:
+            round_info["repair_error"] = rerr
+            break
+        writer_out = wr2_repair.merge_repair(writer_out, repair_out.get("repairs") or [], num_beats=num_beats)
+        round_idx += 1
+
+    best = wr2_repair.select_best_candidate(candidates)
+    debug["repair_rounds"] = round_idx
+    debug["total_calls"] = len(calls)
+    if best is None:
+        debug["accepted"] = False
+        debug["validate_err"] = candidates[-1]["validate_err"] if candidates else "no candidate produced"
         return None, debug
-    score = score_script(m, fact=fact, cta_style=cta_style)
-    debug["score"] = score
-    m["_quality"] = score
+    debug["accepted"] = True
+    debug["score"] = best["score"]
+    debug["validate_err"] = None
+    m = best["manifest"]
+    m["_quality"] = best["score"]
     return m, debug
 
 

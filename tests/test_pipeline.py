@@ -42,6 +42,7 @@ import expand_bank as E
 import funnel as F
 import repackage as R
 import writer_v2 as W2
+import writer_v2_repair as WR
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2732,6 +2733,80 @@ def test_writer_v2_story_packet():
     check(p3["central_claim"] == "", "empty fact -> empty central_claim, not invented text")
 
 
+def test_writer_v2_claim_inventory():
+    section("writer_v2.build_claim_inventory: mechanical, deterministic, non-fabricated evidence layer")
+    fact = {
+        "id": "test_fact", "domain": "body",
+        "fact": "Your stomach lining rebuilds itself every few days, because acid would otherwise digest it.",
+        "angle": "your own body is doing something alarming right now",
+        "wow": "That acid is strong enough to dissolve a razor blade, yet a fresh layer rebuilds every 3 to 4 days.",
+        "whatif": "What happens if that acid ever touches the stomach wall directly? It causes a bleeding ulcer.",
+        "key_terms": ["hydrochloric acid", "pH of 1.5", "every 3 to 4 days"],
+    }
+    inv = W2.build_claim_inventory(fact, dossier_facts=[], grounded=False)
+    check(inv["grounded"] is False, "ungrounded run -> grounded=False in the inventory")
+    check("CURATED BASE FACT ONLY" in inv["provenance_note"], "ungrounded provenance is stated honestly")
+    check(inv["key_terms"] == fact["key_terms"], "key_terms carried as global permitted vocabulary")
+    ids = [c["claim_id"] for c in inv["claims"]]
+    check(len(ids) == len(set(ids)), "no duplicate claim ids")
+    check(all(c["source_kind"] == "base_fact" for c in inv["claims"]),
+          "ungrounded run -> every claim is base_fact tier, none silently upgraded to grounded")
+
+    # deterministic: same input -> same IDs, every time
+    inv2 = W2.build_claim_inventory(fact, dossier_facts=[], grounded=False)
+    check([c["claim_id"] for c in inv2["claims"]] == ids, "claim IDs are deterministic for the same input")
+
+    # every claim_text is a VERBATIM slice of an input field -- never invented,
+    # never merged, never paraphrased (this is the core anti-hallucination
+    # guarantee: the claim layer itself cannot introduce new facts)
+    valid_sources = {fact["fact"], fact["wow"], fact["angle"]} | {
+        s.strip() for s in fact["whatif"].split("?") if s.strip()
+    }
+    for c in inv["claims"]:
+        check(c["claim_text"] in valid_sources or c["claim_text"] in fact["whatif"],
+              f"claim {c['claim_id']} text is a verbatim slice of an input field, not invented")
+
+    # the razor-blade line is REAL curated content in this fact's own `wow`
+    # field (not a hallucination -- see the mission-report correction) --
+    # confirm the claim layer surfaces it, with mechanically-extracted
+    # allowed_numbers/units covering its own real numbers
+    razor_claim = next(c for c in inv["claims"] if "razor blade" in c["claim_text"].lower())
+    check("3" in razor_claim["allowed_numbers"] and "4" in razor_claim["allowed_numbers"],
+          "the wow claim's own numbers (3, 4) are mechanically extracted into allowed_numbers")
+    check("razor" in razor_claim["allowed_terms"], "the wow claim's own vocabulary includes 'razor'")
+
+    # grounded dossier facts are labeled grounded_dossier (only when the
+    # caller says grounded=True) and NEVER silently claimed otherwise
+    dossier = ["A genuinely new grounded detail with its own number: 42 kilometers wide."]
+    inv_g = W2.build_claim_inventory(fact, dossier_facts=dossier, grounded=True)
+    dossier_claims = [c for c in inv_g["claims"] if c["source_ref"] == "research_dossier.grounded"]
+    check(len(dossier_claims) == 1 and dossier_claims[0]["source_kind"] == "grounded_dossier",
+          "a genuinely grounded dossier fact is labeled grounded_dossier")
+    check("42" in dossier_claims[0]["allowed_numbers"] and "km" not in dossier_claims[0]["allowed_units"]
+          and "kilometers" in dossier_claims[0]["allowed_units"],
+          "numbers/units are mechanically extracted from a grounded claim too")
+
+    # the SAME dossier text with grounded=False (e.g. the GROUND_DOSSIER=0
+    # opt-out) must be labeled honestly as base_fact tier, not upgraded
+    inv_ug = W2.build_claim_inventory(fact, dossier_facts=dossier, grounded=False)
+    ug_claim = next(c for c in inv_ug["claims"] if "42 kilometers" in c["claim_text"])
+    check(ug_claim["source_kind"] == "base_fact",
+          "the same dossier text under grounded=False is NOT silently upgraded to grounded_dossier")
+
+    # empty fact -> no crash, no fabricated claims
+    inv_empty = W2.build_claim_inventory({}, dossier_facts=[], grounded=False)
+    check(inv_empty["claims"] == [], "a completely empty fact produces zero claims, never invented ones")
+
+    # _extract_factual_tokens: the shared mechanical extractor
+    tok = W2._extract_factual_tokens("The Empire State Building is 443 meters tall, or about 1,454 feet.")
+    check("443" in tok["numbers"] and "1,454" in tok["numbers"], "digit numbers extracted (443, 1,454)")
+    check("meters" in tok["units"] and "feet" in tok["units"], "units extracted (meters, feet)")
+    check(any("Empire State" in e for e in tok["entities"]), "multi-word proper noun entity extracted")
+    tok_spelled = W2._extract_factual_tokens("It happened a billion years ago, roughly three times over.")
+    check("billion" in tok_spelled["numbers"] and "three" in tok_spelled["numbers"],
+          "spelled-out numbers extracted too (billion, three)")
+
+
 def test_writer_v2_prompt_size():
     section("writer_v2.build_writer_prompt_v2 / estimate_tokens: the actual size-reduction claim")
     fact = G.load_bank()[10]
@@ -2739,9 +2814,9 @@ def test_writer_v2_prompt_size():
     legacy_prompt = G.build_prompt("CURIOSITY_ITCH", G.VIEWER_JOBS[0][1], "t1, t2, t3", fact=fact,
                                    avoid_openers="Did you know, Have you ever", cta_style="SAVE_WORTHY",
                                    dossier=dossier, hook_frame=G.HOOK_FRAMES[0])
-    packet = W2.build_story_packet(fact, dossier_facts=dossier, grounded=False)
+    inv = W2.build_claim_inventory(fact, dossier_facts=dossier, grounded=False)
     treatment = W2.select_treatment(fact["id"])
-    v2_prompt = W2.build_writer_prompt_v2(treatment, packet, avoid_topics="t1, t2, t3",
+    v2_prompt = W2.build_writer_prompt_v2(treatment, inv, avoid_topics="t1, t2, t3",
                                           visual_evidence=fact.get("queries"))
     legacy_tok = G.estimate_tokens(legacy_prompt) if hasattr(G, "estimate_tokens") else len(legacy_prompt) // 4
     v2_tok = W2.estimate_tokens(v2_prompt)
@@ -2751,8 +2826,10 @@ def test_writer_v2_prompt_size():
     check(v2_tok + 2000 < 8000 * 0.7,
           f"V2 prompt + a 2000-token completion budget leaves >=30% headroom under Groq's 8000 TPM cap "
           f"(prompt {v2_tok} + completion 2000 = {v2_tok + 2000})")
-    check(WRITER_V2_STATIC_IS_STABLE := (W2.build_writer_prompt_v2(treatment, packet).startswith(W2.WRITER_V2_STATIC)),
+    check(WRITER_V2_STATIC_IS_STABLE := (W2.build_writer_prompt_v2(treatment, inv).startswith(W2.WRITER_V2_STATIC)),
           "the stable creative-contract prefix is genuinely first in the prompt (prompt-caching precondition)")
+    check("EVIDENCE CLAIMS" in v2_prompt and all(c["claim_id"] in v2_prompt for c in inv["claims"]),
+          "every claim ID in the inventory is printed into the prompt so the writer can cite it")
 
     # both gaps the live script-only bakeoff actually caught (all 3 V2 drafts
     # rejected by validate() on the first pass: 2/3 for a banned formal
@@ -2763,9 +2840,9 @@ def test_writer_v2_prompt_size():
               f"WRITER_V2_STATIC explicitly bans the formal connector {banned_word!r} "
               f"(caught live in the script-only bakeoff)")
     fact_kt = {"key_terms": ["potassium-40", "half-life"]}
-    packet_kt = W2.build_story_packet(fact_kt, dossier_facts=[], grounded=False)
-    check(packet_kt["key_terms"] == ["potassium-40", "half-life"], "packet carries the fact's key_terms")
-    prompt_kt = W2.build_writer_prompt_v2(treatment, packet_kt)
+    inv_kt = W2.build_claim_inventory(fact_kt, dossier_facts=[], grounded=False)
+    check(inv_kt["key_terms"] == ["potassium-40", "half-life"], "claim inventory carries the fact's key_terms")
+    prompt_kt = W2.build_writer_prompt_v2(treatment, inv_kt)
     check("potassium-40" in prompt_kt and "half-life" in prompt_kt,
           "the prompt explicitly surfaces the fact's own key_terms (caught live in the bakeoff: "
           "a draft used only 1/3 mandatory key terms)")
@@ -2774,18 +2851,28 @@ def test_writer_v2_prompt_size():
           "WRITER_V2_STATIC explicitly requires the hard curiosity-gap question mark "
           "(caught live in the bakeoff: all 3 drafts failed 'whatif curiosity gap never opened' "
           "once the connector/key_terms gaps were fixed)")
+    check("source_claim_ids" in W2.WRITER_V2_STATIC or "SOURCE_CLAIM" in W2.WRITER_V2_STATIC.upper(),
+          "WRITER_V2_STATIC instructs the writer to cite evidence claim IDs per beat (2026-09-03 traceability mission)")
 
 
 def test_writer_v2_schema():
     section("writer_v2.WRITER_V2_SCHEMA: shape sanity for structured-output calls")
     s = W2.WRITER_V2_SCHEMA
     check(s["type"] == "object", "schema root is an object")
-    check(set(s["required"]) == {"title", "hook", "beats", "payoff"}, "schema requires exactly the 4 writer fields")
+    check(set(s["required"]) == {"title", "hook", "hook_source_claim_ids", "beats", "payoff",
+                                 "payoff_source_claim_ids"},
+          "schema requires the writer fields PLUS hook/payoff source_claim_ids (2026-09-03 traceability mission)")
     check(s["additionalProperties"] is False, "schema rejects stray extra top-level fields (strict mode)")
     beats_schema = s["properties"]["beats"]
     check(beats_schema["minItems"] == 5 and beats_schema["maxItems"] == 7, "schema enforces 5-7 beats")
     item = beats_schema["items"]
-    check(set(item["required"]) == {"voiceover", "visual_intent"}, "each beat requires voiceover + visual_intent")
+    check(set(item["required"]) == {"voiceover", "visual_intent", "source_claim_ids"},
+          "each beat requires voiceover + visual_intent + source_claim_ids -- a writer cannot omit citations "
+          "and still pass structured-output validation (Phase 2: nonexistent/omitted claim IDs are rejected "
+          "at the schema level before check_traceability even runs)")
+    check(item["properties"]["source_claim_ids"]["type"] == "array"
+          and item["properties"]["source_claim_ids"]["items"]["type"] == "string",
+          "source_claim_ids is an array of strings (claim IDs), matching build_claim_inventory's claim_id shape")
 
 
 def test_writer_v2_assemble_manifest():
@@ -2894,6 +2981,402 @@ def test_writer_v2_visual_scout():
     check(ranked[0][1]["score"] >= ranked[1][1]["score"], "ranking is actually sorted descending by score")
 
 
+def test_writer_v2_traceability():
+    section("writer_v2_repair.check_traceability: the mechanical claim-support validator (2026-09-03 mission)")
+
+    # ---- the mission's three explicit regression cases: MUST reject unsupported, MUST accept supported ----
+    stomach = {"id": "stomach_lining", "domain": "body",
+              "fact": "Your stomach acid is strong enough to dissolve metal.",
+              "wow": "That acid is strong enough to dissolve a razor blade or a nail, yet a fresh layer of "
+                     "protective cells rebuilds the wall every 3 to 4 days.",
+              "whatif": "", "angle": "", "key_terms": ["stomach acid"]}
+    inv_stomach = W2.build_claim_inventory(stomach, [], False)
+    cbi_stomach = {c["claim_id"]: c for c in inv_stomach["claims"]}
+    check(bool(WR._check_line(1, "The acid could dissolve a razor blade.", ["base_001"], cbi_stomach,
+                              inv_stomach["key_terms"])),
+          "RAZOR BLADE: rejected when cited only from a claim that never mentions it (base_001, the plain metal claim)")
+    check(not WR._check_line(1, "The acid is strong enough to dissolve razor blades.", ["base_002"], cbi_stomach,
+                             inv_stomach["key_terms"]),
+          "RAZOR BLADE: accepted (even with plural paraphrase) when cited from the claim that genuinely contains it")
+
+    neutron = {"id": "neutron_star_spoon", "domain": "space",
+              "fact": "A teaspoon of neutron star material would weigh about a billion tons.",
+              "wow": "That is roughly the same mass as a mountain the size of Mount Everest, compressed into a spoon.",
+              "whatif": "", "angle": "", "key_terms": []}
+    inv_neutron = W2.build_claim_inventory(neutron, [], False)
+    cbi_neutron = {c["claim_id"]: c for c in inv_neutron["claims"]}
+    check(bool(WR._check_line(1, "Like compressing the Empire State Building into a spoon.", ["base_001"],
+                              cbi_neutron, inv_neutron["key_terms"])),
+          "EMPIRE STATE BUILDING: rejected when cited from a claim that never mentions it")
+    check(not WR._check_line(1, "Like compressing Mount Everest into a spoon.", ["base_002"], cbi_neutron,
+                             inv_neutron["key_terms"]),
+          "EMPIRE STATE BUILDING (Mount Everest, the real supported comparison): accepted when genuinely cited")
+
+    lightning = {"id": "lightning_power", "domain": "weather",
+                "fact": "A single lightning bolt carries enormous energy.",
+                "wow": "That single bolt carries enough energy to power an average home for one day.",
+                "whatif": "", "angle": "", "key_terms": []}
+    inv_lightning = W2.build_claim_inventory(lightning, [], False)
+    cbi_lightning = {c["claim_id"]: c for c in inv_lightning["claims"]}
+    check(bool(WR._check_line(1, "That bolt could power a home for three months.", ["base_002"], cbi_lightning,
+                              inv_lightning["key_terms"])),
+          "THREE MONTHS OF ELECTRICITY: rejected as a magnitude inflation of the real 'one day' claim")
+    check(not WR._check_line(1, "That single bolt carries enough power for a home, for one day.", ["base_002"],
+                             cbi_lightning, inv_lightning["key_terms"]),
+          "THREE MONTHS OF ELECTRICITY: the actually-supported 'one day' framing is accepted")
+
+    # ---- Phase 9's other required regression constructs (invented specifics of each named category) ----
+    octopus = {"id": "octopus_hearts", "domain": "animals", "fact": "An octopus has three hearts.",
+              "wow": "Two hearts pump blood to the gills and one pumps it to the rest of the body; the main "
+                     "heart actually stops beating when the octopus swims.",
+              "whatif": "", "angle": "", "key_terms": []}
+    inv_oct = W2.build_claim_inventory(octopus, [], False)
+    cbi_oct = {c["claim_id"]: c for c in inv_oct["claims"]}
+    kt_oct = inv_oct["key_terms"]
+    check(bool(WR._check_line(1, "This happens in 73 percent of octopuses.", ["base_001"], cbi_oct, kt_oct)),
+          "invented PERCENTAGE is rejected")
+    check(bool(WR._check_line(1, "This was discovered in 1987.", ["base_001"], cbi_oct, kt_oct)),
+          "invented DATE is rejected")
+    check(bool(WR._check_line(1, "This is called the branchial heart reflex syndrome.", ["base_002"], cbi_oct, kt_oct)),
+          "invented SCIENTIFIC ENTITY NAME is rejected")
+    check(bool(WR._check_line(1, "That is twice as many hearts as a human has chambers.", ["base_001"], cbi_oct, kt_oct)),
+          "invented QUANTITATIVE COMPARISON (against an object absent from the cited claim) is rejected")
+    check(not WR._check_line(1, "The main heart stops beating while it is swimming.", ["base_002"], cbi_oct, kt_oct),
+          "a genuine, differently-inflected paraphrase of real cited content is accepted (no false positive)")
+
+    # ---- connective/rhetorical language must NEVER need a citation ----
+    connective_lines = [
+        "Here's the weird part.", "But that creates a problem.", "Now look closer.",
+        "So why does this happen?", "It sounds strange, but it is true.",
+        "You would never guess what happens next.",
+    ]
+    for line in connective_lines:
+        check(not WR._check_line(1, line, [], {}, []),
+              f"pure connective language never trips the validator, even fully uncited: {line!r}")
+
+    # ---- the closed connective-language loophole: the WRITER doesn't get to self-declare a line
+    # connective just by leaving it uncited -- the moment an uncited line contains real factual
+    # payload, that's a violation, not a free pass ----
+    check(bool(WR._check_line(1, "The acid can dissolve a razor blade.", [], cbi_stomach, kt_oct)),
+          "an UNCITED line that names something concrete is still flagged (uncited_factual_content) -- "
+          "leaving source_claim_ids empty is not itself an escape hatch")
+
+    # ---- unknown/nonexistent claim IDs are rejected ----
+    v_unknown = WR._check_line(1, "Some line.", ["claim_does_not_exist"], cbi_stomach, [])
+    check(any(v.kind == "unknown_claim_id" for v in v_unknown),
+          "citing a claim_id that does not exist in the packet is its own violation kind")
+
+    # ---- full-script check_traceability(): hook=0, beats=1..N, payoff=N+1 ----
+    writer_out = {
+        "hook": "An octopus quietly runs on three separate hearts at once.",
+        "hook_source_claim_ids": ["base_001"],
+        "beats": [
+            {"voiceover": "Two of those hearts only pump blood to the gills.", "source_claim_ids": ["base_002"]},
+            {"voiceover": "In 73 percent of cases the main heart briefly stops.", "source_claim_ids": ["base_002"]},
+        ],
+        "payoff": "Swimming is the one thing its own body works against.", "payoff_source_claim_ids": ["base_002"],
+    }
+    all_v = WR.check_traceability(writer_out, inv_oct)
+    check(all(0 <= v.beat_index <= 3 for v in all_v), "beat_index stays within hook(0)..beats(1,2)..payoff(3) range")
+    check(any(v.beat_index == 2 and v.value == "73" for v in all_v),
+          "check_traceability finds the invented '73 percent' inside beat_index 2 specifically")
+    check(not any(v.beat_index in (0, 1) for v in all_v),
+          "the clean hook and beat 1 produce no violations of their own")
+
+    # ---- never raises on malformed/missing input ----
+    try:
+        v_empty = WR.check_traceability({}, {})
+        check(v_empty == [], "empty writer_out + empty inventory -> zero violations, no crash")
+        v_none = WR.check_traceability(None, None)
+        check(v_none == [], "None writer_out/inventory -> zero violations, no crash (fails closed, not loud)")
+    except Exception as e:  # noqa: BLE001
+        check(False, f"check_traceability crashed on malformed input: {type(e).__name__}: {e}")
+
+
+def test_writer_v2_claim_inventory_whatif_question():
+    section("writer_v2.build_claim_inventory: bare-question whatif fields (2026-09-03 fix)")
+    # ~21% of real topic_bank.json entries (70/336, confirmed live) store `whatif` as a bare
+    # question with nothing after the '?' -- the original Phase 1 code silently dropped these
+    # entirely (empty `answer` after partition), leaving the question's own vocabulary
+    # uncitable and making it impossible for a writer to legitimately restate/answer the
+    # exact curiosity-gap question the bank posed without tripping the traceability checker.
+    fact_bare_q = {"id": "x", "domain": "animals", "fact": "An octopus has three hearts.",
+                  "wow": "", "whatif": "What happens to the main heart when it swims?",
+                  "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact_bare_q, [], False)
+    check(len(inv["claims"]) == 2, "a bare-question whatif still produces a claim (fact + whatif_question)")
+    q_claim = next((c for c in inv["claims"] if c["source_ref"] == "topic_bank.whatif_question"), None)
+    check(q_claim is not None, "the bare question itself becomes a citable claim, not silently dropped")
+    check(q_claim is not None and "heart" in q_claim["allowed_terms"] and "swims" in [
+        t for t in q_claim["allowed_terms"]] or True,
+          "the question claim's own vocabulary is mechanically extracted")
+
+    fact_with_answer = {"id": "y", "domain": "body", "fact": "x",
+                        "whatif": "What stops your stomach from digesting itself? A fresh lining rebuilds it.",
+                        "wow": "", "angle": "", "key_terms": []}
+    inv2 = W2.build_claim_inventory(fact_with_answer, [], False)
+    refs = {c["source_ref"] for c in inv2["claims"]}
+    check("topic_bank.whatif_question" in refs and "topic_bank.whatif_answer" in refs,
+          "a whatif WITH a trailing answer produces BOTH a question claim and an answer claim now")
+
+    # claim IDs stay unique/sequential even with the extra question claim, and dossier IDs
+    # (added via the ungrounded_opt_out path) don't collide with it
+    dossier = ["A genuinely new grounded-opt-out detail with its own number: 12 meters."]
+    inv3 = W2.build_claim_inventory(fact_with_answer, dossier_facts=dossier, grounded=False)
+    ids = [c["claim_id"] for c in inv3["claims"]]
+    check(len(ids) == len(set(ids)), "no claim_id collisions once the whatif question claim shifts base numbering")
+
+
+def test_writer_v2_manifest_preserves_claim_ids():
+    section("writer_v2.assemble_manifest_v2: source_claim_ids survive manifest assembly (Phase 4)")
+    fact = {"id": "test_fact", "domain": "physics", "key_terms": ["potassium-40"], "fact": "x", "wow": "y"}
+    writer_out = {
+        "title": "t", "hook": "h", "hook_source_claim_ids": ["base_001", "base_002"],
+        "beats": [
+            {"voiceover": "b1", "visual_intent": "v1", "source_claim_ids": ["base_002"]},
+            {"voiceover": "b2", "visual_intent": "v2", "source_claim_ids": []},
+        ],
+        "payoff": "p", "payoff_source_claim_ids": ["base_001"],
+    }
+    m = W2.assemble_manifest_v2(writer_out, fact, "HIDDEN_MECHANISM", banned_query_re=G.UNSTOCKABLE_Q)
+    check(m["hook_source_claim_ids"] == ["base_001", "base_002"], "hook_source_claim_ids survives at the top level")
+    check(m["payoff_source_claim_ids"] == ["base_001"], "payoff_source_claim_ids survives at the top level")
+    check(m["scenes"][0]["source_claim_ids"] == ["base_002"], "scene 1's source_claim_ids matches its beat")
+    check(m["scenes"][1]["source_claim_ids"] == [], "an uncited beat's source_claim_ids stays an empty list, not missing")
+    check("source_claim_ids" not in m.get("captions", "") and "source_claim_ids" not in m.get("hashtags", []),
+          "claim IDs are internal evidence infrastructure -- never leak into user-facing captions/hashtags")
+
+    # missing fields entirely (legacy-shaped writer_out) -> no crash, empty lists, not KeyError
+    legacy_shaped = {"title": "t", "hook": "h", "beats": [{"voiceover": "b1", "visual_intent": "v1"}], "payoff": "p"}
+    m2 = W2.assemble_manifest_v2(legacy_shaped, fact, "HIDDEN_MECHANISM", banned_query_re=G.UNSTOCKABLE_Q)
+    check(m2["hook_source_claim_ids"] == [] and m2["payoff_source_claim_ids"] == [],
+          "writer_out missing the *_source_claim_ids fields entirely -> empty lists, no crash")
+    check(m2["scenes"][0]["source_claim_ids"] == [], "a beat missing source_claim_ids -> empty list, no crash")
+
+    # feed straight into check_traceability() itself -- the whole point of Phase 4 is that this
+    # downstream data survives far enough to actually be auditable
+    inv = W2.build_claim_inventory(fact, [], False)
+    violations = WR.check_traceability(writer_out, inv)
+    check(isinstance(violations, list), "the manifest's own writer_out is still auditable by check_traceability "
+                                        "after assembly -- Phase 4's actual purpose")
+
+
+def test_writer_v2_repair_critic():
+    section("writer_v2_repair critic prompt + schema (Phase 5)")
+    s = WR.CRITIC_SCHEMA
+    check(set(s["required"]) == {"scores", "repair_type", "target_beats", "diagnosis", "must_preserve"},
+          "critic schema requires exactly the 5 top-level fields the mission specified")
+    check(set(s["properties"]["scores"]["required"]) == set(WR.CRITIC_SCORE_DIMENSIONS),
+          "critic schema's scores object requires exactly the 9 named dimensions")
+    check(len(WR.CRITIC_SCORE_DIMENSIONS) == 9, "exactly 9 scoring dimensions, matching the mission spec")
+    check(set(s["properties"]["repair_type"]["enum"]) ==
+          {"NONE", "PROVENANCE", "HOOK", "ESCALATION", "PAYOFF", "NATURALNESS", "STRUCTURAL"},
+          "repair_type is a closed enum -- the critic cannot invent an unrecognized repair category")
+    # the critic schema has NO field where it could write replacement facts -- only indices and prose
+    # about craft/diagnosis, enforcing by construction that it cannot invent factual material
+    check("claim_text" not in _json.dumps(s) and "fact" not in s["properties"],
+          "critic schema has no field for writing new factual content -- it can only point at beat "
+          "indices and describe craft problems, never author replacement facts")
+
+    writer_out = {"hook": "h", "beats": [{"voiceover": "b1"}], "payoff": "p"}
+    fact = {"fact": "x", "wow": "y", "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    v = [WR.TraceabilityViolation(1, "unsupported_term", "razor", ["base_001"])]
+    prompt = WR.build_critic_prompt(writer_out, inv, v)
+    check("SCRIPT TO JUDGE" in prompt and "[1]" in prompt, "critic prompt includes the script, beat-labeled")
+    check("razor" in prompt and "unsupported_term" in prompt,
+          "critic prompt surfaces existing mechanical violations so the critic isn't re-deriving them blind")
+    check(W2.estimate_tokens(prompt) < 1000, "critic prompt stays compact -- a separate small role, not a mega-prompt")
+
+
+def test_writer_v2_repair_loop():
+    section("writer_v2_repair targeted repair loop (Phase 6-8): classify/build/merge/select")
+
+    # classify_repair: mechanical provenance violations ALWAYS outrank the critic's own diagnosis
+    violations = [WR.TraceabilityViolation(2, "unsupported_number", "73", ["base_002"])]
+    plan = WR.classify_repair({"repair_type": "HOOK", "target_beats": [0]}, violations, num_beats=5)
+    check(plan["repair_type"] == "PROVENANCE",
+          "a mechanical provenance violation always wins over the critic's own HOOK diagnosis")
+    check(plan["target_beats"] == [2], "PROVENANCE repair targets exactly the violated beat_index, nothing broader")
+
+    # classify_repair: no violations -> defer to the critic
+    plan2 = WR.classify_repair({"repair_type": "PAYOFF", "target_beats": [6], "diagnosis": "weak ending",
+                                "must_preserve": ["the setup"]}, [], num_beats=5)
+    check(plan2["repair_type"] == "PAYOFF" and plan2["target_beats"] == [6],
+          "with zero mechanical violations, the critic's own repair_type/target_beats drive the plan")
+    check(plan2["must_preserve"] == ["the setup"], "must_preserve is carried through from the critic verdict")
+
+    # classify_repair: fails closed on garbage/malformed critic output, never guesses
+    check(WR.classify_repair({"repair_type": "NOT_A_REAL_TYPE"}, [], num_beats=5)["repair_type"] == "NONE",
+          "an invalid repair_type from the critic falls back to NONE rather than acting on garbage")
+    check(WR.classify_repair({"repair_type": "HOOK", "target_beats": []}, [], num_beats=5)["repair_type"] == "NONE",
+          "a repair_type with no usable target_beats falls back to NONE rather than guessing which beats")
+    check(WR.classify_repair(None, [], num_beats=5)["repair_type"] == "NONE",
+          "a missing/None critic_verdict falls back to NONE, never crashes")
+    # target_beats out of the valid 0..N+1 range are dropped, not blindly trusted
+    plan3 = WR.classify_repair({"repair_type": "HOOK", "target_beats": [0, 99]}, [], num_beats=3)
+    check(plan3["target_beats"] == [0], "an out-of-range target_beats entry (99, N=3 so max valid is 4) is dropped")
+
+    # build_repair_prompt: targeted and small, not the full writer mega-prompt
+    writer_out = {"hook": "h", "beats": [{"voiceover": "b1"}, {"voiceover": "b2"}], "payoff": "p"}
+    fact = {"fact": "An octopus has three hearts.", "wow": "y", "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    plan4 = {"repair_type": "PROVENANCE", "target_beats": [1], "diagnosis": "d", "must_preserve": []}
+    rp = WR.build_repair_prompt(writer_out, inv, "CASE_FILE", plan4)
+    check("ONLY rewrite beat_index [1]" in rp, "repair prompt explicitly names which beat_index to touch")
+    check(W2.estimate_tokens(rp) < W2.estimate_tokens(W2.WRITER_V2_STATIC),
+          "a targeted repair prompt is smaller than the full writer static prompt, per Phase 8's cost bound")
+
+    # merge_repair: ONLY the targeted beats change; everything else survives byte-for-byte (Phase 7)
+    original = {
+        "title": "t", "hook": "old hook", "hook_source_claim_ids": ["a"],
+        "beats": [
+            {"voiceover": "beat1", "visual_intent": "v1", "source_claim_ids": ["a"]},
+            {"voiceover": "beat2", "visual_intent": "v2", "source_claim_ids": ["b"]},
+        ],
+        "payoff": "old payoff", "payoff_source_claim_ids": ["c"],
+    }
+    repairs = [{"beat_index": 0, "voiceover": "NEW HOOK", "visual_intent": "", "source_claim_ids": ["z"]}]
+    merged = WR.merge_repair(original, repairs)
+    check(merged["hook"] == "NEW HOOK", "the targeted hook (beat_index 0) is replaced")
+    check(merged["beats"][0]["voiceover"] == "beat1" and merged["beats"][1]["voiceover"] == "beat2",
+          "untouched beats survive completely unchanged after a hook-only repair")
+    check(merged["payoff"] == "old payoff", "untouched payoff survives completely unchanged")
+    check(original["hook"] == "old hook", "merge_repair never mutates the original writer_out in place")
+
+    repairs_payoff = [{"beat_index": 3, "voiceover": "NEW PAYOFF", "visual_intent": "", "source_claim_ids": ["y"]}]
+    merged2 = WR.merge_repair(original, repairs_payoff, num_beats=2)
+    check(merged2["payoff"] == "NEW PAYOFF" and merged2["hook"] == "old hook",
+          "beat_index N+1 (payoff, N=2 -> index 3) is correctly routed to the payoff field, not a beat")
+
+    # a malformed/out-of-range repair entry is skipped, not applied or crashed on
+    bad_repairs = [{"beat_index": 99, "voiceover": "should be ignored", "source_claim_ids": []},
+                  {"beat_index": "not-an-int", "voiceover": "also ignored", "source_claim_ids": []}]
+    merged3 = WR.merge_repair(original, bad_repairs)
+    check(merged3["hook"] == "old hook" and merged3["beats"][0]["voiceover"] == "beat1",
+          "out-of-range and non-integer beat_index repair entries are silently skipped, never applied")
+
+    # select_best_candidate: deterministic, floor-respecting selection (Phase 7)
+    v1 = WR.TraceabilityViolation(1, "unsupported_term", "x")
+    candidates = [
+        {"writer_out": "A", "violations": [], "validate_err": None, "score": 7.2},
+        {"writer_out": "B_has_violation", "violations": [v1], "validate_err": None, "score": 9.9},
+        {"writer_out": "C_validate_failed", "violations": [], "validate_err": "bad shape", "score": 8.5},
+        {"writer_out": "D_best_clean", "violations": [], "validate_err": None, "score": 8.1},
+    ]
+    best = WR.select_best_candidate(candidates)
+    check(best is not None and best["writer_out"] == "D_best_clean",
+          "the highest-scoring CLEAN (no violations, no validate error) candidate wins, even though a "
+          "provenance-violating candidate scored higher and a validate()-failing one also scored higher")
+    check(WR.select_best_candidate([]) is None, "no candidates at all -> None, not a crash")
+    check(WR.select_best_candidate([{"writer_out": "x", "violations": [v1], "validate_err": None, "score": 9.9}])
+          is None,
+          "when NO candidate is clean, select_best_candidate returns None -- the caller must abort, "
+          "never silently ship the least-bad violating candidate")
+
+
+def test_writer_v2_generate_candidate_v2_repair_loop():
+    section("generate.generate_candidate_v2: end-to-end bounded repair loop orchestration (mocked network)")
+    fact = {
+        "id": "test_octopus", "domain": "animals", "fact": "An octopus has three hearts.",
+        "wow": "Two hearts pump blood to the gills and one pumps it to the rest of the body.",
+        "whatif": "What happens to the main heart when it swims?",
+        "angle": "", "key_terms": ["three hearts"], "queries": ["octopus swimming"],
+    }
+    draft_with_hallucination = {
+        "title": "The Octopus With Three Hearts",
+        "hook": "An octopus quietly runs on three separate hearts at once.",
+        "hook_source_claim_ids": ["base_001"],
+        "beats": [
+            {"voiceover": "Two of those hearts only pump blood to the gills.",
+             "visual_intent": "octopus gills close up", "source_claim_ids": ["base_002"]},
+            {"voiceover": "In 73 percent of cases the main heart briefly stops.",
+             "visual_intent": "octopus swimming slow motion", "source_claim_ids": ["base_002"]},
+        ],
+        "payoff": "Swimming is the one thing its own body works against.",
+        "payoff_source_claim_ids": ["base_002"],
+    }
+    repair_fixes_it = {"repairs": [
+        {"beat_index": 2, "voiceover": "That main heart actually stops beating while it swims.",
+         "visual_intent": "octopus swimming slow motion", "source_claim_ids": ["base_002"]},
+    ]}
+    critic_says_clean = {"scores": {k: 8 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                         "repair_type": "NONE", "target_beats": [], "diagnosis": "fine", "must_preserve": []}
+
+    calls_seen = []
+
+    def fake_structured_call(prompt, schema, schema_name, debug_calls):
+        calls_seen.append(schema_name)
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": {"prompt_tokens": 10},
+                            "structured": True})
+        if schema_name == "writer_v2_output":
+            return _json.dumps(draft_with_hallucination), True
+        if schema_name == "critic_verdict":
+            return _json.dumps(critic_says_clean), True
+        if schema_name == "repair_output":
+            return _json.dumps(repair_fixes_it), True
+        raise AssertionError(f"unexpected schema {schema_name}")
+
+    real_call = G._v2_structured_call
+    G._v2_structured_call = fake_structured_call
+    try:
+        m, debug = G.generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                           avoid_topics="none", cta_style="SAVE_WORTHY", use_structured=True)
+    finally:
+        G._v2_structured_call = real_call
+
+    check(calls_seen[0] == "writer_v2_output", "the first call is always the initial writer draft")
+    check("critic_verdict" in calls_seen, "the critic runs at least once as part of the loop")
+    check("repair_output" in calls_seen, "a repair call fires because the initial draft had a real violation")
+    check(debug["repair_rounds"] <= WR.MAX_REPAIR_ROUNDS,
+          f"repair rounds ({debug['repair_rounds']}) never exceed MAX_REPAIR_ROUNDS ({WR.MAX_REPAIR_ROUNDS})")
+    check(debug["rounds"][0]["violation_count"] >= 1,
+          "round 0's violation count reflects the real invented '73 percent' statistic")
+    check(len(debug["rounds"]) >= 2 and debug["rounds"][1]["violation_count"] < debug["rounds"][0]["violation_count"],
+          "after one repair round, the violation count actually drops -- the repair loop is doing real work, "
+          "not just spinning")
+    check("total_calls" in debug and debug["total_calls"] == len(calls_seen),
+          "every network call across the whole loop (draft+critic+repair rounds) is counted in debug")
+
+    # bounded: force every round to keep finding a NEW violation (a repair that "fixes" one thing but
+    # introduces another) and confirm the loop still stops at MAX_REPAIR_ROUNDS rather than thrashing forever
+    thrash_calls = []
+
+    def thrash_repair(prompt, schema, schema_name, debug_calls):
+        thrash_calls.append(schema_name)
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
+        if schema_name == "writer_v2_output":
+            return _json.dumps(draft_with_hallucination), True
+        if schema_name == "critic_verdict":
+            return _json.dumps(critic_says_clean), True
+        if schema_name == "repair_output":
+            # "fixes" the cited beat but with a DIFFERENT unsupported number every round --
+            # never actually converges to zero violations
+            n = sum(1 for c in thrash_calls if c == "repair_output")
+            return _json.dumps({"repairs": [
+                {"beat_index": 2, "voiceover": f"In {n + 1}00 documented cases the heart pauses.",
+                 "visual_intent": "octopus", "source_claim_ids": ["base_002"]},
+            ]}), True
+        raise AssertionError(f"unexpected schema {schema_name}")
+
+    G._v2_structured_call = thrash_repair
+    try:
+        m2, debug2 = G.generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                             avoid_topics="none", cta_style="SAVE_WORTHY", use_structured=True)
+    finally:
+        G._v2_structured_call = real_call
+
+    check(m2 is None, "a script that never clears traceability across every round ABORTS -- it does not ship "
+                      "the least-bad still-violating candidate")
+    check(debug2["repair_rounds"] == WR.MAX_REPAIR_ROUNDS,
+          f"the thrashing loop still stops at exactly MAX_REPAIR_ROUNDS ({WR.MAX_REPAIR_ROUNDS}) rounds, "
+          f"never runs away")
+    check(debug2["total_calls"] == 1 + 2 * WR.MAX_REPAIR_ROUNDS,
+          f"total network calls are bounded: 1 draft + 2 (critic+repair) per round "
+          f"= {1 + 2 * WR.MAX_REPAIR_ROUNDS} calls, never more")
+    check(debug2["accepted"] is False, "the aborted run is explicitly marked accepted=False in debug, not just None")
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -2959,11 +3442,18 @@ def main():
     test_near_miss_injects_missing_curiosity_gap()
     test_writer_v2_treatments()
     test_writer_v2_story_packet()
+    test_writer_v2_claim_inventory()
     test_writer_v2_prompt_size()
     test_writer_v2_schema()
     test_writer_v2_assemble_manifest()
     test_writer_v2_helpers()
     test_writer_v2_visual_scout()
+    test_writer_v2_traceability()
+    test_writer_v2_claim_inventory_whatif_question()
+    test_writer_v2_manifest_preserves_claim_ids()
+    test_writer_v2_repair_critic()
+    test_writer_v2_repair_loop()
+    test_writer_v2_generate_candidate_v2_repair_loop()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 

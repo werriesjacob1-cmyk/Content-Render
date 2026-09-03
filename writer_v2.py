@@ -201,6 +201,152 @@ def build_story_packet(fact, dossier_facts=None, grounded=False):
 
 
 # ---------------------------------------------------------------------------
+# CLAIM INVENTORY -- 2026-09-03 traceability mission. build_story_packet()
+# above gives the writer a compact PROSE summary; this gives it (and, more
+# importantly, the validator in writer_v2_repair.py) a set of individually
+# CITABLE, mechanically-sourced claims. The razor-blade hallucination found
+# in the live bakeoff (both legacy AND V2 independently invented the same
+# "stomach acid dissolves a razor blade" line, despite an explicit "never
+# invent" prompt instruction) is exactly the failure this exists to catch:
+# a prompt INSTRUCTION not to fabricate is not enforcement. Every claim here
+# is a verbatim slice of already-trusted text (topic_bank fields or a
+# genuinely grounded dossier item) -- never LLM-authored, never paraphrased,
+# never merged. IDs are deterministic (stable field order + list position)
+# so the same fact+dossier always produces the same inventory.
+# ---------------------------------------------------------------------------
+_NUMBER_WORD_RE = re.compile(
+    r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen|"
+    r"hundred|thousand|million|billion|trillion)\b", re.I)
+_DIGIT_NUMBER_RE = re.compile(r"\b\d[\d,]*(?:\.\d+)?\b")
+_UNIT_RE = re.compile(
+    r"\b(kg|kilograms?|grams?|tons?|tonnes?|mm|cm|km|kilometers?|kilometres?|miles?|"
+    r"feet|foot|inch(?:es)?|meters?|metres?|seconds?|minutes?|hours?|days?|weeks?|"
+    r"months?|years?|degrees?|celsius|fahrenheit|ph|volts?|watts?|liters?|litres?|"
+    r"gallons?|mph|percent|%)\b", re.I)
+_PROPER_NOUN_RE = re.compile(r"\b[A-Z][a-zA-Z'.-]*(?:\s+[A-Z][a-zA-Z'.-]*){0,3}\b")
+_SENTENCE_START_STOP = {"the", "a", "an", "this", "that", "these", "those", "some",
+                        "your", "you", "it", "its", "if", "so", "but", "and", "or",
+                        "when", "while", "because", "there", "here", "what", "how",
+                        "why", "one", "every", "each", "no", "not", "never", "always"}
+_TERM_STOPWORDS = {
+    "that", "this", "these", "those", "with", "from", "your", "into", "than", "then",
+    "have", "has", "had", "will", "would", "could", "should", "about", "their", "them",
+    "they", "there", "here", "when", "while", "because", "even", "just", "also", "only",
+    "actually", "still", "some", "such", "each", "every", "more", "most", "much", "many",
+    "over", "under", "through", "which", "what", "where", "being", "been", "were", "was",
+}
+
+
+def _extract_factual_tokens(text):
+    """Mechanically pulls out the factual PAYLOAD of a claim's text: numbers
+    (digit and spelled-out), units, proper-noun-shaped entities, and
+    significant lowercase terms. Deliberately generous/inclusive here -- this
+    builds the ALLOWED vocabulary for a claim, so over-inclusion just means a
+    claim permits slightly more than strictly necessary, not a false
+    rejection later (the validator in writer_v2_repair.py is what needs to be
+    precise; this is the permissive source-of-truth side)."""
+    text = text or ""
+    numbers = sorted(set(_DIGIT_NUMBER_RE.findall(text)) |
+                     {w.lower() for w in _NUMBER_WORD_RE.findall(text)})
+    units = sorted({w.lower() for w in _UNIT_RE.findall(text)})
+    entities = set()
+    for m in _PROPER_NOUN_RE.finditer(text):
+        cand = m.group(0).strip()
+        if cand.lower() in _SENTENCE_START_STOP:
+            continue
+        entities.add(cand)
+    words = re.findall(r"[a-zA-Z]{4,}", text.lower())
+    terms = sorted({w for w in words if w not in _TERM_STOPWORDS})
+    return {"numbers": numbers, "units": units, "entities": sorted(entities), "terms": terms}
+
+
+def _make_claim(prefix, idx, text, source_kind, source_ref):
+    tok = _extract_factual_tokens(text)
+    return {
+        "claim_id": f"{prefix}_{idx:03d}",
+        "claim_text": text,
+        "source_kind": source_kind,
+        "source_ref": source_ref,
+        "confidence": "grounded" if source_kind == "grounded_dossier" else "verified_base_fact",
+        "allowed_numbers": tok["numbers"],
+        "allowed_units": tok["units"],
+        "allowed_entities": tok["entities"],
+        "allowed_terms": tok["terms"],
+    }
+
+
+def build_claim_inventory(fact, dossier_facts=None, grounded=False):
+    """The mechanical evidence layer. Returns {"claims": [...], "key_terms":
+    [...], "grounded": bool, "provenance_note": "..."}.
+
+    Claims are built ONLY from: the base fact's `fact`/`wow`/`whatif`-answer/
+    `angle` fields, and dossier_facts (labeled grounded_dossier only when the
+    caller-supplied `grounded` flag is True -- an ungrounded dossier, e.g.
+    the explicit GROUND_DOSSIER=0 opt-out, is still labeled honestly as
+    base_fact-tier, never silently upgraded). No LLM call is used to build
+    this, and no text is ever invented, merged, or paraphrased -- every
+    claim_text is a verbatim slice of an existing trusted string. `key_terms`
+    is carried separately as globally-permitted vocabulary (the fact bank's
+    own curated specifics, independent of which claim a beat happens to
+    cite)."""
+    fact = fact or {}
+    dossier_facts = [str(d).strip() for d in (dossier_facts or []) if str(d).strip()]
+    claims = []
+
+    base = (fact.get("fact") or "").strip()
+    if base:
+        claims.append(_make_claim("base", 1, base, "base_fact", "topic_bank.fact"))
+    wow = (fact.get("wow") or "").strip()
+    if wow:
+        claims.append(_make_claim("base", 2, wow, "base_fact", "topic_bank.wow"))
+    whatif = (fact.get("whatif") or "").strip()
+    next_base_id = 3
+    if whatif:
+        # The question half itself is also a claim, not just connective
+        # tissue -- the writer prompt's own CURIOSITY GAP rule explicitly
+        # expects a beat to genuinely ask (a paraphrase of) this exact
+        # question, so its concrete nouns/numbers need to be citable too.
+        # ~21% of real topic_bank entries (70/336, checked live 2026-09-03)
+        # store `whatif` as a BARE question with nothing after the "?" --
+        # the old code silently dropped those entirely (empty `answer`),
+        # leaving that fact's whatif vocabulary uncitable and its question
+        # unusable without tripping the traceability checker. Always
+        # capture the question; separately capture the answer when present.
+        question, sep, answer = whatif.partition("?")
+        question = question.strip()
+        answer = answer.strip()
+        if question and len(question.split()) >= 3:
+            claims.append(_make_claim("base", next_base_id, question, "base_fact", "topic_bank.whatif_question"))
+            next_base_id += 1
+        if sep and answer:
+            claims.append(_make_claim("base", next_base_id, answer, "base_fact", "topic_bank.whatif_answer"))
+            next_base_id += 1
+    angle = (fact.get("angle") or "").strip()
+    if angle and len(angle.split()) >= 3:  # skip short label-style angles ("Weather Extreme") -- not a factual assertion
+        claims.append(_make_claim("base", next_base_id, angle, "base_fact", "topic_bank.angle"))
+        next_base_id += 1
+
+    for i, d in enumerate(dossier_facts):
+        if grounded:
+            claims.append(_make_claim("dossier", i + 1, d, "grounded_dossier", "research_dossier.grounded"))
+        else:
+            claims.append(_make_claim("base", next_base_id + i, d, "base_fact", "research_dossier.ungrounded_opt_out"))
+
+    key_terms = [str(k).strip() for k in (fact.get("key_terms") or []) if str(k).strip()]
+
+    return {
+        "claims": claims,
+        "key_terms": key_terms,
+        "grounded": grounded,
+        "provenance_note": (
+            "grounded via live Google Search" if grounded else
+            "no grounding available this run -- claim inventory is CURATED BASE FACT ONLY, "
+            "nothing from ungrounded model memory"
+        ),
+    }
+
+
+# ---------------------------------------------------------------------------
 # WRITER PROMPT -- static/stable prefix FIRST (genuinely identical text on
 # every call, for provider-side prompt-caching to actually have a chance to
 # help), dynamic per-call material (treatment, packet, avoid-list, visual
@@ -221,7 +367,9 @@ HOOK (the first spoken line, 8-14 words):
 - Never open ON a question mark -- open on a statement; a literal question, if the story needs one, belongs in a later beat.
 - Address the viewer directly ("you"/"your") when it strengthens the stakes, not by default.
 
-ACCURACY (non-negotiable): every claim, name, and number in the script must come from the STORY PACKET below or the base fact. Never invent a number. If unsure of a figure, describe the mechanism instead. Never state two different numbers for the same thing.
+ACCURACY (non-negotiable): every factual claim, name, and number in the script must be traceable to one of the numbered EVIDENCE CLAIMS below -- never the base fact/packet in prose form, never your own general knowledge, even something you're confident is true. If a fact you know isn't in the evidence list, LEAVE IT OUT. If unsure of a figure, describe the mechanism instead. Never state two different numbers for the same thing.
+
+CITE YOUR SOURCES (mechanically checked, not optional): every beat, the hook, and the payoff each carry a "source_claim_ids" list naming which EVIDENCE CLAIM ID(s) below support what you just said. A beat may cite more than one. Paraphrase naturally -- never quote a claim's exact sentence back verbatim -- but the substance must genuinely come from the claim(s) you cite. Leave source_claim_ids EMPTY only for a line with zero factual content -- pure connective tissue like "So what does that mean?" or "Here's the strange part" that asserts no number, name, or fact of its own. The moment a line names a real thing, a number, or a specific claim, it needs a citation. This is mechanically verified after you answer: an uncited line caught naming something concrete gets rejected and repaired, not silently shipped.
 
 BANNED: vague philosophy, fortune-cookie lines, "everything you know/learned about X is wrong", "myth busted", "this changes everything", "you've been lied to", stating a hypothetical danger as though it just literally happened to the viewer (a hypothetical must be conditional: "If..."/"Suppose..."), unexplained jargon, scientific notation spoken aloud (say "a billion billion", never "10^18"). BANNED formal connector words in any beat -- nobody talks like this out loud: however, nevertheless, furthermore, consequently, notably, essentially, arguably, thus, hence, moreover, whereas. Say it plainly instead ("but", "so", "still").
 
@@ -230,47 +378,42 @@ STRUCTURE: follow the BEAT PROGRESSION given below exactly, in order -- it is a 
 CURIOSITY GAP (hard requirement): the hook OR one of the first 3 beats must literally end in a question mark "?" -- a genuine question the story then actually answers by the payoff, not a rhetorical throwaway. A script with no "?" anywhere in the hook or first 3 beats is invalid. The hook itself does not have to be the question (it usually shouldn't be, per the HOOK rule above) -- put it in beat 1, 2, or 3 instead.
 
 Return ONLY valid JSON matching this exact shape, no markdown, no commentary:
-{"title": "...", "hook": "the first spoken line, 8-14 words", "beats": [{"voiceover": "one spoken sentence", "visual_intent": "the concrete filmable subject on screen for this beat -- a real thing, not a mood"}], "payoff": "the final beat's realization in one sentence -- a resonant thought, never a command like 'save this' and never a restatement of the hook"}"""
+{"title": "...", "hook": "the first spoken line, 8-14 words", "hook_source_claim_ids": ["claim_001"], "beats": [{"voiceover": "one spoken sentence", "visual_intent": "the concrete filmable subject on screen for this beat -- a real thing, not a mood", "source_claim_ids": ["claim_002"]}], "payoff": "the final beat's realization in one sentence -- a resonant thought, never a command like 'save this' and never a restatement of the hook", "payoff_source_claim_ids": ["claim_003"]}"""
 
 
-def build_writer_prompt_v2(treatment_name, packet, avoid_topics=None,
+def build_writer_prompt_v2(treatment_name, claim_inventory, avoid_topics=None,
                             visual_evidence=None, treatments=None):
     """Assembles the full V2 writer prompt: WRITER_V2_STATIC (stable) + this
-    call's treatment beats + story packet + avoid-list + visual evidence
-    (dynamic). See estimate_tokens() for the size this is designed to hit."""
+    call's treatment beats + a compact, ID-labeled EVIDENCE CLAIMS list (from
+    build_claim_inventory -- replaces the old free-prose story packet, since
+    a citable list serves the same "here's your material" role while also
+    being the thing the writer can actually reference by ID) + avoid-list +
+    visual evidence (dynamic). See estimate_tokens() for the size target."""
     treatments = treatments or TREATMENTS
     t = treatments[treatment_name]
     beat_lines = "\n".join(f"  {i + 1}. {b}" for i, b in enumerate(t["beats"]))
 
-    packet = packet or {}
-    packet_lines = [
-        f"STORY PACKET (this is TRUE -- build every beat from this, nothing outside it):",
-        f"  Central claim: {packet.get('central_claim', '')}",
-        f"  Mechanism: {packet.get('mechanism', '')}",
-    ]
-    supporting = packet.get("supporting_facts") or []
-    if supporting:
-        packet_lines.append(f"  Supporting facts: {'; '.join(supporting)}")
-    if packet.get("surprising_implication"):
-        packet_lines.append(f"  Surprising implication: {packet['surprising_implication']}")
-    if packet.get("caveat"):
-        packet_lines.append(f"  Caveat: {packet['caveat']}")
-    packet_lines.append(f"  Source: {packet.get('source', '')}")
-    packet_block = "\n".join(packet_lines)
+    claim_inventory = claim_inventory or {}
+    claims = claim_inventory.get("claims") or []
+    claim_lines = [f"EVIDENCE CLAIMS ({claim_inventory.get('provenance_note', '')}):"]
+    for c in claims:
+        claim_lines.append(f"  [{c['claim_id']}] {c['claim_text']}")
+    if not claims:
+        claim_lines.append("  (none available -- write only the hook/structure, no factual specifics)")
+    claims_block = "\n".join(claim_lines)
 
     key_terms_block = ""
-    key_terms = packet.get("key_terms") or []
+    key_terms = claim_inventory.get("key_terms") or []
     if key_terms:
         key_terms_block = (
             f"\n\nNAME THE REAL THING: across your beats, explicitly say AT LEAST 2 of these exact "
             f"terms verbatim (say \"{key_terms[0]}\", never a vague paraphrase like \"a naturally "
-            f"occurring isotope\"): {key_terms}"
+            f"occurring isotope\"): {key_terms} -- and still cite the claim ID that term comes from."
         )
 
     visual_block = ""
-    ve = visual_evidence or packet.get("visual_opportunities")
-    if ve:
-        visual_block = f"\n\nVISUAL OPPORTUNITIES (real, filmable subjects available for this topic): {', '.join(ve)}"
+    if visual_evidence:
+        visual_block = f"\n\nVISUAL OPPORTUNITIES (real, filmable subjects available for this topic): {', '.join(visual_evidence)}"
 
     avoid_block = f"\n\nAVOID these recent topics entirely: {avoid_topics}" if avoid_topics else ""
 
@@ -278,7 +421,7 @@ def build_writer_prompt_v2(treatment_name, packet, avoid_topics=None,
         WRITER_V2_STATIC
         + f"\n\nTHIS VIDEO'S TREATMENT: {treatment_name} -- write EXACTLY {len(t['beats'])} beats, in this order:\n"
         + beat_lines
-        + "\n\n" + packet_block
+        + "\n\n" + claims_block
         + key_terms_block
         + visual_block
         + avoid_block
@@ -290,6 +433,7 @@ WRITER_V2_SCHEMA = {
     "properties": {
         "title": {"type": "string"},
         "hook": {"type": "string"},
+        "hook_source_claim_ids": {"type": "array", "items": {"type": "string"}},
         "beats": {
             "type": "array",
             "minItems": 5,
@@ -299,14 +443,16 @@ WRITER_V2_SCHEMA = {
                 "properties": {
                     "voiceover": {"type": "string"},
                     "visual_intent": {"type": "string"},
+                    "source_claim_ids": {"type": "array", "items": {"type": "string"}},
                 },
-                "required": ["voiceover", "visual_intent"],
+                "required": ["voiceover", "visual_intent", "source_claim_ids"],
                 "additionalProperties": False,
             },
         },
         "payoff": {"type": "string"},
+        "payoff_source_claim_ids": {"type": "array", "items": {"type": "string"}},
     },
-    "required": ["title", "hook", "beats", "payoff"],
+    "required": ["title", "hook", "hook_source_claim_ids", "beats", "payoff", "payoff_source_claim_ids"],
     "additionalProperties": False,
 }
 
@@ -411,8 +557,15 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
     score_script() can consume unchanged (same field names: title,
     viewer_job, keyword, metaphor, vibe, hook, hook_headline, script,
     scenes[id/duration/voiceover/on_screen_text/search_query/motion],
-    captions, hashtags, render) plus an extra `treatment` field for
-    memory/analytics."""
+    captions, hashtags, render) plus `treatment` for memory/analytics.
+
+    TRACEABILITY (2026-09-03): each scene also carries `source_claim_ids`
+    (copied straight from the writer's beat), and the manifest carries
+    `hook_source_claim_ids` / `payoff_source_claim_ids` at the top level --
+    internal evidence infrastructure, never surfaced in captions/hashtags/
+    user-facing text, but preserved far enough downstream that
+    writer_v2_repair.py's traceability validator can audit them, diagnostics
+    can print them, and a future final-QA stage could inspect them."""
     writer_out = writer_out or {}
     beats = writer_out.get("beats") or []
     scenes = []
@@ -427,6 +580,7 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
             "on_screen_text": on_screen,
             "search_query": derive_search_query(vi, banned_query_re),
             "motion": MOTION_CYCLE[i % len(MOTION_CYCLE)],
+            "source_claim_ids": list(b.get("source_claim_ids") or []),
         })
     title = writer_out.get("title") or ""
     hook = writer_out.get("hook") or ""
@@ -439,6 +593,7 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
         "metaphor": metaphor,
         "vibe": derive_vibe(treatment_name),
         "hook": hook,
+        "hook_source_claim_ids": list(writer_out.get("hook_source_claim_ids") or []),
         "hook_headline": derive_hook_headline(hook),
         "script": script,
         "scenes": scenes,
@@ -448,6 +603,7 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
         "treatment": treatment_name,
         "cta_style": cta_style,
         "payoff": writer_out.get("payoff", ""),
+        "payoff_source_claim_ids": list(writer_out.get("payoff_source_claim_ids") or []),
     }
 
 
