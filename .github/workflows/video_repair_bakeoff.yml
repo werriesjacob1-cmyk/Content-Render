@@ -68,8 +68,6 @@ jobs:
           FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
         run: |
           set -euo pipefail
-          EXTRA=""
-          if [ "$PLAN_ONLY" = "true" ]; then EXTRA="--plan-only"; fi
           ARGS=()
           IFS=';' read -ra PARTS <<< "$PRESERVE"
           for p in "${PARTS[@]}"; do
