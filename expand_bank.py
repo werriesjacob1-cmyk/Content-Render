@@ -31,6 +31,37 @@ BANNED = re.compile(
     r"people|cells))\b", re.I)
 
 
+# The bank had drifted toward generic "What if we could harness this to build
+# technology?" prompts. Those application fantasies are not curiosity gaps
+# about the science itself; they steer generation away from the verified fact
+# and toward invented claims. New entries must ask a question ABOUT the existing
+# phenomenon, not propose a product/research agenda.
+GENERIC_APPLICATION_WHATIF_RE = re.compile(
+    r"^\s*what if we could\b.{0,220}\b(harness|create|develop|use|apply|replicate|"
+    r"improve|build|design|turn|learn from)\b"
+    r"|\b(new technolog(?:y|ies)|sustainable (?:energy|future)|resource allocation|"
+    r"urban planning|transportation systems?)\b",
+    re.I)
+
+# Broad overview language that looks like a science topic but is not itself a
+# surprising claim. It is rejected only when the entry also lacks a concrete
+# specificity signal, so a genuinely specific fact is not punished for using
+# one of these words incidentally.
+VAGUE_FACT_RE = re.compile(
+    r"\b(complex ecosystems?|delicate balance|crucial role|critical role|"
+    r"significant (?:impact|effects?|role)|important ecosystem services?|"
+    r"vast array|fascinating stories?|valuable insights?|unique ability|"
+    r"some of the most diverse and complex)\b",
+    re.I)
+
+SPECIFICITY_RE = re.compile(
+    r"\d|\b(because|due to|through|when|causes?|contains?|produces?|converts?|"
+    r"absorbs?|reflects?|expands?|contracts?|rotates?|orbits?|releases?|forms?|"
+    r"detects?|generates?|breaks down|freezes?|boils?|moves?|travels?)\b"
+    r"|\b[A-Z][a-z]{2,}\b",
+    re.I)
+
+
 def _norm(s):
     return re.sub(r"[^a-z0-9 ]", "", (s or "").lower()).strip()
 
@@ -92,6 +123,14 @@ def accept_fact(f, have_ids, have_norms):
         return None
     if BANNED.search(fact + " " + str(f.get("wow", ""))):
         return None
+    whatif = str(f.get("whatif", "")).strip()
+    wow = str(f.get("wow", "")).strip()
+    if GENERIC_APPLICATION_WHATIF_RE.search(whatif):
+        return None
+    if VAGUE_FACT_RE.search(fact) and not SPECIFICITY_RE.search(fact):
+        return None
+    if VAGUE_FACT_RE.search(wow) and not SPECIFICITY_RE.search(wow):
+        return None
     fid = _clean_id(f.get("id"), fact)
     if not fid or fid in have_ids:
         return None
@@ -104,7 +143,7 @@ def accept_fact(f, have_ids, have_norms):
     return {"id": fid, "domain": G._domain_family(raw_domain),
             "fact": fact, "angle": str(f.get("angle", ""))[:60],
             "key_terms": [str(k) for k in f["key_terms"]][:5],
-            "whatif": str(f.get("whatif", "")), "wow": str(f.get("wow", "")),
+            "whatif": whatif, "wow": wow,
             "queries": [str(q) for q in f["queries"]][:4]}
 
 
@@ -118,6 +157,10 @@ HARD BAR — reject your own weak ideas before writing:
 - BANNED: pure size/scale/counting ("how many", "N times bigger", "more X than Y", combinations, factorials). Magnitude alone is boring and will be rejected.
 - Concrete and FILMABLE with ordinary stock footage (give plain visual search queries — no jargon in the queries).
 - Everyday words a 12-year-old understands. Never a term you'd have to look up.
+- The FACT must itself be a specific surprising claim/mechanism, NOT a broad overview like "forests are complex ecosystems" or "X plays a crucial role".
+- The WHATIF must open curiosity about what the phenomenon ALREADY does/is/means. BANNED: "What if we could harness/use/develop/apply this to make technology", sustainability pitches, invention ideas, or research agendas. Those leave the science and invite fabrication.
+- The WOW must be a second independently checkable detail, not "this is incredible/complex/important".
+- DOMAIN must describe the literal scientific subject, not an application or neighboring field. Use a stable family label where possible (animals, biology, body, chemistry, earth, fungi, history, language, light, materials, math, nature, neurology, ocean, physics, plants, psychology, senses, space).
 - Spread across domains; PREFER these thin ones: {", ".join(thin_domains)}.
 
 Do NOT repeat any of these existing facts: {ex}
