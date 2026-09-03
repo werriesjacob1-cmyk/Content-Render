@@ -2160,12 +2160,27 @@ FAL_VIDEO_MODEL = os.environ.get("FAL_VIDEO_MODEL") or "fal-ai/ltx-video"
 FAL_MAX_CLIPS = int(os.environ.get("FAL_MAX_CLIPS") or "2")            # per-video hard cost cap
 FAL_RELEVANCE_FLOOR = int(os.environ.get("FAL_RELEVANCE_FLOOR") or "5")  # stock score < this = replace
 FAL_VIDEO_SCENES = 0
+# fal clips are synthetic media with two observed failure modes that mechanical
+# checks cannot prove away: wrong-subject hallucinations and garbled baked-in text.
+# If the safety judge is unavailable, paying for more unreviewable clips in this
+# render is both lower-quality AND wasted spend. One failed safety check opens this
+# render-local circuit; stock/archival/still fallbacks remain available.
+_FAL_SAFETY_UNAVAILABLE = False
 
 
 def _fal_can_spend():
-    """True iff a paid fal key exists AND we're still under the per-video clip cap.
-    Pure/testable (no network) — the single gate that bounds fal spend."""
-    return bool(FAL_KEY) and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
+    """True iff fal can BOTH generate and verify another clip this render.
+
+    A paid synthetic clip is only useful when its independent Gemini vision safety
+    check can run. No Gemini key / VISION_JUDGE disabled / a safety-check outage
+    therefore disables fal BEFORE spending; after one runtime judge failure the
+    render-local circuit prevents repeatedly paying for clips we cannot verify.
+    """
+    return (bool(FAL_KEY)
+            and FAL_VIDEO_SCENES < FAL_MAX_CLIPS
+            and VISION_JUDGE
+            and bool(os.environ.get("GEMINI_API_KEY", ""))
+            and not _FAL_SAFETY_UNAVAILABLE)
 
 
 # Camera/lighting descriptors per VIBE (see VIBE_TWEAKS above) so the AI hero
@@ -2298,20 +2313,25 @@ def _fal_clip_relevant(scene, clip_path):
     the middle of the frame, directly under the caption. The two checks are
     independent: a clip can be perfectly on-subject and still be unusable
     because of hallucinated text, so this rejects on EITHER failure, not just
-    a low relevance score. Fails OPEN (returns True) whenever judging itself
-    is unavailable/broken/unparseable -- this must never be the reason a
-    render aborts or a fal clip is wrongly rejected; it only rejects on a
-    CONFIDENT low score or a CONFIDENT text-hallucination flag. Reuses the
-    same bounded-thinking-budget fix as _gemini_vision_pick/_final_qa_check
-    (thinkingBudget=0 400s once image parts are attached)."""
+    a low relevance score. This safety check FAILS CLOSED for the synthetic clip:
+    if judging is unavailable/broken/unparseable, reject this fal clip and let the
+    caller fall back to real stock / archival / still / card. That is deliberately
+    different from aborting the whole render: an unverified AI clip is optional,
+    while the project's consistency-over-cadence rule says known synthetic-media
+    risk must not silently become trusted media. Reuses the same bounded-thinking-
+    budget fix as _gemini_vision_pick/_final_qa_check."""
+    global _FAL_SAFETY_UNAVAILABLE
     key = os.environ.get("GEMINI_API_KEY", "")
     if not (VISION_JUDGE and key):
-        return True
+        _FAL_SAFETY_UNAVAILABLE = True
+        return False
     frame_path = os.path.join(WORK, f"_fal_check_{os.path.basename(clip_path)}.jpg")
     try:
         run(["ffmpeg", "-y", "-i", clip_path, "-ss", "1.0", "-frames:v", "1", frame_path])
         if not os.path.exists(frame_path):
-            return True
+            _FAL_SAFETY_UNAVAILABLE = True
+            print("  [fal] safety check produced no frame — rejecting clip and disabling fal for this render")
+            return False
         intent = _footage_intent(scene)
         import base64
         parts = [
@@ -2345,16 +2365,19 @@ def _fal_clip_relevant(scene, clip_path):
         txt = data["candidates"][0]["content"]["parts"][0]["text"]
         m = re.search(r"\{.*\}", txt, re.S)
         if not m:
-            return True   # unparseable reply -- fail open, don't block on a judging hiccup
+            _FAL_SAFETY_UNAVAILABLE = True
+            print("  [fal] safety judge returned no parseable JSON — rejecting clip and disabling fal for this render")
+            return False
         verdict = json.loads(m.group(0))
         accept, reason = _fal_clip_verdict(verdict)
         if not accept:
             print(f"  [fal] vision check: {reason} against {intent!r} -- rejecting")
             return False
         return True
-    except Exception as e:  # noqa: BLE001 - a broken check must never block a render
-        print(f"  [fal] relevance check unavailable ({e}); accepting clip")
-        return True
+    except Exception as e:  # noqa: BLE001 - reject only this optional synthetic clip
+        _FAL_SAFETY_UNAVAILABLE = True
+        print(f"  [fal] safety check unavailable ({e}); rejecting clip and disabling fal for this render")
+        return False
     finally:
         try:
             os.remove(frame_path)
