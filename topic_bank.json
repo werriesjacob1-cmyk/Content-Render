@@ -3746,24 +3746,6 @@
       ]
     },
     {
-      "id": "atmospheric_rivers",
-      "domain": "ecology",
-      "fact": "Atmospheric rivers are long, narrow channels of moisture that flow through the atmosphere, often bringing heavy rainfall and flooding to the regions they affect. These rivers can be thousands of miles long and carry enormous amounts of water vapor.",
-      "angle": "Meteorology",
-      "key_terms": [
-        "atmospheric rivers",
-        "moisture transport",
-        "heavy rainfall"
-      ],
-      "whatif": "What if these atmospheric rivers could be predicted and managed to prevent flooding and droughts, providing a new tool for water resource management? Could they also be used to understand and predict weather patterns on other planets?",
-      "wow": "Atmospheric rivers can carry up to 15 times the amount of water that flows through the Mississippi River, making them a significant factor in shaping regional weather patterns.",
-      "queries": [
-        "atmospheric rivers footage",
-        "moisture transport documentary",
-        "heavy rainfall events"
-      ]
-    },
-    {
       "id": "glowing_forests",
       "domain": "ecology",
       "fact": "Certain forests around the world contain glowing plants and fungi, creating an ethereal landscape of light and color. This phenomenon is caused by the presence of bioluminescent organisms, such as glowing mushrooms and fireflies.",
@@ -4121,42 +4103,6 @@
         "morning glory cloud footage",
         "atmospheric phenomena examples",
         "tubular cloud formation"
-      ]
-    },
-    {
-      "id": "linguistic_cognitive_bias",
-      "domain": "linguistics",
-      "fact": "The language we speak can influence the way we think and perceive the world, with some languages having words and grammatical structures that shape our cognitive biases and attitudes. This can affect our behavior and decision-making.",
-      "angle": "Language Influence",
-      "key_terms": [
-        "linguistic relativity",
-        "cognitive bias",
-        "language influence"
-      ],
-      "whatif": "What if we could understand how language influences our thinking and use that knowledge to develop more nuanced and culturally sensitive communication strategies? It could help us build stronger relationships and more effective collaborations.",
-      "wow": "Some languages have words and grammatical structures that are so unique that they can influence the way their speakers think about time, space, and even causality, revealing the complex interplay between language and thought.",
-      "queries": [
-        "linguistic relativity examples",
-        "language influence on cognition",
-        "cognitive bias in language"
-      ]
-    },
-    {
-      "id": "marine_biology_migration",
-      "domain": "marinebiology",
-      "fact": "Some species of fish migrate across entire ocean basins, traveling thousands of miles each year to reach their spawning grounds. These migrations are crucial for the fish populations and the ecosystems they inhabit.",
-      "angle": "Ocean Migration",
-      "key_terms": [
-        "fish migration",
-        "ocean basins",
-        "spawning grounds"
-      ],
-      "whatif": "What if we could better understand the migration patterns of these fish and use that knowledge to develop more effective conservation strategies? It could help protect these species and the ecosystems they inhabit.",
-      "wow": "Some fish migrations are so impressive that they involve entire schools of fish traveling together, creating massive aggregations that can be seen from space and supporting the entire food chain in the ocean.",
-      "queries": [
-        "fish migration patterns",
-        "ocean basin migration",
-        "spawning grounds conservation"
       ]
     },
     {
@@ -4574,42 +4520,6 @@
       ]
     },
     {
-      "id": "sea_cucumber_intelligence",
-      "domain": "marine_biology",
-      "fact": "Sea cucumbers are highly intelligent creatures that can solve complex problems and even exhibit a form of consciousness. They have been observed using tools and communicating with each other in a sophisticated way.",
-      "angle": "intelligent",
-      "key_terms": [
-        "sea cucumber",
-        "intelligence",
-        "consciousness"
-      ],
-      "whatif": "What if sea cucumbers could be used as a model for developing new forms of artificial intelligence? Could their unique cognitive abilities provide insights into the nature of intelligence itself?",
-      "wow": "Sea cucumbers have been observed using their many tentacles to manipulate objects and even play games with each other, demonstrating a level of cognitive sophistication that is rare in the animal kingdom.",
-      "queries": [
-        "sea cucumber intelligence",
-        "sea cucumber problem solving",
-        "sea cucumber communication"
-      ]
-    },
-    {
-      "id": "storm_intensity",
-      "domain": "marine_biology",
-      "fact": "Some storms can produce massive amounts of hail, with hailstones reaching the size of baseballs or even larger. These storms can cause significant damage to crops and infrastructure.",
-      "angle": "intense",
-      "key_terms": [
-        "storm intensity",
-        "hail",
-        "damage"
-      ],
-      "whatif": "What if these intense storms could be predicted and mitigated using advanced weather forecasting techniques? Could they be used to develop new forms of storm-resistant infrastructure?",
-      "wow": "The hailstones produced by these storms can be so large that they can weigh several pounds, and can cause significant damage to buildings and vehicles.",
-      "queries": [
-        "storm footage",
-        "hail damage",
-        "storm prediction"
-      ]
-    },
-    {
       "id": "marine_mammal_sociality",
       "domain": "marine_biology",
       "fact": "Some marine mammals, such as dolphins and whales, have been observed exhibiting complex social behaviors, including cooperation and altruism. These behaviors are similar to those found in human societies.",
@@ -4661,24 +4571,6 @@
         "animal mimicry",
         "adaptive strategies",
         "nature-inspired technologies"
-      ]
-    },
-    {
-      "id": "language_influence",
-      "domain": "psychology",
-      "fact": "The language we speak can influence the way we think and perceive the world. This phenomenon is known as linguistic relativity.",
-      "angle": "Cognitive Science",
-      "key_terms": [
-        "linguistic relativity",
-        "language influence",
-        "cognition"
-      ],
-      "whatif": "What if the language we speak shapes our understanding of reality and our place in the world?",
-      "wow": "Some languages have words that describe emotions and concepts that do not exist in other languages.",
-      "queries": [
-        "linguistic relativity",
-        "language and cognition",
-        "cultural influence"
       ]
     },
     {
@@ -5042,24 +4934,6 @@
       ]
     },
     {
-      "id": "gut_brain_axis",
-      "domain": "neuroscience",
-      "fact": "Our gut and brain are connected through the vagus nerve, which allows them to communicate with each other. This is known as the gut-brain axis.",
-      "angle": "intriguing",
-      "key_terms": [
-        "gut",
-        "brain",
-        "vagus nerve"
-      ],
-      "whatif": "What if our gut was influencing our mood and cognitive function? What if we could 'feed' our brain through our gut?",
-      "wow": "For example, certain gut bacteria have been shown to produce neurotransmitters that can affect our mood and behavior.",
-      "queries": [
-        "gut brain connection",
-        "vagus nerve",
-        "gut bacteria"
-      ]
-    },
-    {
       "id": "brain_waves",
       "domain": "neuroscience",
       "fact": "Our brain waves can change in response to different states of consciousness, such as relaxation, attention, or sleep.",
@@ -5201,24 +5075,6 @@
         "neural synchronization",
         "brain waves",
         "communication"
-      ]
-    },
-    {
-      "id": "geological_oscillations",
-      "domain": "earth",
-      "fact": "The Earth's crust is constantly oscillating due to the movement of tectonic plates, creating a rhythmic pattern that can be felt in the planet's gravitational field. This phenomenon is known as the 'geological hum'.",
-      "angle": "Vibrations",
-      "key_terms": [
-        "oscillations",
-        "tectonic",
-        "geological hum"
-      ],
-      "whatif": "What if we could harness the energy from these geological oscillations to create new forms of sustainable power?",
-      "wow": "The geological hum is so powerful that it can be detected from space, and is thought to be responsible for the formation of certain geological features.",
-      "queries": [
-        "geological hum detection",
-        "tectonic plate movement patterns",
-        "earth's gravitational field oscillations"
       ]
     },
     {
@@ -5852,24 +5708,6 @@
       ]
     },
     {
-      "id": "mathematical_rivers",
-      "domain": "earth",
-      "fact": "Rivers can flow in a fractal pattern, with smaller tributaries branching off from the main river in a self-similar pattern. This phenomenon is known as 'fractal rivers'.",
-      "angle": "Geometry",
-      "key_terms": [
-        "fractal rivers",
-        "mathematics",
-        "geology"
-      ],
-      "whatif": "What if we could use mathematical patterns to understand and predict river flow and erosion?",
-      "wow": "The fractal pattern of rivers can be seen in everything from the shape of river deltas to the structure of river networks.",
-      "queries": [
-        "fractal rivers",
-        "mathematical rivers",
-        "geology"
-      ]
-    },
-    {
       "id": "self_healing_materials",
       "domain": "materials_science",
       "fact": "Some materials can self-heal, repairing cracks and damages through the use of special chemicals and microorganisms. This property can be used to create more durable and sustainable materials.",
@@ -5885,24 +5723,6 @@
         "self-healing materials",
         "materials science",
         "sustainable materials"
-      ]
-    },
-    {
-      "id": "underwater_volcanoes",
-      "domain": "earth",
-      "fact": "There are underwater volcanoes that exist beneath the ocean's surface, erupting with molten lava and ash. These volcanoes can be found in oceans around the world.",
-      "angle": "geology",
-      "key_terms": [
-        "underwater volcanoes",
-        "geology",
-        "oceanography"
-      ],
-      "whatif": "What if we could explore these underwater volcanoes and learn more about the Earth's geology? What if we could use them to study the Earth's internal dynamics?",
-      "wow": "Some underwater volcanoes can be up to 10,000 feet tall, making them a truly massive and awe-inspiring phenomenon.",
-      "queries": [
-        "underwater volcanoes",
-        "oceanography",
-        "geology"
       ]
     },
     {

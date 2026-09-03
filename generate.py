@@ -915,12 +915,27 @@ RECENT_DOMAIN_WINDOW = 4    # don't reuse the domain of any of the last N videos
 # "plants"/"botany", and "space"/"astronomy" are each really one family under
 # two different domain strings, so two back-to-back videos from a split pair
 # read as the same kind of video and dodged the recent-domain dedup entirely.
+# EXPANDED AGAIN 2026-09-03: the same fragmentation audit (this time run against
+# the affiliate-coverage test) found "marine_biology"/"marinebiology" split from
+# "marine"/"ocean", "materials_science" split from "materials", "mathematics"
+# split from "math", "meteorology" never folded into the earth/weather family,
+# "neuroscience" split from "neurology", and "language"/"linguistics" as a wholly
+# unmapped pair -- same bug, same fix.
 DOMAIN_FAMILIES = {
     "geology": "earth", "earth": "earth", "weather": "earth", "atmosphere": "earth",
+    "meteorology": "earth",
     "ocean": "ocean", "oceanography": "ocean", "marine": "ocean",
+    "marine_biology": "ocean", "marinebiology": "ocean",
     "fungi": "fungi", "mycology": "fungi",
     "plants": "plants", "botany": "plants",
     "space": "space", "astronomy": "space",
+    "materials": "materials", "materials_science": "materials",
+    "math": "math", "mathematics": "math",
+    "neurology": "neurology", "neuroscience": "neurology",
+    "language": "language", "linguistics": "language",
+    "ecology": "nature",
+    "zoology": "animals",
+    "microbiology": "biology",
 }
 def _domain_family(domain):
     return DOMAIN_FAMILIES.get(domain, domain)

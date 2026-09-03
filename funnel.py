@@ -119,6 +119,13 @@ AFFILIATE_BY_DOMAIN = {
                   "angle": "the book on the wildest parts of the natural world"},
     "deep_time": {"kind": "book", "search": "Timefulness Marcia Bjornerud",
                   "angle": "the book that will wreck your sense of time"},
+    # ADDED 2026-09-03: "language"/"linguistics" is a real bank domain family
+    # (generate.DOMAIN_FAMILIES) with no book mapped -- caught by the affiliate
+    # coverage test after "ecology"/"zoology"/"microbiology"/"marine_biology"/
+    # "materials_science"/"mathematics"/"meteorology"/"neuroscience" were folded
+    # into existing families above instead of needing their own entries.
+    "language":  {"kind": "book", "search": "The Language Instinct Steven Pinker",
+                  "angle": "the book on why language itself is stranger than you think"},
 }
 # Fallback for any domain not mapped above.
 AFFILIATE_DEFAULT = {"kind": "book", "search": "What If Randall Munroe",
