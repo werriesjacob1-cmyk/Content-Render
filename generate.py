@@ -431,13 +431,14 @@ else:
 
 
 def draft_is_weak(overall, quality):
-    """True when a scored draft is genuinely weak — below the clean threshold OR
-    breaking any per-criterion floor. Gates the frugal Gemini quality-rescue in
-    main(): a weak best-draft is worth ONE paid Gemini attempt; a strong one (or
-    an ungradable-but-clean one, where overall/quality is None) is not. Pure so
-    the rescue trigger is unit-tested without any LLM."""
+    """True when a draft lacks usable quality evidence OR scores below the bar.
+
+    Structural validity is not creative quality. The Sep-1 lightning script was
+    structurally clean but unscored, was banked, and later rendered without a
+    re-score. Under consistency-over-cadence, missing quality evidence is weak.
+    """
     if overall is None or quality is None:
-        return False   # a clean script we simply couldn't grade — leave it be
+        return True
     if overall < QUALITY_THRESHOLD:
         return True
     return any(quality.get(k, 10) < fl for k, fl in QUALITY_CRITERION_FLOORS.items())
@@ -2975,10 +2976,10 @@ def score_script(m, fact=None, cta_style="SAVE_WORTHY"):
     this video's assigned ending style (CTA_RUBRIC_HINTS) instead of always
     asking whether it "invited a save."
 
-    MUST fail OPEN — this pipeline runs unattended once a day. Any Groq
-    error, timeout, or unparseable/out-of-range response returns None, and
-    the caller treats None as "ship this attempt," never as "reject it." A
-    scoring hiccup must never brick the autonomous run.
+    Any judge error, timeout, or unparseable/out-of-range response returns
+    None. The caller treats None as "quality evidence unavailable" and refuses
+    to ship that candidate. Unattended operation is not a reason to waive the
+    creative-quality bar.
     """
     try:
         fact_line = fact["fact"] if fact else "(no verified fact; general topic)"
@@ -3815,21 +3816,16 @@ def main():
             quality = score_script(candidate, chosen_fact, cta_style=cta_style)
         if quality is None:
             # Scoring itself broke (usually the LLM is rate-limited/exhausted).
-            # Fail OPEN only for a CLEAN candidate — one that passed strict
-            # validate() — because that script is structurally sound and just
-            # couldn't be graded. A DEGRADED near-miss with no score is the
-            # worst case: no research, no punch-up, no grading, shipped anyway.
-            # That is precisely how quota-exhausted runs 52/53 published thin,
-            # repetitive videos. Refuse it — try another attempt, and if every
-            # attempt is degraded+unscored, main() aborts the run (no bad video
-            # published) instead of polluting the profile.
-            if candidate.get("_degraded"):
-                print(f"  [quality] attempt {regen_i+1}: degraded near-miss AND scoring "
-                      f"unavailable (LLM exhausted) — refusing to ship, trying another attempt")
-                continue
-            print(f"  [quality] attempt {regen_i+1}: scoring failed open on a clean script — shipping this attempt")
-            best_manifest, best_quality, best_overall = candidate, None, None
-            break
+            # FAIL CLOSED for creative quality, even when validate() says the
+            # JSON is structurally clean. The Sep-1 lightning release proved why:
+            # an unscored Mistral draft was banked and later dequeued with zero
+            # LLM calls. Mechanical validity is necessary, not proof that a real
+            # viewer would keep watching. Try another attempt; if no draft can be
+            # scored, abort and preserve consistency over cadence.
+            kind = "degraded near-miss" if candidate.get("_degraded") else "clean structural draft"
+            print(f"  [quality] attempt {regen_i+1}: {kind} but quality scoring unavailable "
+                  f"— refusing to ship without creative-quality evidence")
+            continue
         overall = quality["overall"]
         # A REAL score (as opposed to the fail-open None above) that breaks a
         # per-criterion floor must trigger regeneration NO MATTER how high the
@@ -3951,9 +3947,8 @@ def main():
     # best the loop could produce is still genuinely weak — a broken core
     # dimension (floor violation) or an overall below the hard floor — publish
     # NOTHING instead. This is what stops the run-54 case (overall 6.0, hook
-    # 4/10, 2 redundant scenes) from ever shipping. best_quality is None only for
-    # a clean, structurally-valid script we couldn't grade (fail-open); that one
-    # is allowed through.
+    # 4/10, 2 redundant scenes) from ever shipping. Unscored candidates are no
+    # longer selected as best_manifest: missing quality evidence fails closed above.
     if best_quality is not None:
         floor_viol = {k: best_quality[k] for k, fl in QUALITY_CRITERION_FLOORS.items()
                       if best_quality.get(k, 10) < fl}
