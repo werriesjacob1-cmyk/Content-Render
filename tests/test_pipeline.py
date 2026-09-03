@@ -41,6 +41,7 @@ import generate as G
 import expand_bank as E
 import funnel as F
 import repackage as R
+import video_model_bakeoff as VMB
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2615,6 +2616,93 @@ def test_rank_gemini_models_prefers_full_over_lite():
     check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
 
 
+def test_video_model_bakeoff_registry():
+    section("FAL video model lab: current endpoints + hard spend guard")
+    names = VMB.parse_models(
+        "ltx23_fast,h3_max,wan30,kling3_standard,veo31_fast,seedance25,grok15"
+    )
+    check(len(names) == 7, "seven current comparison lanes parse")
+    check(len({VMB.MODEL_SPECS[n]["model"] for n in names}) == len(names),
+          "each current alias points to a distinct FAL endpoint")
+    check(VMB.MODEL_SPECS["ltx_legacy"]["model"] == "fal-ai/ltx-video",
+          "exact production LTX endpoint retained only as legacy baseline")
+    check(VMB.MODEL_SPECS["ltx23_fast"]["model"] == "fal-ai/ltx-2.3/text-to-video/fast",
+          "LTX 2.3 Fast endpoint is current")
+    check(VMB.MODEL_SPECS["h3_max"]["model"] == "minimax/h3-max/text-to-video",
+          "MiniMax H3 Max endpoint is current")
+    check(VMB.MODEL_SPECS["wan30"]["model"] == "alibaba/wan-3.0/text-to-video",
+          "Wan 3.0 endpoint is current")
+    check(VMB.MODEL_SPECS["kling3_standard"]["model"] ==
+          "fal-ai/kling-video/v3/standard/text-to-video",
+          "Kling 3 Standard endpoint is current")
+    check(VMB.MODEL_SPECS["veo31_fast"]["model"] == "fal-ai/veo3.1/fast",
+          "Veo 3.1 Fast endpoint is current")
+    check(VMB.MODEL_SPECS["seedance25"]["model"] ==
+          "bytedance/seedance-2.5/text-to-video",
+          "Seedance 2.5 endpoint is current")
+    check(VMB.MODEL_SPECS["grok15"]["model"] ==
+          "xai/grok-imagine-video/v1.5/text-to-video",
+          "Grok Imagine 1.5 endpoint is current")
+
+    prompt = "real mantis shrimp cavitation, no text"
+    for alias in ("ltx23_fast", "h3_max", "wan30", "kling3_standard",
+                  "veo31_fast", "seedance25", "grok15"):
+        req = VMB.MODEL_SPECS[alias]["arguments"](prompt, 6)
+        check(req.get("aspect_ratio") == "9:16",
+              f"{alias}: native vertical request")
+
+    check(VMB.MODEL_SPECS["ltx23_fast"]["arguments"](prompt, 6)["generate_audio"] is False,
+          "LTX audio disabled for visual-only comparison")
+    check(VMB.MODEL_SPECS["wan30"]["arguments"](prompt, 6)["audio"] is False,
+          "Wan native audio disabled for visual-only comparison")
+    check(VMB.MODEL_SPECS["kling3_standard"]["arguments"](prompt, 6)["generate_audio"] is False,
+          "Kling native audio disabled for visual-only comparison")
+    check(VMB.MODEL_SPECS["veo31_fast"]["arguments"](prompt, 6)["generate_audio"] is False,
+          "Veo native audio disabled for visual-only comparison")
+    check(VMB.MODEL_SPECS["seedance25"]["arguments"](prompt, 6)["generate_audio"] is False,
+          "Seedance native audio disabled for visual-only comparison")
+    check(VMB.MODEL_SPECS["veo31_fast"]["arguments"](prompt, 6)["auto_fix"] is False,
+          "Veo cannot silently rewrite a scientifically specific test prompt")
+    check(VMB.MODEL_SPECS["h3_max"]["arguments"](prompt, 6)["enable_safety_checker"] is True,
+          "H3 safety checker remains enabled")
+
+    defaults = VMB.parse_models(VMB.DEFAULT_MODELS)
+    estimate, unknown = VMB.estimate_run_cost(defaults, 6)
+    check(not unknown, "default comparison has no unknown-price endpoints")
+    check(2.50 < estimate < 3.00,
+          f"default 6-second known-cost plan is bounded (~{estimate:.2f})")
+    check(abs(VMB.enforce_budget(defaults, 6, 3.00) - estimate) < 0.001,
+          "hard $3 budget accepts current default plan")
+    try:
+        VMB.enforce_budget(defaults, 6, 2.50)
+        check(False, "underfunded plan must be rejected")
+    except ValueError as e:
+        check("exceeds hard budget" in str(e), "underfunded plan aborts before provider calls")
+
+    try:
+        VMB.enforce_budget(["grok15"], 6, 100.00)
+        check(False, "unknown-price endpoint must not run implicitly")
+    except ValueError as e:
+        check("unknown-price" in str(e), "unknown price fails closed")
+    check(VMB.enforce_budget(["grok15"], 6, 100.00, allow_unknown_cost=True) == 0.0,
+          "unknown-price endpoint requires explicit opt-in")
+
+    planned = VMB.plan(defaults, prompt, 6, 3.00, False)
+    check(planned["estimated_known_cost_usd"] == estimate,
+          "plan records pre-call cost estimate")
+    check(all("capabilities" in row and "arguments" in row for row in planned["models"]),
+          "plan preserves version/capability/request evidence")
+    check(VMB.review_stub("h3_max")["would_use_in_final"] is None,
+          "human review template never fabricates a winner")
+
+    check(VMB.extract_video_url({"video": {"url": "https://x/a.mp4"}}) == "https://x/a.mp4",
+          "common single-video FAL response is parsed")
+    check(VMB.extract_video_url({"videos": [{"url": "https://x/b.mp4"}]}) == "https://x/b.mp4",
+          "list-style FAL response is parsed")
+    check(VMB.extract_video_url({"data": {"video": {"url": "https://x/c.mp4"}}}) == "https://x/c.mp4",
+          "wrapped FAL response is parsed")
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2689,6 +2777,7 @@ def main():
     test_vibe_matched_captions()
     test_vibe_music_filter()
     test_vibe_sting_freqs()
+    test_video_model_bakeoff_registry()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()

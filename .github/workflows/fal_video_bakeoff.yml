@@ -1,0 +1,88 @@
+name: fal-video-bakeoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Science scene prompt — PAID comparison across explicitly selected FAL models"
+        required: true
+        default: "A real peacock mantis shrimp underwater strikes a snail shell. Extreme macro documentary footage: the appendage snaps forward, a cavitation bubble flashes and collapses beside the shell, water shockwave visible through suspended particles. Physically plausible marine biology, natural reef lighting, no text, no labels, no fantasy anatomy."
+        type: string
+      models:
+        description: "Current aliases. Add seedance25/grok15 only deliberately."
+        required: true
+        default: "ltx23_fast,h3_max,wan30,kling3_standard,veo31_fast"
+        type: string
+      duration:
+        description: "Requested comparison duration in seconds (models clamp to supported values)"
+        required: true
+        default: "6"
+        type: string
+      max_budget_usd:
+        description: "HARD known-cost ceiling in USD. The script aborts before provider calls if exceeded."
+        required: true
+        default: "3.00"
+        type: string
+      allow_unknown_cost:
+        description: "Permit selected endpoints whose current public price is not encoded"
+        required: true
+        default: false
+        type: boolean
+      plan_only:
+        description: "Zero-spend dry plan: validate models, request shapes and budget only"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fal-video-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FAL client
+        if: ${{ !inputs.plan_only }}
+        run: pip install fal-client
+
+      - name: Build budget-guarded comparison plan
+        env:
+          BAKEOFF_PROMPT: ${{ inputs.prompt }}
+          BAKEOFF_MODELS: ${{ inputs.models }}
+          BAKEOFF_DURATION: ${{ inputs.duration }}
+          BAKEOFF_MAX_BUDGET: ${{ inputs.max_budget_usd }}
+          ALLOW_UNKNOWN: ${{ inputs.allow_unknown_cost }}
+          PLAN_ONLY: ${{ inputs.plan_only }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
+        run: |
+          set -euo pipefail
+          EXTRA=""
+          if [ "$ALLOW_UNKNOWN" = "true" ]; then EXTRA="$EXTRA --allow-unknown-cost"; fi
+          if [ "$PLAN_ONLY" = "true" ]; then EXTRA="$EXTRA --plan-only"; fi
+          python video_model_bakeoff.py \
+            --prompt "$BAKEOFF_PROMPT" \
+            --models "$BAKEOFF_MODELS" \
+            --duration "$BAKEOFF_DURATION" \
+            --max-budget-usd "$BAKEOFF_MAX_BUDGET" \
+            --out-dir video_bakeoff \
+            $EXTRA
+
+      - name: Upload private comparison or zero-spend plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: fal-video-bakeoff-${{ github.run_id }}
+          path: video_bakeoff/
+          if-no-files-found: error
+          retention-days: 7
