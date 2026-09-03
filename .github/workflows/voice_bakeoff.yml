@@ -1,0 +1,72 @@
+name: voice-bakeoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      voices:
+        description: "Comma-separated Orpheus voices"
+        required: false
+        default: "troy,daniel,austin"
+        type: string
+      direction:
+        description: "Optional Orpheus vocal direction, e.g. calmly / authoritatively"
+        required: false
+        default: ""
+        type: string
+      include_edge:
+        description: "Also render the current Edge-TTS baseline"
+        required: false
+        default: true
+        type: boolean
+      text:
+        description: "Optional narration text; blank uses manifest.json"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: voice-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  bakeoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Edge baseline
+        if: ${{ inputs.include_edge }}
+        run: pip install "edge-tts>=6.1.0"
+
+      - name: Generate private voice samples
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          BAKEOFF_TEXT: ${{ inputs.text }}
+          BAKEOFF_VOICES: ${{ inputs.voices }}
+          BAKEOFF_DIRECTION: ${{ inputs.direction }}
+          INCLUDE_EDGE: ${{ inputs.include_edge }}
+        run: |
+          args=(--manifest manifest.json --voices "$BAKEOFF_VOICES" --direction "$BAKEOFF_DIRECTION" --out-dir voice_bakeoff)
+          if [ -n "$BAKEOFF_TEXT" ]; then
+            args+=(--text "$BAKEOFF_TEXT")
+          fi
+          if [ "$INCLUDE_EDGE" = "true" ]; then
+            args+=(--edge)
+          fi
+          python voice_bakeoff.py "${args[@]}"
+
+      - name: Upload private comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: voice-bakeoff-${{ github.run_id }}
+          path: voice_bakeoff/
+          if-no-files-found: error
+          retention-days: 7
