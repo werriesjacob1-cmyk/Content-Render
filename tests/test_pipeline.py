@@ -41,6 +41,7 @@ import generate as G
 import expand_bank as E
 import funnel as F
 import repackage as R
+import video_model_bakeoff as VMB
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2615,6 +2616,43 @@ def test_rank_gemini_models_prefers_full_over_lite():
     check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
 
 
+def test_video_model_bakeoff_registry():
+    section("FAL video bakeoff: current baseline vs modern quality candidates")
+    names = VMB.parse_models("ltx_current,hailuo23,grok_imagine,seedance2_fast")
+    check(names == ["ltx_current", "hailuo23", "grok_imagine", "seedance2_fast"],
+          "all four comparison lanes parse in a stable order")
+    check(len({VMB.MODEL_SPECS[n]["model"] for n in names}) == 4,
+          "each alias points to a distinct FAL endpoint")
+    check(VMB.MODEL_SPECS["ltx_current"]["model"] == "fal-ai/ltx-video",
+          "bakeoff retains the exact current production baseline")
+    check("hailuo-2.3" in VMB.MODEL_SPECS["hailuo23"]["model"],
+          "Hailuo 2.3 is present")
+    check("grok-imagine-video" in VMB.MODEL_SPECS["grok_imagine"]["model"],
+          "Grok Imagine Video is present")
+    check("seedance-2.0/fast" in VMB.MODEL_SPECS["seedance2_fast"]["model"],
+          "Seedance 2.0 Fast is present")
+
+    prompt = "mantis shrimp cavitation"
+    grok = VMB.MODEL_SPECS["grok_imagine"]["arguments"](prompt, 6)
+    seed = VMB.MODEL_SPECS["seedance2_fast"]["arguments"](prompt, 6)
+    hailuo = VMB.MODEL_SPECS["hailuo23"]["arguments"](prompt, 6)
+    check(grok["aspect_ratio"] == "9:16" and grok["resolution"] == "720p",
+          "Grok requests native vertical 720p")
+    check(seed["aspect_ratio"] == "9:16" and seed["resolution"] == "720p",
+          "Seedance requests native vertical 720p")
+    check(seed["generate_audio"] is False,
+          "Seedance native audio is disabled so the visual bakeoff stays isolated")
+    check(hailuo["duration"] == "6" and hailuo["prompt_optimizer"] is True,
+          "Hailuo uses its supported 6-second optimized request")
+
+    check(VMB.extract_video_url({"video": {"url": "https://x/a.mp4"}}) == "https://x/a.mp4",
+          "common single-video FAL response is parsed")
+    check(VMB.extract_video_url({"videos": [{"url": "https://x/b.mp4"}]}) == "https://x/b.mp4",
+          "list-style FAL response is parsed")
+    check(VMB.extract_video_url({"data": {"video": {"url": "https://x/c.mp4"}}}) == "https://x/c.mp4",
+          "wrapped FAL response is parsed")
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2689,6 +2727,7 @@ def main():
     test_vibe_matched_captions()
     test_vibe_music_filter()
     test_vibe_sting_freqs()
+    test_video_model_bakeoff_registry()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
