@@ -1355,31 +1355,42 @@ def test_fal_clip_verdict_rejects_garbled_text_independent_of_score():
 
 
 def test_fal_clip_relevant():
-    section("main._fal_clip_relevant: fal hero/gap-fill clips now get a relevance check (render 205)")
-    # Render 205 asked fal for "naked mole rat close up" and got a boat, then a
-    # human silhouette -- shipped unconditionally as the PAYOFF scene because
-    # a fal clip was accepted on API success alone (score hardcoded to 10),
-    # never actually checked against what was asked for. No GEMINI_API_KEY /
-    # VISION_JUDGE off must fail OPEN (accept the clip, no network attempt at
-    # all) -- this check existing must never be a NEW way to abort a render.
+    section("main._fal_clip_relevant: unverified synthetic clips fail CLOSED to real-media fallbacks")
+    # Render 205 proved API success is not content success: fal returned a boat /
+    # human silhouette for "naked mole rat". A later real render proved a second,
+    # independent failure mode: garbled baked-in text. If the independent vision
+    # safety check cannot run, the optional synthetic clip must NOT be trusted.
+    # Rejecting the clip does not abort the video; build_scene falls through to
+    # stock / archival / still / card.
     prev_key = os.environ.get("GEMINI_API_KEY")
     prev_vj = M.VISION_JUDGE
+    prev_safety = M._FAL_SAFETY_UNAVAILABLE
     try:
+        M._FAL_SAFETY_UNAVAILABLE = False
         os.environ.pop("GEMINI_API_KEY", None)
         M.VISION_JUDGE = True
-        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
-              "no GEMINI_API_KEY -> fail open, accepts the clip (no network attempt)")
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
+              "no GEMINI_API_KEY -> reject unverified fal clip")
+        check(M._FAL_SAFETY_UNAVAILABLE is True,
+              "missing safety judge opens the render-local fal safety circuit")
+
+        M._FAL_SAFETY_UNAVAILABLE = False
         os.environ["GEMINI_API_KEY"] = "x"
         M.VISION_JUDGE = False
-        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
-              "VISION_JUDGE off -> fail open, accepts the clip")
-        # a genuinely bad/missing clip path (ffmpeg can't extract a frame) must
-        # also fail open, not crash or block the render on a judging hiccup
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
+              "VISION_JUDGE off -> reject unverified fal clip")
+
+        # A broken/missing clip path means we could not inspect the generated
+        # content. Reject that optional clip instead of silently accepting it.
+        M._FAL_SAFETY_UNAVAILABLE = False
         M.VISION_JUDGE = True
-        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is True,
-              "frame extraction failure -> fail open, accepts the clip")
+        check(M._fal_clip_relevant({"search_query": "naked mole rat"}, "/nonexistent/clip.mp4") is False,
+              "frame extraction failure -> reject unverified fal clip")
+        check(M._FAL_SAFETY_UNAVAILABLE is True,
+              "runtime safety failure disables further fal spend this render")
     finally:
         M.VISION_JUDGE = prev_vj
+        M._FAL_SAFETY_UNAVAILABLE = prev_safety
         if prev_key is None:
             os.environ.pop("GEMINI_API_KEY", None)
         else:
@@ -1679,18 +1690,40 @@ def test_fal_gap_fill_gating():
     check("no text" in p and "no watermark" in p, "fal prompt guards against burned-in text/watermark")
     check(M._fal_prompt({"search_query": "", "voiceover": "just this"}).startswith("just this"),
           "falls back to the voiceover when there is no subject")
-    # cost gate: the ONLY thing that lets fal spend. No key => never spends (free
-    # tier byte-for-byte unchanged); at the per-video cap => stops.
+    # cost + safety gate: paid fal may spend only when an independent vision
+    # safety check is configured and healthy. Otherwise stock/still/card wins.
     _k, _n, _cap = M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS
+    _vj, _safe = M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE
+    _gem = os.environ.get("GEMINI_API_KEY")
     try:
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = "", 0, 2
+        M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE = True, False
+        os.environ["GEMINI_API_KEY"] = "x"
         check(M._fal_can_spend() is False, "no FAL_KEY -> never spends (feature is a no-op)")
+
         M.FAL_KEY = "x"
-        check(M._fal_can_spend() is True, "key present and under cap -> may spend")
+        os.environ.pop("GEMINI_API_KEY", None)
+        check(M._fal_can_spend() is False,
+              "fal key without independent Gemini safety judge -> do not spend")
+
+        os.environ["GEMINI_API_KEY"] = "x"
+        check(M._fal_can_spend() is True,
+              "generation key + safety judge configured + under cap -> may spend")
+
+        M._FAL_SAFETY_UNAVAILABLE = True
+        check(M._fal_can_spend() is False,
+              "after one safety outage, circuit stops further unreviewable fal spend")
+
+        M._FAL_SAFETY_UNAVAILABLE = False
         M.FAL_VIDEO_SCENES = 2
         check(M._fal_can_spend() is False, "at the per-video cap -> stops spending")
     finally:
         M.FAL_KEY, M.FAL_VIDEO_SCENES, M.FAL_MAX_CLIPS = _k, _n, _cap
+        M.VISION_JUDGE, M._FAL_SAFETY_UNAVAILABLE = _vj, _safe
+        if _gem is None:
+            os.environ.pop("GEMINI_API_KEY", None)
+        else:
+            os.environ["GEMINI_API_KEY"] = _gem
 
 
 def test_inaturalist_photo_license_safety():
