@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zero-network regression tests for research_grounding.py."""
+"""Zero-network regression tests for research_grounding.py."""\nimport os\nimport sys\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n
 from research_grounding import (
     EvidenceSource,
     GroqCompoundMiniProvider,
