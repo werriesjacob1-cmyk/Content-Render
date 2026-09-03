@@ -70,13 +70,19 @@ jobs:
           set -euo pipefail
           EXTRA=""
           if [ "$PLAN_ONLY" = "true" ]; then EXTRA="--plan-only"; fi
-          PRESERVE_ARGS=""
+          ARGS=()
           IFS=';' read -ra PARTS <<< "$PRESERVE"
-          for p in "${PARTS[@]}"; do PRESERVE_ARGS="$PRESERVE_ARGS --preserve $p"; done
+          for p in "${PARTS[@]}"; do
+            p="${p#" ${p%%[![:space:]]*}"}"
+            p="${p%" ${p##*[![:space:]]}"}"
+            if [ -n "$p" ]; then ARGS+=(--preserve "$p"); fi
+          done
+          if [ "${#ARGS[@]}" -eq 0 ]; then echo "No preserve requirements parsed" >&2; exit 2; fi
+          if [ "$PLAN_ONLY" = "true" ]; then ARGS+=(--plan-only); fi
           python video_repair_lab.py \
             --source-video-url "$SOURCE" --kind "$KIND" --instruction "$INSTRUCTION" \
             --duration "$DURATION" --models "$MODELS" --max-budget-usd "$MAX_BUDGET" \
-            --out-dir video_repair $PRESERVE_ARGS $EXTRA
+            --out-dir video_repair "${ARGS[@]}"
       - uses: actions/upload-artifact@v4
         with:
           name: video-repair-${{ github.run_id }}
