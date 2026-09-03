@@ -274,6 +274,7 @@ MISTRAL_MODELS   = _models_env("MISTRAL_MODEL",   ["mistral-small-latest"])
 # Removed 2026-09-03 rather than left as dead weight silently 401ing on every
 # render (SUPERCHAD audit + corroborated by earlier render logs).
 BANK_PATH = os.path.join(ROOT, "topic_bank.json")
+TOPIC_QUARANTINE_PATH = os.path.join(ROOT, "topic_quarantine.json")
 
 # ---------------------------------------------------------------------------
 # QUALITY RATCHET — pre-publish self-critique scoring (improvement loop, part 1)
@@ -500,6 +501,32 @@ def load_bank():
             return json.load(f).get("facts", [])
     except Exception:
         return []
+
+def load_topic_quarantine():
+    """IDs temporarily excluded from automatic selection.
+
+    The quarantine is deliberately data-driven and fail-open: deleting or
+    corrupting the file restores the old selector rather than bricking a run.
+    The entries remain in topic_bank.json for later review/repair.
+    """
+    try:
+        with open(TOPIC_QUARANTINE_PATH) as f:
+            data = json.load(f)
+        ids = data.get("ids", []) if isinstance(data, dict) else []
+        return {str(x).strip() for x in ids if str(x).strip()}
+    except Exception:
+        return set()
+
+
+def selectable_bank(facts, quarantined=None):
+    """Return the runtime-safe fact pool, preserving old behavior if a
+    quarantine would somehow exclude the entire bank."""
+    facts = list(facts or [])
+    q = load_topic_quarantine() if quarantined is None else set(quarantined)
+    if not q:
+        return facts
+    clean = [f for f in facts if f.get("id") not in q]
+    return clean or facts
 _WORKING_MODEL = None  # cached once we find one that responds
 # One-shot switch for the Gemini quality-rescue (main() sets it True for a single
 # grounded attempt when the free chain could only manage a weak draft, then clears
@@ -513,8 +540,10 @@ VIEWER_JOBS = [
      "verifiable mechanism (how/why something actually works). The payoff rewires their mental model. "
      "End so they think 'I'll never see X the same way.' NOT vague philosophy — a concrete fact."),
     ("SOCIAL_CURRENCY",
-     "Built around ONE stunning, TRUE, specific number or comparison (with the actual figure) so striking "
-     "the viewer repeats it to sound smart. Must include a real measurable fact, not a feeling."),
+     "Built around ONE stunning, TRUE, specific scientific idea, mechanism, or comparison the viewer "
+     "would repeat because it changes how they see something. A number is OPTIONAL and belongs only when "
+     "it is verified, meaningful, and makes the idea clearer — never add a statistic just to make the "
+     "script feel impressive. Strip the number away: the core thought should still be worth repeating."),
     ("EXISTENTIAL_CHILL",
      "Take a REAL, specific scientific fact about reality/the body/time/the universe that happens to be "
      "awe-inducing, and explain the actual science of it. The chill comes from a TRUE mechanism, not from "
@@ -563,8 +592,10 @@ CTA_STYLES = ["SAVE_WORTHY", "LOOP", "COMMENT"]
 # apply on top. One is picked per render in main(), avoiding the last one used.
 HOOK_FRAMES = [
     ("DIRECT_QUESTION",
-     "Open on a concrete question the viewer instantly starts answering in their head — name a "
-     "real thing in it (e.g. 'How much of what you taste is actually smell?'). Not abstract."),
+     "Legacy label, but DO NOT put a question mark in the first spoken line. Open with a concrete "
+     "shock statement that makes the viewer instantly ask a specific question in their head; put "
+     "the literal question in scene 2 if needed. Example: 'Most of what you call taste is actually "
+     "smell.' then 'So what happens when your nose is blocked?' Never open with the question itself."),
     ("MYTH_FLIP",
      "Open by stating a belief the viewer HOLDS, then flip it in the same breath (e.g. 'You were "
      "taught your tongue has taste zones — it doesn't'). The rest proves the correction."),
@@ -585,13 +616,11 @@ HOOK_FRAMES = [
      "fact (e.g. 'The Amazon rainforest is kept alive by a desert on another continent'). The "
      "collision itself is the hook; the curiosity is 'wait, how are those two even related?'"),
     ("STAKES_SCENARIO",
-     "Open on a high-stakes 'what happens if this happens to YOU' scenario — survival, danger, or "
-     "the viewer's own body under extreme conditions (e.g. 'An airlock bursts and you're sucked into "
-     "space — you have about fifteen seconds'). Life-or-death stakes happening to the VIEWER means "
-     "they physically cannot scroll until they see how it ends. This is the channel's HIGHEST-"
-     "retention hook shape, proven in analytics: 2.5x the average watch time and 4x the completion "
-     "rate of a passive 'how many / can you see' question. Frame the fact as a consequence the "
-     "viewer would live through, not a trivia question they can shrug off."),
+     "Open on a high-stakes scenario ONLY when it is directly supported by the verified science and "
+     "physically plausible. If the event is hypothetical, SAY SO with conditional framing ('If...', "
+     "'Suppose...', 'An airlock bursts...') — NEVER falsely tell the viewer an accident just happened "
+     "to them ('your phone just got hit by lightning'). Do not invent danger merely to raise stakes. "
+     "Use the viewer perspective only when it clarifies a real consequence the science actually supports."),
 ]
 
 CTA_ENDING_RULES = {
@@ -620,12 +649,13 @@ CTA_ENDING_RULES = {
         "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
     ),
     "COMMENT": (
-        "ENDING STYLE FOR THIS VIDEO: COMMENT BAIT. The final line must pose a genuine binary "
-        "question ('Team A or Team B?', 'Real or myth?') or state a claim people will actually "
-        "want to argue with ('and that means everything you learned about X is wrong') -- something "
-        "a real person would stop and type a reply to, not a rhetorical throwaway. NEVER phrase this "
-        "as 'Did you know' / 'Have you ever' -- those are banned wind-up openers everywhere in this "
-        "script, not just the hook. Do not also tell them to save or share in this line."
+        "ENDING STYLE FOR THIS VIDEO: EARNED DISCUSSION. End with a SPECIFIC question or disputed "
+        "scientific implication that follows directly from what the video proved. Prefer a concrete "
+        "choice, mechanism, consequence, or misconception the viewer now has enough information to "
+        "answer. BANNED: generic outrage/reframe clichés such as 'everything you know/learned about X "
+        "is wrong', 'myth busted', 'this changes everything', or 'you've been lied to'. Those create "
+        "cheap comments but make the page sound like an AI content farm. NEVER phrase this as "
+        "'Did you know' / 'Have you ever', and never tell them to save/share."
     ),
     "SHARE": (
         "ENDING STYLE FOR THIS VIDEO: SHARE TRIGGER. The final line must hand the viewer a concrete, "
@@ -645,8 +675,9 @@ CTA_RUBRIC_HINTS = {
                     "('save', 'screenshot', 'remember', 'look up' are all disqualifying)?",
     "LOOP": "does the ending loop back cleanly to the hook/opening image so a replay feels seamless, "
             "with no bolted-on CTA language?",
-    "COMMENT": "does the ending pose a real binary question or arguable claim a viewer would "
-               "actually reply to?",
+    "COMMENT": "does the ending invite a response through a SPECIFIC scientific choice, mechanism, "
+               "consequence, or misconception the video actually earned — with zero generic "
+               "'everything you know is wrong' / 'myth busted' outrage bait?",
     "SHARE": "does the ending give a specific, identity-relevant reason to send this to one "
              "particular kind of person, tied to the fact just taught?",
 }
@@ -659,8 +690,9 @@ CTA_PUNCHUP_RULES = {
                    "'remember', 'look up', 'keep this' are all banned. A thought, never an order.",
     "LOOP": "Final line: a NEW resonant thought that echoes the hook's feeling/image so a replay feels "
             "seamless — but must NOT restate the hook's fact or repeat its exact words/number. No CTA language.",
-    "COMMENT": "Final line: a genuine binary question or an arguable claim -- something a real "
-               "viewer would type a reply to.",
+    "COMMENT": "Final line: a specific scientific question/implication the viewer can answer or "
+               "argue from the evidence just shown. No generic 'everything you know is wrong', "
+               "'myth busted', 'this changes everything', or fake-outrage phrasing.",
     "SHARE": "Final line: a specific, identity-relevant reason to send this to one particular kind "
              "of person, tied to the fact just taught.",
 }
@@ -688,6 +720,24 @@ GENERIC_SAVE_CMD = re.compile(
     r"|\btag (a|the|your|someone|that)\b"
     r"|\bshow (this|it) to (the|a|your|someone)\b"
     r"|\bsend (this|it) to the (friend|person|one)\b",
+    re.I)
+
+# Generic pseudo-payoffs that sound dramatic but communicate no new scientific
+# idea. The Sep-1 lightning script ended "everything you know about weather is
+# wrong" because COMMENT mode explicitly encouraged that phrasing. These lines
+# are now rejected mechanically so a scorer cannot wave them through.
+GENERIC_REFRAME_CLICHE_RE = re.compile(
+    r"\beverything you (know|learned|thought|were taught) about .{1,50} (is|was) wrong\b"
+    r"|^\s*myth busted[.!]?\s*$"
+    r"|\bthis changes everything\b"
+    r"|\byou(?:'|’)ve been lied to\b",
+    re.I)
+
+# A high-stakes hook may be conditional ("If an airlock bursts...") but must not
+# fabricate an accident as though it literally just happened to the viewer.
+FALSE_PRESENT_STAKES_RE = re.compile(
+    r"^\s*(?:your\b|you\b).{0,60}\b(?:just got|was just|has just been)\s+"
+    r"(?:hit|struck|electrocuted|shot|crushed|blown up|exploded|ruptured|killed)\b",
     re.I)
 
 # A "save-worthy" moment is engineered into the CONTENT, not just the ending:
@@ -1109,17 +1159,17 @@ def dequeue_to(dest):
 PAGE_IDENTITY = (
     "CHANNEL IDENTITY — this is who the page IS (bake it into voice and choices, don't state it):\n"
     "You are the narrator of \"Stranger Than It Sounds\": the channel that reveals ordinary reality "
-    "is far weirder, bigger, and more unsettling-beautiful than it looks. The vibe is a calm, precise, "
-    "quietly eerie documentary narrator — never hype-y, never 'you won't BELIEVE', never an exclamation "
-    "salesman. You state astonishing true things plainly and let the strangeness do the work. The "
-    "viewer should feel a small chill of awe, like the floor of reality just shifted under them.\n"
-    "WHAT MAKES THIS PAGE UNIQUE (lean into it): brutal SPECIFICITY (real names, real numbers, the "
-    "actual mechanism — never vague), and finding the UNSETTLING or awe-inducing angle inside a normal "
-    "thing. A viewer should think 'I will never see [ordinary thing] the same way again.'\n"
-    "EMOTIONAL REGISTER for THIS video (pick the one that fits the fact and commit to it, so the page "
-    "has range across videos, not one monotone): AWE (cosmic/scale), UNSETTLING (a quiet dread about "
-    "something normal), BEAUTIFUL (something ordinary revealed as gorgeous), or DARKLY FUNNY (absurd "
-    "but true). Whichever you pick, keep the calm precise delivery.\n"
+    "is far weirder, bigger, funnier, harsher, or more beautiful than it looks. The VOICE is calm and "
+    "precise — never hype-y, never 'you won't BELIEVE', never an exclamation salesman — but the "
+    "EMOTIONAL COLOR changes with the subject. Eerie is one valid mood, NOT the channel default. "
+    "State astonishing true things plainly and let the strangeness do the work.\n"
+    "WHAT MAKES THIS PAGE UNIQUE (lean into it): brutal SPECIFICITY (real names, real mechanisms, and "
+    "only the numbers that genuinely clarify the idea), plus the most distinctive implication hidden "
+    "inside an ordinary thing. A viewer should think 'I will never see [ordinary thing] the same way again.'\n"
+    "EMOTIONAL REGISTER for THIS video: commit to the mood the FACT actually earns. Use AWE for wonder/"
+    "scale, EERIE only for genuinely uncanny material, VISCERAL for body/impact, TENSE for danger, "
+    "PEACEFUL for beauty/slow natural processes, and CHAOTIC for violent/fast phenomena. Do NOT choose "
+    "eerie reflexively just because the channel is about strange science. Keep the delivery calm and precise.\n"
 )
 
 
@@ -1238,10 +1288,11 @@ ADDICTIVE CRAFT (what separates a bingeable page from the 10,000 identical AI fa
 - STRUCTURE IT AS A TINY MYSTERY, not a list: open a real question the brain CANNOT ignore, build
   tension, then reveal. Each scene should make the viewer need the next one. A list of facts is
   boring even when every fact is true; a reveal with tension is not.
-- QUESTION HOOK the mind auto-answers: the strongest hooks are a concrete question the viewer starts
-  answering in their head ("How much of you isn't technically human?", "What's the oldest thing you'll
-  touch today?") — or a flat claim so specific it demands the 'how is that possible?' The brain can't
-  scroll past an open loop.
+- CREATE A QUESTION GAP WITHOUT OPENING ON A QUESTION: the first spoken line is a concrete shock
+  STATEMENT, never a wind-up question. It should make the viewer immediately ask "how?" or "why?" in
+  their own head; if the video's central curiosity needs an explicit '?', put that literal question in
+  scene 2 or 3. Example: "Most of what you call taste is actually smell." then "So what disappears
+  when your nose is blocked?" The brain gets an open loop without wasting the first beat on setup.
 - LEAVE THE PAGE, NOT JUST THE VIDEO, OPEN: the final line should quietly imply there is a whole world
   of this strangeness (this is one of many) — a resonant thought that makes them want the NEXT one.
   NOT a command ('follow me', 'save this') — the pull comes from the feeling that reality is full of
@@ -2313,6 +2364,11 @@ def validate(m, job_name, fact=None):
                 f"told you'/'Here's'/'This is' as openers but this was never mechanically "
                 f"enforced; open cold on the shock instead, no wind-up")
 
+    if FALSE_PRESENT_STAKES_RE.search(m["hook"]):
+        return (f"hook '{m['hook']}' falsely states a high-stakes accident as though it literally "
+                f"just happened to the viewer — hypothetical stakes must be conditional ('If...', "
+                f"'Suppose...'), never fabricated present-tense danger")
+
     # HOOK_HEADLINE (2026-08-03): the burned-on COVER text -- what a scrolling
     # viewer sees in the profile grid before they ever hear a word, arguably
     # the single highest-leverage piece of text in the whole video. Nothing
@@ -2450,6 +2506,11 @@ def validate(m, job_name, fact=None):
                 "('save this so you...') — the ending must earn a save through "
                 "content, not a command; see this video's assigned CTA style")
 
+    ending = m["scenes"][-1]["voiceover"].strip() if m["scenes"] else ""
+    if GENERIC_REFRAME_CLICHE_RE.search(ending):
+        return (f"final line {ending!r} is a generic pseudo-payoff / outrage cliché — "
+                f"end on a specific scientific implication, mechanism, or question the video earned")
+
     # CTA overhaul guard 2: save-worthiness must be engineered into the
     # CONTENT, not just claimed by the ending. Require at least one concrete,
     # specific, reference-worthy detail somewhere in the script (a real
@@ -2457,9 +2518,9 @@ def validate(m, job_name, fact=None):
     # viewer could actually repeat or look up again. Bank-fact videos already
     # clear this via mandatory key_terms; this catches jobs/scripts with no
     # bank fact behind them (e.g. HOW_TO, or a MYTH_BUSTER with no fact_id).
-    if not REFERENCE_WORTHY_RE.search(full_blob):
-        return ("no reference-worthy / 'screenshot-this' detail found anywhere in the "
-                "script — include a specific number, rule of thumb, or vivid comparison "
+    if not fact and not REFERENCE_WORTHY_RE.search(full_blob):
+        return ("no reference-worthy / 'screenshot-this' detail found anywhere in this "
+                "non-bank script — include a specific rule of thumb or vivid comparison "
                 "a viewer would actually want to remember or reuse")
 
     # Path B: numeric-contradiction guard — catch fabricated/contradictory numbers (e.g. "7 colors" then "16.5 colors")
@@ -3289,9 +3350,10 @@ def research_dossier(fact):
     specific, surprising, TRUE details about the same topic, so stage 2 can build
     each scene from a DIFFERENT real point instead of rephrasing the premise.
 
-    Returns a list of concrete fact strings (or [] on failure — the caller then
-    generates the old way, so this can never break a render). Best with the
-    Gemini free tier (reliable, high quota); degrades under Groq rate limits."""
+    Returns a list of concrete fact strings. Under the default GROUND_DOSSIER=1
+    policy, any grounding/key/quota failure returns [] so the writer must stay on
+    the base bank fact instead of silently expanding from model memory. Set
+    GROUND_DOSSIER=0 only as an explicit operator opt-out for experiments."""
     if not fact:
         return []
     topic = fact.get("fact") or fact.get("angle") or ""
@@ -3302,10 +3364,26 @@ def research_dossier(fact):
     # a fixed topic, so it doesn't go stale between runs.
     key = _dossier_key(fact)
     cache = _load_dossier_cache() if key else {}
+    # Provenance matters: legacy cache entries were bare lists, so we cannot
+    # tell whether they came from grounded Google Search or ordinary model
+    # memory. Under the default quality-first policy, only explicitly-grounded
+    # cache entries are trusted. GROUND_DOSSIER=0 is the operator's explicit
+    # opt-out and may reuse an ungrounded cache entry.
+    ground_required = os.getenv("GROUND_DOSSIER", "1") != "0"
     cached = cache.get(key)
-    if isinstance(cached, list) and len([f for f in cached if str(f).strip()]) >= 5:
-        print(f"  [research] dossier cache HIT ({len(cached)} angles) — no LLM call")
-        return [str(f).strip() for f in cached if str(f).strip()][:10]
+    cached_facts = []
+    cached_grounded = False
+    if isinstance(cached, dict):
+        cached_facts = [str(f).strip() for f in (cached.get("facts") or []) if str(f).strip()]
+        cached_grounded = cached.get("grounded") is True
+    elif isinstance(cached, list) and not ground_required:
+        # Backward compatibility only when the operator explicitly disabled
+        # grounding; unknown-provenance legacy lists are not trusted by default.
+        cached_facts = [str(f).strip() for f in cached if str(f).strip()]
+    if len(cached_facts) >= 5 and (cached_grounded or not ground_required):
+        provenance = "grounded" if cached_grounded else "ungrounded/operator-opt-out"
+        print(f"  [research] dossier cache HIT ({len(cached_facts)} angles, {provenance}) — no LLM call")
+        return cached_facts[:10]
     kt = ", ".join(fact.get("key_terms", []) or [])
     prompt = (
         "You are the researcher behind the most fascinating science videos on the internet "
@@ -3328,23 +3406,29 @@ def research_dossier(fact):
         'Return ONLY JSON: {"facts": ["...", "...", "...", "...", "...", "...", "...", "...", "..."]}'
     )
     try:
-        # GROUNDED RESEARCH: pull the facts from REAL Google Search results via
-        # Gemini's grounding tool so the dossier is sourced and accurate, not just
-        # the model's memory. Falls back to the ordinary (ungrounded) provider
-        # chain on any failure, so this never blocks a run.
-        raw = None
-        # Grounding is the one Gemini call that runs even on the free-first chain
-        # (it's Gemini-unique). It's cached per fact, so it's a ONE-TIME cost per
-        # topic — but GROUND_DOSSIER=0 skips it entirely for max frugality, falling
-        # back to the free provider chain (the topic_bank facts are already curated,
-        # so an ungrounded dossier is still solid).
-        if GEMINI_KEY and os.getenv("GROUND_DOSSIER", "1") != "0":
+        # GROUNDED RESEARCH is the default contract. Extra claims are allowed
+        # to enrich a script only when they came through Gemini's live Google
+        # Search grounding. A quota/network failure now returns [] (base fact
+        # only) instead of silently asking an ungrounded model to invent nine
+        # "TRUE" supporting facts. Consistency/accuracy beats filling eight
+        # scenes on a bad quota day.
+        if ground_required:
+            if not GEMINI_KEY:
+                print("  [research] grounded dossier required but GEMINI_API_KEY is unavailable — "
+                      "writing from the base fact only")
+                return []
             try:
                 raw = _call_gemini(gemini_models()[0], prompt, ground=True)
                 print("  [research] grounded on live Google Search")
             except Exception as e:  # noqa: BLE001
-                print(f"  [research] grounded search unavailable ({e}); using model knowledge")
-        if raw is None:
+                print(f"  [research] grounded search unavailable ({e}) — "
+                      f"NO ungrounded fallback; writing from the base fact only")
+                return []
+        else:
+            # Explicit operator opt-out for development/frugality experiments.
+            # Production defaults to grounding on, so this path is never entered
+            # merely because a provider happened to fail.
+            print("  [research] GROUND_DOSSIER=0 — explicit ungrounded research opt-out")
             raw = call_groq(prompt)
         data = json.loads(raw)
         facts = [str(x).strip() for x in (data.get("facts") or []) if str(x).strip()]
@@ -3352,7 +3436,7 @@ def research_dossier(fact):
         if facts:
             print(f"  [research] scientist-brain dossier: {len(facts)} distinct angles gathered")
             if key and len(facts) >= 5:  # only cache a genuinely full dossier
-                cache[key] = facts
+                cache[key] = {"facts": facts, "grounded": bool(ground_required)}
                 _save_dossier_cache(cache)
         return facts
     except Exception as e:
@@ -3704,9 +3788,15 @@ def main():
     # facts) doesn't ship back to back. Domain comes from the new memory field
     # with a bank lookup fallback for older entries that predate it. Filters
     # widen gracefully if they would empty the pool.
-    bank = load_bank()
+    bank_all = load_bank()
+    quarantined = load_topic_quarantine()
+    bank = selectable_bank(bank_all, quarantined)
+    if quarantined:
+        excluded = len(bank_all) - len(bank)
+        print(f"  [bank] runtime quarantine excludes {excluded} of {len(bank_all)} facts "
+              f"({len(bank)} eligible)")
     used_ids = {h.get("fact_id") for h in history if h.get("fact_id")}
-    _id_to_domain = {f["id"]: f.get("domain") for f in bank}
+    _id_to_domain = {f["id"]: f.get("domain") for f in bank_all}
     recent_families = set()
     for h in history[-RECENT_DOMAIN_WINDOW:]:
         d = h.get("domain") or _id_to_domain.get(h.get("fact_id"))

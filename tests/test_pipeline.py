@@ -223,6 +223,28 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "generic 'save this' command rejected")
 
+    # shipped Sep-1 failure: COMMENT mode encouraged a generic pseudo-payoff
+    # ("everything you know about weather is wrong") instead of landing a real
+    # scientific implication. This must be mechanically rejected.
+    m = copy.deepcopy(FIX_ASTRO)
+    m["scenes"][-1]["voiceover"] = "And that means everything you know about weather is wrong."
+    m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "generic pseudo-payoff" in err,
+          f"generic 'everything you know is wrong' ending rejected ({err})")
+
+    # shipped Sep-1 hook shape: a hypothetical catastrophe stated as though it
+    # literally just happened to the viewer. Conditional stakes remain allowed.
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "Your phone just got hit by a bolt from the sky."
+    err = G.validate(m, "EXPLAIN")
+    check(err is not None and "hypothetical stakes" in err,
+          f"fabricated present-tense stakes hook rejected ({err})")
+    m = copy.deepcopy(FIX_ASTRO)
+    m["hook"] = "If lightning hits your phone, the damage starts before you react."
+    err = G.validate(m, "EXPLAIN")
+    check(err is None, f"explicitly conditional high-stakes hook remains allowed ({err})")
+
     # abstract perception-vs-reality hook
     m = copy.deepcopy(FIX_ASTRO)
     m["hook"] = "You are seeing it as it was, not as it is."
@@ -366,6 +388,24 @@ def test_validate_rejections():
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is not None, "'send this to a friend' command ending rejected")
     check("SHARE" not in G.CTA_STYLES, "SHARE command-ending style removed from rotation")
+
+    # The reference-worthy regex was intended only for scripts WITHOUT a bank
+    # fact, but the implementation accidentally applied it to every script,
+    # pressuring verified science videos to jam in a number/comparison. Prove
+    # the scope: with the regex forced to match nothing, a non-bank script fails
+    # that gate while a bank-backed script is allowed to rely on verified fact
+    # and key-term machinery instead.
+    _rw_orig = G.REFERENCE_WORTHY_RE
+    try:
+        G.REFERENCE_WORTHY_RE = re.compile(r"(?!x)x")
+        no_fact = G.validate(copy.deepcopy(FIX_BIO), "EXPLAIN", fact=None)
+        with_fact = G.validate(copy.deepcopy(FIX_BIO), "EXPLAIN", fact={"domain": "biology"})
+        check(no_fact is not None and "reference-worthy" in no_fact,
+              f"non-bank script still requires a reference-worthy detail ({no_fact})")
+        check(with_fact is None,
+              f"bank-backed script is not forced to add an arbitrary number/comparison ({with_fact})")
+    finally:
+        G.REFERENCE_WORTHY_RE = _rw_orig
 
     # contradictory COUNT of a discrete named thing (7 moons vs 12 moons) is a
     # real fabrication and must still be rejected by the contradiction guard.
@@ -1016,11 +1056,111 @@ def test_generate_helpers():
           "near-duplicate metaphor flagged")
     check(G._metaphor_too_similar("a metal that melts in your hand", hist) is False,
           "distinct metaphor allowed")
+    frames = dict(G.HOOK_FRAMES)
+    dq = frames["DIRECT_QUESTION"]
+    check("DO NOT put a question mark" in dq and "scene 2" in dq,
+          "DIRECT_QUESTION legacy frame now creates a question-gap without violating the no-question hook gate")
+    p = G.build_prompt("REFRAME", "test", "none")
+    check("CREATE A QUESTION GAP WITHOUT OPENING ON A QUESTION" in p,
+          "main writer prompt agrees with validate(): first beat is a statement, literal question comes later")
+    check("the strongest hooks are a concrete question" not in p,
+          "old contradictory question-hook instruction is gone")
+    check("quietly eerie documentary narrator" not in G.PAGE_IDENTITY,
+          "channel identity no longer hard-biases every topic toward eerie")
+    check("Eerie is one valid mood, NOT the channel default" in G.PAGE_IDENTITY,
+          "identity explicitly preserves emotional range instead of one monotone")
 
 
 # --------------------------------------------------------------------------
 # 6. fast-fail when all providers throttled (wall-clock budget work)
 # --------------------------------------------------------------------------
+def test_research_dossier_requires_grounding():
+    section("generate.research_dossier: extra science fails CLOSED when grounding is unavailable")
+    fact = {"id": "ground-test",
+            "fact": "GPS satellites require relativistic clock corrections.",
+            "angle": "relativity",
+            "key_terms": ["GPS", "relativity"]}
+    grounded_facts = [
+        "Grounded fact one has a concrete mechanism and enough detail.",
+        "Grounded fact two has a concrete mechanism and enough detail.",
+        "Grounded fact three has a concrete mechanism and enough detail.",
+        "Grounded fact four has a concrete mechanism and enough detail.",
+        "Grounded fact five has a concrete mechanism and enough detail.",
+    ]
+
+    old_cache = G.DOSSIER_CACHE
+    old_key = G.GEMINI_KEY
+    old_models = G._GEMINI_MODELS_CACHE
+    old_gem = G._call_gemini
+    old_llm = G.call_groq
+    old_env = os.environ.get("GROUND_DOSSIER")
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            G.DOSSIER_CACHE = os.path.join(td, "dossier.json")
+            G.GEMINI_KEY = "fake-key"
+            G._GEMINI_MODELS_CACHE = ["gemini-test"]
+            os.environ["GROUND_DOSSIER"] = "1"
+            ungrounded_calls = {"n": 0}
+
+            def _ungrounded(_prompt):
+                ungrounded_calls["n"] += 1
+                return _json.dumps({"facts": grounded_facts})
+
+            G.call_groq = _ungrounded
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("grounding down"))
+            got = G.research_dossier(fact)
+            check(got == [], "grounding outage -> [] / base fact only")
+            check(ungrounded_calls["n"] == 0,
+                  "grounding outage NEVER silently falls back to ordinary model memory")
+
+            # A successful grounded response is accepted and cached with explicit
+            # provenance, then reusable at zero quota.
+            G._call_gemini = lambda *a, **k: _json.dumps({"facts": grounded_facts})
+            got2 = G.research_dossier(fact)
+            check(got2 == grounded_facts, "grounded dossier accepted")
+            cache = _json.load(open(G.DOSSIER_CACHE))
+            key = G._dossier_key(fact)
+            check(isinstance(cache.get(key), dict) and cache[key].get("grounded") is True,
+                  "new dossier cache records grounded provenance")
+
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(AssertionError("cache hit must not call Gemini"))
+            got3 = G.research_dossier(fact)
+            check(got3 == grounded_facts, "grounded cache hit reuses facts with zero network calls")
+
+            # Legacy bare-list cache has unknown provenance; production grounding
+            # mode must not trust it.
+            with open(G.DOSSIER_CACHE, "w") as fh:
+                _json.dump({key: grounded_facts}, fh)
+            G._call_gemini = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("grounding down"))
+            got4 = G.research_dossier(fact)
+            check(got4 == [], "legacy unknown-provenance dossier cache is ignored by default")
+
+            # Explicit operator opt-out remains possible for experiments, but it
+            # must be a conscious env choice, never an outage fallback. Clear the
+            # cache first -- the legacy bare-list entry written just above would
+            # otherwise be a legitimate ungrounded-mode cache HIT (by design, see
+            # the "reuse an ungrounded cache entry" comment on ground_required
+            # above) and this sub-test would never actually exercise the live
+            # ungrounded call it's named for.
+            with open(G.DOSSIER_CACHE, "w") as fh:
+                _json.dump({}, fh)
+            os.environ["GROUND_DOSSIER"] = "0"
+            ungrounded_calls["n"] = 0
+            got5 = G.research_dossier(fact)
+            check(got5 == grounded_facts and ungrounded_calls["n"] == 1,
+                  "GROUND_DOSSIER=0 explicitly enables ungrounded research")
+    finally:
+        G.DOSSIER_CACHE = old_cache
+        G.GEMINI_KEY = old_key
+        G._GEMINI_MODELS_CACHE = old_models
+        G._call_gemini = old_gem
+        G.call_groq = old_llm
+        if old_env is None:
+            os.environ.pop("GROUND_DOSSIER", None)
+        else:
+            os.environ["GROUND_DOSSIER"] = old_env
+
+
 def test_fast_fail_when_throttled():
     section("generate.py: throttled run fails fast (wall-clock budget + circuit skip)")
     # GEN_WALL_BUDGET_S sane
@@ -1442,6 +1582,25 @@ def test_bank_expander():
     ok = E.accept_fact(good, have_ids, have_norms)
     check(ok is not None, "a strong novel fact is accepted")
     check(ok and ok["id"] == "new_fact", "id is sanitized to snake_case")
+    # Generic application-fantasy WHATIFs caused bank drift toward "harness this
+    # to build technology" instead of curiosity about the science itself.
+    app = {**good, "id":"app1",
+           "whatif":"What if we could harness fungal networks to create new communication technologies?"}
+    check(E.accept_fact(app, have_ids, have_norms) is None,
+          "generic 'What if we could harness/create technology' entry rejected")
+
+    # Broad overview statements are topic descriptions, not scroll-stopping facts.
+    vague = {**good, "id":"vague1",
+             "fact":"Forests are complex ecosystems that rely on a delicate balance of relationships.",
+             "whatif":"What happens underground when two trees compete for the same nutrients?"}
+    check(E.accept_fact(vague, have_ids, have_norms) is None,
+          "vague broad-overview fact with no concrete mechanism/specificity rejected")
+
+    # Curiosity questions about the actual phenomenon remain allowed.
+    curious = {**good, "id":"curious1",
+               "whatif":"What happens when one part of a giant fungus is damaged miles from another part?"}
+    check(E.accept_fact(curious, have_ids, have_norms) is not None,
+          "science-centered curiosity whatif remains allowed")
     # magnitude/scale facts are rejected
     mag = {**good, "id":"m1", "fact":"There are 10 times more bacteria than human cells in your body."}
     check(E.accept_fact(mag, have_ids, have_norms) is None, "'N times more' magnitude fact rejected")
@@ -1514,6 +1673,32 @@ def test_topic_bank_integrity():
             if _difflib.SequenceMatcher(None, norms[i][1], norms[j][1]).ratio() > 0.62:
                 dupes.append((norms[i][0], norms[j][0]))
     check(not dupes, f"no two different fact ids are near-duplicate text (found: {dupes[:5]})")
+
+
+def test_runtime_topic_quarantine():
+    section("generate: weak current topic seeds are quarantined without deleting them")
+    bank = G.load_bank()
+    q = G.load_topic_quarantine()
+    bank_ids = {f.get("id") for f in bank}
+
+    check(len(q) >= 50, f"quarantine is materially populated ({len(q)} ids)")
+    check(q <= bank_ids, f"every quarantined id still exists in topic_bank.json ({len(q - bank_ids)} missing)")
+    check("starling_murmurations" in q, "unsupported starling gravity/stars seed is quarantined")
+    check("frozen_carbonite" in q, "science-fiction frozen-carbonite seed is quarantined")
+    check("magnetic_moon" in q, "overstated lunar-magnetism seed is quarantined")
+    check("memory_transplant" in q, "overstated sea-slug memory-transfer seed is quarantined")
+
+    selected = G.selectable_bank(bank, q)
+    selected_ids = {f.get("id") for f in selected}
+    check(not (selected_ids & q), "normal selector excludes every quarantined fact")
+    check(len(selected) < len(bank), f"selector shrinks the pool ({len(bank)} -> {len(selected)})")
+    check(len(selected) >= 180, f"still leaves a large diverse production pool ({len(selected)} facts)")
+
+    # Safety: quarantine corruption or an over-broad future list must never make
+    # generation impossible. If every fact is excluded, preserve old behavior.
+    all_ids = {f.get("id") for f in bank if f.get("id")}
+    fail_open = G.selectable_bank(bank, all_ids)
+    check(len(fail_open) == len(bank), "all-quarantined edge case fails open to the original bank")
 
 
 def test_caption_pop_animation():
@@ -2476,6 +2661,7 @@ def main():
     test_series_and_callback()
     test_funnel_affiliate_coverage()
     test_generate_helpers()
+    test_research_dossier_requires_grounding()
     test_caption_function_word_grouping()
     test_script_buffer_queue()
     test_xfade_offsets_monotonic()
@@ -2489,6 +2675,7 @@ def main():
     test_caption_pop_animation()
     test_bank_expander()
     test_topic_bank_integrity()
+    test_runtime_topic_quarantine()
     test_draft_is_weak()
     test_quality_floors_restored()
     test_cover_headline()
