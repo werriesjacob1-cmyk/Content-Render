@@ -31,6 +31,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install FFmpeg for media smoke tests
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+
       - name: Run zero-quota test suite
         # GROQ_API_KEY is set to a dummy so the provider-chain code paths the tests
         # exercise see a key present; the tests never make a network call.
