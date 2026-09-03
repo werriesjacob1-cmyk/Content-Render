@@ -1526,6 +1526,7 @@ def test_fal_clip_relevant():
         M.ffprobe_dur = lambda p: 5.0
         def fake_run(args):
             dest = args[-1]
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
             with open(dest, "wb") as f:
                 f.write(b"\xff\xd8\xff" + b"x" * 200)
         M.run = fake_run
