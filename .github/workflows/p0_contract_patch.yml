@@ -1,0 +1,118 @@
+name: P0 contract patch
+
+on:
+  push:
+    branches:
+      - claude/p0-manifest-semantic-merge-01
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p0-contract-patch
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply narrowly asserted contract consolidation
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+          import ast
+          from pathlib import Path
+
+          def splice(lines, start_line, end_line, replacement):
+              lines[start_line - 1:end_line] = replacement
+
+          # main.py: import the shared contract, then replace only the old local
+          # _terminate + scene join with spoken_text(m). AST line numbers keep this
+          # surgical even though main.py is large.
+          path = Path('main.py')
+          text = path.read_text()
+          assert text.count('import profiles\n') == 1, 'unexpected profiles import shape'
+          assert 'from narration import spoken_text\n' not in text, 'main.py already imports spoken_text'
+          text = text.replace('import profiles\n', 'import profiles\nfrom narration import spoken_text\n', 1)
+          tree = ast.parse(text)
+          main_fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
+          terminate = next(n for n in main_fn.body if isinstance(n, ast.FunctionDef) and n.name == '_terminate')
+          full_assign = next(
+              n for n in main_fn.body
+              if isinstance(n, ast.Assign)
+              and any(isinstance(t, ast.Name) and t.id == 'full_script' for t in n.targets)
+          )
+          assert terminate.end_lineno < full_assign.lineno, 'unexpected TTS contract order'
+          lines = text.splitlines(keepends=True)
+          indent = lines[terminate.lineno - 1][:len(lines[terminate.lineno - 1]) - len(lines[terminate.lineno - 1].lstrip())]
+          splice(lines, terminate.lineno, full_assign.end_lineno, [f'{indent}full_script = spoken_text(m)\n'])
+          path.write_text(''.join(lines))
+
+          # generate.py: remove the old independently-evolved fail-open V2 helper
+          # as a certification path. Keep its public call signature, but delegate
+          # to the one fail-closed V2.1 orchestrator. Local import avoids the
+          # generate <-> orchestrator module import cycle at import time.
+          path = Path('generate.py')
+          text = path.read_text()
+          tree = ast.parse(text)
+          matches = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'generate_candidate_v2']
+          assert len(matches) == 1, f'expected one generate_candidate_v2, found {len(matches)}'
+          fn = matches[0]
+          wrapper = '''def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
+                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
+    """Compatibility entrypoint for the canonical fail-closed Writer V2.1 path.
+
+    Writer certification is owned by writer_v21_orchestrator. Keeping this
+    legacy public name as a thin delegate prevents an accidental caller from
+    selecting the older fail-open semantic/manifest implementation.
+    """
+    from writer_v21_orchestrator import generate_candidate_v21
+
+    return generate_candidate_v21(
+        fact,
+        job_name=job_name,
+        recent_treatments=recent_treatments,
+        avoid_topics=avoid_topics,
+        cta_style=cta_style,
+        use_structured=use_structured,
+    )
+'''.splitlines(keepends=True)
+          lines = text.splitlines(keepends=True)
+          splice(lines, fn.lineno, fn.end_lineno, wrapper)
+          path.write_text(''.join(lines))
+
+          # These were temporary parallel contracts. Their functionality now
+          # lives in canonical writer_v2 + writer_v21_orchestrator + narration.
+          for obsolete in ('writer_v21_runtime.py', 'writer_v21_manifest.py'):
+              p = Path(obsolete)
+              assert p.exists(), f'missing expected temporary adapter: {obsolete}'
+              p.unlink()
+          PY
+      - name: Prove patch is narrow and syntactically sound
+        run: |
+          set -euo pipefail
+          git diff --check
+          python -m py_compile narration.py writer_v2.py writer_v21_orchestrator.py writer_v21_semantic_gate.py generate.py main.py
+          if grep -R --include='*.py' -n -E 'writer_v21_runtime|writer_v21_manifest' . --exclude-dir=.git; then
+            echo 'obsolete runtime/manifest Python reference remains' >&2
+            exit 1
+          fi
+          git diff --stat
+      - name: Commit exact patch to mission branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add main.py generate.py writer_v21_runtime.py writer_v21_manifest.py
+          git diff --cached --check
+          git commit -m 'Consolidate canonical Writer narration and semantic path'
+          git push origin HEAD:claude/p0-manifest-semantic-merge-01
