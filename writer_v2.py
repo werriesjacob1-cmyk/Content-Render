@@ -214,9 +214,44 @@ def build_story_packet(fact, dossier_facts=None, grounded=False):
 # never merged. IDs are deterministic (stable field order + list position)
 # so the same fact+dossier always produces the same inventory.
 # ---------------------------------------------------------------------------
+_TYPOGRAPHIC_QUOTES_RE = re.compile("[‘’ʼ′]")
+_TYPOGRAPHIC_DOUBLE_QUOTES_RE = re.compile("[“”″]")
+_TYPOGRAPHIC_DASH_RE = re.compile("[–—]")
+
+
+def _normalize_text(text):
+    """2026-09-04 V2.1 fix (mission Phase 5): a curly/typographic apostrophe
+    ("didn't" with U+2019) previously tokenized to the fragment "didn" + "t"
+    (the word-char regex elsewhere only matches [a-zA-Z], not the smart-quote
+    codepoint), and "didn" wasn't a recognized stopword -- a live bakeoff run
+    flagged it as an unsupported_term. Normalizing curly quotes/dashes to
+    their plain ASCII equivalents BEFORE any tokenization makes "didn't" and
+    "didn't" behave identically everywhere text is extracted or compared,
+    instead of patching the specific malformed fragment into a stopword
+    list (which would only fix this one word, not the class of bug)."""
+    text = text or ""
+    text = _TYPOGRAPHIC_QUOTES_RE.sub("'", text)
+    text = _TYPOGRAPHIC_DOUBLE_QUOTES_RE.sub('"', text)
+    text = _TYPOGRAPHIC_DASH_RE.sub("-", text)
+    return text
+
+
 _NUMBER_WORD_RE = re.compile(
-    r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen|"
-    r"hundred|thousand|million|billion|trillion)\b", re.I)
+    # "one" deliberately excluded: overwhelmingly used as a pronoun/determiner
+    # in natural English ("the one thing...", "the one everybody assumes")
+    # rather than a numeral -- live testing found it misfiring as a hard
+    # unsupported-number violation on completely ordinary sentences far more
+    # than it ever caught a genuine invented count of one.
+    r"\b(zero|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen|"
+    r"hundred|thousand|million|billion|trillion|"
+    # magnitude-multiplier words -- 2026-09-04 V2.1 addition, mission Phase 1
+    # category B ("explicit quantitative comparisons / magnitude claims"). A
+    # closed, bounded set (English has only a handful of these), not an
+    # open-ended vocabulary expansion -- "twice as many hearts" is exactly
+    # the kind of quantitative comparison that must be hard-checkable, and
+    # without this "twice"/"double"/etc were invisible to the numeric check
+    # entirely (neither a digit nor one of the digit-count words above).
+    r"twice|thrice|double|triple|quadruple|half|quarter)\b", re.I)
 _DIGIT_NUMBER_RE = re.compile(r"\b\d[\d,]*(?:\.\d+)?\b")
 _UNIT_RE = re.compile(
     r"\b(kg|kilograms?|grams?|tons?|tonnes?|mm|cm|km|kilometers?|kilometres?|miles?|"
@@ -237,6 +272,9 @@ _TERM_STOPWORDS = {
 }
 
 
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+
+
 def _extract_factual_tokens(text):
     """Mechanically pulls out the factual PAYLOAD of a claim's text: numbers
     (digit and spelled-out), units, proper-noun-shaped entities, and
@@ -244,20 +282,44 @@ def _extract_factual_tokens(text):
     builds the ALLOWED vocabulary for a claim, so over-inclusion just means a
     claim permits slightly more than strictly necessary, not a false
     rejection later (the validator in writer_v2_repair.py is what needs to be
-    precise; this is the permissive source-of-truth side)."""
-    text = text or ""
+    precise; this is the permissive source-of-truth side).
+
+    2026-09-04 V2.1 addition: also reports `weak_entities`, the subset of
+    `entities` that are a SINGLE capitalized word sitting at the very start
+    of their own sentence ("Zoom in and you see...", "Measured from base to
+    summit..."). That position is ambiguous by construction -- English
+    capitalizes the first word of every sentence regardless of whether it's
+    a real proper noun, which is exactly why live testing caught ordinary
+    words ("Zoom", "Measured", "Today", "Our", "Impossible") being extracted
+    as entities. A genuine multi-word proper-noun phrase ("Mount Everest",
+    "Empire State Building") is a near-unambiguous signal regardless of
+    position and stays a full-strength entity; so does ANY single-word
+    entity used mid-sentence ("...taller than Everest"), which is how real
+    comparisons are actually phrased. Callers (writer_v2_repair.py) treat
+    `weak_entities` as a softer signal than the rest of `entities` -- see
+    its own hard/soft severity split."""
+    text = _normalize_text(text)
     numbers = sorted(set(_DIGIT_NUMBER_RE.findall(text)) |
                      {w.lower() for w in _NUMBER_WORD_RE.findall(text)})
     units = sorted({w.lower() for w in _UNIT_RE.findall(text)})
     entities = set()
-    for m in _PROPER_NOUN_RE.finditer(text):
-        cand = m.group(0).strip()
-        if cand.lower() in _SENTENCE_START_STOP:
-            continue
-        entities.add(cand)
-    words = re.findall(r"[a-zA-Z]{4,}", text.lower())
+    weak_entities = set()
+    for sentence in _SENTENCE_SPLIT_RE.split(text):
+        for m in _PROPER_NOUN_RE.finditer(sentence):
+            cand = m.group(0).strip()
+            if cand.lower() in _SENTENCE_START_STOP:
+                continue
+            entities.add(cand)
+            if " " not in cand and m.start() == 0:
+                weak_entities.add(cand)
+    # strip apostrophes before word-splitting so a contraction ("didn't")
+    # tokenizes as one clean word ("didnt") instead of splitting into a
+    # malformed fragment on the apostrophe -- text is already
+    # curly-quote-normalized above, so this catches both quote styles.
+    words = re.findall(r"[a-zA-Z]{4,}", text.replace("'", "").lower())
     terms = sorted({w for w in words if w not in _TERM_STOPWORDS})
-    return {"numbers": numbers, "units": units, "entities": sorted(entities), "terms": terms}
+    return {"numbers": numbers, "units": units, "entities": sorted(entities),
+            "weak_entities": sorted(weak_entities), "terms": terms}
 
 
 def _make_claim(prefix, idx, text, source_kind, source_ref):

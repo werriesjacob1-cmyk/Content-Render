@@ -3473,17 +3473,37 @@ def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name=
     json_object mode + a giant prose paragraph describing the manifest shape
     + after-the-fact repair. Raises on any failure -- including the account/
     model simply not supporting structured output -- exactly like every other
-    provider call here, so callers fall back the same way they already do."""
-    body = json.dumps({
+    provider call here, so callers fall back the same way they already do.
+
+    2026-09-04 V2.1 fix (mission Phase 6): the live bakeoff showed Groq's
+    gpt-oss-20b/120b returning HTTP 400 "max completion tokens reached
+    before generating a valid document" on 2/5 topics, both repeatably
+    across separate runs. Root cause, confirmed against Groq's own docs:
+    openai/gpt-oss-* are reasoning models that support a `reasoning_effort`
+    parameter ("low"/"medium"/"high", default "medium" when unset) -- our
+    calls never set it, so the model spent an unpredictable, sometimes-large
+    share of the max_tokens budget on chain-of-thought before ever emitting
+    the JSON payload (live evidence: one successful call used 1247 of 1573
+    completion tokens purely on reasoning). This is the same class of bug
+    CLAUDE.md documents for Gemini's thinking budget, now showing up here.
+    Fix is two-part, not a blind token-budget increase alone:
+    reasoning_effort="low" for this well-scoped extraction/repair task (it
+    doesn't need heavy chain-of-thought), PLUS a modest max_tokens raise
+    (2000->3000) for real headroom, since even successful live calls were
+    already using up to ~1979 completion tokens with the default effort."""
+    body_dict = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7,
-        "max_tokens": 2000,
+        "max_tokens": 3000,
         "response_format": {
             "type": "json_schema",
             "json_schema": {"name": schema_name, "schema": schema, "strict": True},
         },
-    }).encode()
+    }
+    if "gpt-oss" in model:
+        body_dict["reasoning_effort"] = "low"
+    body = json.dumps(body_dict).encode()
     req = urllib.request.Request(
         url, data=body,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
@@ -3544,26 +3564,50 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
     mechanical claim inventory (writer_v2.build_claim_inventory, from
     research_dossier()'s existing fail-closed grounded call, reshaped not
     re-asked) + a lean citation-aware writer prompt, then a BOUNDED targeted
-    repair loop (writer_v2_repair, 2026-09-03 traceability/repair mission):
+    repair loop (writer_v2_repair, 2026-09-03/04 traceability/repair
+    mission, V2.1 hard/soft + semantic-support redesign):
 
-      draft -> check_traceability() (Phase 3, mechanical provenance floor)
+      draft -> check_traceability() (Phase 1/3: HARD deterministic checks
+               only -- claim-ID integrity, numbers, units, multi-word/mid-
+               sentence entities. General content-word novelty is SOFT
+               telemetry now, never blocking -- see writer_v2_repair's own
+               docstrings for why the old "any unrecognized word blocks"
+               design structurally overfired on natural paraphrase)
             -> validate()/score_script() (the SAME production quality gate
                the legacy path uses -- never touched, never lowered)
-            -> a small independent creative critic (Phase 5)
-            -> classify_repair() (Phase 6 -- provenance violations always
-               outrank the critic's own diagnosis)
-            -> a targeted repair call touching ONLY the flagged beats
+            -> a small independent creative critic that ALSO fact-checks
+               each beat's MEANING against its exact cited claim text
+               (Phase 2/5 semantic-support layer -- the backstop for a
+               hallucination using only ordinary words and no number/proper
+               noun, which the mechanical layer cannot see at all)
+            -> classify_repair() (Phase 3: three-tier priority -- TIER 1
+               fatal factual integrity (hard mechanical + semantic) always
+               wins; TIER 2 a validate() floor failure, mapped to its actual
+               beat instead of only gating acceptance; TIER 3 the critic's
+               own craft diagnosis, only reached when 1 and 2 are clean)
+            -> a targeted repair call touching ONLY the flagged beats,
+               escalated (Phase 4) if the previous round's repair for the
+               same beats came back byte-identical (a real stall live
+               testing found)
       ...for up to writer_v2_repair.MAX_REPAIR_ROUNDS rounds, keeping every
-      candidate seen. The final result is select_best_candidate()'s pick: the
-      highest-scoring candidate with ZERO traceability violations AND a clean
-      validate() pass, or None (abort) if no round ever produced one -- a
-      failing-clean abort is success, per the standing quality-gate policy.
+      candidate seen (critic runs on EVERY round including the last, so the
+      terminal candidate is still semantically fact-checked even when no
+      further repair round remains -- bounds total calls at
+      2*MAX_REPAIR_ROUNDS+2, not the older 2*MAX_REPAIR_ROUNDS+1). The final
+      result is select_best_candidate()'s pick: the highest-scoring
+      candidate with ZERO hard violations (mechanical + semantic) AND a
+      clean validate() pass, using the critic's craft average to break a
+      near-tie so a later, more-hedged repair round doesn't automatically
+      beat an earlier, livelier one -- or None (abort) if no round ever
+      produced one. A failing-clean abort is success, per the standing
+      quality-gate policy.
 
     Returns (manifest_or_None, debug). debug always carries: treatment,
     claim_inventory provenance, initial prompt size, every network call made
     (provider/model/usage/structured, across draft+critic+repair rounds),
-    repair_rounds actually run, each round's traceability-violation count and
-    score, and the final accepted/aborted verdict."""
+    repair_rounds actually run, each round's mechanical/semantic violation
+    counts + full script text + critic verdict + repair plan (with its
+    tier), and the final accepted/aborted verdict."""
     treatment = writer_v2.select_treatment((fact or {}).get("id"), recent_treatments)
     dossier = research_dossier(fact) if fact else []
     grounded = bool(dossier)  # research_dossier() only returns non-empty on a genuine grounded (or explicit ungrounded-opt-out) success -- see its own docstring
@@ -3593,17 +3637,36 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
 
     candidates = []
     round_idx = 0
+    stalled = False
     while True:
         num_beats = len(writer_out.get("beats") or [])
-        violations = wr2_repair.check_traceability(writer_out, claim_inventory)
+        mech_violations = wr2_repair.check_traceability(writer_out, claim_inventory)
+        mech_hard = wr2_repair.hard_violations(mech_violations)
         m = writer_v2.assemble_manifest_v2(writer_out, fact, treatment, job_name=job_name,
                                            cta_style=cta_style, banned_query_re=UNSTOCKABLE_Q)
         verr = validate(m, job_name, fact=fact)
         score = None if verr else score_script(m, fact=fact, cta_style=cta_style)
+
+        # The semantic critic runs EVERY round, including the last -- it is
+        # the only backstop for a hallucination with no number/proper noun,
+        # so skipping it on the terminal round would ship (or wrongly
+        # abort) that candidate without ever fact-checking it.
+        critic_prompt = wr2_repair.build_critic_prompt(writer_out, claim_inventory, mech_violations)
+        craw, _ = _v2_structured_call(critic_prompt, wr2_repair.CRITIC_SCHEMA, "critic_verdict", calls)
+        critic_verdict, cerr = (None, "critic call failed")
+        if craw is not None:
+            critic_verdict, cerr = _v2_parse_json_obj(craw)
+        semantic_violations = wr2_repair.derive_semantic_violations(critic_verdict, num_beats)
+        all_hard = mech_hard + semantic_violations
+        critic_avg = wr2_repair.critic_average(critic_verdict)
+
         round_info = {
-            "round": round_idx, "violation_count": len(violations),
-            "violations": [v.to_dict() for v in violations[:20]],
-            "validate_err": verr, "score": score,
+            "round": round_idx,
+            "mechanical_violation_count": len(mech_violations), "mechanical_hard_count": len(mech_hard),
+            "semantic_violation_count": len(semantic_violations),
+            "violations": [v.to_dict() for v in (mech_violations + semantic_violations)[:30]],
+            "validate_err": verr, "score": score, "critic_avg": critic_avg,
+            "critic_error": cerr, "critic_verdict": critic_verdict, "stalled_going_in": stalled,
             # full text of this round's candidate -- needed for human editorial
             # review even when the round never reaches acceptance (an aborted
             # run's last round is still worth reading, not just its violation
@@ -3612,33 +3675,19 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
             "beats": [s.get("voiceover") for s in m.get("scenes", [])],
         }
         debug["rounds"].append(round_info)
-        candidates.append({"writer_out": writer_out, "manifest": m, "violations": violations,
-                           "validate_err": verr, "score": score})
+        candidates.append({"writer_out": writer_out, "manifest": m, "hard_violations": all_hard,
+                           "validate_err": verr, "score": score, "critic_avg": critic_avg})
+
+        plan = wr2_repair.classify_repair(mech_hard, semantic_violations, verr, critic_verdict, num_beats)
+        round_info["repair_plan"] = plan
 
         if round_idx >= wr2_repair.MAX_REPAIR_ROUNDS:
             break
-
-        # Even a mechanically-clean, validate()-passing draft still gets ONE
-        # critic look (below) rather than an early return here: a high
-        # score_script() total can hide a structurally-repairable issue (see
-        # the 2026-07-26 Pluto coherence-gate precedent) that only a craft
-        # judge, not the rubric, would catch. classify_repair() still only
-        # acts on it if the critic actually names something concrete.
-
-        critic_prompt = wr2_repair.build_critic_prompt(writer_out, claim_inventory, violations)
-        craw, _ = _v2_structured_call(critic_prompt, wr2_repair.CRITIC_SCHEMA, "critic_verdict", calls)
-        critic_verdict, cerr = (None, "critic call failed")
-        if craw is not None:
-            critic_verdict, cerr = _v2_parse_json_obj(craw)
-        round_info["critic_error"] = cerr
-        round_info["critic_verdict"] = critic_verdict
-
-        plan = wr2_repair.classify_repair(critic_verdict, violations, num_beats)
-        round_info["repair_plan"] = plan
         if plan["repair_type"] == "NONE":
             break  # nothing actionable -- stop spending rounds, let selection decide
 
-        repair_prompt = wr2_repair.build_repair_prompt(writer_out, claim_inventory, treatment, plan)
+        repair_prompt = wr2_repair.build_repair_prompt(writer_out, claim_inventory, treatment, plan,
+                                                        stalled=stalled)
         rraw, _ = _v2_structured_call(repair_prompt, wr2_repair.REPAIR_SCHEMA, "repair_output", calls)
         if rraw is None:
             round_info["repair_error"] = "repair call failed on every provider"
@@ -3660,7 +3709,11 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
         if rerr:
             round_info["repair_error"] = rerr
             break
-        writer_out = wr2_repair.merge_repair(writer_out, repair_out.get("repairs") or [], num_beats=num_beats)
+
+        new_writer_out = wr2_repair.merge_repair(writer_out, repair_out.get("repairs") or [],
+                                                 num_beats=num_beats)
+        stalled = wr2_repair.detect_stall(writer_out, new_writer_out, plan.get("target_beats") or [], num_beats)
+        writer_out = new_writer_out
         round_idx += 1
 
     best = wr2_repair.select_best_candidate(candidates)

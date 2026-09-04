@@ -2982,35 +2982,30 @@ def test_writer_v2_visual_scout():
 
 
 def test_writer_v2_traceability():
-    section("writer_v2_repair.check_traceability: the mechanical claim-support validator (2026-09-03 mission)")
+    section("writer_v2_repair.check_traceability V2.1: HARD deterministic checks (2026-09-04 redesign)")
+    # 2026-09-04 V2.1 note: unsupported_term (general content-word novelty) and
+    # single-word sentence-initial entities are now SOFT (telemetry only, never
+    # block) per the mission's explicit instruction -- only numbers/units/
+    # multi-word-or-mid-sentence entities/claim-id integrity remain HARD. A
+    # concrete-object hallucination with NO number and NO proper noun (like the
+    # bare phrase "razor blade" on its own) is intentionally NOT caught by this
+    # mechanical layer anymore -- see test_writer_v2_semantic_support below for
+    # where that class of case is now handled (the critic's semantic layer).
 
-    # ---- the mission's three explicit regression cases: MUST reject unsupported, MUST accept supported ----
-    stomach = {"id": "stomach_lining", "domain": "body",
-              "fact": "Your stomach acid is strong enough to dissolve metal.",
-              "wow": "That acid is strong enough to dissolve a razor blade or a nail, yet a fresh layer of "
-                     "protective cells rebuilds the wall every 3 to 4 days.",
-              "whatif": "", "angle": "", "key_terms": ["stomach acid"]}
-    inv_stomach = W2.build_claim_inventory(stomach, [], False)
-    cbi_stomach = {c["claim_id"]: c for c in inv_stomach["claims"]}
-    check(bool(WR._check_line(1, "The acid could dissolve a razor blade.", ["base_001"], cbi_stomach,
-                              inv_stomach["key_terms"])),
-          "RAZOR BLADE: rejected when cited only from a claim that never mentions it (base_001, the plain metal claim)")
-    check(not WR._check_line(1, "The acid is strong enough to dissolve razor blades.", ["base_002"], cbi_stomach,
-                             inv_stomach["key_terms"]),
-          "RAZOR BLADE: accepted (even with plural paraphrase) when cited from the claim that genuinely contains it")
-
+    # ---- Empire State Building / three months of electricity: still HARD (numbers/entities) ----
     neutron = {"id": "neutron_star_spoon", "domain": "space",
               "fact": "A teaspoon of neutron star material would weigh about a billion tons.",
               "wow": "That is roughly the same mass as a mountain the size of Mount Everest, compressed into a spoon.",
               "whatif": "", "angle": "", "key_terms": []}
     inv_neutron = W2.build_claim_inventory(neutron, [], False)
     cbi_neutron = {c["claim_id"]: c for c in inv_neutron["claims"]}
-    check(bool(WR._check_line(1, "Like compressing the Empire State Building into a spoon.", ["base_001"],
-                              cbi_neutron, inv_neutron["key_terms"])),
-          "EMPIRE STATE BUILDING: rejected when cited from a claim that never mentions it")
-    check(not WR._check_line(1, "Like compressing Mount Everest into a spoon.", ["base_002"], cbi_neutron,
-                             inv_neutron["key_terms"]),
-          "EMPIRE STATE BUILDING (Mount Everest, the real supported comparison): accepted when genuinely cited")
+    check(bool(WR.hard_violations(WR._check_line(
+        1, "Like compressing the Empire State Building into a spoon.", ["base_001"], cbi_neutron,
+        inv_neutron["key_terms"]))),
+          "EMPIRE STATE BUILDING: HARD-rejected (multi-word entity) when cited from a claim that never mentions it")
+    check(not WR.hard_violations(WR._check_line(
+        1, "Like compressing Mount Everest into a spoon.", ["base_002"], cbi_neutron, inv_neutron["key_terms"])),
+          "EMPIRE STATE BUILDING (Mount Everest, the real supported comparison): no HARD violation when genuinely cited")
 
     lightning = {"id": "lightning_power", "domain": "weather",
                 "fact": "A single lightning bolt carries enormous energy.",
@@ -3018,14 +3013,16 @@ def test_writer_v2_traceability():
                 "whatif": "", "angle": "", "key_terms": []}
     inv_lightning = W2.build_claim_inventory(lightning, [], False)
     cbi_lightning = {c["claim_id"]: c for c in inv_lightning["claims"]}
-    check(bool(WR._check_line(1, "That bolt could power a home for three months.", ["base_002"], cbi_lightning,
-                              inv_lightning["key_terms"])),
-          "THREE MONTHS OF ELECTRICITY: rejected as a magnitude inflation of the real 'one day' claim")
-    check(not WR._check_line(1, "That single bolt carries enough power for a home, for one day.", ["base_002"],
-                             cbi_lightning, inv_lightning["key_terms"]),
-          "THREE MONTHS OF ELECTRICITY: the actually-supported 'one day' framing is accepted")
+    check(bool(WR.hard_violations(WR._check_line(
+        1, "That bolt could power a home for three months.", ["base_002"], cbi_lightning,
+        inv_lightning["key_terms"]))),
+          "THREE MONTHS OF ELECTRICITY: HARD-rejected (number+unit) as a magnitude inflation of 'one day'")
+    check(not WR.hard_violations(WR._check_line(
+        1, "That single bolt carries enough power for a home, for one day.", ["base_002"], cbi_lightning,
+        inv_lightning["key_terms"])),
+          "THREE MONTHS OF ELECTRICITY: no HARD violation for the actually-supported 'one day' framing")
 
-    # ---- Phase 9's other required regression constructs (invented specifics of each named category) ----
+    # ---- number/unit/date/percentage/magnitude-comparison regressions (still HARD) ----
     octopus = {"id": "octopus_hearts", "domain": "animals", "fact": "An octopus has three hearts.",
               "wow": "Two hearts pump blood to the gills and one pumps it to the rest of the body; the main "
                      "heart actually stops beating when the octopus swims.",
@@ -3033,40 +3030,89 @@ def test_writer_v2_traceability():
     inv_oct = W2.build_claim_inventory(octopus, [], False)
     cbi_oct = {c["claim_id"]: c for c in inv_oct["claims"]}
     kt_oct = inv_oct["key_terms"]
-    check(bool(WR._check_line(1, "This happens in 73 percent of octopuses.", ["base_001"], cbi_oct, kt_oct)),
-          "invented PERCENTAGE is rejected")
-    check(bool(WR._check_line(1, "This was discovered in 1987.", ["base_001"], cbi_oct, kt_oct)),
-          "invented DATE is rejected")
-    check(bool(WR._check_line(1, "This is called the branchial heart reflex syndrome.", ["base_002"], cbi_oct, kt_oct)),
-          "invented SCIENTIFIC ENTITY NAME is rejected")
-    check(bool(WR._check_line(1, "That is twice as many hearts as a human has chambers.", ["base_001"], cbi_oct, kt_oct)),
-          "invented QUANTITATIVE COMPARISON (against an object absent from the cited claim) is rejected")
-    check(not WR._check_line(1, "The main heart stops beating while it is swimming.", ["base_002"], cbi_oct, kt_oct),
-          "a genuine, differently-inflected paraphrase of real cited content is accepted (no false positive)")
+    check(bool(WR.hard_violations(WR._check_line(1, "This happens in 73 percent of octopuses.", ["base_001"],
+                                                  cbi_oct, kt_oct))),
+          "invented PERCENTAGE is HARD-rejected (number+unit)")
+    check(bool(WR.hard_violations(WR._check_line(1, "This was discovered in 1987.", ["base_001"], cbi_oct, kt_oct))),
+          "invented DATE is HARD-rejected (number)")
+    check(bool(WR.hard_violations(WR._check_line(
+        1, "That is twice as many hearts as a human has chambers.", ["base_001"], cbi_oct, kt_oct))),
+          "invented QUANTITATIVE COMPARISON ('twice', a magnitude-multiplier word) is HARD-rejected")
+    check(not WR.hard_violations(WR._check_line(
+        1, "The main heart stops beating while it is swimming.", ["base_002"], cbi_oct, kt_oct)),
+          "a genuine, differently-inflected paraphrase of real cited content has no HARD violation")
 
-    # ---- connective/rhetorical language must NEVER need a citation ----
+    # invented all-lowercase scientific entity name ("branchial heart reflex syndrome") has NO number
+    # and NO capitalized word -- this is now correctly SOFT-only mechanically (telemetry), not HARD;
+    # catching it is the semantic layer's job now (see test_writer_v2_semantic_support)
+    sci_entity_v = WR._check_line(1, "This is called the branchial heart reflex syndrome.", ["base_002"],
+                                  cbi_oct, kt_oct)
+    check(not WR.hard_violations(sci_entity_v) and bool(WR.soft_violations(sci_entity_v)),
+          "invented all-lowercase SCIENTIFIC ENTITY NAME (no number/proper noun) is SOFT-only mechanically -- "
+          "no word-level signal exists for it, by design; the semantic critic layer is the real backstop")
+
+    # ---- connective/rhetorical language must NEVER produce a HARD violation ----
     connective_lines = [
         "Here's the weird part.", "But that creates a problem.", "Now look closer.",
         "So why does this happen?", "It sounds strange, but it is true.",
         "You would never guess what happens next.",
     ]
     for line in connective_lines:
-        check(not WR._check_line(1, line, [], {}, []),
-              f"pure connective language never trips the validator, even fully uncited: {line!r}")
+        check(not WR.hard_violations(WR._check_line(1, line, [], {}, [])),
+              f"pure connective language never produces a HARD violation, even fully uncited: {line!r}")
 
-    # ---- the closed connective-language loophole: the WRITER doesn't get to self-declare a line
-    # connective just by leaving it uncited -- the moment an uncited line contains real factual
-    # payload, that's a violation, not a free pass ----
-    check(bool(WR._check_line(1, "The acid can dissolve a razor blade.", [], cbi_stomach, kt_oct)),
-          "an UNCITED line that names something concrete is still flagged (uncited_factual_content) -- "
-          "leaving source_claim_ids empty is not itself an escape hatch")
+    # ---- natural paraphrase using ORDINARY WORDS ABSENT FROM THE SOURCE TEXT must not be HARD-blocked
+    # (this is the actual bug class the V2.1 redesign exists to fix -- live testing found 20-50
+    # violations per real script, almost all ordinary descriptive vocabulary like this) ----
+    mauna = {"id": "mauna_kea", "domain": "earth",
+            "fact": "Everest is the highest point above sea level, but Mauna Kea in Hawaii is the tallest "
+                    "mountain on Earth measured from its base on the ocean floor.",
+            "whatif": "", "wow": "", "angle": "", "key_terms": []}
+    inv_mauna = W2.build_claim_inventory(mauna, [], False)
+    cbi_mauna = {c["claim_id"]: c for c in inv_mauna["claims"]}
+    paraphrases = [
+        "Mauna Kea rises far above Everest once you measure from the seafloor.",
+        "It turns out the tallest mountain isn't the one everybody assumes.",
+        "Everything changes once you start measuring from underwater instead.",
+    ]
+    for p in paraphrases:
+        check(not WR.hard_violations(WR._check_line(1, p, ["base_001"], cbi_mauna, inv_mauna["key_terms"])),
+              f"natural paraphrase with ordinary words not in the source text produces no HARD violation: {p!r}")
 
-    # ---- unknown/nonexistent claim IDs are rejected ----
+    # ---- topic-defining ordinary noun ("lining" for a stomach_lining fact) must not be HARD-blocked
+    # just because it's absent from ONE specific cited claim's exact wording ----
+    stomach = {"id": "stomach_lining", "domain": "body",
+              "fact": "Your stomach lining rebuilds itself every few days.",
+              "wow": "That acid is strong enough to dissolve a nail.",
+              "whatif": "", "angle": "", "key_terms": ["stomach acid"]}
+    inv_stomach = W2.build_claim_inventory(stomach, [], False)
+    cbi_stomach = {c["claim_id"]: c for c in inv_stomach["claims"]}
+    check(not WR.hard_violations(WR._check_line(
+        1, "That fresh lining keeps the acid from ever reaching too deep.", ["base_002"], cbi_stomach,
+        inv_stomach["key_terms"])),
+          "the topic's own defining ordinary noun ('lining') produces no HARD violation even cited from "
+          "a claim whose exact text doesn't repeat it")
+
+    # ---- the closed connective-language loophole: an UNCITED line with real HARD factual payload
+    # (a number/unit/strong entity) is still HARD-flagged -- leaving source_claim_ids empty is not an
+    # escape hatch for genuinely concrete claims ----
+    check(bool(WR.hard_violations(WR._check_line(1, "That single bolt lasted exactly 12 seconds.", [],
+                                                  cbi_lightning, []))),
+          "an UNCITED line naming a real number+unit is still HARD-flagged -- empty source_claim_ids is "
+          "not itself an escape hatch for concrete claims")
+    # but an uncited PURELY ORDINARY-VOCABULARY line (no number, no strong entity) is soft-only now,
+    # not hard -- deferred to the semantic layer same as the cited case
+    ordinary_uncited = WR._check_line(1, "The acid can dissolve almost anything given enough time.", [],
+                                      cbi_stomach, [])
+    check(not WR.hard_violations(ordinary_uncited),
+          "an uncited line with only ordinary vocabulary (no number/strong entity) is soft-only, not HARD")
+
+    # ---- unknown/nonexistent claim IDs are still HARD-rejected ----
     v_unknown = WR._check_line(1, "Some line.", ["claim_does_not_exist"], cbi_stomach, [])
-    check(any(v.kind == "unknown_claim_id" for v in v_unknown),
-          "citing a claim_id that does not exist in the packet is its own violation kind")
+    check(any(v.kind == "unknown_claim_id" and v.severity == "hard" for v in v_unknown),
+          "citing a claim_id that does not exist in the packet is HARD (its own violation kind)")
 
-    # ---- full-script check_traceability(): hook=0, beats=1..N, payoff=N+1 ----
+    # ---- full-script check_traceability(): hook=0, beats=1..N, payoff=N+1; hard_violations() filters ----
     writer_out = {
         "hook": "An octopus quietly runs on three separate hearts at once.",
         "hook_source_claim_ids": ["base_001"],
@@ -3077,11 +3123,12 @@ def test_writer_v2_traceability():
         "payoff": "Swimming is the one thing its own body works against.", "payoff_source_claim_ids": ["base_002"],
     }
     all_v = WR.check_traceability(writer_out, inv_oct)
+    hard_v = WR.hard_violations(all_v)
     check(all(0 <= v.beat_index <= 3 for v in all_v), "beat_index stays within hook(0)..beats(1,2)..payoff(3) range")
-    check(any(v.beat_index == 2 and v.value == "73" for v in all_v),
-          "check_traceability finds the invented '73 percent' inside beat_index 2 specifically")
-    check(not any(v.beat_index in (0, 1) for v in all_v),
-          "the clean hook and beat 1 produce no violations of their own")
+    check(any(v.beat_index == 2 and v.value == "73" and v.severity == "hard" for v in all_v),
+          "check_traceability finds the invented '73 percent' inside beat_index 2 as a HARD violation")
+    check(not any(v.beat_index in (0, 1) for v in hard_v),
+          "the clean hook and beat 1 produce no HARD violations of their own")
 
     # ---- never raises on malformed/missing input ----
     try:
@@ -3091,6 +3138,163 @@ def test_writer_v2_traceability():
         check(v_none == [], "None writer_out/inventory -> zero violations, no crash (fails closed, not loud)")
     except Exception as e:  # noqa: BLE001
         check(False, f"check_traceability crashed on malformed input: {type(e).__name__}: {e}")
+
+
+def test_writer_v2_entity_hard_soft_split():
+    section("writer_v2._extract_factual_tokens / writer_v2_repair: entity HARD/SOFT split (V2.1 Phase 1)")
+    # multi-word capitalized phrases are HARD regardless of position (near-unambiguous signal)
+    tok = W2._extract_factual_tokens("Empire State Building looms over the block.")
+    check("Empire State Building" in tok["entities"] and "Empire State Building" not in tok["weak_entities"],
+          "a multi-word proper-noun phrase is a full-strength (non-weak) entity even at sentence start")
+
+    # a single-word entity used MID-sentence is HARD (this is how real comparisons are phrased)
+    tok3 = W2._extract_factual_tokens("That single bolt struck near Everest last year.")
+    check("Everest" in tok3["entities"] and "Everest" not in tok3["weak_entities"],
+          "a single-word entity used mid-sentence is a full-strength (non-weak) entity")
+
+    # a single-word capitalized word at the START of its own sentence is SOFT/weak -- live evidence
+    # found "Zoom", "Measured", "Today", "Our", "Impossible" all misfiring as entities this way
+    for line, word in [("Zoom in and you see the acid working.", "Zoom"),
+                       ("Measured from base to summit, it towers over Everest.", "Measured"),
+                       ("Today the record still stands.", "Today"),
+                       ("Impossible as it sounds, the math checks out.", "Impossible")]:
+        tok4 = W2._extract_factual_tokens(line)
+        check(word in tok4["weak_entities"],
+              f"sentence-initial single-word capitalization is flagged weak/soft, not a strong entity: {line!r}")
+
+    # end-to-end: a weak/soft entity never produces a HARD violation even when totally uncited
+    v = WR._check_line(1, "Zoom in and you see the acid working.", [], {}, [])
+    check(not WR.hard_violations(v), "an uncited sentence-initial single-word capitalization is not HARD-flagged")
+
+    # end-to-end: a genuinely unsupported STRONG entity (multi-word or mid-sentence) is still HARD
+    fact = {"id": "x", "fact": "A single lightning bolt carries enormous energy.", "wow": "", "whatif": "",
+           "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    cbi = {c["claim_id"]: c for c in inv["claims"]}
+    v2 = WR._check_line(1, "That bolt struck the Golden Gate Bridge directly.", ["base_001"], cbi, [])
+    check(bool(WR.hard_violations(v2)), "a genuinely unsupported multi-word entity stays HARD-caught")
+
+
+def test_writer_v2_number_normalization():
+    section("writer_v2_repair: numeric value normalization (V2.1 -- 'thousand' vs '1,000')")
+    fact = {"id": "mauna_kea", "domain": "earth", "fact": "x",
+           "wow": "From base to summit Mauna Kea is more than 1,000 metres taller than Everest.",
+           "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    cbi = {c["claim_id"]: c for c in inv["claims"]}
+    v_word_form = WR._check_line(1, "Mauna Kea rises more than a thousand metres taller than Everest.",
+                                 ["base_002"], cbi, [])
+    check(not WR.hard_violations(v_word_form),
+          "'thousand' (spelled word) is accepted as equivalent to the cited claim's '1,000' (digit form) -- "
+          "same fact, different form, not a new unsupported number")
+    v_wrong_value = WR._check_line(1, "Mauna Kea rises more than a million metres taller than Everest.",
+                                   ["base_002"], cbi, [])
+    check(bool(WR.hard_violations(v_wrong_value)),
+          "a genuinely DIFFERENT value ('million' vs the cited '1,000') is still correctly rejected -- "
+          "normalization matches equivalent values, it doesn't blanket-allow any number word")
+
+    check(WR._number_value("1,000") == 1000.0, "_number_value parses a comma-separated digit string")
+    check(WR._number_value("thousand") == 1000, "_number_value maps the word form to the same value")
+    check(WR._number_value("not-a-number") is None, "_number_value returns None for unparseable input, never raises")
+
+
+def test_writer_v2_punctuation_normalization():
+    section("writer_v2._normalize_text: curly-quote/apostrophe tokenization fix (V2.1 Phase 5)")
+    curly = "Your stomach lining is constantly bathed in strong acid that could digest it if it didn’t rebuild."
+    straight = curly.replace("’", "'")
+    tok_curly = W2._extract_factual_tokens(curly)
+    tok_straight = W2._extract_factual_tokens(straight)
+    check("didn" not in tok_curly["terms"] and "didn" not in tok_straight["terms"],
+          "a contraction never leaves a malformed 'didn' fragment in EITHER quote style")
+    check(tok_curly["terms"] == tok_straight["terms"],
+          "curly and straight apostrophe forms of the same text tokenize identically")
+
+    v_curly = WR._check_line(1, curly, [], {}, [])
+    v_straight = WR._check_line(1, straight, [], {}, [])
+    check([v.value for v in v_curly] == [v.value for v in v_straight],
+          "check_traceability behaves identically regardless of curly vs straight apostrophe")
+    check(not any(v.value == "didn" for v in v_curly + v_straight),
+          "no violation is ever raised over the malformed 'didn' fragment itself")
+
+    # em-dash normalization doesn't break tokenization either
+    tok_dash = W2._extract_factual_tokens("The acid—dangerous as it sounds—rebuilds daily.")
+    check("dangerous" in tok_dash["terms"], "em-dash-separated clauses still tokenize their words normally")
+
+
+def test_writer_v2_semantic_support():
+    section("writer_v2_repair semantic-support layer: critic-derived hard violations (V2.1 Phase 2)")
+    s = WR.CRITIC_SCHEMA
+    check("claim_support" in s["required"], "critic schema requires claim_support (PART 2, the fact-check)")
+    cs_item = s["properties"]["claim_support"]["items"]
+    check(set(cs_item["required"]) == {"beat_index", "verdict", "unsupported_proposition"},
+          "each claim_support entry requires beat_index + verdict + unsupported_proposition")
+    check(set(cs_item["properties"]["verdict"]["enum"]) ==
+          {"SUPPORTED", "SUPPORTED_PARAPHRASE", "UNSUPPORTED_ADDITION", "CONTRADICTED", "CONNECTIVE_OR_EDITORIAL"},
+          "verdict is the exact 5-way taxonomy the mission specified")
+    check("PROVENANCE" not in s["properties"]["repair_type"]["enum"],
+          "PROVENANCE is no longer a critic-chosen repair_type -- claim support now lives entirely in "
+          "PART 2's claim_support array, which always routes through TIER 1 regardless of repair_type")
+
+    # build_critic_prompt gives the critic the EXACT cited claim TEXT per beat, not just IDs -- it
+    # cannot fact-check meaning against an opaque ID
+    fact = {"fact": "An octopus has three hearts.", "wow": "Two pump to the gills, one pumps to the body.",
+           "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    writer_out = {"hook": "h", "hook_source_claim_ids": ["base_001"],
+                 "beats": [{"voiceover": "This happens in 73 percent of octopuses.",
+                           "source_claim_ids": ["base_001"]}],
+                 "payoff": "p", "payoff_source_claim_ids": []}
+    prompt = WR.build_critic_prompt(writer_out, inv, [])
+    check("An octopus has three hearts" in prompt,
+          "the critic prompt includes the actual cited claim TEXT (not just an opaque ID) so it can fact-check")
+    check(W2.estimate_tokens(prompt) < 1500, "critic prompt (now with claim_support instructions) stays compact")
+
+    # derive_semantic_violations: the WIRING from a critic verdict to a hard violation. The critic's
+    # own JUDGMENT quality (would it really flag "razor blade" live) is proven by the live bakeoff,
+    # not here -- this proves that WHEN it does flag something, the pipeline correctly treats it as hard
+    critic_verdict = {
+        "scores": {k: 7 for k in WR.CRITIC_SCORE_DIMENSIONS},
+        "claim_support": [
+            {"beat_index": 0, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""},
+            {"beat_index": 1, "verdict": "UNSUPPORTED_ADDITION", "unsupported_proposition": "invented 73 percent stat"},
+            {"beat_index": 2, "verdict": "CONTRADICTED", "unsupported_proposition": "says two hearts stop, not one"},
+            {"beat_index": 3, "verdict": "CONNECTIVE_OR_EDITORIAL", "unsupported_proposition": ""},
+        ],
+        "repair_type": "NONE", "target_beats": [], "diagnosis": "", "must_preserve": [],
+    }
+    sem = WR.derive_semantic_violations(critic_verdict, num_beats=2)
+    check(len(sem) == 2, "only UNSUPPORTED_ADDITION and CONTRADICTED verdicts become violations "
+                         "(SUPPORTED_PARAPHRASE and CONNECTIVE_OR_EDITORIAL do not)")
+    check(all(v.severity == "hard" for v in sem), "every semantic violation is severity=hard")
+    check({v.beat_index for v in sem} == {1, 2}, "semantic violations land on the exact beat_index the critic named")
+    check(any(v.kind == "semantic_unsupported_addition" for v in sem), "UNSUPPORTED_ADDITION -> its own kind")
+    check(any(v.kind == "semantic_contradicted" for v in sem), "CONTRADICTED -> its own kind")
+
+    # the classic "razor blade" case: NO number, NO proper noun -- the mechanical layer alone would
+    # NOT catch this (proven in test_writer_v2_traceability), but WHEN the critic flags it semantically,
+    # it correctly becomes a hard, tier-1 violation driving PROVENANCE repair -- this is the mission's
+    # own explicit design: the semantic layer is the backstop for exactly this class of hallucination
+    razor_verdict = {"scores": {k: 6 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                     "claim_support": [{"beat_index": 1, "verdict": "UNSUPPORTED_ADDITION",
+                                       "unsupported_proposition": "claims the acid could dissolve a razor blade"}],
+                     "repair_type": "NONE", "target_beats": [], "diagnosis": "", "must_preserve": []}
+    razor_sem = WR.derive_semantic_violations(razor_verdict, num_beats=3)
+    check(len(razor_sem) == 1 and razor_sem[0].beat_index == 1,
+          "a 'razor blade'-class semantic violation (no number/proper noun) is correctly derived as hard")
+    plan = WR.classify_repair([], razor_sem, None, {"repair_type": "HOOK", "target_beats": [0]}, num_beats=3)
+    check(plan["repair_type"] == "PROVENANCE" and plan["target_beats"] == [1],
+          "a semantic-only violation still drives TIER 1 PROVENANCE repair, overriding the critic's own "
+          "unrelated craft repair_type -- proving the end-to-end razor-blade-class case is still caught "
+          "by the OVERALL system even though the mechanical layer alone cannot see it")
+
+    # malformed/missing input never raises
+    check(WR.derive_semantic_violations(None, 3) == [], "None critic_verdict -> empty list, no crash")
+    check(WR.derive_semantic_violations({}, 3) == [], "empty critic_verdict -> empty list, no crash")
+    check(WR.derive_semantic_violations({"claim_support": [{"beat_index": 99, "verdict": "CONTRADICTED",
+                                                            "unsupported_proposition": "x"}]}, 3) == [],
+          "an out-of-range beat_index in claim_support is dropped, not applied")
+    check(WR.derive_semantic_violations({"claim_support": "not-a-list"}, 3) == [],
+          "a malformed (non-list) claim_support never raises")
 
 
 def test_writer_v2_claim_inventory_whatif_question():
@@ -3162,72 +3366,133 @@ def test_writer_v2_manifest_preserves_claim_ids():
 
 
 def test_writer_v2_repair_critic():
-    section("writer_v2_repair critic prompt + schema (Phase 5)")
+    section("writer_v2_repair critic prompt + schema (Phase 5, V2.1)")
     s = WR.CRITIC_SCHEMA
-    check(set(s["required"]) == {"scores", "repair_type", "target_beats", "diagnosis", "must_preserve"},
-          "critic schema requires exactly the 5 top-level fields the mission specified")
+    check(set(s["required"]) == {"scores", "claim_support", "repair_type", "target_beats", "diagnosis",
+                                 "must_preserve"},
+          "critic schema requires the 6 top-level fields (V2.1 adds claim_support for semantic support)")
     check(set(s["properties"]["scores"]["required"]) == set(WR.CRITIC_SCORE_DIMENSIONS),
           "critic schema's scores object requires exactly the 9 named dimensions")
     check(len(WR.CRITIC_SCORE_DIMENSIONS) == 9, "exactly 9 scoring dimensions, matching the mission spec")
     check(set(s["properties"]["repair_type"]["enum"]) ==
-          {"NONE", "PROVENANCE", "HOOK", "ESCALATION", "PAYOFF", "NATURALNESS", "STRUCTURAL"},
-          "repair_type is a closed enum -- the critic cannot invent an unrecognized repair category")
-    # the critic schema has NO field where it could write replacement facts -- only indices and prose
-    # about craft/diagnosis, enforcing by construction that it cannot invent factual material
+          {"NONE", "HOOK", "ESCALATION", "PAYOFF", "NATURALNESS", "STRUCTURAL"},
+          "repair_type is a closed CRAFT-only enum (V2.1: PROVENANCE removed -- claim support now lives "
+          "entirely in claim_support, which always routes through classify_repair's tier 1)")
+    # the critic schema has NO field where it could write replacement facts -- only indices, an enum
+    # verdict, and prose about craft/diagnosis, enforcing by construction that it cannot invent material
     check("claim_text" not in _json.dumps(s) and "fact" not in s["properties"],
           "critic schema has no field for writing new factual content -- it can only point at beat "
-          "indices and describe craft problems, never author replacement facts")
+          "indices, classify support, and describe craft problems, never author replacement facts")
 
-    writer_out = {"hook": "h", "beats": [{"voiceover": "b1"}], "payoff": "p"}
+    writer_out = {"hook": "h", "hook_source_claim_ids": ["base_001"],
+                 "beats": [{"voiceover": "b1", "source_claim_ids": ["base_001"]}], "payoff": "p",
+                 "payoff_source_claim_ids": []}
     fact = {"fact": "x", "wow": "y", "whatif": "", "angle": "", "key_terms": []}
     inv = W2.build_claim_inventory(fact, [], False)
-    v = [WR.TraceabilityViolation(1, "unsupported_term", "razor", ["base_001"])]
+    v = [WR.TraceabilityViolation(1, "unsupported_number", "73", ["base_001"], severity="hard")]
     prompt = WR.build_critic_prompt(writer_out, inv, v)
     check("SCRIPT TO JUDGE" in prompt and "[1]" in prompt, "critic prompt includes the script, beat-labeled")
-    check("razor" in prompt and "unsupported_term" in prompt,
+    check("EXACT CLAIM(S) CITED PER BEAT" in prompt,
+          "critic prompt includes the exact cited claim text per beat, required for its own fact-checking")
+    check("73" in prompt and "unsupported_number" in prompt,
           "critic prompt surfaces existing mechanical violations so the critic isn't re-deriving them blind")
-    check(W2.estimate_tokens(prompt) < 1000, "critic prompt stays compact -- a separate small role, not a mega-prompt")
+    check(W2.estimate_tokens(prompt) < 1500,
+          "critic prompt (now with claim-support fact-check instructions) stays compact -- a separate "
+          "small role, not a mega-prompt")
 
 
 def test_writer_v2_repair_loop():
-    section("writer_v2_repair targeted repair loop (Phase 6-8): classify/build/merge/select")
+    section("writer_v2_repair targeted repair loop V2.1 (Phase 3-8): three-tier classify/build/merge/select/stall")
 
-    # classify_repair: mechanical provenance violations ALWAYS outrank the critic's own diagnosis
-    violations = [WR.TraceabilityViolation(2, "unsupported_number", "73", ["base_002"])]
-    plan = WR.classify_repair({"repair_type": "HOOK", "target_beats": [0]}, violations, num_beats=5)
-    check(plan["repair_type"] == "PROVENANCE",
-          "a mechanical provenance violation always wins over the critic's own HOOK diagnosis")
-    check(plan["target_beats"] == [2], "PROVENANCE repair targets exactly the violated beat_index, nothing broader")
+    # ---- TIER 1: hard mechanical + semantic violations always win, over BOTH validate_err and the critic ----
+    hard_v = [WR.TraceabilityViolation(2, "unsupported_number", "73", ["base_002"], severity="hard")]
+    sem_v = [WR.TraceabilityViolation(1, "semantic_unsupported_addition", "invented mechanism", severity="hard")]
+    plan = WR.classify_repair(hard_v, sem_v, "hook length 20 words out of range",
+                              {"repair_type": "HOOK", "target_beats": [0]}, num_beats=5)
+    check(plan["repair_type"] == "PROVENANCE" and plan["tier"] == 1,
+          "TIER 1 (mechanical+semantic) wins over both a validate_err AND the critic's own HOOK diagnosis")
+    check(plan["target_beats"] == [1, 2],
+          "TIER 1 repair targets exactly the violated beat_indices (mechanical beat 2 + semantic beat 1)")
 
-    # classify_repair: no violations -> defer to the critic
-    plan2 = WR.classify_repair({"repair_type": "PAYOFF", "target_beats": [6], "diagnosis": "weak ending",
-                                "must_preserve": ["the setup"]}, [], num_beats=5)
-    check(plan2["repair_type"] == "PAYOFF" and plan2["target_beats"] == [6],
-          "with zero mechanical violations, the critic's own repair_type/target_beats drive the plan")
-    check(plan2["must_preserve"] == ["the setup"], "must_preserve is carried through from the critic verdict")
+    # ---- TIER 2: a validate() floor failure, mapped to its actual beat -- only reached when tier 1 is clean ----
+    plan_hook_len = WR.classify_repair([], [], "hook length 20 words out of range", None, num_beats=5)
+    check(plan_hook_len["repair_type"] == "HOOK" and plan_hook_len["target_beats"] == [0] and plan_hook_len["tier"] == 2,
+          "a validate() hook-length failure now actually DRIVES a targeted HOOK repair (this was the real "
+          "live gap: previously validate_err only gated acceptance, never targeted a repair round)")
+    plan_scene = WR.classify_repair([], [], "scene 3 voiceover uses the formal connector 'thus' — nobody talks "
+                                    "like this out loud; rewrite in plain conversational language", None, num_beats=5)
+    check(plan_scene["repair_type"] == "NATURALNESS" and plan_scene["target_beats"] == [3],
+          "a 'scene N voiceover ...' validate error maps to beat_index N with a NATURALNESS repair")
+    plan_footage = WR.classify_repair([], [], "scene 3 voiceover compares to a specific named landmark/object "
+                                      "('Everest') but the search_query never mentions it", None, num_beats=5)
+    check(plan_footage["repair_type"] == "STRUCTURAL" and plan_footage["target_beats"] == [3],
+          "a footage/landmark-anchoring validate error maps to its scene as a STRUCTURAL (visual) repair, "
+          "not a wording repair")
+    plan_curiosity = WR.classify_repair([], [], "whatif curiosity gap never opened — the hook or one of the "
+                                        "first few scenes must pose a real question", None, num_beats=6)
+    check(plan_curiosity["target_beats"] == [0, 1, 2, 3],
+          "curiosity-gap failure targets exactly its real scope (hook + first 3 beats), not the whole script")
+    plan_safety = WR.classify_repair([], [], "HOW_TO tripped safety filter", None, num_beats=5)
+    check(plan_safety["repair_type"] == "NONE",
+          "an unrepairable validate error (safety filter trip) maps to NONE rather than guessing a target")
+    plan_global = WR.classify_repair([], [], "scene count 3 out of range (5-8, mode short)", None, num_beats=3)
+    check(plan_global["repair_type"] == "STRUCTURAL" and plan_global["target_beats"] == list(range(5)),
+          "a genuinely global/cross-scene validate error (scene count) uses the explicit full-script exception")
 
-    # classify_repair: fails closed on garbage/malformed critic output, never guesses
-    check(WR.classify_repair({"repair_type": "NOT_A_REAL_TYPE"}, [], num_beats=5)["repair_type"] == "NONE",
+    # ---- TIER 3: only reached when tiers 1 and 2 are both clean -- the critic's own craft diagnosis ----
+    plan3 = WR.classify_repair([], [], None, {"repair_type": "PAYOFF", "target_beats": [6],
+                                              "diagnosis": "weak ending", "must_preserve": ["the setup"]},
+                               num_beats=5)
+    check(plan3["repair_type"] == "PAYOFF" and plan3["target_beats"] == [6] and plan3["tier"] == 3,
+          "with tiers 1 and 2 both clean, the critic's own repair_type/target_beats drive the plan")
+    check(plan3["must_preserve"] == ["the setup"], "must_preserve is carried through from the critic verdict")
+    check(WR.classify_repair([], [], None, {"repair_type": "PROVENANCE", "target_beats": [1]}, num_beats=5)
+          ["repair_type"] == "NONE",
+          "PROVENANCE is no longer a valid TIER 3 critic-chosen type (V2.1: claim support lives in "
+          "claim_support/tier 1 now) -- a critic that still emits it falls back to NONE")
+    check(WR.classify_repair([], [], None, {"repair_type": "NOT_A_REAL_TYPE"}, num_beats=5)["repair_type"] == "NONE",
           "an invalid repair_type from the critic falls back to NONE rather than acting on garbage")
-    check(WR.classify_repair({"repair_type": "HOOK", "target_beats": []}, [], num_beats=5)["repair_type"] == "NONE",
+    check(WR.classify_repair([], [], None, {"repair_type": "HOOK", "target_beats": []}, num_beats=5)
+          ["repair_type"] == "NONE",
           "a repair_type with no usable target_beats falls back to NONE rather than guessing which beats")
-    check(WR.classify_repair(None, [], num_beats=5)["repair_type"] == "NONE",
-          "a missing/None critic_verdict falls back to NONE, never crashes")
-    # target_beats out of the valid 0..N+1 range are dropped, not blindly trusted
-    plan3 = WR.classify_repair({"repair_type": "HOOK", "target_beats": [0, 99]}, [], num_beats=3)
-    check(plan3["target_beats"] == [0], "an out-of-range target_beats entry (99, N=3 so max valid is 4) is dropped")
+    check(WR.classify_repair([], [], None, None, num_beats=5)["repair_type"] == "NONE",
+          "everything clean and no critic verdict at all -> NONE, never crashes")
+    plan4 = WR.classify_repair([], [], None, {"repair_type": "HOOK", "target_beats": [0, 99]}, num_beats=3)
+    check(plan4["target_beats"] == [0], "an out-of-range target_beats entry (99, N=3 so max valid is 4) is dropped")
 
-    # build_repair_prompt: targeted and small, not the full writer mega-prompt
+    # ---- build_repair_prompt: targeted and small, not the full writer mega-prompt ----
     writer_out = {"hook": "h", "beats": [{"voiceover": "b1"}, {"voiceover": "b2"}], "payoff": "p"}
     fact = {"fact": "An octopus has three hearts.", "wow": "y", "whatif": "", "angle": "", "key_terms": []}
     inv = W2.build_claim_inventory(fact, [], False)
-    plan4 = {"repair_type": "PROVENANCE", "target_beats": [1], "diagnosis": "d", "must_preserve": []}
-    rp = WR.build_repair_prompt(writer_out, inv, "CASE_FILE", plan4)
+    plan5 = {"repair_type": "PROVENANCE", "target_beats": [1], "diagnosis": "d", "must_preserve": [], "tier": 1}
+    rp = WR.build_repair_prompt(writer_out, inv, "CASE_FILE", plan5)
     check("ONLY rewrite beat_index [1]" in rp, "repair prompt explicitly names which beat_index to touch")
     check(W2.estimate_tokens(rp) < W2.estimate_tokens(W2.WRITER_V2_STATIC),
           "a targeted repair prompt is smaller than the full writer static prompt, per Phase 8's cost bound")
+    rp_stalled = WR.build_repair_prompt(writer_out, inv, "CASE_FILE", plan5, stalled=True)
+    check("REJECTED" in rp_stalled and "prohibited" in rp_stalled.lower(),
+          "a stalled repair prompt (Phase 4) explicitly tells the model its previous identical wording "
+          "was rejected and is now prohibited")
+    check(len(rp_stalled) > len(rp), "the stall-escalation instruction actually adds real content to the prompt")
 
-    # merge_repair: ONLY the targeted beats change; everything else survives byte-for-byte (Phase 7)
+    # ---- detect_stall (Phase 4): the mauna_kea live bug -- a repair round producing byte-identical text ----
+    prev = {"hook": "old hook", "beats": [{"voiceover": "same beat text"}], "payoff": "p"}
+    same_again = {"hook": "old hook", "beats": [{"voiceover": "same beat text"}], "payoff": "p"}
+    changed = {"hook": "a genuinely different hook now", "beats": [{"voiceover": "same beat text"}], "payoff": "p"}
+    check(WR.detect_stall(prev, same_again, [0], num_beats=1),
+          "identical text at every targeted beat_index is correctly detected as a stall")
+    check(not WR.detect_stall(prev, changed, [0], num_beats=1),
+          "genuinely different text at the targeted beat is NOT a stall")
+    check(not WR.detect_stall(prev, same_again, [], num_beats=1),
+          "an empty target_beats list never counts as stalled (nothing was asked to change)")
+    # curly vs straight apostrophe must not itself look like a "change" (Phase 5 normalization applies here too)
+    prev_curly = {"hook": "it didn’t work", "beats": [], "payoff": "p"}
+    new_straight = {"hook": "it didn't work", "beats": [], "payoff": "p"}
+    check(WR.detect_stall(prev_curly, new_straight, [0], num_beats=0),
+          "a pure quote-style change (curly vs straight) still counts as a stall -- the underlying text is "
+          "identical, so a repair that only changed the apostrophe glyph made no real edit")
+
+    # ---- merge_repair: ONLY the targeted beats change; everything else survives byte-for-byte (Phase 7) ----
     original = {
         "title": "t", "hook": "old hook", "hook_source_claim_ids": ["a"],
         "beats": [
@@ -3256,27 +3521,63 @@ def test_writer_v2_repair_loop():
     check(merged3["hook"] == "old hook" and merged3["beats"][0]["voiceover"] == "beat1",
           "out-of-range and non-integer beat_index repair entries are silently skipped, never applied")
 
-    # select_best_candidate: deterministic, floor-respecting selection (Phase 7)
-    v1 = WR.TraceabilityViolation(1, "unsupported_term", "x")
+    # ---- select_best_candidate V2.1: hard_violations-only filtering + critic-average near-tie breaker ----
+    hv = [WR.TraceabilityViolation(1, "unsupported_number", "x", severity="hard")]
     candidates = [
-        {"writer_out": "A", "violations": [], "validate_err": None, "score": 7.2},
-        {"writer_out": "B_has_violation", "violations": [v1], "validate_err": None, "score": 9.9},
-        {"writer_out": "C_validate_failed", "violations": [], "validate_err": "bad shape", "score": 8.5},
-        {"writer_out": "D_best_clean", "violations": [], "validate_err": None, "score": 8.1},
+        {"writer_out": "A", "hard_violations": [], "validate_err": None, "score": 7.2, "critic_avg": 6.0},
+        {"writer_out": "B_has_hard_violation", "hard_violations": hv, "validate_err": None, "score": 9.9,
+         "critic_avg": 9.0},
+        {"writer_out": "C_validate_failed", "hard_violations": [], "validate_err": "bad shape", "score": 8.5,
+         "critic_avg": 8.0},
+        {"writer_out": "D_best_clean", "hard_violations": [], "validate_err": None, "score": 8.1,
+         "critic_avg": 7.0},
     ]
     best = WR.select_best_candidate(candidates)
     check(best is not None and best["writer_out"] == "D_best_clean",
-          "the highest-scoring CLEAN (no violations, no validate error) candidate wins, even though a "
-          "provenance-violating candidate scored higher and a validate()-failing one also scored higher")
+          "the highest-scoring CLEAN (no HARD violations, no validate error) candidate wins, even though "
+          "a hard-violating candidate scored higher and a validate()-failing one also scored higher")
     check(WR.select_best_candidate([]) is None, "no candidates at all -> None, not a crash")
-    check(WR.select_best_candidate([{"writer_out": "x", "violations": [v1], "validate_err": None, "score": 9.9}])
-          is None,
+    check(WR.select_best_candidate([{"writer_out": "x", "hard_violations": hv, "validate_err": None,
+                                     "score": 9.9, "critic_avg": 9.0}]) is None,
           "when NO candidate is clean, select_best_candidate returns None -- the caller must abort, "
           "never silently ship the least-bad violating candidate")
 
+    # a SOFT-only violation must NOT disqualify a candidate (this is the actual point of the V2.1 redesign)
+    soft_v = [WR.TraceabilityViolation(1, "unsupported_term", "quietly", severity="soft")]
+    soft_candidate = {"writer_out": "E_soft_only", "hard_violations": [], "validate_err": None, "score": 7.0,
+                      "critic_avg": 7.0}
+    # (hard_violations is already empty above -- soft violations are tracked separately in round_info,
+    # never passed into the candidate's hard_violations key at all; this just confirms an empty
+    # hard_violations candidate is picked even when its round clearly had soft/telemetry noise)
+    check(WR.select_best_candidate([soft_candidate]) is soft_candidate,
+          "a candidate whose only issues were soft/telemetry violations is treated as clean and selectable")
+
+    # the critic-average near-tie breaker: two candidates within 0.3 score -- higher critic_avg wins
+    tie_candidates = [
+        {"writer_out": "F_early_livelier", "hard_violations": [], "validate_err": None, "score": 7.5,
+         "critic_avg": 8.5},
+        {"writer_out": "G_later_hedged", "hard_violations": [], "validate_err": None, "score": 7.7,
+         "critic_avg": 5.0},
+    ]
+    tie_best = WR.select_best_candidate(tie_candidates)
+    check(tie_best["writer_out"] == "F_early_livelier",
+          "within a 0.3-point near-tie on score_script(), the candidate with the HIGHER critic craft "
+          "average wins -- protects against a later repair round nudging the rubric score up by a hair "
+          "while making the writing itself worse (the exact 'stomach walls dissolve' -> hedged-hook "
+          "regression the mission named)")
+    # outside the near-tie band, a real score difference still wins outright regardless of critic_avg
+    clear_win_candidates = [
+        {"writer_out": "H_low_score_high_critic", "hard_violations": [], "validate_err": None, "score": 6.0,
+         "critic_avg": 9.5},
+        {"writer_out": "I_high_score_low_critic", "hard_violations": [], "validate_err": None, "score": 8.5,
+         "critic_avg": 4.0},
+    ]
+    check(WR.select_best_candidate(clear_win_candidates)["writer_out"] == "I_high_score_low_critic",
+          "outside the 0.3 near-tie band, a genuinely higher score_script() wins outright")
+
 
 def test_writer_v2_generate_candidate_v2_repair_loop():
-    section("generate.generate_candidate_v2: end-to-end bounded repair loop orchestration (mocked network)")
+    section("generate.generate_candidate_v2 V2.1: end-to-end bounded repair loop orchestration (mocked network)")
     fact = {
         "id": "test_octopus", "domain": "animals", "fact": "An octopus has three hearts.",
         "wow": "Two hearts pump blood to the gills and one pumps it to the rest of the body.",
@@ -3300,8 +3601,26 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
         {"beat_index": 2, "voiceover": "That main heart actually stops beating while it swims.",
          "visual_intent": "octopus swimming slow motion", "source_claim_ids": ["base_002"]},
     ]}
+    critic_flags_the_stat = {"scores": {k: 6 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                             "claim_support": [
+                                 {"beat_index": 0, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""},
+                                 {"beat_index": 1, "verdict": "SUPPORTED", "unsupported_proposition": ""},
+                                 {"beat_index": 2, "verdict": "UNSUPPORTED_ADDITION",
+                                  "unsupported_proposition": "invented 73 percent statistic"},
+                                 {"beat_index": 3, "verdict": "CONNECTIVE_OR_EDITORIAL",
+                                  "unsupported_proposition": ""},
+                             ],
+                             "repair_type": "NONE", "target_beats": [], "diagnosis": "provenance issue in beat 2",
+                             "must_preserve": []}
     critic_says_clean = {"scores": {k: 8 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                         "claim_support": [
+                             {"beat_index": 0, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""},
+                             {"beat_index": 1, "verdict": "SUPPORTED", "unsupported_proposition": ""},
+                             {"beat_index": 2, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""},
+                             {"beat_index": 3, "verdict": "CONNECTIVE_OR_EDITORIAL", "unsupported_proposition": ""},
+                         ],
                          "repair_type": "NONE", "target_beats": [], "diagnosis": "fine", "must_preserve": []}
+    expected_calls = 2 * WR.MAX_REPAIR_ROUNDS + 2  # 1 draft + (MAX+1) critic rounds + MAX repair rounds
 
     calls_seen = []
 
@@ -3312,7 +3631,8 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
         if schema_name == "writer_v2_output":
             return _json.dumps(draft_with_hallucination), True
         if schema_name == "critic_verdict":
-            return _json.dumps(critic_says_clean), True
+            n = sum(1 for c in calls_seen if c == "critic_verdict")
+            return _json.dumps(critic_flags_the_stat if n == 1 else critic_says_clean), True
         if schema_name == "repair_output":
             return _json.dumps(repair_fixes_it), True
         raise AssertionError(f"unexpected schema {schema_name}")
@@ -3326,17 +3646,31 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
         G._v2_structured_call = real_call
 
     check(calls_seen[0] == "writer_v2_output", "the first call is always the initial writer draft")
-    check("critic_verdict" in calls_seen, "the critic runs at least once as part of the loop")
+    check("critic_verdict" in calls_seen, "the critic runs as part of the loop")
     check("repair_output" in calls_seen, "a repair call fires because the initial draft had a real violation")
     check(debug["repair_rounds"] <= WR.MAX_REPAIR_ROUNDS,
           f"repair rounds ({debug['repair_rounds']}) never exceed MAX_REPAIR_ROUNDS ({WR.MAX_REPAIR_ROUNDS})")
-    check(debug["rounds"][0]["violation_count"] >= 1,
-          "round 0's violation count reflects the real invented '73 percent' statistic")
-    check(len(debug["rounds"]) >= 2 and debug["rounds"][1]["violation_count"] < debug["rounds"][0]["violation_count"],
-          "after one repair round, the violation count actually drops -- the repair loop is doing real work, "
-          "not just spinning")
+    r0 = debug["rounds"][0]
+    check(r0["mechanical_hard_count"] >= 1 and r0["semantic_violation_count"] >= 1,
+          "round 0 catches the invented '73 percent' BOTH mechanically (number+unit) AND semantically "
+          "(the critic's own claim_support independently flagged it) -- both layers agree here")
+    check(r0["repair_plan"]["tier"] == 1, "round 0's repair plan is TIER 1 (fatal factual integrity)")
+    check(len(debug["rounds"]) >= 2
+          and debug["rounds"][1]["mechanical_hard_count"] == 0
+          and debug["rounds"][1]["semantic_violation_count"] == 0,
+          "after one repair round, BOTH mechanical and semantic violations actually clear -- the repair "
+          "loop is doing real work, not just spinning")
     check("total_calls" in debug and debug["total_calls"] == len(calls_seen),
           "every network call across the whole loop (draft+critic+repair rounds) is counted in debug")
+    # this fixture is deliberately a minimal 2-beat draft (not a realistic full script), so it still
+    # fails validate()'s OWN unrelated scene-count floor (5-8 scenes) even once TIER 1 is fully clear --
+    # that floor is tested extensively elsewhere (test_validate_clean/test_validate_rejections); what
+    # matters HERE is that TIER 2 correctly takes over once TIER 1 clears, targeting the real remaining
+    # problem instead of re-diagnosing the (already-fixed) provenance issue
+    r1 = debug["rounds"][1]
+    check(r1["validate_err"] is not None and r1["repair_plan"]["tier"] == 2,
+          "once TIER 1 (mechanical+semantic) is clear, TIER 2 (the validate() floor) correctly takes "
+          "over the repair plan instead of the loop having nothing left to act on")
 
     # bounded: force every round to keep finding a NEW violation (a repair that "fixes" one thing but
     # introduces another) and confirm the loop still stops at MAX_REPAIR_ROUNDS rather than thrashing forever
@@ -3348,7 +3682,7 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
         if schema_name == "writer_v2_output":
             return _json.dumps(draft_with_hallucination), True
         if schema_name == "critic_verdict":
-            return _json.dumps(critic_says_clean), True
+            return _json.dumps(critic_flags_the_stat), True
         if schema_name == "repair_output":
             # "fixes" the cited beat but with a DIFFERENT unsupported number every round --
             # never actually converges to zero violations
@@ -3371,10 +3705,46 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
     check(debug2["repair_rounds"] == WR.MAX_REPAIR_ROUNDS,
           f"the thrashing loop still stops at exactly MAX_REPAIR_ROUNDS ({WR.MAX_REPAIR_ROUNDS}) rounds, "
           f"never runs away")
-    check(debug2["total_calls"] == 1 + 2 * WR.MAX_REPAIR_ROUNDS,
-          f"total network calls are bounded: 1 draft + 2 (critic+repair) per round "
-          f"= {1 + 2 * WR.MAX_REPAIR_ROUNDS} calls, never more")
+    check(debug2["total_calls"] == expected_calls,
+          f"total network calls are bounded: 1 draft + (MAX+1) critic rounds (the critic runs on the "
+          f"terminal round too, for semantic completeness) + MAX repair rounds "
+          f"= {expected_calls} calls, never more")
     check(debug2["accepted"] is False, "the aborted run is explicitly marked accepted=False in debug, not just None")
+
+    # stall escalation actually reaches the wire: force the SAME repair text every round and confirm the
+    # second repair prompt sent is the escalated/stalled version
+    stall_prompts = []
+
+    def stalling_repair(prompt, schema, schema_name, debug_calls):
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
+        if schema_name == "writer_v2_output":
+            return _json.dumps(draft_with_hallucination), True
+        if schema_name == "critic_verdict":
+            return _json.dumps(critic_flags_the_stat), True
+        if schema_name == "repair_output":
+            stall_prompts.append(prompt)
+            # returns the SAME unfixed text every time -- never actually repairs beat 2
+            return _json.dumps({"repairs": [
+                {"beat_index": 2, "voiceover": "In 73 percent of cases the main heart briefly stops.",
+                 "visual_intent": "octopus swimming slow motion", "source_claim_ids": ["base_002"]},
+            ]}), True
+        raise AssertionError(f"unexpected schema {schema_name}")
+
+    G._v2_structured_call = stalling_repair
+    try:
+        G.generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=[], avoid_topics="none",
+                                cta_style="SAVE_WORTHY", use_structured=True)
+    finally:
+        G._v2_structured_call = real_call
+
+    check(len(stall_prompts) >= 2, "at least 2 repair prompts were sent for the stalling scenario")
+    if len(stall_prompts) >= 2:
+        check("REJECTED" not in stall_prompts[0],
+              "the FIRST repair prompt (nothing has stalled yet) is not escalated")
+        check("REJECTED" in stall_prompts[1],
+              "the SECOND repair prompt (after the first repair came back byte-identical) is the "
+              "escalated stall version -- detect_stall's output actually reaches build_repair_prompt "
+              "through the live orchestration, not just in isolated unit tests")
 
 
 def main():
@@ -3449,6 +3819,10 @@ def main():
     test_writer_v2_helpers()
     test_writer_v2_visual_scout()
     test_writer_v2_traceability()
+    test_writer_v2_entity_hard_soft_split()
+    test_writer_v2_number_normalization()
+    test_writer_v2_punctuation_normalization()
+    test_writer_v2_semantic_support()
     test_writer_v2_claim_inventory_whatif_question()
     test_writer_v2_manifest_preserves_claim_ids()
     test_writer_v2_repair_critic()
