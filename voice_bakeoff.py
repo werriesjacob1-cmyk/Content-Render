@@ -31,6 +31,9 @@ import wave
 ORPHEUS_MODEL = "canopylabs/orpheus-v1-english"
 ORPHEUS_URL = "https://api.groq.com/openai/v1/audio/speech"
 ALLOWED_ORPHEUS_VOICES = {"autumn", "diana", "hannah", "austin", "daniel", "troy"}
+# Backward-compatible public name retained for the original PR #43 regression
+# suite and any external diagnostic scripts built before Voice Lab 2.0.
+ALLOWED_VOICES = ALLOWED_ORPHEUS_VOICES
 
 CARTESIA_MODEL = "sonic-3.6"
 CARTESIA_URL = "https://api.cartesia.ai/tts/bytes"
@@ -150,8 +153,10 @@ def generate_orpheus(text: str, voice: str, dest: str, api_key: str, direction: 
         _concat_wavs(tmp, dest)
     finally:
         for p in tmp:
-            try: os.remove(p)
-            except OSError: pass
+            try:
+                os.remove(p)
+            except OSError:
+                pass
     return {"provider": "orpheus", "model": ORPHEUS_MODEL, "voice": voice, "chunks": len(chunks)}
 
 
@@ -172,7 +177,8 @@ def generate_cartesia(text: str, voice_id: str, dest: str, api_key: str, locale:
     )
     if not data.startswith(b"RIFF") or b"WAVE" not in data[:16]:
         raise ValueError("Cartesia response was not WAV")
-    with open(dest, "wb") as f: f.write(data)
+    with open(dest, "wb") as f:
+        f.write(data)
     return {"provider": "cartesia", "model": CARTESIA_MODEL, "voice": voice_id.strip(), "locale": locale}
 
 
@@ -185,7 +191,8 @@ def generate_eleven(text: str, voice_id: str, dest: str, api_key: str):
         {"text": text, "model_id": ELEVEN_MODEL},
         {"xi-api-key": api_key},
     )
-    with open(dest, "wb") as f: f.write(data)
+    with open(dest, "wb") as f:
+        f.write(data)
     return {"provider": "eleven", "model": ELEVEN_MODEL, "voice": voice_id.strip()}
 
 
@@ -223,19 +230,27 @@ def parse_providers(raw: str) -> list[str]:
     out=[]
     for x in raw.split(","):
         p=x.strip().lower()
-        if not p: continue
-        if p not in PROVIDER_ORDER: raise ValueError(f"unknown provider {p!r}")
-        if p not in out: out.append(p)
-    if not out: raise ValueError("no providers selected")
+        if not p:
+            continue
+        if p not in PROVIDER_ORDER:
+            raise ValueError(f"unknown provider {p!r}")
+        if p not in out:
+            out.append(p)
+    if not out:
+        raise ValueError("no providers selected")
     return out
 
 
 def _load_text(args):
-    if args.text.strip(): return args.text.strip()
-    with open(args.manifest) as f: m=json.load(f)
+    if args.text.strip():
+        return args.text.strip()
+    with open(args.manifest) as f:
+        m=json.load(f)
     text=str(m.get("script") or "").strip()
-    if not text: text=" ".join(str(s.get("voiceover") or "") for s in (m.get("scenes") or [])).strip()
-    if not text: raise ValueError("manifest contains no narration")
+    if not text:
+        text=" ".join(str(s.get("voiceover") or "") for s in (m.get("scenes") or [])).strip()
+    if not text:
+        raise ValueError("manifest contains no narration")
     return text
 
 
@@ -273,16 +288,22 @@ def main():
     providers=parse_providers(args.providers)
     os.makedirs(args.out_dir, exist_ok=True)
     plan={"verified_on":VERIFIED_ON,"script_chars":len(text),"providers":provider_plan(providers,args),"paid_calls":False}
-    with open(os.path.join(args.out_dir,"plan.json"),"w") as f: json.dump(plan,f,indent=2)
-    with open(os.path.join(args.out_dir,"script.txt"),"w") as f: f.write(text+"\n")
+    with open(os.path.join(args.out_dir,"plan.json"),"w") as f:
+        json.dump(plan,f,indent=2)
+    with open(os.path.join(args.out_dir,"script.txt"),"w") as f:
+        f.write(text+"\n")
     if args.plan_only:
-        print(json.dumps(plan,indent=2)); print("PLAN ONLY: zero provider calls made."); return
+        print(json.dumps(plan,indent=2))
+        print("PLAN ONLY: zero provider calls made.")
+        return
 
-    candidates=[]; blocked=[]
+    candidates=[]
+    blocked=[]
     def capture(provider, label, fn, ext):
         original=os.path.join(args.out_dir,f"original_{label}.{ext}")
         try:
-            meta=fn(original); candidates.append((provider,label,original,meta))
+            meta=fn(original)
+            candidates.append((provider,label,original,meta))
         except Exception as exc:
             blocked.append({"provider":provider,"label":label,"error":f"{type(exc).__name__}: {exc}"})
 
@@ -291,20 +312,25 @@ def main():
     if "orpheus" in providers:
         key=os.getenv("GROQ_API_KEY","")
         for v in [x.strip().lower() for x in args.orpheus_voices.split(",") if x.strip()]:
-            if key: capture("orpheus",f"orpheus_{v}",lambda d,v=v:generate_orpheus(text,v,d,key,args.direction),"wav")
-            else: blocked.append({"provider":"orpheus","label":v,"error":"GROQ_API_KEY missing"})
+            if key:
+                capture("orpheus",f"orpheus_{v}",lambda d,v=v:generate_orpheus(text,v,d,key,args.direction),"wav")
+            else:
+                blocked.append({"provider":"orpheus","label":v,"error":"GROQ_API_KEY missing"})
     if "cartesia" in providers:
         key=os.getenv("CARTESIA_API_KEY","")
         if key and args.cartesia_voice_id:
             capture("cartesia","cartesia",lambda d:generate_cartesia(text,args.cartesia_voice_id,d,key,args.cartesia_locale),"wav")
-        else: blocked.append({"provider":"cartesia","label":"cartesia","error":"CARTESIA_API_KEY and --cartesia-voice-id required"})
+        else:
+            blocked.append({"provider":"cartesia","label":"cartesia","error":"CARTESIA_API_KEY and --cartesia-voice-id required"})
     if "eleven" in providers:
         key=os.getenv("ELEVENLABS_API_KEY","")
         if key and args.eleven_voice_id:
             capture("eleven","eleven",lambda d:generate_eleven(text,args.eleven_voice_id,d,key),"mp3")
-        else: blocked.append({"provider":"eleven","label":"eleven","error":"ELEVENLABS_API_KEY and --eleven-voice-id required"})
+        else:
+            blocked.append({"provider":"eleven","label":"eleven","error":"ELEVENLABS_API_KEY and --eleven-voice-id required"})
 
-    blind=[]; keymap={}
+    blind=[]
+    keymap={}
     for idx,(provider,label,src,meta) in enumerate(candidates):
         letter=chr(ord("A")+idx)
         dest=os.path.join(args.out_dir,f"blind_{letter}.wav")
@@ -312,11 +338,16 @@ def main():
         blind.append(review_stub(letter))
         keymap[letter]={"provider":provider,"label":label,"source_file":os.path.basename(src),**meta}
 
-    with open(os.path.join(args.out_dir,"blind_review.json"),"w") as f: json.dump(blind,f,indent=2)
-    with open(os.path.join(args.out_dir,"blind_key.json"),"w") as f: json.dump(keymap,f,indent=2)
+    with open(os.path.join(args.out_dir,"blind_review.json"),"w") as f:
+        json.dump(blind,f,indent=2)
+    with open(os.path.join(args.out_dir,"blind_key.json"),"w") as f:
+        json.dump(keymap,f,indent=2)
     report={**plan,"paid_calls":bool(candidates),"candidate_count":len(candidates),"blocked":blocked,"blind_samples":[f"blind_{x['sample']}.wav" for x in blind]}
-    with open(os.path.join(args.out_dir,"report.json"),"w") as f: json.dump(report,f,indent=2)
-    if not candidates: raise SystemExit("no voice candidate generated")
+    with open(os.path.join(args.out_dir,"report.json"),"w") as f:
+        json.dump(report,f,indent=2)
+    if not candidates:
+        raise SystemExit("no voice candidate generated")
     print(json.dumps(report,indent=2))
 
-if __name__=="__main__": main()
+if __name__=="__main__":
+    main()
