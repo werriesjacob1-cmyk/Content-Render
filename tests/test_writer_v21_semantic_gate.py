@@ -133,13 +133,15 @@ def test_nonnumeric_fallback_key_and_mixed_garbage_fail():
     check(covered == (0, 2), "malformed rows are not silently converted into coverage")
 
 
-def test_boolean_fallback_key_is_not_integer_identity():
-    critic = complete_critic(1)
-    critic["claim_support"] = {0: "SUPPORTED", True: "SUPPORTED", 2: "SUPPORTED"}
-    ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
-    check(ok is False, "boolean fallback key cannot masquerade as beat_index 1")
-    check(any("not an integer beat identity" in e for e in errors), "boolean fallback identity is diagnosed")
-    check(covered == (0, 2), "boolean fallback identity covers nothing")
+def test_boolean_and_float_fallback_keys_are_not_integer_identity():
+    for bad_key in (True, 1.0):
+        critic = complete_critic(1)
+        critic["claim_support"] = {0: "SUPPORTED", bad_key: "SUPPORTED", 2: "SUPPORTED"}
+        ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
+        check(ok is False, f"fallback key {bad_key!r} cannot masquerade as beat_index 1")
+        check(any("not an integer beat identity" in e for e in errors),
+              f"fallback identity {bad_key!r} is diagnosed")
+        check(covered == (0, 2), f"fallback identity {bad_key!r} covers nothing")
 
 
 def test_fallback_nested_identity_must_match_key():
@@ -334,7 +336,7 @@ def main():
     test_one_missing_index_invalidates_otherwise_complete_list()
     test_boolean_float_and_string_list_indices_fail()
     test_nonnumeric_fallback_key_and_mixed_garbage_fail()
-    test_boolean_fallback_key_is_not_integer_identity()
+    test_boolean_and_float_fallback_keys_are_not_integer_identity()
     test_fallback_nested_identity_must_match_key()
     test_unsupported_requires_named_proposition()
     test_bounded_retry_recovers_once()
