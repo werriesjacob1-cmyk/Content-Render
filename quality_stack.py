@@ -95,7 +95,8 @@ TOOLS: tuple[ToolDescriptor, ...] = (
     ToolDescriptor("existing_real_footage", Stage.AUTHENTIC_MEDIA, "existing_main", True, False, note="Pexels/Wikimedia/iNaturalist/Openverse/Internet Archive adapters already in main"),
     ToolDescriptor("science_motion", Stage.MOTION, "science_motion", note="deterministic scale/timeline/process/layer graphics bound to claim IDs"),
     ToolDescriptor("still_model_lab", Stage.GENERATED_MEDIA, "still_model_bakeoff", True, True, True, True, "verified-still-first candidate generation; never auto-promotes"),
-    ToolDescriptor("fal_video_lab", Stage.GENERATED_MEDIA, "video_model_bakeoff", True, True, True, True, "current FAL video candidates with hard budget guard"),
+    ToolDescriptor("image_to_video_lab", Stage.GENERATED_MEDIA, "image_to_video_bakeoff", True, True, True, True, "animate only a verified still; output must pass vision again"),
+    ToolDescriptor("fal_video_lab", Stage.GENERATED_MEDIA, "video_model_bakeoff", True, True, True, True, "direct current FAL video candidates with hard budget guard; later fallback"),
     ToolDescriptor("qwen_asset_vision", Stage.VISION_QA, "vision_gateway", True, True, experimental=True, note="Qwen 3.8 independent still/video verification"),
     ToolDescriptor("gemini_asset_vision", Stage.VISION_QA, "existing_main", True, True, experimental=True, note="existing Gemini first-choice asset vision until modular migration"),
     ToolDescriptor("voice_lab", Stage.VOICE, "voice_bakeoff", True, True, experimental=True, note="blind normalized Edge/Orpheus/Cartesia/Eleven comparison"),
@@ -116,7 +117,10 @@ VISUAL_TOOL_ORDER: Mapping[VD.VisualClass, tuple[str, ...]] = {
     VD.VisualClass.PROGRAMMATIC_DIAGRAM: ("science_motion",),
     VD.VisualClass.NORMAL_REAL_FOOTAGE: ("existing_real_footage",),
     VD.VisualClass.VERIFIED_GENERATED_STILL: ("still_model_lab", "qwen_asset_vision", "gemini_asset_vision"),
-    VD.VisualClass.IMAGE_TO_VIDEO: ("still_model_lab", "qwen_asset_vision", "fal_video_lab", "qwen_asset_vision"),
+    VD.VisualClass.IMAGE_TO_VIDEO: (
+        "still_model_lab", "qwen_asset_vision", "gemini_asset_vision",
+        "image_to_video_lab", "qwen_asset_vision", "gemini_asset_vision",
+    ),
     VD.VisualClass.GENERATED_VIDEO: ("fal_video_lab", "qwen_asset_vision", "gemini_asset_vision"),
     VD.VisualClass.GENERIC_STOCK: ("existing_real_footage",),
 }
@@ -132,6 +136,11 @@ PIPELINE_ORDER: tuple[str, ...] = (
     "existing_real_footage",
     "science_motion",
     "still_model_lab",
+    "qwen_asset_vision",
+    "gemini_asset_vision",
+    "image_to_video_lab",
+    "qwen_asset_vision",
+    "gemini_asset_vision",
     "fal_video_lab",
     "qwen_asset_vision",
     "gemini_asset_vision",
@@ -164,7 +173,6 @@ def assert_safe_defaults(policy: QualityPolicy | None = None) -> None:
         raise AssertionError("default quality policy must remain plan_only")
     if p.allow_network or p.allow_paid or p.allow_generated_visuals:
         raise AssertionError("default quality policy cannot enable network/paid/generated lanes")
-    # This module deliberately has no publishing descriptor at all.
     if any("publish" in t.name or "publer" in t.name or "release" in t.name for t in TOOLS):
         raise AssertionError("publishing must never be part of the quality-stack tool registry")
 
@@ -189,7 +197,7 @@ def _scene_routes_to_dict(plan: VD.VisualPlan, policy: QualityPolicy) -> list[di
     out: list[dict[str, Any]] = []
     for spec in plan.scenes:
         routes = []
-        for route in plan.routes.get(spec.scene_id, ()):  # route order set by Visual Director
+        for route in plan.routes.get(spec.scene_id, ()):
             routes.append({
                 "visual_class": route.visual_class.value,
                 "reason": route.reason,
