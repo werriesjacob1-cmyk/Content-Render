@@ -41,6 +41,7 @@ import generate as G
 import expand_bank as E
 import funnel as F
 import repackage as R
+import voice_bakeoff as VB
 import json as _json
 
 # --------------------------------------------------------------------------
@@ -2615,6 +2616,23 @@ def test_rank_gemini_models_prefers_full_over_lite():
     check(G._rank_gemini_models([]) == [], "empty input -> empty output, no crash")
 
 
+def test_voice_bakeoff_chunking():
+    section("voice bakeoff: Orpheus 200-character request contract")
+    text = (
+        "Your stomach is rebuilding its protective surface right now. "
+        "Without that barrier, hydrochloric acid would start attacking the tissue beneath it. "
+        "The strange part is that this is not a repair job after damage; it is normal maintenance."
+    )
+    chunks = VB.split_for_orpheus(text, direction="calmly")
+    check(len(chunks) >= 2, f"long narration splits into multiple Orpheus calls ({len(chunks)})")
+    check(all(len(c) <= 200 for c in chunks), "every Orpheus input stays at or below 200 characters")
+    check(all(c.startswith("[calmly] ") for c in chunks), "vocal direction is applied consistently")
+    rebuilt = " ".join(c.replace("[calmly] ", "", 1).strip() for c in chunks)
+    check(rebuilt.replace("  ", " ") == text, "chunking preserves narration text exactly")
+    check({"troy", "daniel", "austin"} <= VB.ALLOWED_VOICES,
+          "three male science-narration candidates are available")
+
+
 def test_429_wait_and_retry_helpers():
     section("generate: strong-writer 429 wait-and-retry (always-a-video fix)")
     # _is_weak_model: only Groq-8B/instant and Cerebras are the weak backstops
@@ -2689,6 +2707,7 @@ def main():
     test_vibe_matched_captions()
     test_vibe_music_filter()
     test_vibe_sting_freqs()
+    test_voice_bakeoff_chunking()
     test_trim_scene_to_cap()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
