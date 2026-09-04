@@ -1,33 +1,50 @@
-# Overnight Quality Control Addendum — through 2026-09-04 06:20 CT
+# Overnight Quality Control Addendum — through 2026-09-04 07:19 CT
 
 Canonical continuation handoff. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE VERIFIED
-- origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged through this run.
-- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
-- Quality-stack integration: `9eb299fa19e0de51c905f39ff3f561d39192b986` — unchanged.
-- SuperChad takeover entered at `c65103aefed1269b7b74bb850d08464fa7f3ffe2` and advanced to `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`.
+- origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
+- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged from inherited state.
+- Quality-stack integration: `9eb299fa19e0de51c905f39ff3f561d39192b986` — unchanged from inherited state.
+- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`.
 - PR #56 remains draft and targets Claude V2.1, not main.
-- No merge to main, deploy, render, publish, cron/live-delivery change, or paid-provider call. Known spend $0.
+- No merge to main, deploy, render, publish, cron/live-delivery change, or provider call this run. Known takeover spend remains $0.
 
-## CI FAILURE ROOT CAUSE — NOW PRECISELY DIAGNOSED
-Workflow `33862515511` completed FAILURE on exact head `c65103a...`. The checkout integrity fix worked: job logs prove `actions/checkout@v4` fetched and checked out exactly `c65103a...`, and the required-path proof passed. Therefore the earlier synthetic-merge-ref theory is no longer the active blocker.
+## BREAKTHROUGH: COMPLETE ZERO-QUOTA STACK IS GREEN
+Workflow run `33867508615` completed SUCCESS on exact takeover head `5669d2d...`. Checkout identity proof explicitly reported `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`, required Writer files were present, and `PYTHONPATH` pointed at the checked-out repository root.
 
-All suites before visual feasibility passed again: legacy 1503/0; semantic 28; quality signals 18; editorial 17; spoken manifest 21; repair regression 20; blind pairwise PASS; known-bad corpus PASS; story-shape/first-8s PASS; hook/payoff PASS. The only observed failure was `ModuleNotFoundError: writer_v21_visual_preflight` when executing `python tests/test_writer_v21_visual_feasibility.py`.
+All named checks passed in the same run:
+- legacy pipeline: 1503 passed / 0 failed;
+- semantic fail-closed gate: 28 checks;
+- scorer/critic quality signals: 18 checks;
+- editorial diagnostics: 17 checks;
+- spoken manifest contract: 21 checks;
+- repair-regression telemetry: 20 checks;
+- blind pairwise editorial judging: PASS;
+- permanent known-bad torture corpus: PASS;
+- story-shape diversity + first-8-second audit: PASS;
+- hook/headline/first-frame separation + payoff proof: PASS;
+- visual feasibility: 6 checks passed;
+- live runner syntax preflight: PASS.
 
-Direct GitHub content reads prove BOTH the module and test exist in exact head `c65103a...`. The failure is Python script-path import semantics: when a test is executed by pathname, Python 3.11 puts `tests/` at `sys.path[0]`; the repository root is not guaranteed importable. Earlier test files happened to work because their imported modules were already reachable through other import behavior, masking the issue.
+This closes the CI/import blocker without weakening any creative or factual threshold. Architecture freeze is now HARD unless a new demonstrated P0 correctness/render-contract defect appears.
 
-Fix at `5669d2d...`: `.github/workflows/tests.yml` now sets `PYTHONPATH: ${{ github.workspace }}` for the zero-quota test step. This preserves the exact-head checkout proof and makes top-level Writer modules explicitly importable from path-executed tests. No quality threshold, test, creative diagnostic, acceptance rule, or application behavior was weakened or changed.
+## IMPORTANT LIVE-PANEL EXECUTION CONSTRAINT
+`main` contains the generic manual-dispatch `branch_recon.yml`, specifically designed to check out an arbitrary ref and run a branch diagnostic with `GROQ_API_KEY` / `GEMINI_API_KEY`, without merge/render/publish. The corrected script-only panel `wr21_takeover_bakeoff.py` is syntax-clean on the takeover branch and uses the five canonical topics. It explicitly does no render/publish and defaults to a 60-second inter-topic delay.
+
+However, the currently exposed GitHub connector can inspect workflow runs/logs and rerun existing jobs, but does not expose a workflow-dispatch action with inputs. Therefore this automation turn cannot truthfully initiate the one-off secret-backed quota diagnostic or corrected five-topic panel itself. Do NOT fake quota availability and do NOT use the zero-quota test job's dummy `GROQ_API_KEY=x` as evidence.
 
 ## CREATIVE / ENGINEERING STATUS
-Architecture freeze remains in force. This run changed only CI execution integrity. The creative stack is unchanged: fail-closed semantic coverage, true quality floors, scorer-vs-critic telemetry, repair-regression, blind pairwise, known-bad torture corpus, story-shape diversity, first-8-second audit, hook/headline/first-frame separation, payoff proof, and visual-feasibility preflight.
+The complete pre-live evidence stack is now simultaneously green: fail-closed semantic coverage, production quality floors, scorer-vs-critic disagreement telemetry, repair-regression detection, blind pairwise comparison, known-bad regression corpus, narrative-shape diversity, first-8-second audit, hook/headline/visual separation, payoff proof, spoken hook/payoff manifest contract, visual feasibility, and runner syntax.
+
+This is an engineering breakthrough, not yet a content-promotion breakthrough. Promotion remains HOLD because the corrected five-topic live Writer V2.1 panel has not yet produced multiple factual-clean, floor-clearing, human-postable scripts under this final combined stack.
 
 ## NEXT EXACT ACTION
-1. Inspect Actions for takeover head `5669d2d...` once the push-triggered run appears/completes.
-2. Require checkout identity/path proof, visual-feasibility test, AND live-runner syntax preflight to pass. If red, repair only the named proven defect.
-3. If fully green, architecture freeze becomes hard: perform ONE safe secret-backed quota diagnostic using the existing branch-recon workflow. If quota is available, run ONE corrected five-topic script-only Writer V2.1 panel and preserve full evidence.
-4. If quota is unavailable, advance V2.1 -> quality-stack compatibility/pre-production visual plans without inferring promotion.
-5. Promotion remains HOLD until multiple corrected-panel scripts are factual-clean, floor-clearing, and human-postable.
+1. Do NOT add more Writer architecture before live evidence.
+2. At the next run, first inspect whether a new `branch-recon` workflow run has appeared for takeover ref `5669d2d...` and script `wr21_takeover_bakeoff.py` (it may have been manually dispatched outside this connector).
+3. If such a run exists, read the full logs and ruthlessly judge all five scripts for factual/semantic cleanliness, true floor pass, scorer-vs-critic disagreement, repair regressions, first-8-second strength, payoff closure, visual feasibility, AI smell, and human postability. Preserve exact best/worst scripts and call counts in a promotion evidence packet.
+4. If no live run exists and dispatch remains unavailable, use zero-quota time only for V2.1 -> quality-stack compatibility / pre-production visual planning or promotion-evidence tooling; do not redesign Writer and do not infer promotion.
+5. Only after multiple scripts clearly earn promotion should convergence/certification proceed; full render still requires Jacob's explicit approval.
 
 ## APPROVAL / SPEND
 - main untouched; no merge/deploy/publish.
