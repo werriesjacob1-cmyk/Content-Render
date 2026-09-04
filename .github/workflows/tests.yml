@@ -1,7 +1,7 @@
 name: tests
 
-# Gate every PR on zero-quota logic tests. The integration quality-stack test
-# imports every grafted module and verifies safe defaults without network calls.
+# Gate every PR on zero-quota logic tests. The integration quality-stack tests
+# import the grafted modules and verify safe defaults without network calls.
 on:
   pull_request:
   push:
@@ -32,7 +32,8 @@ jobs:
           GROQ_API_KEY: x
         run: |
           python tests/test_pipeline.py
-          # Remove the dummy key so the integration test can prove provider
-          # calls fail closed rather than mistaking CI scaffolding for a credential.
+          # Remove the dummy key so integration tests can prove provider calls
+          # fail closed rather than mistaking CI scaffolding for a credential.
           env -u GROQ_API_KEY python tests/test_quality_stack.py
+          env -u GROQ_API_KEY python tests/test_review_readiness.py
           env -u GROQ_API_KEY python quality_stack_cli.py --status-only > /dev/null
