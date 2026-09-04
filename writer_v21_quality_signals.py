@@ -159,3 +159,53 @@ def selection_signal_report(candidates: Sequence[Mapping[str, Any]] | None) -> d
         "critic_winner_legacy_score": round(_number(critic_winner.get("score")) or 0.0, 3),
         "gating": False,
     }
+
+
+def analyze_debug(debug: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Post-process Writer V2.1 debug output without modifying orchestration.
+
+    This is intentionally sidecar analysis: it can be run on historical/new
+    bakeoff results and cannot influence which candidate ships.
+    """
+    rounds = list((debug or {}).get("rounds") or [])
+    round_reports: list[dict[str, Any]] = []
+    selection_candidates: list[dict[str, Any]] = []
+
+    for r in rounds:
+        report = quality_signal_report(r.get("score"), r.get("critic_verdict"))
+        report["round"] = int(r.get("round", len(round_reports)))
+        report["semantic_verified"] = bool(r.get("semantic_verified"))
+        report["score_clears_floor"] = bool(r.get("score_clears_floor"))
+        round_reports.append(report)
+
+        if (
+            not r.get("mechanical_hard_count")
+            and not r.get("semantic_violation_count")
+            and r.get("semantic_verified")
+            and not r.get("validate_err")
+            and r.get("score_clears_floor")
+            and _number((r.get("score") or {}).get("overall")) is not None
+            and _number(r.get("critic_avg")) is not None
+        ):
+            selection_candidates.append({
+                "round": int(r.get("round", 0)),
+                "hard_violations": [],
+                "validate_err": None,
+                "score": _number((r.get("score") or {}).get("overall")),
+                "critic_avg": _number(r.get("critic_avg")),
+            })
+
+    bands = [r["disagreement_band"] for r in round_reports]
+    return {
+        "rounds": round_reports,
+        "severe_disagreement_rounds": [r["round"] for r in round_reports if r["disagreement_band"] == "SEVERE"],
+        "moderate_disagreement_rounds": [r["round"] for r in round_reports if r["disagreement_band"] == "MODERATE"],
+        "max_disagreement_band": (
+            "SEVERE" if "SEVERE" in bands else
+            "MODERATE" if "MODERATE" in bands else
+            "LOW" if "LOW" in bands else
+            "UNAVAILABLE"
+        ),
+        "selection": selection_signal_report(selection_candidates),
+        "gating": False,
+    }
