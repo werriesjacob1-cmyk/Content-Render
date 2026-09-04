@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from typing import Mapping, Sequence
+import urllib.parse
 
 import visual_director as VD
 import molecular_media as MM
@@ -39,6 +40,39 @@ def nasa_svs_asset(row: Mapping[str, object], subject_terms: Sequence[str], *, r
             attribution_text="NASA Scientific Visualization Studio",
         ),
         provenance_notes=f"authentic NASA SVS source; media={media_url}; {desc[:300]}",
+    )
+
+
+def pubchem_asset(resolved_name: str, image_path: str, *, relevance_score: float = 0.95, technical_quality: float = 0.95) -> VD.AssetCandidate:
+    """Normalize an exact PubChem structure depiction after successful retrieval.
+
+    PubChem's own PUG notice says the NLM/U.S. Government software/database is
+    freely available for public use/reproduction. We preserve that wording as the
+    usage basis instead of over-claiming that every downstream PubChem record is
+    generically 'public domain'.
+    """
+    name = str(resolved_name or "").strip()
+    path = str(image_path or "").strip()
+    if not name or not path:
+        raise ValueError("resolved PubChem name and image path are required")
+    source_url = "https://pubchem.ncbi.nlm.nih.gov/compound/" + urllib.parse.quote(name, safe="")
+    return VD.AssetCandidate(
+        asset_id="pubchem:" + name.lower().replace(" ", "_"),
+        visual_class=VD.VisualClass.MOLECULAR_RENDER,
+        subject_terms=(name, "chemical structure"),
+        relevance_score=max(0.0, min(1.0, float(relevance_score))),
+        scientific_authenticity=1.0,
+        technical_quality=max(0.0, min(1.0, float(technical_quality))),
+        rights=VD.RightsInfo(
+            source_name="PubChem / National Library of Medicine",
+            source_url=source_url,
+            license_name="NLM/U.S. Government unrestricted use and reproduction notice",
+            license_url="https://pubchem.ncbi.nlm.nih.gov/pug/",
+            public_domain=False,
+            attribution_required=False,
+            attribution_text=f"PubChem structure depiction: {name}",
+        ),
+        provenance_notes=f"exact PubChem PUG-REST structure depiction; local_image={path}",
     )
 
 
