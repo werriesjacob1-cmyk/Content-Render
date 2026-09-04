@@ -20,6 +20,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          # PR workflows normally test GitHub's synthetic refs/pull/N/merge.
+          # During the Writer V2.1 takeover that merge ref repeatedly omitted
+          # newly-added head files while retaining tests that import them. Test
+          # the exact PR head instead; main/base drift is separately re-read by
+          # the overnight control loop and the PR itself still shows mergeability.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Prove checkout identity and required Writer V2.1 paths
+        run: |
+          echo "checked_out_sha=$(git rev-parse HEAD)"
+          test -f writer_v21_visual_preflight.py
+          test -f tests/test_writer_v21_visual_feasibility.py
+          test -f wr21_takeover_bakeoff.py
+          test -f wr21_run.py
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
