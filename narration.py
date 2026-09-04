@@ -41,6 +41,8 @@ def _assert_v21_contract(manifest: dict, scenes: list[dict]) -> None:
     last = scenes[-1]
     if first.get("_v2_role") != "hook" or last.get("_v2_role") != "payoff":
         raise NarrationContractError("V2.1 first/last scene roles are not hook/payoff")
+    if any(scene.get("_v2_role") != "beat" for scene in scenes[1:-1]):
+        raise NarrationContractError("V2.1 middle scene role drift: expected only beats")
     hook = (manifest.get("hook") or "").strip()
     payoff = (manifest.get("payoff") or "").strip()
     if hook != (first.get("voiceover") or "").strip():
