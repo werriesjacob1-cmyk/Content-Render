@@ -1,119 +1,81 @@
-# Overnight Quality Control Addendum — 2026-09-04 00:44 CT
+# Overnight Quality Control Addendum — 2026-09-04 00:21–00:55 CT
 
-This addendum extends `engineering/OVERNIGHT_QUALITY_CONTROL.md` and is part of the canonical hourly handoff until folded back into the primary checkpoint.
+This addendum extends `engineering/OVERNIGHT_QUALITY_CONTROL.md` and is the canonical continuation handoff for the next hourly run.
 
-## Live state verified this run
-- origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6`.
-- SuperChad takeover branch advanced to `7e7985210f9528eb33d6dbbb2cf2dab8e6f6a26a`.
-- PR #56 remains draft, base = Claude Writer V2.1 branch, not main.
-- Latest Actions run for takeover head: `33837880251`, pending at checkpoint write.
-- No merge, deploy, render, publish, cron/live-delivery change, or paid provider call.
+## LIVE STATE VERIFIED THIS RUN
+- `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
+- Quality-stack integration: `superchad/quality-stack-integration-01` @ `9eb299fa19e0de51c905f39ff3f561d39192b986` — unchanged.
+- SuperChad takeover advanced through `523dd47e690c572f7cb1e81a486fbfc172cc8a80`; re-read live head before any next write because CI-triggering commits may advance it.
+- PR #56 remains takeover -> Claude V2.1 base, NOT main.
+- No merge, deploy, render, publish, cron/live-delivery change, or paid-provider call. Known spend remains $0.
 
-## Added overnight priorities now encoded in the hourly automation
-The stateful `Content Render Overnight Control` automation now explicitly carries:
-1. blind pairwise editorial judging;
-2. repair-regression protection;
-3. permanent known-bad torture corpus;
-4. narrative-shape diversity diagnostics;
-5. first-8-second audit;
-6. spoken hook / on-screen hook / first-frame visual / cover-headline separation;
-7. payoff proof;
-8. pre-render visual feasibility pressure test;
-9. structured failure-learning records;
-10. promotion evidence packet.
+## CI FINDING + FIX
+The previously pending run `33837880251` was cancelled by a newer push, not a failure. The authoritative newer run `33837971247` on head `947fa44c...` failed exactly one new test after all legacy and prior takeover suites passed:
 
-The automation must read the primary checkpoint AND this addendum before acting.
+`tests/test_writer_v21_story_shape.py::test_same_story_grammar_scores_high_even_with_rewording`
 
-## New implementation — repair craft regression
-`writer_v21_repair_regression.py`
+The failure was valuable: the story-shape diagnostic under-recognized lexical rewordings of the same narrative grammar. It could therefore overstate treatment diversity.
 
-Purpose: preserve evidence that a factual repair can make a script less watchable before any selection rule is changed.
+Fix committed as `00db83c96f505096c1b931710e1ac4786ca78f1a` WITHOUT lowering the >=0.70 similarity expectation:
+- added an `observation` narrative function for signal/reading/anomaly openings;
+- expanded reversal detection to catch reversed/reversal/broke-the-idea phrasing;
+- expanded consequence/reframe detection to catch changed/forced/reframed language;
+- reordered primary-function priority so a payoff such as “the evidence forced a new interpretation” is classified by its narrative consequence rather than merely the word “evidence.”
 
-Current telemetry includes:
-- exact before/after lines;
-- declared target beats vs changed beats;
-- hook/payoff word inflation;
-- newly introduced generic AI moralizing;
-- information-gain/repetition warning changes;
-- critic craft-average decline;
-- legacy-score decline;
-- scorer-vs-critic disagreement worsening;
-- untargeted text changes.
+This preserves the purpose of the test: different wording must not masquerade as a different story shape.
 
-All output remains `gating=False`.
+## NEW ZERO-SPEND QUALITY LAYER — HOOK SURFACES + PAYOFF PROOF
+Implemented `writer_v21_hook_payoff.py` at commit `c6912bfb357c30445912e6005f7b4b4c08280533` and tests at `160d9b8c83fadc385dd56eaa8e569c83f69f4a6c`.
 
-## New implementation — blind pairwise editorial judge
-`writer_v21_pairwise.py`
+Non-gating diagnostics now explicitly treat four surfaces as separate jobs:
+1. spoken hook;
+2. profile/cover headline;
+3. first on-screen hook text;
+4. first-frame visual.
 
-Purpose: absolute score swings are noisy. Pairwise comparison asks the easier question: between two candidates that ALREADY passed factual, validation, and semantic gates, which is the stronger human-facing short-form story?
+Telemetry catches:
+- cover merely repeating the spoken hook;
+- on-screen text merely repeating spoken/cover copy;
+- generic first frames such as “science laboratory cinematic footage”;
+- first-frame visuals not anchored to the hook’s actual subject.
 
-Safety/rigor:
-- candidate ids, round numbers, treatment names, original/repair/newer metadata, previous scores, and repair history never enter the judge prompt;
-- deterministic but blind A/B order;
-- only factually clean + validate-clean + semantic-verified candidates are eligible;
-- criteria: opening pull, spoken naturalness, information gain, escalation, payoff, low AI smell, visual tellability;
-- explicit TIE option to prevent forced fake differences;
-- structured verdict validation;
-- alias maps back to candidate identity only AFTER verdict;
-- cannot accept/reject a script; `gating=False`.
+Payoff proof now records:
+- hook/payoff overlap;
+- opening-question/payoff overlap;
+- explicit resolution cues such as causal/reversal language;
+- generic AI payoff patterns (including the observed mantis-shrimp “danger hides in plain sight” shape);
+- payoff that opens a new question instead of resolving/reframing the reason the viewer stayed.
 
-Zero-network tests added in `tests/test_writer_v21_pairwise.py` and wired into CI.
+All output is `gating=False`; no new arbitrary promotion threshold was introduced.
 
-## New implementation — permanent known-bad torture corpus
-`writer_v21_torture_corpus.py`
+Workflow updated at `74af3c1ea41c6445b38318f6e877c60f50e2820c` to run the new tests. Latest observed Actions run for that head was `33840336089`, IN PROGRESS at checkpoint time. Read its final result first next run.
 
-Canonical real failure classes:
-- `mantis_shrimp_blender` — unsupported comparison + generic moralizing payoff;
-- `neutron_star_invented_mechanism` — no-number/no-proper-noun hallucinated mechanism/application;
-- `mauna_kea_invented_framing` — invented authority/record framing;
-- `lightning_duration_inflation` — one-day -> three-month quantitative inflation;
-- `chess_magnitude_only` — technically impressive magnitude with weak idea/payoff + AI grandeur;
-- `stomach_clinical_repair` — provenance repair makes sharper prose long/clinical/flat.
+## BAKEOFF REPORTING ADVANCED
+`wr21_takeover_bakeoff.py` updated at `523dd47e690c572f7cb1e81a486fbfc172cc8a80` so corrected live attempts will now print:
+- semantic/mechanical integrity;
+- true floor state;
+- scorer-vs-critic disagreement;
+- editorial/information-gain diagnostics;
+- story shape + first-eight-second exposure;
+- repair regression;
+- blind pairwise plans;
+- payoff-proof warnings per round;
+- final manifest hook-surface separation and payoff proof if accepted.
 
-The corpus records the expected guard (`hard_traceability`, `semantic_support`, `editorial_quality`, or `repair_regression_pairwise`) instead of pretending every failure is string-matchable.
+No pairwise-provider calls were added to the runner; pairwise prompts remain prepared evidence only unless deliberately invoked later. No extra render/publish path exists.
 
-Zero-network tests added in `tests/test_writer_v21_torture_corpus.py` and wired into CI.
+## CREATIVE FINDING THIS HOUR
+A useful emerging principle is now mechanical enough to test: **“different treatment” and “different hook wording” are not diversity.** We need different narrative FUNCTION progressions, and the four opening surfaces should compound curiosity instead of saying the same sentence four ways. Likewise a dramatic final sentence is not a payoff unless it visibly resolves/reframes the opening reason-to-stay.
 
-## New implementation — story-shape diversity + first-8-second audit
-`writer_v21_story_shape.py`
-
-Purpose: do not trust treatment names as evidence of actual creative diversity, and do not let a decent whole-script score hide a slow opening.
-
-Current deterministic telemetry:
-- beat-function features: question, evidence, wrong hypothesis, reversal, mechanism, scale, timeline, journey, consequence, viewer reframe, comparison, experiment;
-- primary-function sequence for the actual spoken hook/beats/payoff;
-- aligned shape-similarity score across scripts even when treatment labels differ;
-- portfolio high-similarity pairs so nominally different treatments that collapse to the same grammar are visible;
-- transparent first-8-second model using an explicit words-per-second assumption until real TTS timing is available;
-- hook estimated duration;
-- how many escalation beats are actually heard by 8 seconds;
-- opening function diversity;
-- warnings for >3-second hooks, no full escalation beat by 8 seconds, repeated opening function, and description/magnitude-only openings.
-
-No virality probability is generated. `gating=False`.
-
-Zero-network tests added in `tests/test_writer_v21_story_shape.py` and wired into CI.
-
-## Latest branch writes this run
-- `39759dfb4bd654bf1bb3f5f988d45e585029ed35` — add blind pairwise editorial judging contract.
-- `0167eafb1ed580246edbf468e79951751bbaa977` — pairwise zero-network tests.
-- `1b479b5f0169de5068a3b8e96c45e6e66d57b24a` — permanent known-bad torture corpus.
-- `abb923e284e523eefdf4b2eb1702441bded0cbbd` — torture corpus tests.
-- `648c13d5b4a58aa0c93a668e5c5d496949b8c37b` — run pairwise + torture corpus in CI.
-- `7a500a1fe1b0606fff15da2b0abadfd664097ccc` — add story-shape and first-8-second diagnostics.
-- `2f11a2cd8478d5c76dfe26cb29baed3f2430f8a5` — story-shape/first-8-second tests.
-- `7e7985210f9528eb33d6dbbb2cf2dab8e6f6a26a` — run full expanded Writer V2.1 zero-network suite.
+## PROMOTION STATUS
+HOLD. No genuinely postable, floor-clearing Writer V2.1 script has yet been demonstrated under the final semantic-failclosed + spoken-hook/payoff + current diagnostics stack. Full certification render is NOT earned.
 
 ## NEXT EXACT ACTION
-1. Read Actions run `33837880251`.
-2. If RED: diagnose the exact failing new test/contract and fix without weakening a guard.
-3. If GREEN: build HOOK/HEADLINE/FIRST-FRAME separation + PAYOFF PROOF next, still non-gating.
-4. Integrate repair-regression, pairwise plans, torture-corpus labels, story-shape, first-8-second, hook-surface, and payoff diagnostics into `wr21_takeover_bakeoff.py` reporting.
-5. If secret-backed Groq quota is available after those zero-quota gates are green, run the corrected five-topic panel once through `wr21_run.py`; do not repeatedly burn quota under contention.
-6. Every live script must be read as a human. Pairwise judging and diagnostics are evidence, not substitutes for editorial judgment.
-7. After live evidence, build structured failure-learning records + promotion evidence packet from the observed failures/winners, not from guessed labels.
-
-## Promotion remains HOLD
-No genuinely postable, quality-floor-clearing Writer V2.1 script has yet been demonstrated under the final combined semantic-failclosed + spoken-hook/payoff stack.
-Full video certification is still NOT EARNED.
+1. Re-read takeover branch head and final result of latest CI (starting with run `33840336089` if still authoritative). If red, fix the exact guard without weakening it.
+2. If green, syntax/preflight-check the updated `wr21_takeover_bakeoff.py` path in CI or a zero-network test because the reporting file changed after the current workflow trigger.
+3. Add the next deterministic zero-spend layer: PRE-RENDER VISUAL FEASIBILITY. Require every important beat to name a specific visible subject/mechanism/action and identify generic lab/space/person-thinking wallpaper before asset acquisition.
+4. Wire visual-feasibility output into the corrected torture runner.
+5. Only after all zero-network gates are green, check secret-backed Groq availability once. If quota is available, run ONE corrected five-topic panel with the combined stack. Do not repeatedly burn quota under contention.
+6. Read every live script as a human. Promotion requires multiple factual-clean, floor-clearing scripts that are actually postable, not merely green telemetry.
+7. Build structured failure-learning records + promotion packet from observed live evidence after that panel, not guessed outcomes.
