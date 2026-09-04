@@ -2900,7 +2900,7 @@ def test_writer_v2_assemble_manifest():
     for key in ("title", "viewer_job", "keyword", "metaphor", "vibe", "hook", "hook_headline",
                "script", "scenes", "captions", "hashtags", "render", "treatment"):
         check(key in m, f"assembled manifest carries legacy-schema field '{key}'")
-    check(len(m["scenes"]) == 5, "one scene per writer beat")
+    check(len(m["scenes"]) == 7, "hook + five writer beats + payoff become seven spoken scenes")
     check(all(s["search_query"] and not G.UNSTOCKABLE_Q.search(s["search_query"]) for s in m["scenes"]),
           "every derived search_query is non-empty and passes the SAME un-filmable-terms gate as production")
     check(m["treatment"] == "HIDDEN_MECHANISM", "the manifest records which treatment was used")
@@ -2908,8 +2908,8 @@ def test_writer_v2_assemble_manifest():
           "vibe defaults to the treatment's own default")
     check(len(m["hook_headline"]) <= 22, f"hook_headline fits the cover's character budget ({m['hook_headline']!r})")
     check(m["hook_headline"] == m["hook_headline"].upper(), "hook_headline is ALL CAPS")
-    check([s["motion"] for s in m["scenes"]] == ["zoom_in", "zoom_out", "pan_left", "pan_right", "zoom_in"],
-          "motion cycles deterministically across scenes")
+    check([s["motion"] for s in m["scenes"]] == ["zoom_in", "zoom_out", "pan_left", "pan_right", "zoom_in", "zoom_out", "pan_left"],
+          "motion cycles deterministically across every spoken scene")
     check(m["keyword"] == "potassium-40", "keyword derives from the fact's own key_terms")
 
     # feed straight into the REAL production validator -- must not crash on
@@ -3461,8 +3461,9 @@ def test_writer_v2_manifest_preserves_claim_ids():
     m = W2.assemble_manifest_v2(writer_out, fact, "HIDDEN_MECHANISM", banned_query_re=G.UNSTOCKABLE_Q)
     check(m["hook_source_claim_ids"] == ["base_001", "base_002"], "hook_source_claim_ids survives at the top level")
     check(m["payoff_source_claim_ids"] == ["base_001"], "payoff_source_claim_ids survives at the top level")
-    check(m["scenes"][0]["source_claim_ids"] == ["base_002"], "scene 1's source_claim_ids matches its beat")
-    check(m["scenes"][1]["source_claim_ids"] == [], "an uncited beat's source_claim_ids stays an empty list, not missing")
+    check(m["scenes"][0]["source_claim_ids"] == ["base_001", "base_002"], "scene 1 carries the certified hook evidence")
+    check(m["scenes"][1]["source_claim_ids"] == ["base_002"], "scene 2 carries the first beat evidence")
+    check(m["scenes"][2]["source_claim_ids"] == [], "an uncited beat's source_claim_ids stays an empty list, not missing")
     check("source_claim_ids" not in m.get("captions", "") and "source_claim_ids" not in m.get("hashtags", []),
           "claim IDs are internal evidence infrastructure -- never leak into user-facing captions/hashtags")
 
