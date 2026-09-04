@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-04 14:17 CT
+# Overnight Quality Control Addendum — through 2026-09-04 15:16 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -13,7 +13,7 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 13:20 AUDIT
+## DELTA SINCE 14:17 AUDIT
 No application-code or branch-head drift detected.
 
 PR #57 remains open and draft with head `3ca3061f9a433578b4fb5b3b506f17745ce2c6ba`, and its GitHub base remains `main @ 6a045e50...` even though the PR body names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority. Therefore the prior integration-control STOP WARNING remains unresolved.
