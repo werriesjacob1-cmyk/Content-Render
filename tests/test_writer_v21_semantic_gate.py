@@ -86,6 +86,66 @@ def test_live_dict_fallback_shape_can_still_be_verified():
     check(errors == () and covered == (0, 1, 2), "fallback still requires complete coverage")
 
 
+def test_missing_indices_are_never_invented_from_list_position():
+    critic = complete_critic(1)
+    critic["claim_support"] = [
+        {"verdict": "SUPPORTED", "unsupported_proposition": ""},
+        {"verdict": "SUPPORTED", "unsupported_proposition": ""},
+        {"verdict": "SUPPORTED", "unsupported_proposition": ""},
+    ]
+    ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
+    check(ok is False, "list position can never manufacture missing semantic identities")
+    check(sum("missing beat_index" in e for e in errors) == 3,
+          "every identity-less row is explicitly diagnosed")
+    check(covered == (), "identity-less supported rows cover nothing")
+
+
+def test_one_missing_index_invalidates_otherwise_complete_list():
+    critic = complete_critic(1)
+    critic["claim_support"] = [supported(0), {"verdict": "SUPPORTED"}, supported(2)]
+    ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
+    check(ok is False, "one missing identity invalidates the semantic payload")
+    check(any("row 1 is missing beat_index" in e for e in errors), "missing row identity is diagnosed")
+    check(covered == (0, 2), "valid neighboring identities do not repair the missing beat")
+
+
+def test_boolean_float_and_string_list_indices_fail():
+    for bad in (True, 1.0, "1"):
+        critic = complete_critic(1)
+        critic["claim_support"] = [supported(0), supported(bad), supported(2)]
+        ok, errors, _ = SG.validate_semantic_coverage(critic, 1)
+        check(ok is False, f"non-canonical list beat_index {bad!r} fails closed")
+        check(any("not an integer" in e for e in errors), f"bad list beat_index {bad!r} is diagnosed")
+
+
+def test_nonnumeric_fallback_key_and_mixed_garbage_fail():
+    critic = complete_critic(1)
+    critic["claim_support"] = {
+        "0": "SUPPORTED",
+        "beat-one": "SUPPORTED",
+        "1": ["SUPPORTED"],
+        "2": "SUPPORTED",
+    }
+    ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
+    check(ok is False, "fallback map with unknown key or malformed value fails as a whole")
+    check(any("not an integer beat identity" in e for e in errors), "nonnumeric fallback key is diagnosed")
+    check(any("value for beat_index 1 is malformed" in e for e in errors), "garbage fallback value is diagnosed")
+    check(covered == (0, 2), "malformed rows are not silently converted into coverage")
+
+
+def test_fallback_nested_identity_must_match_key():
+    critic = complete_critic(1)
+    critic["claim_support"] = {
+        "0": "SUPPORTED",
+        "1": {"beat_index": 2, "verdict": "SUPPORTED"},
+        "2": "SUPPORTED",
+    }
+    ok, errors, covered = SG.validate_semantic_coverage(critic, 1)
+    check(ok is False, "fallback key/nested identity disagreement fails closed")
+    check(any("key/index disagreement" in e for e in errors), "identity disagreement is diagnosed")
+    check(covered == (0, 2), "conflicting identity is not laundered into coverage")
+
+
 def test_unsupported_requires_named_proposition():
     critic = complete_critic(1)
     critic["claim_support"][1] = supported(1, "UNSUPPORTED_ADDITION", "")
@@ -219,6 +279,22 @@ def test_orchestrator_critic_outage_cannot_accept():
           "debug distinguishes verifier outage from script factual failure")
 
 
+def test_orchestrator_identityless_supported_payload_cannot_accept():
+    malformed = complete_critic(1)
+    malformed["claim_support"] = [
+        {"verdict": "SUPPORTED"},
+        {"verdict": "SUPPORTED"},
+        {"verdict": "SUPPORTED"},
+    ]
+    (manifest, debug), invocations = _run_orchestrator([malformed, malformed])
+    check(manifest is None and debug["accepted"] is False,
+          "perfect-score candidate cannot ship when critic omits semantic identities")
+    check(debug.get("_semantic_verified") is not True,
+          "malformed supported payload can never earn semantic verification")
+    check(invocations.count("critic_verdict") == 2,
+          "identityless payload consumes only the bounded semantic retry")
+
+
 def test_orchestrator_partial_then_complete_retry_accepts():
     partial = complete_critic(1)
     partial["claim_support"] = [supported(0), supported(1)]
@@ -243,10 +319,16 @@ def main():
     test_partial_coverage_fails()
     test_duplicate_and_unknown_verdict_fail()
     test_live_dict_fallback_shape_can_still_be_verified()
+    test_missing_indices_are_never_invented_from_list_position()
+    test_one_missing_index_invalidates_otherwise_complete_list()
+    test_boolean_float_and_string_list_indices_fail()
+    test_nonnumeric_fallback_key_and_mixed_garbage_fail()
+    test_fallback_nested_identity_must_match_key()
     test_unsupported_requires_named_proposition()
     test_bounded_retry_recovers_once()
     test_bounded_retry_exhaustion_fails_closed()
     test_orchestrator_critic_outage_cannot_accept()
+    test_orchestrator_identityless_supported_payload_cannot_accept()
     test_orchestrator_partial_then_complete_retry_accepts()
     test_orchestrator_quality_floor_still_load_bearing()
     print(f"writer_v21 semantic gate tests: PASS ({PASS} checks)")
