@@ -1,0 +1,57 @@
+name: sound-brain-bakeoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_json:
+        description: "SoundPlan JSON. Keep it sparse and scene-specific."
+        required: true
+        default: '{"video_duration_s":30,"events":[{"event_id":"amb1","kind":"ambience","start_s":0,"duration_s":3,"prompt":"quiet underwater reef ambience","scene_id":"1"},{"event_id":"mech1","kind":"mechanism","start_s":12,"duration_s":2,"prompt":"brief cavitation snap and bubble collapse","scene_id":"3"}]}'
+        type: string
+      max_credits:
+        description: "HARD ElevenLabs SFX credit ceiling checked before any call"
+        required: true
+        default: "200"
+        type: string
+      plan_only:
+        description: "Zero-spend sound plan only"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sound-brain-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  plan-or-generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Materialize plan
+        env:
+          PLAN_JSON: ${{ inputs.plan_json }}
+        run: printf '%s\n' "$PLAN_JSON" > sound_plan.json
+      - name: Plan or generate restrained SFX
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          MAX_CREDITS: ${{ inputs.max_credits }}
+          PLAN_ONLY: ${{ inputs.plan_only }}
+        run: |
+          set -euo pipefail
+          args=(--plan sound_plan.json --max-credits "$MAX_CREDITS" --out-dir sound_brain)
+          if [ "$PLAN_ONLY" = "true" ]; then args+=(--plan-only); fi
+          python sound_brain.py "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sound-brain-${{ github.run_id }}
+          path: sound_brain/
+          if-no-files-found: error
+          retention-days: 7
