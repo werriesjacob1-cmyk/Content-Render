@@ -2,7 +2,8 @@ name: tests
 
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
 # semantic-safety, scorer telemetry, editorial diagnostics, spoken manifest,
-# and repair-regression telemetry. No suite makes network calls.
+# repair-regression telemetry, and blind pairwise editorial judging.
+# No suite makes network calls.
 
 on:
   pull_request:
@@ -40,3 +41,4 @@ jobs:
           python tests/test_writer_v21_editorial_diagnostics.py
           python tests/test_writer_v21_manifest.py
           python tests/test_writer_v21_repair_regression.py
+          python tests/test_writer_v21_pairwise.py
