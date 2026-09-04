@@ -40,12 +40,26 @@ def test_budget():
     models=R.parse_models(R.DEFAULT_MODELS)
     e=R.estimate_cost(models,spec())
     check(abs(e-1.22)<0.001, "5s two-model repair estimate is exact")
-    check(R.enforce_budget(models,spec(),1.25)==e, "$1.25 hard ceiling admits expected run")
+    check(R.enforce_budget(models,spec(),1.22)==1.22, "exact 5s budget boundary is accepted")
     try:
-        R.enforce_budget(models,spec(),1.00); raise AssertionError("budget should fail")
+        R.enforce_budget(models,spec(),1.21); raise AssertionError("one-cent-under budget should fail")
     except ValueError as ex:
-        check("exceeds hard budget" in str(ex), "under-budget plan fails before calls")
-    check(abs(R.estimate_cost(models,spec(8.0))-2.24)<0.001, "8s plan uses LTX per-second + Luma 10s price")
+        check("exceeds hard budget" in str(ex), "one-cent-under 5s budget is rejected")
+
+    e8=R.estimate_cost(models,spec(8.0))
+    check(abs(e8-2.24)<0.001, "8s plan remains exactly $2.24 without float inflation")
+    check(R.enforce_budget(models,spec(8.0),2.24)==2.24, "exact 8s budget boundary is accepted")
+    try:
+        R.enforce_budget(models,spec(8.0),2.23); raise AssertionError("one-cent-under 8s budget should fail")
+    except ValueError as ex:
+        check("exceeds hard budget" in str(ex), "one-cent-under 8s budget is rejected")
+
+    for bad in (-0.01, float("inf"), float("nan")):
+        try:
+            R.enforce_budget(models,spec(),bad); raise AssertionError("invalid budget should fail")
+        except ValueError:
+            pass
+    check(True, "negative/non-finite budgets are rejected")
 
 
 def test_plan_never_promotes():
