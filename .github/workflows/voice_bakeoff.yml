@@ -3,26 +3,41 @@ name: voice-bakeoff
 on:
   workflow_dispatch:
     inputs:
-      voices:
+      providers:
+        description: "Comma-separated: edge,orpheus,cartesia,eleven"
+        required: true
+        default: "edge,orpheus,cartesia,eleven"
+        type: string
+      orpheus_voices:
         description: "Comma-separated Orpheus voices"
         required: false
-        default: "troy,daniel,austin"
+        default: "troy"
         type: string
       direction:
-        description: "Optional Orpheus vocal direction, e.g. calmly / authoritatively"
+        description: "Optional Orpheus vocal direction"
         required: false
         default: ""
         type: string
-      include_edge:
-        description: "Also render the current Edge-TTS baseline"
+      cartesia_voice_id:
+        description: "Cartesia voice ID (required only for paid Cartesia generation)"
         required: false
-        default: true
-        type: boolean
+        default: ""
+        type: string
+      eleven_voice_id:
+        description: "ElevenLabs voice ID (required only for paid Eleven generation)"
+        required: false
+        default: ""
+        type: string
       text:
         description: "Optional narration text; blank uses manifest.json"
         required: false
         default: ""
         type: string
+      plan_only:
+        description: "Zero-spend provider/config plan only"
+        required: true
+        default: true
+        type: boolean
 
 permissions:
   contents: read
@@ -34,7 +49,7 @@ concurrency:
 jobs:
   bakeoff:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -42,28 +57,33 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Edge baseline
-        if: ${{ inputs.include_edge }}
-        run: pip install "edge-tts>=6.1.0"
+      - name: Install audio tools only for generation mode
+        if: ${{ !inputs.plan_only }}
+        run: |
+          pip install "edge-tts>=6.1.0"
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
 
-      - name: Generate private voice samples
+      - name: Build plan or generate private blind samples
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CARTESIA_API_KEY: ${{ secrets.CARTESIA_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           BAKEOFF_TEXT: ${{ inputs.text }}
-          BAKEOFF_VOICES: ${{ inputs.voices }}
-          BAKEOFF_DIRECTION: ${{ inputs.direction }}
-          INCLUDE_EDGE: ${{ inputs.include_edge }}
+          PROVIDERS: ${{ inputs.providers }}
+          ORPHEUS_VOICES: ${{ inputs.orpheus_voices }}
+          DIRECTION: ${{ inputs.direction }}
+          CARTESIA_VOICE_ID: ${{ inputs.cartesia_voice_id }}
+          ELEVEN_VOICE_ID: ${{ inputs.eleven_voice_id }}
+          PLAN_ONLY: ${{ inputs.plan_only }}
         run: |
-          args=(--manifest manifest.json --voices "$BAKEOFF_VOICES" --direction "$BAKEOFF_DIRECTION" --out-dir voice_bakeoff)
-          if [ -n "$BAKEOFF_TEXT" ]; then
-            args+=(--text "$BAKEOFF_TEXT")
-          fi
-          if [ "$INCLUDE_EDGE" = "true" ]; then
-            args+=(--edge)
-          fi
+          set -euo pipefail
+          args=(--manifest manifest.json --providers "$PROVIDERS" --orpheus-voices "$ORPHEUS_VOICES" --direction "$DIRECTION" --cartesia-voice-id "$CARTESIA_VOICE_ID" --eleven-voice-id "$ELEVEN_VOICE_ID" --out-dir voice_bakeoff)
+          if [ -n "$BAKEOFF_TEXT" ]; then args+=(--text "$BAKEOFF_TEXT"); fi
+          if [ "$PLAN_ONLY" = "true" ]; then args+=(--plan-only); fi
           python voice_bakeoff.py "${args[@]}"
 
-      - name: Upload private comparison
+      - name: Upload private plan/comparison
         uses: actions/upload-artifact@v4
         with:
           name: voice-bakeoff-${{ github.run_id }}
