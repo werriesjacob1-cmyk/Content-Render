@@ -289,8 +289,10 @@ def test_orchestrator_identityless_supported_payload_cannot_accept():
     (manifest, debug), invocations = _run_orchestrator([malformed, malformed])
     check(manifest is None and debug["accepted"] is False,
           "perfect-score candidate cannot ship when critic omits semantic identities")
-    check(debug.get("_semantic_verified") is not True,
-          "malformed supported payload can never earn semantic verification")
+    check(debug.get("error") == "no candidate obtained complete semantic verification",
+          "identityless supported payload ends as semantic verification failure")
+    check(debug["semantic_retries_used"] == 1,
+          "identityless payload spends exactly the one allowed semantic retry")
     check(invocations.count("critic_verdict") == 2,
           "identityless payload consumes only the bounded semantic retry")
 
