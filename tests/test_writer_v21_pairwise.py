@@ -41,8 +41,18 @@ def test_blind_packet_is_deterministic_and_anonymous():
           "candidate ids never leak into judge prompt")
     check("candidate a" in prompt and "candidate b" in prompt,
           "judge sees only anonymous A/B scripts")
-    check("which version is newer" not in prompt,
-          "prompt never tells judge chronology")
+    # The instruction intentionally CONTAINS the phrase "which version is newer"
+    # as a prohibition, so asserting that phrase is absent creates a false
+    # negative. Test the real anonymity property instead: no chronology labels,
+    # repair language, or round metadata are attached to either candidate.
+    chronology_labels = (
+        "candidate a is newer", "candidate b is newer",
+        "candidate a is older", "candidate b is older",
+        "original version", "repaired version", "new version", "old version",
+        "previous round", "later round", "repair round",
+    )
+    check(not any(label in prompt for label in chronology_labels),
+          "prompt never labels A/B as old/new/original/repaired or exposes round chronology")
     check("do not infer which version is newer" in prompt,
           "judge explicitly forbidden from chronology inference")
     check(packet1["gating"] is False, "pairwise packet is telemetry only")
