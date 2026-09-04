@@ -10,7 +10,7 @@ import writer_v21_pairwise as P
 import writer_v21_quality_signals as Q
 import writer_v21_repair_regression as RR
 import writer_v21_story_shape as S
-import writer_v21_visual_feasibility as VF
+import writer_v21_visual_preflight as VF
 TOPIC_IDS=("stomach_lining","neutron_star_spoon","mauna_kea","chess_possible_games","mantis_shrimp")
 INTER_TOPIC_DELAY_SECONDS=int(os.getenv("WR21_INTER_TOPIC_DELAY_SECONDS","60"))
 def _editorial_for_round(r): return E.editorial_diagnostics(hook=r.get("hook") or "",beats=r.get("beats") or [],payoff=r.get("payoff") or "")
