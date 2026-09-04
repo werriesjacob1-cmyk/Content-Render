@@ -1,38 +1,43 @@
-# Overnight Quality Control Addendum — through 2026-09-04 08:18 CT
+# Overnight Quality Control Addendum — through 2026-09-04 09:18 CT
 
 Canonical continuation handoff. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE VERIFIED
 - origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
-- Quality-stack integration: `9eb299fa19e0de51c905f39ff3f561d39192b986` — unchanged.
-- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
+- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — no observed drift.
+- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — no observed drift.
+- Quality-stack integration advanced intentionally from `9eb299f...` to `62197e9ad4b5322ba5cd5f89cf747c268bc54308` to close the previously recorded fail-closed semantic convergence seam.
 - PR #56 remains draft and targets Claude V2.1, not main.
 - No merge to main, deploy, render, publish, cron/live-delivery change, or provider call this run. Known takeover spend remains $0.
 
-## ZERO-QUOTA STACK — STILL AUTHORITATIVELY GREEN
-Workflow `33867508615` remains the promotion-preflight proof on exact takeover head `5669d2d...`: legacy 1503/0; semantic 28; scorer/critic 18; editorial 17; spoken manifest 21; repair regression 20; blind pairwise PASS; permanent torture corpus PASS; story-shape + first-8s PASS; hook/headline/visual separation + payoff proof PASS; visual feasibility 6/6; live-runner syntax PASS.
-
-Architecture freeze remains HARD unless a new demonstrated P0 correctness/render-contract defect appears.
-
 ## LIVE PANEL CHECK
-At 08:18 CT I inspected the latest repository Actions activity. No new secret-backed `branch_recon` / corrected Writer V2.1 torture-panel run was visible for takeover ref `5669d2d...` and `wr21_takeover_bakeoff.py`. The newest visible activity was the routine scheduled `render-video` run on unchanged main, not promotion evidence for Writer V2.1.
+Latest Actions activity still contains no newly dispatched secret-backed `branch_recon` corrected five-topic panel for takeover ref `5669d2d...`. The visible scheduled `render-video` run is on unchanged main and is not Writer promotion evidence. Workflow dispatch with inputs remains unavailable from the current connector, so no quota state or live-script result is inferred.
 
-The available GitHub connector still has no workflow-dispatch action with inputs, so this run cannot truthfully initiate `branch_recon.yml`. Do not infer Groq/Gemini quota from CI dummy credentials and do not fabricate live evidence.
+## CONCRETE PROGRESS — QUALITY-STACK SEMANTIC BOUNDARY CLOSED
+The checkpoint had identified a real convergence risk: `writer_v21_adapter.accepted_traceability()` trusted Claude-era `accepted=True + score + no validate error`, while takeover acceptance requires complete fail-closed semantic verification.
 
-## COMPATIBILITY RE-READ / CREATIVE FINDING
-The quality-stack integration branch already has an exact V2.1 adapter (`writer_v21_adapter.py`) that preserves claim IDs/provenance and can build a quality-session plan. The takeover runtime corrected the production narration contract so hook + six treatment beats + payoff are all spoken scenes. These branches have not drifted since the prior checkpoint.
+Quality-stack branch now requires ALL of:
+- debug `accepted=True`;
+- no validate error;
+- numeric accepted score;
+- manifest `_semantic_verified is True`;
+- at least one round explicitly `semantic_verified is True`.
 
-Important remaining convergence seam after script promotion: the quality-stack adapter was written against Claude's accepted-debug contract, while takeover acceptance additionally requires complete semantic verification. Before any eventual convergence, the adapter must consume the takeover/fail-closed semantic signal rather than treating Claude-era acceptance alone as sufficient. This is NOT a reason to redesign Writer before live evidence; it is a recorded post-promotion integration requirement.
+Missing manifest proof, Claude-era acceptance without semantic proof, aborted runs, and unverified manifests now fail closed before `QualitySessionPlan.traceability_ready` can become true. `session_from_v21()` passes both debug and manifest into this boundary. `debug_traceability_summary()` exposes semantic state explicitly.
 
-## CURRENT PROMOTION STATUS
-HOLD. Engineering preflight is complete and green, but there is still no corrected five-topic live evidence showing multiple factual-clean, floor-clearing scripts a strong human editor would post. No certification render is earned.
+Tests were rewritten to cover the convergence contract, including a negative test proving an unverified candidate cannot enter the quality stack. Branch commits: adapter `d0c653fc270f4bab099cefb6626b311431634921`; tests/final head `62197e9ad4b5322ba5cd5f89cf747c268bc54308`.
+
+## TEST / CI EVIDENCE
+GitHub Actions run `33882878259` started for the first adapter commit and was still in progress at checkpoint time; its PR metadata already reports quality-stack head advanced to `62197e9...`. Do NOT call the seam green until a run on the final head completes successfully. The authoritative Writer takeover zero-quota proof remains run `33867508615` on `5669d2d...`: legacy 1503/0; semantic 28; scorer/critic 18; editorial 17; spoken manifest 21; repair regression 20; blind pairwise; permanent torture corpus; story-shape + first-8s; hook/payoff; visual feasibility 6/6; runner syntax all green.
+
+## CREATIVE / PROMOTION STATUS
+HOLD. This hour improved safety of eventual convergence but supplied no new live scripts. Architecture freeze remains HARD on Writer itself. No certification render is earned.
 
 ## NEXT EXACT ACTION
-1. First inspect for a newly dispatched `branch_recon` run targeting `5669d2d...` + `wr21_takeover_bakeoff.py`.
-2. If present, read complete logs and build the promotion evidence packet: exact scripts, factual/semantic state, floors, scorer/critic disagreement, repair behavior, pairwise plans/outcomes if invoked, first-8s, payoff, visual feasibility, AI smell, human postability, and exact call count/cost evidence.
-3. If absent and dispatch remains unavailable, do not add Writer architecture. Preserve the freeze and advance only zero-quota convergence/evidence tooling, specifically the fail-closed semantic acceptance seam in the quality-stack adapter and/or deterministic pre-production visual plans for the five torture topics.
-4. Promotion requires multiple genuinely postable scripts. Only after that should convergence/certification proceed. Full video render still requires Jacob's explicit approval.
+1. Inspect Actions for final quality-stack head `62197e9...`. If red, fix only the exact semantic-adapter/test regression; do not broaden scope. If green, record exact evidence and freeze this seam.
+2. Inspect for any newly dispatched secret-backed `branch_recon` run targeting `5669d2d...` + `wr21_takeover_bakeoff.py`. If present, build the full promotion evidence packet and ruthlessly judge all five scripts.
+3. If live dispatch remains absent, continue zero-spend work only: deterministic pre-production visual plans / evidence routing for the five canonical torture topics, without inferring promotion.
+4. Promotion still requires multiple factual-clean, floor-clearing scripts a strong human creator would actually post. Full certification render requires Jacob's explicit approval.
 
 ## APPROVAL / SPEND
 - main untouched; no merge/deploy/publish.
