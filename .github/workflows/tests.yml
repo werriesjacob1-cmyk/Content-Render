@@ -3,8 +3,8 @@ name: tests
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
 # semantic-safety, scorer telemetry, editorial diagnostics, spoken manifest,
 # repair-regression telemetry, blind pairwise judging, the permanent known-bad
-# torture corpus, and story-shape / first-8-second diagnostics.
-# No suite makes network calls.
+# torture corpus, story-shape / first-8-second diagnostics, and hook/payoff
+# surface diagnostics. No suite makes network calls.
 
 on:
   pull_request:
@@ -45,3 +45,4 @@ jobs:
           python tests/test_writer_v21_pairwise.py
           python tests/test_writer_v21_torture_corpus.py
           python tests/test_writer_v21_story_shape.py
+          python tests/test_writer_v21_hook_payoff.py
