@@ -172,8 +172,10 @@ def test_critic_and_legacy_quality_drops_are_visible():
     r = RR.compare_rounds(before, after)
     check("critic_craft_drop" in r["regression_flag_kinds"], "independent craft drop is surfaced")
     check("legacy_score_drop" in r["regression_flag_kinds"], "legacy quality-score drop is surfaced")
-    check("judge_disagreement_worsened" in r["regression_flag_kinds"] or True,
-          "judge disagreement movement remains available without being required for every quality drop")
+    check(r["after_quality"]["critic_craft_avg"] < r["before_quality"]["critic_craft_avg"],
+          "raw critic averages prove the direction of the craft regression")
+    check(r["after_quality"]["legacy_overall"] < r["before_quality"]["legacy_overall"],
+          "raw legacy overall scores prove the direction of the self-score regression")
 
 
 def test_debug_analysis_collects_multiple_transitions():
