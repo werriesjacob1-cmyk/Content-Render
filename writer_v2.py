@@ -247,28 +247,9 @@ def _normalize_text(text):
 
 
 _NUMBER_WORD_RE = re.compile(
-    # "one" deliberately excluded: overwhelmingly used as a pronoun/determiner
-    # in natural English ("the one thing...", "the one everybody assumes")
-    # rather than a numeral -- live testing found it misfiring as a hard
-    # unsupported-number violation on completely ordinary sentences far more
-    # than it ever caught a genuine invented count of one.
     r"\b(zero|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen|"
     r"hundred|thousand|million|billion|trillion|"
-    # magnitude-multiplier words -- 2026-09-04 V2.1 addition, mission Phase 1
-    # category B ("explicit quantitative comparisons / magnitude claims"). A
-    # closed, bounded set (English has only a handful of these), not an
-    # open-ended vocabulary expansion -- "twice as many hearts" is exactly
-    # the kind of quantitative comparison that must be hard-checkable, and
-    # without this "twice"/"double"/etc were invisible to the numeric check
-    # entirely (neither a digit nor one of the digit-count words above).
     r"twice|thrice|double|triple|quadruple|half|quarter)s?\b", re.I)
-# trailing s? (outside the capture group, so "zeros" still captures as
-# "zero") -- 2026-09-04 V2.1 fix: a claim saying "a number with 120 zeros"
-# and a paraphrase saying "an 80-zero count" refer to the same word: plural
-# vs singular, not a new unsupported number. Confirmed live (chess bakeoff
-# run): "zero" from "80-zero" failed to match the claim's own "zeros"
-# because \bzero\b requires a boundary immediately after "zero", which the
-# plural's "s" broke -- neither form matched the other at all before this.
 _DIGIT_NUMBER_RE = re.compile(r"\b\d[\d,]*(?:\.\d+)?\b")
 _UNIT_RE = re.compile(
     r"\b(kg|kilograms?|grams?|tons?|tonnes?|mm|cm|km|kilometers?|kilometres?|miles?|"
@@ -293,28 +274,6 @@ _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
 
 def _extract_factual_tokens(text):
-    """Mechanically pulls out the factual PAYLOAD of a claim's text: numbers
-    (digit and spelled-out), units, proper-noun-shaped entities, and
-    significant lowercase terms. Deliberately generous/inclusive here -- this
-    builds the ALLOWED vocabulary for a claim, so over-inclusion just means a
-    claim permits slightly more than strictly necessary, not a false
-    rejection later (the validator in writer_v2_repair.py is what needs to be
-    precise; this is the permissive source-of-truth side).
-
-    2026-09-04 V2.1 addition: also reports `weak_entities`, the subset of
-    `entities` that are a SINGLE capitalized word sitting at the very start
-    of their own sentence ("Zoom in and you see...", "Measured from base to
-    summit..."). That position is ambiguous by construction -- English
-    capitalizes the first word of every sentence regardless of whether it's
-    a real proper noun, which is exactly why live testing caught ordinary
-    words ("Zoom", "Measured", "Today", "Our", "Impossible") being extracted
-    as entities. A genuine multi-word proper-noun phrase ("Mount Everest",
-    "Empire State Building") is a near-unambiguous signal regardless of
-    position and stays a full-strength entity; so does ANY single-word
-    entity used mid-sentence ("...taller than Everest"), which is how real
-    comparisons are actually phrased. Callers (writer_v2_repair.py) treat
-    `weak_entities` as a softer signal than the rest of `entities` -- see
-    its own hard/soft severity split."""
     text = _normalize_text(text)
     numbers = sorted(set(_DIGIT_NUMBER_RE.findall(text)) |
                      {w.lower() for w in _NUMBER_WORD_RE.findall(text)})
@@ -329,10 +288,6 @@ def _extract_factual_tokens(text):
             entities.add(cand)
             if " " not in cand and m.start() == 0:
                 weak_entities.add(cand)
-    # strip apostrophes before word-splitting so a contraction ("didn't")
-    # tokenizes as one clean word ("didnt") instead of splitting into a
-    # malformed fragment on the apostrophe -- text is already
-    # curly-quote-normalized above, so this catches both quote styles.
     words = re.findall(r"[a-zA-Z]{4,}", text.replace("'", "").lower())
     terms = sorted({w for w in words if w not in _TERM_STOPWORDS})
     return {"numbers": numbers, "units": units, "entities": sorted(entities),
@@ -355,19 +310,6 @@ def _make_claim(prefix, idx, text, source_kind, source_ref):
 
 
 def build_claim_inventory(fact, dossier_facts=None, grounded=False):
-    """The mechanical evidence layer. Returns {"claims": [...], "key_terms":
-    [...], "grounded": bool, "provenance_note": "..."}.
-
-    Claims are built ONLY from: the base fact's `fact`/`wow`/`whatif`-answer/
-    `angle` fields, and dossier_facts (labeled grounded_dossier only when the
-    caller-supplied `grounded` flag is True -- an ungrounded dossier, e.g.
-    the explicit GROUND_DOSSIER=0 opt-out, is still labeled honestly as
-    base_fact-tier, never silently upgraded). No LLM call is used to build
-    this, and no text is ever invented, merged, or paraphrased -- every
-    claim_text is a verbatim slice of an existing trusted string. `key_terms`
-    is carried separately as globally-permitted vocabulary (the fact bank's
-    own curated specifics, independent of which claim a beat happens to
-    cite)."""
     fact = fact or {}
     dossier_facts = [str(d).strip() for d in (dossier_facts or []) if str(d).strip()]
     claims = []
@@ -381,16 +323,6 @@ def build_claim_inventory(fact, dossier_facts=None, grounded=False):
     whatif = (fact.get("whatif") or "").strip()
     next_base_id = 3
     if whatif:
-        # The question half itself is also a claim, not just connective
-        # tissue -- the writer prompt's own CURIOSITY GAP rule explicitly
-        # expects a beat to genuinely ask (a paraphrase of) this exact
-        # question, so its concrete nouns/numbers need to be citable too.
-        # ~21% of real topic_bank entries (70/336, checked live 2026-09-03)
-        # store `whatif` as a BARE question with nothing after the "?" --
-        # the old code silently dropped those entirely (empty `answer`),
-        # leaving that fact's whatif vocabulary uncitable and its question
-        # unusable without tripping the traceability checker. Always
-        # capture the question; separately capture the answer when present.
         question, sep, answer = whatif.partition("?")
         question = question.strip()
         answer = answer.strip()
@@ -401,7 +333,7 @@ def build_claim_inventory(fact, dossier_facts=None, grounded=False):
             claims.append(_make_claim("base", next_base_id, answer, "base_fact", "topic_bank.whatif_answer"))
             next_base_id += 1
     angle = (fact.get("angle") or "").strip()
-    if angle and len(angle.split()) >= 3:  # skip short label-style angles ("Weather Extreme") -- not a factual assertion
+    if angle and len(angle.split()) >= 3:
         claims.append(_make_claim("base", next_base_id, angle, "base_fact", "topic_bank.angle"))
         next_base_id += 1
 
@@ -425,14 +357,6 @@ def build_claim_inventory(fact, dossier_facts=None, grounded=False):
     }
 
 
-# ---------------------------------------------------------------------------
-# WRITER PROMPT -- static/stable prefix FIRST (genuinely identical text on
-# every call, for provider-side prompt-caching to actually have a chance to
-# help), dynamic per-call material (treatment, packet, avoid-list, visual
-# evidence) AFTER. The legacy build_prompt() interleaves fact/dossier/avoid
-# blocks ahead of the stable rules, which defeats any prefix cache before it
-# starts.
-# ---------------------------------------------------------------------------
 WRITER_V2_STATIC = """You write scripts for "Stranger Than It Sounds", a faceless science page built to make people FOLLOW and binge.
 
 VOICE: calm, precise, never hype-y ("you won't BELIEVE"), never an exclamation salesman. State astonishing true things plainly and let the strangeness do the work. Match your emotional color to what the fact actually earns (awe, eerie, visceral, tense, peaceful, chaotic) -- never default to one mood.
@@ -462,12 +386,6 @@ Return ONLY valid JSON matching this exact shape, no markdown, no commentary:
 
 def build_writer_prompt_v2(treatment_name, claim_inventory, avoid_topics=None,
                             visual_evidence=None, treatments=None):
-    """Assembles the full V2 writer prompt: WRITER_V2_STATIC (stable) + this
-    call's treatment beats + a compact, ID-labeled EVIDENCE CLAIMS list (from
-    build_claim_inventory -- replaces the old free-prose story packet, since
-    a citable list serves the same "here's your material" role while also
-    being the thing the writer can actually reference by ID) + avoid-list +
-    visual evidence (dynamic). See estimate_tokens() for the size target."""
     treatments = treatments or TREATMENTS
     t = treatments[treatment_name]
     beat_lines = "\n".join(f"  {i + 1}. {b}" for i, b in enumerate(t["beats"]))
@@ -537,21 +455,9 @@ WRITER_V2_SCHEMA = {
 
 
 def estimate_tokens(text):
-    """Cheap chars/4 heuristic, no tokenizer dependency. Live-verified against
-    Groq's own 'Requested' TPM figure in the 2026-09-03 mission logs (a
-    ~40,172-char legacy prompt estimated at ~10,043 tokens vs Groq's reported
-    Requested ~10,033-11,492 across several real calls -- within ~1-2%),
-    good enough to prove a size reduction without adding a dependency."""
     return len(text or "") // 4
 
 
-# ---------------------------------------------------------------------------
-# DOWNSTREAM MECHANICAL ASSEMBLY -- everything the legacy mega-prompt used to
-# ask the LLM for, done here instead as plain deterministic functions. These
-# are intentionally simple heuristics for THIS experiment (the bakeoff is
-# judging the WRITING, not caption/hashtag polish) -- production-quality
-# versions are follow-up work once the writer-side split is validated.
-# ---------------------------------------------------------------------------
 MOTION_CYCLE = ["zoom_in", "zoom_out", "pan_left", "pan_right"]
 _STOPWORDS = {"the", "a", "an", "of", "in", "on", "at", "to", "for", "with", "and", "or",
              "is", "are", "was", "were", "its", "your", "you", "this", "that", "it", "as",
@@ -559,13 +465,6 @@ _STOPWORDS = {"the", "a", "an", "of", "in", "on", "at", "to", "for", "with", "an
 
 
 def derive_search_query(visual_intent, banned_re=None, max_words=5):
-    """Turns a beat's visual_intent into a short filmable noun-phrase query --
-    mechanical, no LLM call. `banned_re` is an optional caller-supplied regex
-    (e.g. generate.UNSTOCKABLE_Q) of jargon/un-filmable terms to avoid --
-    matched and dropped WORD BY WORD (not just truncated) so a banned term
-    anywhere in the phrase can't survive by sitting inside the kept slice.
-    The real production gate is still generate.validate()'s own check on the
-    assembled manifest; this is just a decent-effort mechanical query."""
     words = re.findall(r"[A-Za-z][A-Za-z'-]*", visual_intent or "")
     kept = [w for w in words if w.lower() not in _STOPWORDS]
     if banned_re is not None:
@@ -575,9 +474,6 @@ def derive_search_query(visual_intent, banned_re=None, max_words=5):
 
 
 def derive_hook_headline(hook, max_chars=22):
-    """Mechanical ALL-CAPS cover headline from the spoken hook (was an extra
-    LLM-authored field in the legacy schema) -- keeps the strongest content
-    words, drops stopwords, truncates to fit the cover design."""
     words = re.findall(r"[A-Za-z0-9'-]+", hook or "")
     kept = [w for w in words if w.lower() not in _STOPWORDS] or words
     out, total = [], 0
@@ -605,9 +501,6 @@ def derive_keyword_metaphor(fact, title):
 
 
 def derive_captions(hook, cta_style="SAVE_WORTHY"):
-    """Deliberately minimal placeholder captions -- caption craft isn't part
-    of what the bakeoff is judging (see the mission's own judging criteria);
-    real per-platform caption generation is explicit follow-up work."""
     base = (hook or "Something you won't unsee").rstrip(".!")
     return [f"{base}...", "Wait for it.", "The real reason why."]
 
@@ -631,39 +524,60 @@ def derive_hashtags(domain):
 
 def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_ITCH",
                           cta_style="SAVE_WORTHY", banned_query_re=None):
-    """Combines the writer's creative-only output with every mechanical field
-    the legacy schema also carried, producing a manifest shape validate()/
-    score_script() can consume unchanged (same field names: title,
-    viewer_job, keyword, metaphor, vibe, hook, hook_headline, script,
-    scenes[id/duration/voiceover/on_screen_text/search_query/motion],
-    captions, hashtags, render) plus `treatment` for memory/analytics.
+    """Canonical Writer V2.1 render-manifest assembly.
 
-    TRACEABILITY (2026-09-03): each scene also carries `source_claim_ids`
-    (copied straight from the writer's beat), and the manifest carries
-    `hook_source_claim_ids` / `payoff_source_claim_ids` at the top level --
-    internal evidence infrastructure, never surfaced in captions/hashtags/
-    user-facing text, but preserved far enough downstream that
-    writer_v2_repair.py's traceability validator can audit them, diagnostics
-    can print them, and a future final-QA stage could inspect them."""
-    writer_out = writer_out or {}
-    beats = writer_out.get("beats") or []
-    scenes = []
-    for i, b in enumerate(beats):
-        vo = (b.get("voiceover") or "").strip()
-        vi = (b.get("visual_intent") or "").strip()
-        on_screen = " ".join(w for w in vo.split()[:3]).upper()
-        scenes.append({
-            "id": i + 1,
-            "duration": 4,
-            "voiceover": vo,
-            "on_screen_text": on_screen,
-            "search_query": derive_search_query(vi, banned_query_re),
-            "motion": MOTION_CYCLE[i % len(MOTION_CYCLE)],
-            "source_claim_ids": list(b.get("source_claim_ids") or []),
-        })
-    title = writer_out.get("title") or ""
-    hook = writer_out.get("hook") or ""
+    The certified semantic surfaces are made literal in the render contract:
+    scene 1 is the hook, scenes 2..N+1 are the treatment beats, and the final
+    scene is the payoff. Claim IDs travel with the exact spoken scene. This is
+    the only Writer V2.1 manifest assembler used by the canonical orchestrator.
+    """
+    writer_out = dict(writer_out or {})
+    fact = dict(fact or {})
+    beats = list(writer_out.get("beats") or [])
+    curated_queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
+
+    title = str(writer_out.get("title") or "")
+    hook = str(writer_out.get("hook") or "").strip()
+    payoff = str(writer_out.get("payoff") or "").strip()
     keyword, metaphor = derive_keyword_metaphor(fact, title)
+
+    hook_visual = curated_queries[0] if curated_queries else hook
+    payoff_visual = curated_queries[-1] if len(curated_queries) >= 2 else payoff
+
+    spoken_units = [{
+        "voiceover": hook,
+        "visual_intent": hook_visual,
+        "source_claim_ids": list(writer_out.get("hook_source_claim_ids") or []),
+        "role": "hook",
+    }]
+    for beat in beats:
+        spoken_units.append({
+            "voiceover": str(beat.get("voiceover") or "").strip(),
+            "visual_intent": str(beat.get("visual_intent") or "").strip(),
+            "source_claim_ids": list(beat.get("source_claim_ids") or []),
+            "role": "beat",
+        })
+    spoken_units.append({
+        "voiceover": payoff,
+        "visual_intent": payoff_visual,
+        "source_claim_ids": list(writer_out.get("payoff_source_claim_ids") or []),
+        "role": "payoff",
+    })
+
+    scenes = []
+    for idx, unit in enumerate(spoken_units, 1):
+        voiceover = unit["voiceover"]
+        scenes.append({
+            "id": idx,
+            "duration": 4,
+            "voiceover": voiceover,
+            "on_screen_text": " ".join(voiceover.split()[:3]).upper(),
+            "search_query": derive_search_query(unit["visual_intent"], banned_query_re),
+            "motion": MOTION_CYCLE[(idx - 1) % len(MOTION_CYCLE)],
+            "source_claim_ids": list(unit["source_claim_ids"]),
+            "_v2_role": unit["role"],
+        })
+
     script = " ".join(s["voiceover"] for s in scenes if s["voiceover"])
     return {
         "title": title,
@@ -677,40 +591,24 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
         "script": script,
         "scenes": scenes,
         "captions": derive_captions(hook, cta_style),
-        "hashtags": derive_hashtags((fact or {}).get("domain", "")),
+        "hashtags": derive_hashtags(fact.get("domain", "")),
         "render": {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"},
         "treatment": treatment_name,
         "cta_style": cta_style,
-        "payoff": writer_out.get("payoff", ""),
+        "payoff": payoff,
         "payoff_source_claim_ids": list(writer_out.get("payoff_source_claim_ids") or []),
+        "_v2_spoken_scene_count": len(scenes),
     }
 
 
-# ---------------------------------------------------------------------------
-# VISUAL SCOUT -- evaluate a candidate topic's real visual tellability BEFORE
-# writing it, so a scientifically interesting fact with terrible visual
-# evidence loses to an equally strong fact that can actually be SHOWN. Pure/
-# lightweight: works off the topic_bank fact's own `queries`/`key_terms`/
-# `domain` fields alone, no network probe, no renderer change. Estimates,
-# not guarantees -- the real gate is still what main.py's footage search
-# actually finds at render time.
-# ---------------------------------------------------------------------------
 GENERIC_FILLER_QUERIES = {
     "night sky stars", "ocean waves", "abstract background", "close up hands",
     "clock ticking", "digital data", "computer screen",
 }
-
-# Rough, historically-observed free-stock coverage tier by domain (see
-# CLAUDE.md's footage-source notes -- Wikimedia video recall confirmed thin
-# on several abstract/interior-body/psychology-style queries in real testing;
-# space/ocean/animals/earth/nature/weather have consistently deep Pexels/
-# NASA/Wikimedia coverage). A heuristic, not a live probe -- deliberately
-# conservative about domains with no direct evidence either way.
 _RICH_VISUAL_DOMAINS = {"space", "ocean", "animals", "earth", "nature", "weather",
                         "geology", "plants", "physics", "materials"}
 _THIN_VISUAL_DOMAINS = {"psychology", "math", "mathematics", "language", "linguistics",
                         "neurology", "neuroscience", "senses", "history"}
-
 _MECHANISM_ACTION_WORDS = ("moves", "grows", "flows", "erupts", "freezes", "glows",
                            "breathes", "swims", "flies", "burns", "melts", "spins",
                            "collapses", "explodes", "orbits", "rotates", "vibrates")
@@ -726,35 +624,23 @@ def _filmable(q, banned_re=None):
 
 
 def visual_scout_score(fact, banned_re=None):
-    """Returns a dict: overall `score` (0-10) plus the four sub-questions the
-    mission specified (hook_visual, distinct_subjects, domain_coverage,
-    mechanism_visual), a generic-filler penalty count, and a short `verdict`.
-    Higher score = more likely to look genuinely edited rather than generic
-    B-roll wallpaper. `banned_re` should be generate.UNSTOCKABLE_Q so
-    'filmable' means the SAME thing here as it does in production."""
     fact = fact or {}
     queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
     domain = (fact.get("domain") or "").lower()
 
     filmable_queries = [q for q in queries if _filmable(q, banned_re)]
     distinct = len({q.lower() for q in filmable_queries})
-
-    # 1. can we obtain a compelling hook/proof visual?
     hook_visual = 10 if (queries and _filmable(queries[0], banned_re)) else (3 if queries else 0)
-    # 2. can we show 3+ visually distinct things?
     distinct_subjects_score = min(10, distinct * 10 // 3)
-    # 3. is there real scientific/NASA/Wikimedia/etc. media for this domain?
     if domain in _RICH_VISUAL_DOMAINS:
         domain_coverage = 9
     elif domain in _THIN_VISUAL_DOMAINS:
         domain_coverage = 4
     else:
         domain_coverage = 6
-    # 4. can the mechanism itself be shown (an action, not just a static noun)?
     key_terms = fact.get("key_terms") or []
     mech_hit = any(a in " ".join(list(key_terms) + queries).lower() for a in _MECHANISM_ACTION_WORDS)
     mechanism_visual = 8 if mech_hit else 5
-    # 5. would this devolve into generic B-roll?
     generic_hits = sum(1 for q in queries if q.lower().strip() in GENERIC_FILLER_QUERIES)
 
     score = (hook_visual * 0.3 + distinct_subjects_score * 0.3 +
@@ -780,9 +666,6 @@ def visual_scout_score(fact, banned_re=None):
 
 
 def rank_topics_by_visual_score(facts, banned_re=None):
-    """Sorts candidate facts by visual_scout_score descending -- 'choose
-    visually tellable stories, then write them,' not the other way around.
-    Returns a list of (fact, score_dict) tuples."""
     scored = [(f, visual_scout_score(f, banned_re)) for f in (facts or [])]
     scored.sort(key=lambda pair: pair[1]["score"], reverse=True)
     return scored
