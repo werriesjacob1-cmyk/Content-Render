@@ -38,7 +38,7 @@ import writer_v2_repair as WR
 # generates ONE video, so this contention is an artifact of THIS bakeoff's
 # own tight loop, not the architecture. Pace topics out so each one gets a
 # fresh-ish per-minute budget instead of inheriting the last topic's debt.
-INTER_TOPIC_DELAY_SECONDS = 45
+INTER_TOPIC_DELAY_SECONDS = 60
 
 TOPIC_IDS = ["stomach_lining", "neutron_star_spoon", "mauna_kea", "chess_possible_games", "mantis_shrimp"]
 
