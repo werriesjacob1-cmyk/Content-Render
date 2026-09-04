@@ -3220,6 +3220,28 @@ def test_writer_v2_punctuation_normalization():
     tok_dash = W2._extract_factual_tokens("The acid—dangerous as it sounds—rebuilds daily.")
     check("dangerous" in tok_dash["terms"], "em-dash-separated clauses still tokenize their words normally")
 
+    # 2026-09-04: "Mauna Kea" (narrow no-break space between the words) survived 3 live repair
+    # rounds unrepaired because the entity string never matched the allowed vocabulary's plain-space
+    # "mauna kea" at all -- confirmed live on the mauna_kea bakeoff topic
+    narrow_space_text = "Mauna Kea rises from the ocean floor."
+    tok_narrow = W2._extract_factual_tokens(narrow_space_text)
+    check("Mauna Kea" in tok_narrow["entities"],
+          "an entity written with a Unicode narrow no-break space (U+202F) between words is still "
+          "recognized as the single two-word entity, not split or left malformed")
+    mauna = {"id": "mauna_kea", "fact": "Mauna Kea is a mountain.",
+            "wow": "Mauna Kea rises from the ocean floor, taller than Everest.",
+            "whatif": "", "angle": "", "key_terms": []}
+    inv_mauna = W2.build_claim_inventory(mauna, [], False)
+    cbi_mauna = {c["claim_id"]: c for c in inv_mauna["claims"]}
+    v_narrow = WR._check_line(1, "Measurements show Mauna Kea exceeds Everest.", ["base_002"], cbi_mauna, [])
+    check(not any("Mauna" in str(x.value) for x in WR.hard_violations(v_narrow)),
+          "a genuinely-cited entity written with an exotic Unicode space is not HARD-flagged as unsupported")
+    # a non-breaking space (U+00A0) and other common exotic spaces are covered too, not just U+202F
+    for space_char, name in [(" ", "non-breaking space"), (" ", "thin space"),
+                             ("　", "ideographic space")]:
+        normalized = W2._normalize_text(f"Mauna{space_char}Kea")
+        check(normalized == "Mauna Kea", f"{name} (U+{ord(space_char):04X}) normalizes to a plain ASCII space")
+
 
 def test_writer_v2_semantic_support():
     section("writer_v2_repair semantic-support layer: critic-derived hard violations (V2.1 Phase 2)")

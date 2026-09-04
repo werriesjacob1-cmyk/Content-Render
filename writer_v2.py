@@ -217,6 +217,14 @@ def build_story_packet(fact, dossier_facts=None, grounded=False):
 _TYPOGRAPHIC_QUOTES_RE = re.compile("[‘’ʼ′]")
 _TYPOGRAPHIC_DOUBLE_QUOTES_RE = re.compile("[“”″]")
 _TYPOGRAPHIC_DASH_RE = re.compile("[–—]")
+# exotic Unicode space characters a model can emit in place of a plain ASCII
+# space -- 2026-09-04 V2.1 fix, same class of bug as the apostrophe one
+# below: "Mauna Kea" written with U+202F (narrow no-break space) between the
+# words survived 3 live repair rounds unrepaired because the entity string
+# never matched the allowed vocabulary's plain-space "mauna kea" at all. A
+# small, bounded set of known Unicode space codepoints, not indefinite --
+# regular space/tab/newline are left untouched.
+_UNICODE_SPACE_RE = re.compile("[   -   　]")
 
 
 def _normalize_text(text):
@@ -224,15 +232,17 @@ def _normalize_text(text):
     ("didn't" with U+2019) previously tokenized to the fragment "didn" + "t"
     (the word-char regex elsewhere only matches [a-zA-Z], not the smart-quote
     codepoint), and "didn" wasn't a recognized stopword -- a live bakeoff run
-    flagged it as an unsupported_term. Normalizing curly quotes/dashes to
-    their plain ASCII equivalents BEFORE any tokenization makes "didn't" and
-    "didn't" behave identically everywhere text is extracted or compared,
-    instead of patching the specific malformed fragment into a stopword
-    list (which would only fix this one word, not the class of bug)."""
+    flagged it as an unsupported_term. Normalizing curly quotes/dashes/exotic
+    spaces to their plain ASCII equivalents BEFORE any tokenization makes
+    "didn't" and "didn't" (and "Mauna Kea" with any Unicode space style)
+    behave identically everywhere text is extracted or compared, instead of
+    patching each specific malformed fragment into a stopword list (which
+    would only fix that one instance, not the class of bug)."""
     text = text or ""
     text = _TYPOGRAPHIC_QUOTES_RE.sub("'", text)
     text = _TYPOGRAPHIC_DOUBLE_QUOTES_RE.sub('"', text)
     text = _TYPOGRAPHIC_DASH_RE.sub("-", text)
+    text = _UNICODE_SPACE_RE.sub(" ", text)
     return text
 
 
