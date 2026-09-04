@@ -1,67 +1,88 @@
-# Overnight Quality Control Addendum — through 2026-09-04 11:18 CT
+# Overnight Quality Control Addendum — through 2026-09-04 12:20 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6`.
-- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`.
-- Quality stack: `8d93f4e71489674f4bc95aade72f9c411620d30b`.
-- NEW authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `dffb6964c2509ce5ceeb183c67ca92c937050594`.
+- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
+- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
+- Quality stack: `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
+- Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` advanced from `dffb6964c2509ce5ceeb183c67ca92c937050594` to `3ca3061f9a433578b4fb5b3b506f17745ce2c6ba`.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed in this audit.
-
-## CLOSED FROM PRIOR CHECKPOINT
-Quality-stack visual-torture CI run `33889058387` completed SUCCESS on exact head `8d93f4e71489674f4bc95aade72f9c411620d30b`. The five-topic anti-wallpaper visual torture seam may now be treated as green/frozen.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## CHANGES OBSERVED
-Implementation branch now exists and advanced to `dffb6964...`. The commit message is `Consolidate canonical Writer narration and semantic path [skip ci]` and is bot-authored by GitHub Actions. Observed material changes include:
-- new `narration.py::spoken_text(manifest)` pure narration contract;
-- `main.py` now calls `spoken_text(m)` instead of locally joining scene voiceovers;
-- `generate.generate_candidate_v2()` was substantially collapsed/delegated rather than retaining the older independent semantic/repair path;
-- `tests/test_pipeline.py` now expects hook + beats + payoff in spoken scenes and checks source-claim propagation;
-- `writer_v21_manifest.py` removed after its logic was consolidated;
-- `writer_v21_runtime.py` removed, eliminating the temporary monkeypatch composition.
+## DELTA SINCE 11:18 AUDIT
+The prior exact-head CI blocker is CLOSED.
 
-Read-only inspection of `narration.py` shows a useful fail-closed V2.1 contract: `_v2_spoken_scene_count` activates checks for exact scene count, hook/payoff first/last roles, beat-only middle roles, and exact top-level hook/payoff equality with first/last spoken voiceovers. Legacy manifests without the marker retain historical scene-only behavior.
+Current implementation head `3ca3061f9a433578b4fb5b3b506f17745ce2c6ba` removes the temporary branch-local patch workflow after the application commit. GitHub Actions `tests` run `33895945129` completed SUCCESS on this exact head. The checkout-identity step passed and the zero-quota test-suite step passed.
+
+The exact-head workflow explicitly runs:
+- legacy pipeline suite;
+- semantic gate;
+- quality signals;
+- editorial diagnostics;
+- spoken manifest;
+- repair regression;
+- blind pairwise;
+- known-bad torture corpus;
+- story-shape + first-8s;
+- hook surfaces + payoff proof;
+- visual feasibility;
+- live-runner syntax preflight.
+
+## ADVERSARIAL INVARIANT REVIEW
+Read-only inspection confirms the promised Mission 1A regression surface exists on current head:
+
+1. `narration.py::spoken_text()` is the single narration definition and preserves legacy terminal punctuation.
+2. V2.1 manifests carrying `_v2_spoken_scene_count` fail closed on scene-count drift, wrong hook/payoff roles, non-beat middle roles, or top-level hook/payoff text drifting from first/last spoken scenes.
+3. `tests/test_writer_v21_manifest.py` contains a direct mutation restoring the old beats-only scene bug and requires `NarrationContractError` before narration.
+4. The same test proves hook + six beats + payoff are eight canonical scenes, exact spoken order, exact claim-ID movement, legacy narration compatibility, and direct canonical assembler use by the orchestrator without runtime substitution.
+5. `tests/test_writer_v21_semantic_gate.py` contains a full orchestrator-level critic-outage test: mechanically clean/high-score content cannot certify when both semantic critic attempts fail; only one global retry is allowed; partial coverage can recover only via a complete second verdict.
+6. Semantic indices remain defined as hook=0, beats=1..N, payoff=N+1 in the semantic coverage validator/tests.
+7. Quality floor remains load-bearing in the orchestrator test.
+8. Quality-stack `writer_v21_adapter.py` still expects `debug.accepted=True`, scalar `debug.score`, `_semantic_verified=True`, and at least one round with `semantic_verified=True`; current orchestrator still supplies those fields, so no field-contract incompatibility is apparent.
 
 ## CI / TEST EVIDENCE
-- One-shot patch workflow run `33892625565` SUCCESS on parent head `95558b5ba96ae4d0c2b4c2a6d889f83c168c18fa`; this proves the patch workflow executed, NOT that final application head `dffb6964...` passes the repository test suite.
-- Final application commit `dffb6964...` contains `[skip ci]` and no exact-head `tests.yml` evidence was found in the branch run list during this audit.
+- Exact-head run: `33895945129`
+- Workflow: `.github/workflows/tests.yml`
+- Tested SHA: `3ca3061f9a433578b4fb5b3b506f17745ce2c6ba`
+- Conclusion: SUCCESS
+- Single job `test`, job id `101098486584`, completed successfully.
+- This closes the prior warning that only the patch-producing parent had evidence.
 
-## STOP WARNING — EXACT-HEAD CORRECTNESS NOT YET PROVEN
-The implementation direction matches the authorized P0 slice, but `dffb6964...` must NOT be called green or merge-ready yet. A successful patch-producing workflow on its parent is not equivalent to tests on the resulting commit. The mission explicitly requires exact-head CI and adversarial/mutation regression proof.
+## STOP WARNING — PR #57 TARGETS THE WRONG INTEGRATION SURFACE
+A new Draft PR #57 exists with title `Mission 1A — canonical Writer V2.1 contract consolidation (DO NOT MERGE)` and explicit body text saying the base authority is `claude/writer-v2-traceability-repair-01 @ 2256f22...` and that Jacob approval is required.
 
-Smallest required next action: run/obtain the normal zero-network/full relevant test suite against exact head `dffb6964...`, then inspect failures. Do not advance to Mission 1B or live provider evidence until Mission 1A exact-head correctness is established and independently reviewed.
+However the actual GitHub PR base is `main @ 6a045e50...`, not the Claude Writer V2.1 branch.
 
-Also verify the promised regression surface exists on the final head, especially:
-1. old broken manifest assembly cannot pass the spoken-text invariant;
-2. semantic outage/incomplete coverage cannot certify a candidate;
-3. semantic index 0 / 1..N / N+1 still aligns with hook / beats / payoff after permanent composition;
-4. legacy narration behavior is unchanged when the V2 marker is absent;
-5. quality-stack adapter still recognizes the canonical semantic-verification fields.
+This is materially risky because the PR-to-main diff contains 34 files, including the entire inherited Writer V2.1/takeover stack and diagnostics, not just the narrow consolidation delta. By contrast, comparing current Mission 1A head against the takeover branch `5669d2d...` shows the actual consolidation delta is 10 files: `generate.py`, `main.py`, `narration.py`, `tests/test_pipeline.py`, `tests/test_writer_v21_manifest.py`, `wr21_run.py`, `writer_v2.py`, removal of `writer_v21_manifest.py`, removal of `writer_v21_runtime.py`, plus the tests-workflow branch trigger.
 
-## SECURITY / PROVENANCE
-- `main` still contains permissive `branch_recon.yml`; security blocker remains open. No new secret-backed use should occur before hardening.
-- The P0 implementation commit being produced by a branch-local GitHub Actions patch mechanism is unusual but retains a concrete parent/commit trail. No raw cross-branch file-copy provenance loss was proven in this audit.
-- Do not confuse `[skip ci]` on the bot commit with evidence that tests are unnecessary; it creates the exact-head evidence gap above.
+Do NOT treat PR #57 as merge-ready while it targets main. The smallest safe correction is for the authorized builder to retarget/recreate the review PR against the intended integration base before any merge discussion. The shadow auditor did not mutate PR metadata.
+
+## PROVENANCE / CONVERGENCE
+- Current Mission 1A head is 62 commits ahead of Claude base and 12 commits ahead of the SuperChad takeover head. This reflects convergence through the takeover lineage rather than a new third implementation, but it means a PR against main visually conflates inherited takeover work with the narrow Mission 1A delta.
+- CONVERGENCE STATUS: WARNING only because PR #57 points at main; code-contract convergence itself remains coherent.
+- No raw-file-copy provenance loss was proven in this audit.
+
+## SECURITY
+- `main` remains unchanged and still contains the permissive `branch_recon.yml`; security blocker remains open.
+- No new secret-backed diagnostic/provider run should occur before Mission 1B hardening.
 
 ## CREATIVE QUALITY
-No new live scripts or renders were produced. This slice is correctly focused on a foundational creative-integrity invariant: the hook/payoff that are scored and certified must be the hook/payoff viewers actually hear. No claim of Writer promotion is warranted yet.
-
-## CONVERGENCE STATUS
-CLEAR with verification hold. The branch is consolidating the temporary takeover paths rather than creating a third Writer contract.
+No new live scripts or renders were produced. Mission 1A now has deterministic evidence for the foundational creative-integrity invariant: the certified hook/payoff cannot disappear from what the viewer hears. This still provides no Writer-promotion evidence by itself.
 
 ## ROADMAP STATUS
-ON PLAN / BLOCKED ON EXACT-HEAD CI.
+Mission 1A correctness evidence: GREEN on exact head.
+Mission 1A integration/review surface: BLOCKED on PR #57 base targeting main.
+Full roadmap: ON PLAN with this narrow integration-control warning.
 
 ## NEXT AUTHORIZED ACTION
-1. Obtain exact-head CI for `claude/p0-manifest-semantic-merge-01 @ dffb6964...` and audit the required P0 regression/mutation invariants.
-2. If green, complete independent Mission 1A review and stop before merge.
-3. Mission 1B (`branch_recon.yml` hardening) begins only after 1A is independently green/reviewed.
-4. No live Writer panel, provider quota use, or certification render yet.
+1. Authorized builder corrects the Mission 1A review/PR base so it does not present the branch as a direct main integration candidate.
+2. Complete independent Mission 1A review on the corrected integration surface and STOP BEFORE MERGE.
+3. Mission 1B (`branch_recon.yml` hardening) begins only after 1A review is clean; no secret-backed live Writer panel before that hardening.
+4. No provider quota use, certification render, deploy, publish, or main merge yet.
 
 ## APPROVAL / SPEND
 - Jacob remains final integration authority.
