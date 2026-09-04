@@ -1,39 +1,68 @@
 name: tests
 
-# Gate every PR (and pushes to the working branch) on the zero-quota test suite —
-# 99 pure-logic checks over validate(), caption alignment, footage anchoring,
-# the brightness shadow-lift, the script buffer, etc. The suite needs NO network,
-# NO ffmpeg, NO LLM key and NO pip install (main.py / generate.py import only the
-# stdlib + the local profiles module), so this runs in a few seconds.
-
+# Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
+# diagnostics. No suite makes network calls.
 on:
   pull_request:
   push:
     branches:
       - main
       - claude/epic-edison-jybjd1
-
+      - superchad/writer-v2-semantic-failclosed-01
 permissions:
   contents: read
-
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Prove checkout identity and required Writer V2.1 paths
+        run: |
+          echo "checked_out_sha=$(git rev-parse HEAD)"
+          test -f writer_v21_visual_preflight.py
+          test -f tests/test_writer_v21_visual_feasibility.py
+          test -f wr21_takeover_bakeoff.py
+          test -f wr21_run.py
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Run zero-quota test suite
-        # GROQ_API_KEY is set to a dummy so the provider-chain code paths the tests
-        # exercise see a key present; the tests never make a network call.
+      - name: Run zero-quota test suites
         env:
           GROQ_API_KEY: x
-        run: python tests/test_pipeline.py
+          # Python 3.11 sets sys.path[0] to tests/ when a test file is executed
+          # by path. Keep the checked-out repository root explicitly importable
+          # so top-level Writer modules are tested exactly from this head.
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          set -uo pipefail
+          failed=0
+          run_check() {
+            label="$1"; shift
+            echo "::group::$label"
+            "$@"
+            rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -ne 0 ]; then
+              echo "::error title=Zero-quota check failed::$label exited $rc"
+              failed=1
+            fi
+          }
+          run_check "legacy pipeline" python tests/test_pipeline.py
+          run_check "semantic gate" python tests/test_writer_v21_semantic_gate.py
+          run_check "quality signals" python tests/test_writer_v21_quality_signals.py
+          run_check "editorial diagnostics" python tests/test_writer_v21_editorial_diagnostics.py
+          run_check "spoken manifest" python tests/test_writer_v21_manifest.py
+          run_check "repair regression" python tests/test_writer_v21_repair_regression.py
+          run_check "blind pairwise" python tests/test_writer_v21_pairwise.py
+          run_check "known-bad torture corpus" python tests/test_writer_v21_torture_corpus.py
+          run_check "story shape + first 8s" python tests/test_writer_v21_story_shape.py
+          run_check "hook surfaces + payoff proof" python tests/test_writer_v21_hook_payoff.py
+          run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
+          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py
+          exit "$failed"
