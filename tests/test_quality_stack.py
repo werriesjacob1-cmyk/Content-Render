@@ -8,6 +8,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import quality_stack as Q
 import visual_director as VD
 import vision_gateway as VG
+import asset_gateway as AG
+import molecular_media as MM
 
 
 def check(cond, label):
@@ -88,9 +90,64 @@ def test_vision_gateway_fails_closed_without_key():
     check(good.production_eligible, "clean independently verified asset can become eligible")
 
 
+def test_asset_gateway_unifies_providers():
+    nasa = AG.nasa_svs_asset({
+        "id": "svs:42",
+        "url": "https://svs.gsfc.nasa.gov/vis/a000000/a000000/movie.mp4",
+        "page_url": "https://svs.gsfc.nasa.gov/42/",
+        "desc": "Satellite visualization of a hurricane eye",
+    }, ["hurricane eye", "satellite"])
+    check(nasa.visual_class == VD.VisualClass.AUTHENTIC_SCIENCE_VIDEO,
+          "NASA candidate becomes authentic-science AssetCandidate")
+    check(nasa.rights.is_usable(), "NASA asset carries explicit source/usage provenance")
+
+    entry = MM.PDBEntry(
+        pdb_id="1ABC",
+        title="Example ligand-bound protein",
+        experimental_methods=("X-RAY DIFFRACTION",),
+        primary_citation_title="Example structure",
+        primary_citation_authors=("A. Scientist",),
+        primary_citation_year=2024,
+        primary_citation_doi="10.0000/example",
+        pdb_doi="10.2210/pdb1abc/pdb",
+        latest_revision_date="2026-01-01",
+        structure_url="https://www.rcsb.org/structure/1ABC",
+        view3d_url="https://www.rcsb.org/3d-view/1ABC",
+        coordinate_url="https://files.rcsb.org/download/1ABC.cif",
+    )
+    pdb = AG.rcsb_asset(entry, ["ligand-bound protein"])
+    check(pdb.visual_class == VD.VisualClass.MOLECULAR_RENDER and pdb.rights.public_domain,
+          "RCSB structure becomes CC0 molecular AssetCandidate")
+
+    gen = AG.generated_asset(
+        "fal:test", VD.VisualClass.GENERATED_VIDEO, ["mantis shrimp"],
+        "https://fal.example/result/123", vision_verified=False,
+    )
+    check(gen.is_generated and not gen.vision_verified, "generated result starts unverified")
+    rejected = AG.apply_vision_verdict(gen, VG.VisionVerdict(10, True, False, False, False, False, "wrong anatomy"))
+    check(not rejected.vision_verified, "perfect numeric score cannot bypass anatomy gate")
+    approved = AG.apply_vision_verdict(gen, VG.VisionVerdict(9, True, True, False, False, False, "clean"))
+    check(approved.vision_verified, "full independent verdict can promote generated asset to ranking eligibility")
+
+    spec = VD.SceneSpec(
+        scene_id="x", narration="Satellite observations reveal the hurricane eye.",
+        scientific_subject="hurricane eye", must_show=("hurricane eye",), domain="earth",
+        authenticity_importance=10, forbidden_generic_substitutions=("generic storm stock",),
+    )
+    pretty_ai = AG.generated_asset(
+        "ai:pretty", VD.VisualClass.GENERATED_VIDEO, ["hurricane eye"],
+        "https://generated.example/a", relevance_score=1.0, technical_quality=1.0,
+        scientific_authenticity=0.4, vision_verified=True,
+    )
+    winner = AG.choose_for_scene(spec, [pretty_ai, nasa])
+    check(winner is not None and winner.asset_id == "svs:42",
+          "one shared ranker chooses authentic science over prettier synthetic media")
+
+
 if __name__ == "__main__":
     test_registry_is_complete_and_safe()
     test_visual_priority_is_reality_first()
     test_plan_only_end_to_end_contract()
     test_vision_gateway_fails_closed_without_key()
+    test_asset_gateway_unifies_providers()
     print("quality_stack tests: PASS")
