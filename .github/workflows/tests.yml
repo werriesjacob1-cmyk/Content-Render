@@ -1,7 +1,7 @@
 name: tests
 
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
-# fail-closed semantic-coverage regressions. Neither suite makes network calls.
+# semantic-safety and quality-signal regressions. No suite makes network calls.
 
 on:
   pull_request:
@@ -35,3 +35,4 @@ jobs:
         run: |
           python tests/test_pipeline.py
           python tests/test_writer_v21_semantic_gate.py
+          python tests/test_writer_v21_quality_signals.py
