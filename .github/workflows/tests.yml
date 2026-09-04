@@ -37,5 +37,6 @@ jobs:
           env -u GROQ_API_KEY python tests/test_quality_stack.py
           env -u GROQ_API_KEY python tests/test_story_packet.py
           env -u GROQ_API_KEY python tests/test_image_to_video_bakeoff.py
+          env -u GROQ_API_KEY python tests/test_generated_media_controller.py
           env -u GROQ_API_KEY python tests/test_review_readiness.py
           env -u GROQ_API_KEY python quality_stack_cli.py --status-only > /dev/null
