@@ -3863,6 +3863,117 @@ def test_writer_v2_generate_candidate_v2_repair_loop():
               "through the live orchestration, not just in isolated unit tests")
 
 
+def test_clears_quality_floor():
+    section("generate._clears_quality_floor: the production quality gate, extracted for V2 (2026-09-04 fix)")
+    strong = {k: 9 for k in G.QUALITY_RUBRIC_CRITERIA}
+    strong["overall"] = 9.0
+    check(G._clears_quality_floor(strong) is True, "a clean, well-above-floor score clears")
+    check(G._clears_quality_floor(None) is False, "no score at all -> does not clear (fail-CLOSED for V2, unlike the legacy fail-open path)")
+    check(G._clears_quality_floor({}) is False, "an empty score dict -> does not clear")
+    check(G._clears_quality_floor({**strong, "overall": None}) is False, "overall missing -> does not clear")
+    # the exact real live-bakeoff numbers this bug was found from: mantis_shrimp (overall
+    # 6.86 but hook=5, below the hook>=6 floor) and stomach_lining (overall 5.29, well
+    # under the 6.8 hard floor) -- both were reported ACCEPTED=True before this fix.
+    mantis_shrimp_actual = {**strong, "overall": 6.86, "hook": 5}
+    check(G._clears_quality_floor(mantis_shrimp_actual) is False,
+          "the real mantis_shrimp live-run score (overall 6.86, hook 5) does NOT clear the floor "
+          "-- it was wrongly reported ACCEPTED before this fix")
+    stomach_lining_actual = {**strong, "overall": 5.29, "hook": 2, "payoff": 2}
+    check(G._clears_quality_floor(stomach_lining_actual) is False,
+          "the real stomach_lining live-run score (overall 5.29) does NOT clear the floor "
+          "-- it was wrongly reported ACCEPTED before this fix")
+    # boundary: exactly at the hard floor with every per-criterion floor exactly met -> clears
+    boundary = {**strong, "overall": G.QUALITY_HARD_FLOOR}
+    for k, fl in G.QUALITY_CRITERION_FLOORS.items():
+        boundary[k] = fl
+    check(G._clears_quality_floor(boundary) is True, "exactly-at-every-floor score clears (inclusive boundary)")
+    # just under the hard floor -> does not clear
+    check(G._clears_quality_floor({**strong, "overall": G.QUALITY_HARD_FLOOR - 0.1}) is False,
+          "0.1 under the hard floor -> does not clear")
+    # overall clears but exactly ONE per-criterion floor misses by a hair -> still does not clear
+    fk = next(iter(G.QUALITY_CRITERION_FLOORS))
+    one_floor_missed = {**strong, "overall": 9.0, fk: G.QUALITY_CRITERION_FLOORS[fk] - 1}
+    check(G._clears_quality_floor(one_floor_missed) is False,
+          f"high overall (9.0) but {fk} misses its own floor by 1 -> still does not clear "
+          f"(a single broken criterion is not averaged away)")
+
+
+def test_generate_candidate_v2_enforces_quality_floor():
+    section("generate.generate_candidate_v2 V2.1: the V2 repair loop enforces the SAME production quality "
+            "floor as the legacy path (2026-09-04 fix -- previously unchecked)")
+    fact = {
+        "id": "test_octopus_floor", "domain": "animals", "fact": "An octopus has three hearts.",
+        "wow": "Two hearts pump blood to the gills and one pumps it to the rest of the body.",
+        "whatif": "What happens to the main heart when it swims?",
+        "angle": "", "key_terms": ["three hearts"], "queries": ["octopus swimming"],
+    }
+    clean_draft = {
+        "title": "The Octopus With Three Hearts",
+        "hook": "An octopus quietly runs on three separate hearts at once.",
+        "hook_source_claim_ids": ["base_001"],
+        "beats": [
+            {"voiceover": "Two of those hearts only pump blood to the gills.",
+             "visual_intent": "octopus gills close up", "source_claim_ids": ["base_002"]},
+        ],
+        "payoff": "Swimming is the one thing its own body works against.",
+        "payoff_source_claim_ids": ["base_002"],
+    }
+    critic_says_clean = {"scores": {k: 8 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                         "claim_support": [
+                             {"beat_index": 0, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""},
+                             {"beat_index": 1, "verdict": "SUPPORTED", "unsupported_proposition": ""},
+                             {"beat_index": 2, "verdict": "CONNECTIVE_OR_EDITORIAL", "unsupported_proposition": ""},
+                         ],
+                         "repair_type": "NONE", "target_beats": [], "diagnosis": "fine", "must_preserve": []}
+
+    def fake_structured_call(prompt, schema, schema_name, debug_calls):
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": {"prompt_tokens": 10},
+                            "structured": True})
+        if schema_name == "writer_v2_output":
+            return _json.dumps(clean_draft), True
+        if schema_name == "critic_verdict":
+            return _json.dumps(critic_says_clean), True
+        raise AssertionError(f"unexpected schema {schema_name} -- no repair should ever be needed here, "
+                              f"the draft/critic are both clean")
+
+    real_call = G._v2_structured_call
+    real_validate = G.validate
+    real_score = G.score_script
+    G._v2_structured_call = fake_structured_call
+    G.validate = lambda m, job_name, fact=None: None  # isolate: validate() itself is tested elsewhere
+    try:
+        # sub-floor score on an otherwise mechanically/semantically/structurally CLEAN candidate
+        # -- this is exactly the mantis_shrimp/stomach_lining live-bug shape: nothing traceability-
+        # or validate()-related is wrong, only the creative-quality score itself is too low.
+        G.score_script = lambda m, fact=None, cta_style="SAVE_WORTHY": {
+            **{k: 8 for k in G.QUALITY_RUBRIC_CRITERIA}, "overall": 6.86, "hook": 5,
+        }
+        m, debug = G.generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                           avoid_topics="none", cta_style="SAVE_WORTHY", use_structured=True)
+        check(m is None, "a mechanically/semantically/structurally clean candidate whose score misses a "
+                         "per-criterion floor (hook=5 < 6) is NOT accepted -- this is the exact bug the "
+                         "2026-09-04 fix closes (previously this would have shipped as ACCEPTED=True)")
+        check(debug["accepted"] is False, "debug explicitly marks the sub-floor run as accepted=False")
+
+        # now clear every floor -- the SAME candidate shape should now be accepted, proving the gate
+        # isn't simply refusing everything
+        G.score_script = lambda m, fact=None, cta_style="SAVE_WORTHY": {
+            **{k: 9 for k in G.QUALITY_RUBRIC_CRITERIA}, "overall": 8.5,
+        }
+        m2, debug2 = G.generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                             avoid_topics="none", cta_style="SAVE_WORTHY", use_structured=True)
+        check(m2 is not None and debug2["accepted"] is True,
+              "the identical mechanically-clean candidate IS accepted once its score genuinely clears "
+              "every floor -- the gate is not vacuously rejecting everything")
+        check(debug2.get("score") == 8.5,
+              "debug['score'] is the scalar overall (8.5), not the full rubric dict -- the "
+              "candidates.append() fix (score_overall, not score) actually reaches the returned debug")
+    finally:
+        G._v2_structured_call = real_call
+        G.validate = real_validate
+        G.score_script = real_score
+
+
 def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
@@ -3946,6 +4057,8 @@ def main():
     test_writer_v2_repair_critic()
     test_writer_v2_repair_loop()
     test_writer_v2_generate_candidate_v2_repair_loop()
+    test_clears_quality_floor()
+    test_generate_candidate_v2_enforces_quality_floor()
     print(f"\n{'='*60}\nRESULT: {_PASS} passed, {_FAIL} failed")
     return 1 if _FAIL else 0
 

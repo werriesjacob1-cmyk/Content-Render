@@ -352,6 +352,31 @@ QUALITY_HARD_FLOOR = 6.8   # RESTORED 2026-07-30 (was briefly 6.0 2026-07-29). T
                             # range is not trustworthy enough to lower the bar for; 6.8
                             # + the new coherence floor (7) + the mechanical dangling-
                             # comparative check are the actual quality backstop now.
+def _clears_quality_floor(score):
+    """Pure. The SAME hard-floor gate main()'s legacy path applies at
+    acceptance time (QUALITY_HARD_FLOOR overall + QUALITY_CRITERION_FLOORS
+    per-criterion) -- extracted so generate_candidate_v2()'s V2 repair loop
+    enforces the identical production bar instead of silently accepting
+    anything that merely cleared traceability/validate(). 2026-09-04 V2.1
+    live-bug fix: the first two "ACCEPTED=True" results the live bakeoff
+    ever produced (mantis_shrimp overall 6.86 hook=5, stomach_lining overall
+    5.29) were NEVER actually checked against this floor at all -- the V2
+    selection logic only checked for zero hard violations and a clean
+    validate(), never the score itself, so a mechanically-clean but
+    editorially-weak script could report ACCEPTED. score=None (unscoreable)
+    is treated as NOT clearing the floor here -- unlike the legacy path's
+    fail-open behavior for an unscoreable-but-otherwise-clean script, V2's
+    repair loop has a real critic score available in normal operation, so
+    treating "we couldn't score it" as a pass would mask a scorer outage
+    the same way the mantis_shrimp/stomach_lining bugs did with the critic."""
+    if not score:
+        return False
+    overall = score.get("overall")
+    if overall is None or overall < QUALITY_HARD_FLOOR:
+        return False
+    return not any(score.get(k, 10) < fl for k, fl in QUALITY_CRITERION_FLOORS.items())
+
+
 QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first (so 3 total).
                                  # RAISED 1 -> 2 (2026-08-02): with only 2 attempts, a
                                  # run that missed threshold on both fell straight to
@@ -3646,6 +3671,12 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
                                            cta_style=cta_style, banned_query_re=UNSTOCKABLE_Q)
         verr = validate(m, job_name, fact=fact)
         score = None if verr else score_script(m, fact=fact, cta_style=cta_style)
+        # the scalar used for selection/ranking must ALSO clear the same
+        # production quality floor the legacy path enforces (QUALITY_HARD_FLOOR
+        # + QUALITY_CRITERION_FLOORS) -- see _clears_quality_floor's own
+        # docstring for the real bug this fixes (a mechanically-clean but
+        # editorially-weak script previously reported ACCEPTED unconditionally)
+        score_overall = score.get("overall") if (score and _clears_quality_floor(score)) else None
 
         # The semantic critic runs EVERY round, including the last -- it is
         # the only backstop for a hallucination with no number/proper noun,
@@ -3676,7 +3707,7 @@ def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=Non
         }
         debug["rounds"].append(round_info)
         candidates.append({"writer_out": writer_out, "manifest": m, "hard_violations": all_hard,
-                           "validate_err": verr, "score": score, "critic_avg": critic_avg})
+                           "validate_err": verr, "score": score_overall, "critic_avg": critic_avg})
 
         plan = wr2_repair.classify_repair(mech_hard, semantic_violations, verr, critic_verdict, num_beats)
         round_info["repair_plan"] = plan
