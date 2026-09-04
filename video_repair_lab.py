@@ -16,6 +16,7 @@ Verified 2026-09-03:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
 from enum import Enum
 import argparse
 import json
@@ -32,6 +33,7 @@ except Exception:
 
 
 VERIFIED_ON = "2026-09-03"
+CENT = Decimal("0.01")
 
 
 class RepairKind(str, Enum):
@@ -120,7 +122,7 @@ MODEL_SPECS = {
         "family": "LTX",
         "version": "2.3 Retake",
         "arguments": _ltx_args,
-        "cost": lambda spec: 0.10 * float(spec.duration_s),
+        "cost": lambda spec: Decimal("0.10") * Decimal(str(spec.duration_s)),
         "note": "segment-level visual-only retake; source audio preserved externally",
     },
     "luma_ray32": {
@@ -129,7 +131,7 @@ MODEL_SPECS = {
         "version": "3.2",
         "arguments": _luma_args,
         # Verified 540p: $0.72 / 5s, $1.44 / 10s.
-        "cost": lambda spec: 0.72 if spec.duration_s <= 5 else 1.44,
+        "cost": lambda spec: Decimal("0.72") if spec.duration_s <= 5 else Decimal("1.44"),
         "note": "whole 5s/10s source-aware edit with strongest adherence setting",
     },
 }
@@ -154,24 +156,42 @@ def parse_models(raw: str) -> list[str]:
     return out
 
 
+def _money(value) -> Decimal:
+    """Convert external numeric input without importing binary-float error.
+
+    str(float_value) is intentional: it preserves the human-facing decimal
+    supplied by argparse/config instead of Decimal's exact binary expansion.
+    """
+    try:
+        amount = Decimal(str(value))
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError("money value must be numeric") from exc
+    if not amount.is_finite():
+        raise ValueError("money value must be finite")
+    return amount
+
+
 def estimate_cost(models: list[str], spec: RepairSpec) -> float:
     errors = spec.validate()
     if errors:
         raise ValueError("; ".join(errors))
-    total = sum(float(MODEL_SPECS[a]["cost"](spec)) for a in models)
-    return math.ceil(total * 100) / 100
+    total = sum((MODEL_SPECS[a]["cost"](spec) for a in models), Decimal("0"))
+    # Conservative only when there is a genuine fractional cent. Exact $2.24
+    # remains $2.24 rather than being inflated by binary floating-point noise.
+    total = total.quantize(CENT, rounding=ROUND_CEILING)
+    return float(total)
 
 
 def enforce_budget(models: list[str], spec: RepairSpec, max_budget_usd: float) -> float:
-    budget = float(max_budget_usd)
-    if not math.isfinite(budget) or budget < 0:
+    budget = _money(max_budget_usd)
+    if budget < 0:
         raise ValueError("max budget must be finite and non-negative")
-    estimate = estimate_cost(models, spec)
-    if estimate > budget + 1e-12:
+    estimate = _money(estimate_cost(models, spec))
+    if estimate > budget:
         raise ValueError(
             f"estimated repair cost ${estimate:.2f} exceeds hard budget ${budget:.2f}"
         )
-    return estimate
+    return float(estimate)
 
 
 def build_plan(models: list[str], spec: RepairSpec, max_budget_usd: float) -> dict:
@@ -196,9 +216,7 @@ def build_plan(models: list[str], spec: RepairSpec, max_budget_usd: float) -> di
                 "model": MODEL_SPECS[alias]["model"],
                 "family": MODEL_SPECS[alias]["family"],
                 "version": MODEL_SPECS[alias]["version"],
-                "estimated_cost_usd": round(
-                    float(MODEL_SPECS[alias]["cost"](spec)), 4
-                ),
+                "estimated_cost_usd": float(MODEL_SPECS[alias]["cost"](spec)),
                 "arguments": MODEL_SPECS[alias]["arguments"](spec),
                 "note": MODEL_SPECS[alias]["note"],
             }
@@ -277,7 +295,7 @@ def run_one(alias: str, spec: RepairSpec, out_dir: str) -> dict:
         "family": row["family"],
         "version": row["version"],
         "seconds": round(elapsed, 2),
-        "estimated_cost_usd": round(float(row["cost"](spec)), 4),
+        "estimated_cost_usd": float(row["cost"](spec)),
         "arguments": args,
         "source_url": url,
         "file": os.path.basename(dest),
