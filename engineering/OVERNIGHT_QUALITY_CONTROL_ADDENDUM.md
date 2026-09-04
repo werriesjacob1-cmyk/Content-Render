@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-04 01:17 CT
+# Overnight Quality Control Addendum — through 2026-09-04 02:22 CT
 
 Canonical continuation handoff. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -6,42 +6,32 @@ Canonical continuation handoff. Read with `engineering/OVERNIGHT_QUALITY_CONTROL
 - origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
 - Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
 - Quality-stack integration last verified: `9eb299fa19e0de51c905f39ff3f561d39192b986`.
-- SuperChad takeover advanced from `332569563babf81f9ce9546f8b8d634ea86dedfe` to `285610f48691ce5dba0bfce8a5861f0a51bf66a4` this run.
+- SuperChad takeover entered this run at `285610f48691ce5dba0bfce8a5861f0a51bf66a4` and advanced to `0fae1a94f5c24aa29e4d808ac7dd19f1f1e0f68e`.
 - No merge, deploy, render, publish, cron/live-delivery change, or paid-provider call. Known spend $0.
 
-## CI CLOSED FROM PRIOR RUN
-The hook-visual anchoring fix at `3325695...` is GREEN: workflow run `33840489304` completed SUCCESS. This closes the false penalty where a specific visual (`stomach lining epithelial cells...`) looked less aligned merely because it contained useful extra detail.
+## PRIOR CI RESULT — RED, ROOT FAILURE OUTPUT NOT EXPOSED BY CONNECTOR
+Both PR/push checks for takeover head `285610f...` failed during the single aggregated `Run zero-quota test suites` step. GitHub reported two annotations but the available connector cannot read the annotation/log endpoint, so guessing which of the 12 commands failed would violate the evidence discipline.
 
-## NEW THIS RUN — PRE-RENDER VISUAL FEASIBILITY
-Added `writer_v21_visual_feasibility.py` and focused tests. The zero-network sidecar inspects each manifest scene before asset acquisition and flags:
-- missing visual intent;
-- generic lab/science/space/person-thinking wallpaper;
-- abstract non-showable intentions;
-- visual plans with no literal subject anchor to the spoken line and no visible action;
-- underspecified one-token visual subjects.
-It explicitly accepts a concrete progression like `stomach` -> `stomach lining epithelial cells regenerating close up`.
+This is a CI observability defect: a red combined shell block is not self-identifying through the control-plane interface used overnight.
 
-Added `tests/test_writer_v21_visual_feasibility.py` with concrete-good, generic-wallpaper, abstract, unrelated, and aggregate fixtures.
+## FIX THIS RUN — SELF-IDENTIFYING ZERO-QUOTA CI
+Commit `0fae1a94f5c24aa29e4d808ac7dd19f1f1e0f68e` changes ONLY `.github/workflows/tests.yml` on the takeover branch. It does not weaken or remove any guard. Every existing suite/preflight still runs, but each is wrapped with a named `run_check` and emits a GitHub `::error` annotation naming the exact failed check while continuing through the rest of the zero-quota suite. The job exits red if any check failed.
 
-## REPORTING-PATH PREFLIGHT
-CI now runs `python -m py_compile` over `wr21_takeover_bakeoff.py`, `wr21_run.py`, and the visual-feasibility module. This closes the gap where a broken live reporting entrypoint could evade unit suites that never imported it.
+This makes the next red run actionable without needing raw Actions logs, and also reveals multiple simultaneous failures in one pass instead of fixing them serially.
 
-## TORTURE RUNNER INTEGRATION
-`wr21_takeover_bakeoff.py` now reports per-manifest visual feasibility, warning kinds, and problem-scene count alongside factual/semantic integrity, quality floors, scorer disagreement, repair regression, story shape, first-8-second audit, hook surfaces, and payoff proof. It remains script-only and does not render/publish or automatically call the pairwise judge.
+New check run for `0fae1a9...`: `100944955037` / workflow run `33848248414`, queued at checkpoint time.
 
-## CREATIVE FINDING
-Visual quality can now be evaluated BEFORE expensive acquisition/render. The key distinction is encoded mechanically: specificity is rewarded when it preserves the narrated subject; decorative specificity that depicts an unrelated subject is still flagged. This should prevent a polished but semantically irrelevant B-roll plan from being mistaken for visual richness.
+## CREATIVE / ENGINEERING STATUS
+No creative thresholds changed this run. The pre-render visual-feasibility layer remains non-gating and the corrected torture runner remains script-only. The architecture freeze still holds: no more Writer redesign unless CI exposes a proven correctness bug.
 
-## CI STATUS / NEXT EXACT ACTION
-Latest takeover head: `285610f48691ce5dba0bfce8a5861f0a51bf66a4`. Its workflow had not appeared at checkpoint time. FIRST ACTION next run: inspect CI for this head (or latest descendant). If red, fix exact failure without weakening guards. If green, record full check counts.
+## NEXT EXACT ACTION
+1. Inspect check run `100944955037` (workflow `33848248414`) for head `0fae1a9...`.
+2. If green: record counts, then perform ONE safe secret-backed quota diagnostic using existing main-registered branch-recon tooling; if quota is available, run ONE corrected five-topic script-only panel and preserve full evidence.
+3. If red: use the now-named failing check(s) to fix exact implementation/test defects without weakening thresholds. Re-run CI before any provider call.
+4. If provider quota is unavailable after green CI, advance V2.1 -> quality-stack compatibility/pre-production visual plans rather than idling.
+5. Promotion remains HOLD until multiple corrected-panel scripts are factual-clean, floor-clearing, and human-postable.
 
-Then, and only then:
-1. Verify live main/Claude/quality-stack SHAs again.
-2. Check secret-backed Groq availability ONCE through an existing safe branch diagnostic/manual workflow if available; do not repeatedly burn quota.
-3. If quota is available, execute ONE corrected five-topic script-only torture panel under the final combined stack and preserve full output.
-4. Human-read every candidate. Promotion still requires multiple factual-clean, floor-clearing scripts that a strong human editor would actually post; acceptance flags alone are insufficient.
-5. From observed panel results, build structured failure-learning records and the promotion evidence packet. Do not invent failure labels in advance.
-6. If quota remains unavailable, advance V2.1 -> quality-stack compatibility/pre-production visual planning without inferring promotion.
-
-## PROMOTION STATUS
-HOLD. Full certification render remains NOT EARNED. No postable-script claim until the corrected live panel exists.
+## APPROVAL / SPEND
+- main untouched; no merge/deploy/publish.
+- known takeover spend: $0.
+- full certification render: NOT EARNED.
