@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-04 16:16 CT
+# Overnight Quality Control Addendum — through 2026-09-04 17:18 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -7,69 +7,72 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 - Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
 - SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
 - Quality stack: `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
-- Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` advanced from `3ca3061f9a433578b4fb5b3b506f17745ce2c6ba` to `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
+- Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged since prior audit.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed in this audit.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 15:16 AUDIT
-Mission 1A advanced by 9 commits, all within the high-risk semantic/narration contract surface rather than a new roadmap slice. Net diff from `3ca3061f...` to `04ef8a3f...` touches exactly four files:
-- `narration.py` (+29/-7)
-- `writer_v21_semantic_gate.py` (+89/-10)
-- `tests/test_writer_v21_manifest.py` (+62/-18)
-- `tests/test_writer_v21_semantic_gate.py` (+96/-0)
+## DELTA SINCE 16:16 AUDIT
+No application-code delta was observed.
 
-The commit sequence hardens malformed semantic claim identities, adds adversarial identity regressions, hardens V2 narration against blank/malformed scenes, adds narration fail-closed regression cases, strengthens malformed-retry assertions, and adds bool/numeric fallback-key type regressions. This remains in-scope Mission 1A correctness work; no unrelated application surface changed.
+Reverification found:
+- Mission 1A head remains `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
+- `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
+- Claude Writer base, SuperChad takeover, and quality-stack heads are unchanged.
+- No newly authorized implementation branch was detected from the current checkpoint/PR surface.
+- PR #57 remains open and draft; its head remains `04ef8a3f...` and its GitHub base remains `main @ 6a045e50...`.
+
+A successful shadow-audit hour may produce zero code; this hour intentionally did not invent work or alter application code.
 
 ## CI / TEST EVIDENCE
-- Latest exact-head Mission 1A run: `33917421337`
-- Workflow: `.github/workflows/tests.yml`
-- Head SHA: `04ef8a3f6f23ff1aaef22482c89767612494f9ab`
-- Conclusion: SUCCESS
-- Job: `101167705478`, SUCCESS
-- Explicit checkout-identity step: `Prove checkout identity and required Writer V2.1 paths` = SUCCESS
-- Zero-quota test-suite step = SUCCESS
+Latest exact-head Mission 1A evidence remains:
+- run `33917421337`
+- workflow `.github/workflows/tests.yml`
+- head SHA `04ef8a3f6f23ff1aaef22482c89767612494f9ab`
+- event `pull_request`
+- conclusion `SUCCESS`
+- exact tested PR surface is still head `04ef8a3f...` against base `main @ 6a045e50...`
 
-Therefore the previous exact-head evidence at `3ca3061f...` is superseded by green exact-head evidence at `04ef8a3f...`.
+No newer Mission 1A application head exists, so no newer exact-head CI is required for code changes this hour.
 
 ## INVARIANT STATUS
-The new changes strengthen, rather than weaken, the previously verified contract:
-- malformed semantic claim identities now fail closed instead of being tolerated as ambiguous coverage;
-- bool/numeric fallback-key variants have explicit regression coverage;
-- blank/malformed V2 scenes fail closed before narration;
-- hook/payoff/scene-count drift protections remain in place;
-- semantic retry remains bounded and explicitly asserted;
-- no quality-floor change was observed in this delta;
-- no provider-backed tests were required.
+No new evidence changes the prior technical verdict:
+- canonical V2.1 spoken order remains hook → beats → payoff;
+- `narration.py::spoken_text()` remains the single explicit narration/TTS contract under Mission 1A;
+- malformed semantic identities and incomplete/malformed coverage remain fail-closed;
+- blank/malformed V2 scenes and hook/payoff/scene-count drift remain covered by regressions;
+- semantic retry remains bounded;
+- quality floors were not changed or weakened;
+- no provider-backed test evidence was introduced.
 
-No new evidence contradicts the established hook=0, beats=1..N, payoff=N+1 semantic indexing or the canonical `narration.py::spoken_text()` contract.
+Mission 1A application correctness remains GREEN at exact head `04ef8a3f...` based on existing evidence.
 
 ## STOP WARNING — PR INTEGRATION SURFACE STILL UNRESOLVED
-PR #57 remains open/draft with head `04ef8a3f6f23ff1aaef22482c89767612494f9ab` and GitHub base `main @ 6a045e50...`.
+PR #57 remains open/draft with head `04ef8a3f6f23ff1aaef22482c89767612494f9ab` and GitHub base `main @ 6a045e50a33408ecafdfa21c9ff951d731347bd9`.
 
-Its own body still names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and says `DO NOT MERGE`. The direct-to-main PR surface therefore remains the wrong review/integration surface and still conflates inherited Writer/takeover history with the narrow Mission 1A consolidation.
+Its own body names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and says `DO NOT MERGE`. The direct-to-main PR surface therefore remains the wrong review/integration surface and still conflates inherited Writer/takeover history with the narrow Mission 1A consolidation.
 
 Smallest recommended authorized-builder action remains: retarget or recreate the review PR against the intended Writer integration base, then independently review that corrected surface. Shadow auditor did not mutate PR metadata.
 
 ## PROVENANCE / CONVERGENCE
 - CONVERGENCE STATUS: WARNING because PR #57 still targets main.
-- Application-code changes this hour stayed confined to the authorized semantic/narration seam.
+- No application-code branch divergence occurred this hour.
 - No raw-file-copy provenance loss newly observed.
 - No new competing implementation branch detected.
-- Branch ancestry from prior Mission 1A head is linear: current head is 9 commits ahead, 0 behind.
+- Main remains untouched.
 
 ## SECURITY
-- `main` remains unchanged and still contains permissive `branch_recon.yml` arbitrary ref/script execution with provider secrets.
+- `main` remains unchanged and therefore still contains the permissive `branch_recon.yml` arbitrary-ref/arbitrary-script execution path with provider secrets identified in prior audits.
 - Mission 1B remains blocked until Mission 1A review surface is corrected and independently clean.
 - No secret-backed live Writer panel should run before hardening.
 
 ## CREATIVE QUALITY
-No new live scripts or renders were produced. This hour improved fail-closed semantic/narration integrity but adds no direct evidence of postability, hook strength, first-8-second quality, visual specificity, payoff quality, or low AI smell. Writer promotion remains unearned.
+No new live scripts or renders were produced. This hour adds no new evidence on postability, hook strength, first-8-second escalation, spoken naturalness, visual specificity, payoff quality, sound/pacing, or AI smell. Writer promotion remains unearned.
 
 ## ROADMAP STATUS
 - Mission 1A correctness evidence: GREEN on exact current head `04ef8a3f...`.
-- Mission 1A scope discipline: ON PLAN; new work stayed within the authorized high-risk contract seam.
+- Mission 1A scope discipline: ON PLAN.
 - Mission 1A integration/review surface: BLOCKED on PR #57 base targeting main.
 - Full roadmap: ON PLAN; do not advance to Mission 1B or provider-backed evidence yet.
 
