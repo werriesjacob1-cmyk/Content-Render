@@ -27,15 +27,29 @@ jobs:
         env:
           GROQ_API_KEY: x
         run: |
-          python tests/test_pipeline.py
-          python tests/test_writer_v21_semantic_gate.py
-          python tests/test_writer_v21_quality_signals.py
-          python tests/test_writer_v21_editorial_diagnostics.py
-          python tests/test_writer_v21_manifest.py
-          python tests/test_writer_v21_repair_regression.py
-          python tests/test_writer_v21_pairwise.py
-          python tests/test_writer_v21_torture_corpus.py
-          python tests/test_writer_v21_story_shape.py
-          python tests/test_writer_v21_hook_payoff.py
-          python tests/test_writer_v21_visual_feasibility.py
-          python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_feasibility.py
+          set -uo pipefail
+          failed=0
+          run_check() {
+            label="$1"; shift
+            echo "::group::$label"
+            "$@"
+            rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -ne 0 ]; then
+              echo "::error title=Zero-quota check failed::$label exited $rc"
+              failed=1
+            fi
+          }
+          run_check "legacy pipeline" python tests/test_pipeline.py
+          run_check "semantic gate" python tests/test_writer_v21_semantic_gate.py
+          run_check "quality signals" python tests/test_writer_v21_quality_signals.py
+          run_check "editorial diagnostics" python tests/test_writer_v21_editorial_diagnostics.py
+          run_check "spoken manifest" python tests/test_writer_v21_manifest.py
+          run_check "repair regression" python tests/test_writer_v21_repair_regression.py
+          run_check "blind pairwise" python tests/test_writer_v21_pairwise.py
+          run_check "known-bad torture corpus" python tests/test_writer_v21_torture_corpus.py
+          run_check "story shape + first 8s" python tests/test_writer_v21_story_shape.py
+          run_check "hook surfaces + payoff proof" python tests/test_writer_v21_hook_payoff.py
+          run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
+          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_feasibility.py
+          exit "$failed"
