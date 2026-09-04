@@ -30,10 +30,11 @@ def test_restraint_and_budget():
         S.enforce_credit_budget(p,199); raise AssertionError("budget should fail")
     except ValueError as e:
         check("exceeds hard ceiling" in str(e),"one-credit-under ceiling rejected")
+    # 30 seconds permits ceil(30/60*5)=3 events; four is the first over-cap case.
     noisy=S.SoundPlan(30.0,tuple(
-        S.SoundEvent(f"x{i}",S.SoundKind.TRANSITION,i*2,1,"transition") for i in range(3)
+        S.SoundEvent(f"x{i}",S.SoundKind.TRANSITION,i*2,1,"transition") for i in range(4)
     ))
-    check(any("too many" in x for x in noisy.validate()),"short video cannot accumulate transition spam")
+    check(any("too many" in x for x in noisy.validate()),"short video cannot accumulate transition spam beyond proportional cap")
     impacts=S.SoundPlan(30.0,(
         S.SoundEvent("i1",S.SoundKind.IMPACT,2,1,"impact"),
         S.SoundEvent("i2",S.SoundKind.IMPACT,8,1,"impact"),
