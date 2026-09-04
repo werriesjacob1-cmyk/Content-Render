@@ -638,32 +638,59 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
     scenes[id/duration/voiceover/on_screen_text/search_query/motion],
     captions, hashtags, render) plus `treatment` for memory/analytics.
 
-    TRACEABILITY (2026-09-03): each scene also carries `source_claim_ids`
-    (copied straight from the writer's beat), and the manifest carries
-    `hook_source_claim_ids` / `payoff_source_claim_ids` at the top level --
-    internal evidence infrastructure, never surfaced in captions/hashtags/
-    user-facing text, but preserved far enough downstream that
-    writer_v2_repair.py's traceability validator can audit them, diagnostics
-    can print them, and a future final-QA stage could inspect them."""
-    writer_out = writer_out or {}
-    beats = writer_out.get("beats") or []
+    TRACEABILITY (2026-09-03): every spoken scene carries the claim IDs that
+    support that exact line, and top-level hook/payoff claim IDs remain for
+    backward-compatible diagnostics. The canonical spoken order is literal:
+    scene 1 = hook, scenes 2..N+1 = treatment beats, final scene = payoff.
+    That keeps the exact content certified by semantic/quality gates identical
+    to the content the renderer can synthesize from ``scenes``."""
+    writer_out = dict(writer_out or {})
+    fact = dict(fact or {})
+    beats = list(writer_out.get("beats") or [])
+    curated_queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
+
+    title = str(writer_out.get("title") or "")
+    hook = str(writer_out.get("hook") or "").strip()
+    payoff = str(writer_out.get("payoff") or "").strip()
+    keyword, metaphor = derive_keyword_metaphor(fact, title)
+
+    hook_visual = curated_queries[0] if curated_queries else hook
+    payoff_visual = curated_queries[-1] if len(curated_queries) >= 2 else payoff
+    spoken_units = [{
+        "voiceover": hook,
+        "visual_intent": hook_visual,
+        "source_claim_ids": list(writer_out.get("hook_source_claim_ids") or []),
+        "role": "hook",
+    }]
+    for beat in beats:
+        spoken_units.append({
+            "voiceover": str(beat.get("voiceover") or "").strip(),
+            "visual_intent": str(beat.get("visual_intent") or "").strip(),
+            "source_claim_ids": list(beat.get("source_claim_ids") or []),
+            "role": "beat",
+        })
+    spoken_units.append({
+        "voiceover": payoff,
+        "visual_intent": payoff_visual,
+        "source_claim_ids": list(writer_out.get("payoff_source_claim_ids") or []),
+        "role": "payoff",
+    })
+
     scenes = []
-    for i, b in enumerate(beats):
-        vo = (b.get("voiceover") or "").strip()
-        vi = (b.get("visual_intent") or "").strip()
+    for i, unit in enumerate(spoken_units):
+        vo = unit["voiceover"]
         on_screen = " ".join(w for w in vo.split()[:3]).upper()
         scenes.append({
             "id": i + 1,
             "duration": 4,
             "voiceover": vo,
             "on_screen_text": on_screen,
-            "search_query": derive_search_query(vi, banned_query_re),
+            "search_query": derive_search_query(unit["visual_intent"], banned_query_re),
             "motion": MOTION_CYCLE[i % len(MOTION_CYCLE)],
-            "source_claim_ids": list(b.get("source_claim_ids") or []),
+            "source_claim_ids": list(unit["source_claim_ids"]),
+            "_v2_role": unit["role"],
         })
-    title = writer_out.get("title") or ""
-    hook = writer_out.get("hook") or ""
-    keyword, metaphor = derive_keyword_metaphor(fact, title)
+
     script = " ".join(s["voiceover"] for s in scenes if s["voiceover"])
     return {
         "title": title,
@@ -677,12 +704,13 @@ def assemble_manifest_v2(writer_out, fact, treatment_name, job_name="CURIOSITY_I
         "script": script,
         "scenes": scenes,
         "captions": derive_captions(hook, cta_style),
-        "hashtags": derive_hashtags((fact or {}).get("domain", "")),
+        "hashtags": derive_hashtags(fact.get("domain", "")),
         "render": {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"},
         "treatment": treatment_name,
         "cta_style": cta_style,
-        "payoff": writer_out.get("payoff", ""),
+        "payoff": payoff,
         "payoff_source_claim_ids": list(writer_out.get("payoff_source_claim_ids") or []),
+        "_v2_spoken_scene_count": len(scenes),
     }
 
 
