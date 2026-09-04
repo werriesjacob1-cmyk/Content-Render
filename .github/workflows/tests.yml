@@ -1,8 +1,8 @@
 name: tests
 
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
-# semantic-safety, scorer telemetry, and editorial diagnostics. No suite makes
-# network calls.
+# semantic-safety, scorer telemetry, editorial diagnostics, and spoken manifest
+# contract. No suite makes network calls.
 
 on:
   pull_request:
@@ -38,3 +38,4 @@ jobs:
           python tests/test_writer_v21_semantic_gate.py
           python tests/test_writer_v21_quality_signals.py
           python tests/test_writer_v21_editorial_diagnostics.py
+          python tests/test_writer_v21_manifest.py
