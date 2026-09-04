@@ -44,24 +44,31 @@ TOPIC_IDS = ["stomach_lining", "neutron_star_spoon", "mauna_kea", "chess_possibl
 
 
 def _print_round(r):
-    print(f"  -- round {r['round']} --")
+    print(f"  -- round {r['round']} (stalled_going_in={r.get('stalled_going_in')}) --")
     print(f"     HOOK: {r.get('hook')}")
     for i, b in enumerate(r.get("beats") or []):
         print(f"     [{i + 1}] {b}")
     print(f"     PAYOFF: {r.get('payoff')}")
-    print(f"     traceability violations ({r['violation_count']}):")
-    for v in r["violations"]:
+    hard = [v for v in r["violations"] if v.get("severity") == "hard"]
+    soft = [v for v in r["violations"] if v.get("severity") == "soft"]
+    print(f"     mechanical: {r.get('mechanical_violation_count')} total "
+          f"({r.get('mechanical_hard_count')} hard)  semantic: {r.get('semantic_violation_count')}")
+    print(f"     HARD violations ({len(hard)}):")
+    for v in hard:
         print(f"       beat {v['beat_index']}: {v['kind']} {v['value']!r} (cited: {v['cited_claim_ids']})")
+    print(f"     soft violations (sample, {len(soft)} total):")
+    for v in soft[:8]:
+        print(f"       beat {v['beat_index']}: {v['kind']} {v['value']!r}")
     print(f"     validate_err: {r['validate_err']}")
-    print(f"     score: {r['score']}")
-    if "critic_verdict" in r:
-        cv = r["critic_verdict"]
-        if cv:
-            print(f"     critic scores: {cv.get('scores')}")
-            print(f"     critic repair_type: {cv.get('repair_type')}  target_beats: {cv.get('target_beats')}")
-            print(f"     critic diagnosis: {cv.get('diagnosis')}")
-        else:
-            print(f"     critic call failed: {r.get('critic_error')}")
+    print(f"     score: {r['score']}   critic_avg: {r.get('critic_avg')}")
+    cv = r.get("critic_verdict")
+    if cv:
+        print(f"     critic scores: {cv.get('scores')}")
+        print(f"     critic claim_support: {cv.get('claim_support')}")
+        print(f"     critic repair_type: {cv.get('repair_type')}  target_beats: {cv.get('target_beats')}")
+        print(f"     critic diagnosis: {cv.get('diagnosis')}")
+    else:
+        print(f"     critic call failed: {r.get('critic_error')}")
     if "repair_plan" in r:
         print(f"     repair plan applied: {r['repair_plan']}")
     if r.get("repair_error"):
