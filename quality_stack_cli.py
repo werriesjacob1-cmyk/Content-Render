@@ -13,6 +13,7 @@ import json
 import os
 import sys
 
+import capability_preflight as CP
 import quality_stack as Q
 
 
@@ -21,6 +22,8 @@ def main() -> int:
     ap.add_argument("--manifest", default="manifest.json")
     ap.add_argument("--out", default="quality_plan.json")
     ap.add_argument("--status-only", action="store_true")
+    ap.add_argument("--preflight", action="store_true",
+                    help="report credentials/binaries available on this runner; ZERO provider calls")
     ap.add_argument("--allow-network", action="store_true")
     ap.add_argument("--allow-paid", action="store_true")
     ap.add_argument("--allow-generated-visuals", action="store_true")
@@ -39,6 +42,14 @@ def main() -> int:
     if required_missing:
         print("Missing required integration modules: " + ", ".join(required_missing), file=sys.stderr)
         return 2
+
+    if args.preflight:
+        report = {
+            "integration_status": status,
+            "runner_preflight": CP.summary(),
+        }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
 
     if args.status_only:
         print(json.dumps(status, indent=2, sort_keys=True))
@@ -64,7 +75,6 @@ def main() -> int:
         enable_final_qa_provider_calls=args.enable_final_qa_provider_calls,
     )
     plan = Q.build_quality_plan(manifest, policy)
-    # Belt-and-suspenders: the planner cannot claim execution happened.
     if plan.get("provider_calls_made") != 0 or plan.get("publishing_enabled") is not False:
         raise AssertionError("quality planner violated zero-execution contract")
 
