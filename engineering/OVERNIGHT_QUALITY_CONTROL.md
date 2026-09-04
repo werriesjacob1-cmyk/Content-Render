@@ -1,226 +1,152 @@
-# Content Render Overnight Quality Control
+# Content Render — Overnight Quality Control
 
-Last updated: 2026-09-03 23:38 America/Chicago
+Updated: 2026-09-03 23:44 America/Chicago
 
 ## NORTH STAR
-Build a science-video system that repeatedly produces short-form videos a strong human creator would actually post and that can compete on TikTok, Reels, and Shorts.
+Repeatedly produce science shorts a strong human creator would actually post and that can compete on TikTok/Reels/Shorts. Green CI is necessary, not success.
 
-Success is NOT green CI or more APIs. Success means:
-- a first 1–1.5 seconds that creates a real curiosity gap without lying;
-- natural spoken writing with increasing information gain every beat;
-- structural variety across videos rather than one repeated AI narrative grammar;
-- factual claims mechanically/semantically grounded in real evidence;
-- visuals that show the actual subject/mechanism/scale rather than wallpaper B-roll;
-- authentic scientific assets when they exist;
-- deterministic explanatory motion when code is clearer than footage;
-- generated still/video only when reality cannot show the idea, with independent vision QA;
-- excellent pacing, narration, captions, restrained sound, and a satisfying visual+story payoff;
-- low AI smell and high watch/replay/share/save/comment potential;
-- consistency over cadence: aborting weak content is success.
+Optimize for: first 1–1.5s curiosity without lying; information gain every beat; natural spoken syntax; genuine treatment diversity; specific/showable science; authentic evidence; purposeful visual pattern interrupts; clear mechanism/scale; a specific visual+story payoff; replay/share/save/comment value; strong voice/pacing/sound; low AI smell. Abort weak content rather than ship it.
 
-## SAFETY / AUTHORITY BOUNDARIES
-Jacob is final authority.
-Do NOT merge to main, deploy, publish, enable cron/live delivery, or materially increase spend without explicit Jacob approval.
-Do NOT trigger a full certification video unless the script has earned it and the current checkpoint says certification is the next safe step.
-Human review remains mandatory before posting.
+## HARD BOUNDARIES
+Jacob is final authority. Overnight: NO merge to main, deploy, publish, cron/live delivery, material spend, or full video render. Human review remains mandatory.
 
-## LIVE REPOSITORY STATE
-- origin/main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged throughout takeover work.
-- Claude final Writer V2.1 branch: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6`
-- SuperChad Writer V2.1 takeover branch: `superchad/writer-v2-semantic-failclosed-01` @ `1e8d65576d430332820b487cc06b7a7c74568382`
-- Writer takeover draft PR: #56, base = Claude V2.1 branch, NOT main
-- Quality-stack integration branch: `superchad/quality-stack-integration-01` @ `9eb299fa19e0de51c905f39ff3f561d39192b986`
-- Durable control branch: `superchad/overnight-quality-control-01`
+## STATEFUL HOURLY LOOP
+`Content Render Overnight Control` runs hourly at :19 from 00:19 through 08:19 CT (9 runs). Every run MUST:
+1. read this file first;
+2. re-check live main + active branch SHAs;
+3. continue NEXT EXACT ACTION rather than restarting solved work;
+4. update this file with concrete changes/tests/blockers/next action;
+5. if quota blocks live calls, keep advancing zero-quota engineering/creative/integration work.
 
-## HOURLY CONTROL LOOP
-Automation `Content Render Overnight Control` is stateful and bounded through the morning:
-- runs at :19 every hour from 00:19 through 08:19 CT;
-- FIRST reads this checkpoint and treats it as the canonical prior-hour handoff;
-- re-verifies live main + active branch SHAs;
-- continues this file's NEXT EXACT ACTION rather than restarting;
-- updates this checkpoint after each run;
-- if provider quota blocks live work, advances zero-quota engineering/creative diagnostics instead of idling.
+## LIVE SHAS / BRANCHES
+- main: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged through takeover.
+- Claude final Writer V2.1: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6`.
+- SuperChad Writer takeover: `superchad/writer-v2-semantic-failclosed-01` @ `7a7baffbd90cc08f95ceca3b09507becfdb4df5f`.
+- Draft PR #56: takeover branch -> Claude V2.1 branch (NOT main).
+- Quality-stack integration: `superchad/quality-stack-integration-01` @ last verified `9eb299fa19e0de51c905f39ff3f561d39192b986`.
+- Durable control: `superchad/overnight-quality-control-01`.
 
-## CLAUDE HANDOFF — AUTHORITATIVE FINDINGS
-Writer V2.1 at `2256f22`:
-- hard/soft traceability split implemented;
-- hard checks: claim IDs, numbers/units, strong named entities, uncited substantive beats;
-- old broad unsupported-term word-overlap reduced to soft telemetry;
-- semantic claim_support critic detects unsupported additions/contradictions with ordinary words;
-- repair priority: factual integrity -> validate() failures -> creative craft;
-- stall detection present;
-- Groq GPT-OSS reasoning budget/truncation fixed with low reasoning + 3000 max tokens;
-- quality-floor bypass fixed in final commit `2256f22`;
-- 1503 zero-quota checks passed;
-- honest promotion status inherited from Claude: HOLD; zero genuinely floor-clearing accepted live scripts after correcting his own acceptance bug;
-- prior live panel was contaminated by Groq 200k/day quota exhaustion and critic failures.
+## CLAUDE HANDOFF — INHERITED TRUTH
+Claude V2.1 @ `2256f22` has hard/soft traceability, semantic claim-support, tiered targeted repair, stall detection, GPT-OSS low-reasoning/3000-token truncation fix, and the production quality-floor fix. 1503 zero-quota checks passed. Honest live promotion status: HOLD; after correcting Claude's own floor bug, zero genuinely floor-clearing accepted scripts existed. Prior five-topic evidence was contaminated by Groq 200k/day quota exhaustion/critic failures.
+
+Canonical torture topics: `stomach_lining`, `neutron_star_spoon`, `mauna_kea`, `chess_possible_games`, `mantis_shrimp`.
 
 ## CLOSED P0 #1 — SEMANTIC CRITIC FAIL-OPEN
-Direct audit proved Claude's loop could treat critic outage as zero semantic violations.
+Audit proved critic outage could become `critic_verdict=None -> [] semantic violations` and make verifier failure look factual-clean.
 
-Takeover implementation:
+Takeover files:
 - `writer_v21_semantic_gate.py`
 - `writer_v21_orchestrator.py`
 
-Rules now:
-- complete semantic verdict required for hook + every middle beat + payoff;
-- missing/duplicate/out-of-range/unknown claim_support fails closed;
-- live fallback response shapes tolerated only if full coverage remains valid;
-- unsupported/contradicted verdict requires an explicit proposition;
-- provider outage is verifier outage, not a fake script factual defect;
-- candidate cannot be selectable unless `semantic_verified=True`;
-- one GLOBAL semantic retry maximum per candidate run;
-- retry spent only when no existing mechanical/validate defect already dictates repair;
-- malformed critic response cannot drive a creative rewrite;
-- quality floor remains load-bearing;
-- worst-case structured invocation ceiling = 7.
+New behavior:
+- complete semantic verdict required for hook + each beat + payoff;
+- missing/duplicate/out-of-range/unknown claim-support fails closed;
+- unsupported/contradicted requires named proposition;
+- provider outage is verifier outage, not fake script defect;
+- candidate selectable only with semantic verification;
+- one GLOBAL semantic retry max per candidate run, spent only when no known hard/validate defect already dictates repair;
+- malformed critic cannot drive creative repair;
+- quality floor still load-bearing;
+- worst-case structured-call ceiling 7.
 
-Proof:
-- PR #56 initial semantic CI run `33836749680`: SUCCESS.
-- Legacy suite remained 1503/0.
-- 28 semantic adversarial checks pass.
+Proof: PR #56 run `33836749680` SUCCESS; legacy 1503/0 + 28 new semantic checks.
 
-## NON-GATING SCORER / CRITIC DISAGREEMENT TELEMETRY
-Finding:
-- legacy `score_script()` is one LLM self-score call and provider path uses temperature 0.7;
-- V2.1 structured critic also currently uses temperature 0.7;
-- current selection makes legacy overall PRIMARY and critic craft average only a <=0.3 tie-breaker.
-This is a plausible cause of the live stomach_lining 6->2 dimension swing after a local repair.
+## SCORER / CRITIC DISAGREEMENT TELEMETRY — IMPLEMENTED, NON-GATING
+Finding: legacy `score_script()` and V2 critic both currently use temperature 0.7. Current selection makes legacy overall primary and critic craft average only a <=0.3 tie-breaker. This plausibly explains live score volatility (e.g. stomach-lining dimensions swinging after a local repair).
 
-Implemented `writer_v21_quality_signals.py`:
-- apples-to-apples hook/escalation/payoff/clarity deltas;
-- legacy overall vs critic craft average;
-- LOW/MODERATE/SEVERE disagreement telemetry;
-- exact low critic dimensions for spoken naturalness / AI smell / visual tellability;
-- reports whether legacy-score winner and critic-craft winner would be different rounds;
-- strictly `gating=False` — NO threshold or selection change yet.
+`writer_v21_quality_signals.py` now records apples-to-apples hook/escalation/payoff/clarity deltas, critic craft average, disagreement band, low human-craft dimensions, and whether legacy-score winner vs critic-craft winner differ. `gating=False`; thresholds/selection unchanged pending live evidence. 18 focused checks pass.
 
-18 focused checks pass.
+## RETENTION / EDITORIAL DIAGNOSTICS — IMPLEMENTED, NON-GATING
+Fresh official TikTok/YouTube/Meta guidance was used only for broad principles: opening seconds matter, maintain curiosity/value/momentum, native vertical visual movement, purposeful sound, clear visual hierarchy.
 
-## NON-GATING RETENTION / EDITORIAL DIAGNOSTICS
-Fresh current platform guidance was reviewed before implementation: prioritize the opening seconds, maintain curiosity/value/momentum, vertical motion, purposeful sound, and clear visual hierarchy. These principles are encoded as evidence/diagnostics, NOT a fake virality score.
-
-Implemented `writer_v21_editorial_diagnostics.py`:
-- beat-to-beat information-gain telemetry;
-- adjacent premise repetition;
+`writer_v21_editorial_diagnostics.py` surfaces:
+- beat information gain;
+- premise repetition;
 - payoff echoing hook;
-- overly long written-sounding lines;
-- monotone sentence rhythm;
-- generic AI moralizing / fortune-cookie ending warnings;
-- generic or missing visual intent;
-- adjacent visual-subject repetition;
+- overlong written-sounding sentences;
+- monotone cadence;
+- generic AI moralizing/fortune-cookie endings;
+- generic/missing visual intent;
+- adjacent visual repetition;
 - explicit human stomach-test questions.
-All non-gating.
-
-17 focused checks pass.
+No fake virality probability; `gating=False`. 17 focused checks pass.
 
 ## CLOSED P0 #2 — V2 HOOK + PAYOFF WERE NOT SPOKEN
-This was found by tracing writer assembly into the production renderer.
+Verified production-path defect:
+- Claude `assemble_manifest_v2()` put only six middle beats into `scenes`;
+- hook/payoff remained top-level metadata;
+- `main.py` synthesizes narration from `m['scenes'][*]['voiceover']` only;
+- therefore V2 could optimize/score/fact-check hook/payoff that viewers would never hear, and first/last hero-shot logic would target the wrong material.
 
-Verified defect:
-- Claude V2.1 `writer_v2.assemble_manifest_v2()` stored hook/payoff at top level but built `scenes` ONLY from treatment middle beats.
-- `main.py` builds the narration audio from `m['scenes'][*]['voiceover']` ONLY.
-- Therefore V2 could optimize/score/fact-check a great hook and payoff that the viewer would never hear.
-- Existing render architecture also assumes the first scene is the hook and final scene is payoff for hero-shot prioritization.
+Fix:
+- `writer_v21_manifest.py`: scene1 hook -> six treatment beats -> final payoff = 8 spoken scenes; exact source claim IDs move with each line; script rebuilt from all scenes; hook/payoff get distinct deterministic visual queries when possible.
+- `writer_v21_runtime.py`: composes corrected assembly with fail-closed orchestrator without rewriting large Claude modules.
+- `wr21_run.py`: corrected live entrypoint.
 
-Takeover fix:
-- `writer_v21_manifest.py`
-  - scene 1 = hook;
-  - scenes 2..N+1 = six treatment beats;
-  - final scene = payoff;
-  - claim IDs preserved on exact spoken scene;
-  - script rebuilt from every spoken scene;
-  - hook/payoff get distinct deterministic visual queries when possible;
-  - six-beat treatment => eight spoken scenes, inside existing production scene windows.
-- `writer_v21_runtime.py` composes corrected assembly with fail-closed orchestration in the isolated experiment without rewriting Claude's large source modules.
-- `wr21_run.py` routes the corrected live torture panel through this composed runtime.
+Proof at head `1e8d65576d430332820b487cc06b7a7c74568382`, run `33837378476` SUCCESS:
+- legacy 1503/0;
+- semantic 28 checks;
+- scorer telemetry 18;
+- editorial diagnostics 17;
+- spoken manifest 21.
+1587 explicit zero-network checks, all green.
 
-21 focused manifest/render-contract checks pass.
+## REPAIR-REGRESSION TELEMETRY — IMPLEMENTED, CI PENDING
+Current head `7a7baffbd90cc08f95ceca3b09507becfdb4df5f`.
+New:
+- `writer_v21_repair_regression.py`
+- `tests/test_writer_v21_repair_regression.py`
 
-## COMPLETE TAKEOVER CI — CURRENT VERIFIED GREEN
-Head: `1e8d65576d430332820b487cc06b7a7c74568382`
-PR #56 workflow run: `33837378476` — SUCCESS.
-Evidence from logs:
-- legacy pipeline: `1503 passed, 0 failed`
-- semantic fail-closed suite: `28 checks` PASS
-- scorer/critic telemetry suite: `18 checks` PASS
-- retention/editorial diagnostics suite: `17 checks` PASS
-- spoken hook/payoff manifest suite: `21 checks` PASS
-Total explicit zero-network checks across these suites: 1587, all green.
+It compares consecutive repair rounds without changing selection and preserves exact before/after lines. Flags:
+- hook/payoff inflation after repair;
+- newly introduced generic AI moralizing;
+- increased low-information/repetition/long-written-sentence warnings;
+- critic craft drop;
+- legacy score drop;
+- worsening scorer-vs-critic disagreement;
+- text changed outside declared target beats.
+The exact Claude failure shape (short visceral stomach hook -> long hedged clinical hook) is a regression fixture. A weak always-true test assertion was caught and removed before CI.
 
-## CORRECTED LIVE TORTURE RUNNER READY
-`wr21_takeover_bakeoff.py` + entrypoint `wr21_run.py`:
-- exact same five comparable topics: stomach_lining, neutron_star_spoon, mauna_kea, chess_possible_games, mantis_shrimp;
-- NO render/publish/memory/queue writes;
-- no duplicate research call merely to print evidence;
-- uses fail-closed takeover orchestrator + corrected spoken manifest;
-- logs all rounds, semantic coverage, floors, critic support, hard/soft violations, repair plans, score-vs-critic disagreement, full text, acceptance/abort;
-- 60s inter-topic pacing retained.
-Live execution still depends on secret-backed workflow/quota availability; do not waste calls under a known-open quota circuit.
+Workflow run `33837656200` is currently in progress. FIRST ACTION next hour: inspect/fix this run before anything else.
 
-## QUALITY STACK ALREADY AVAILABLE FOR LATER PROMOTION
-Separate integration lane contains/adapts:
-- grounded evidence / claim registry;
-- Writer V2.1 compatibility;
-- Visual Director / scene routing;
-- NASA SVS + PubChem;
-- RCSB molecular structures;
-- deterministic science motion;
-- Gemini/Qwen asset vision QA;
-- still-first generation lab;
-- verified-still -> image-to-video lab;
-- current text-to-video lab;
-- generated-media promotion controller;
-- constrained video repair;
-- Voice Lab 2.0 (Edge, Orpheus, Cartesia Sonic 3.6, Eleven v3);
-- restrained Sound Brain;
-- holistic final-video multimodal QA;
-- capability preflight / zero-spend planning;
-- human-review readiness gate.
-Do NOT use this stack to compensate for a weak script. V2.1 must earn promotion first.
+## CORRECTED LIVE TORTURE RUNNER — READY, NOT YET RUN
+- `wr21_takeover_bakeoff.py`
+- `wr21_run.py`
+Same five topics, 60s pacing, no render/publish/memory writes, no duplicate research call just for reporting. Uses semantic fail-closed + bounded retry + true quality floors + spoken hook/beats/payoff. Prints full scripts, every round, semantic coverage, hard/soft violations, repair plans, scorer/critic disagreement, acceptance/abort.
 
-## OPEN BLOCKERS / QUESTIONS
-1. Repair-regression protection: factual repair can still make a once-good line hedged/clinical/less watchable. Instrument round-to-round craft/editorial regression before changing selection rules.
-2. Current scorer and critic both use temperature 0.7. Do NOT change temperature or thresholds yet; corrected live disagreement evidence comes first.
-3. Corrected five-topic live panel has never run with ALL of these simultaneously:
-   - Claude hard/soft semantic design,
-   - claim-support parser fixes,
-   - quality-floor fix,
-   - semantic fail-closed coverage,
-   - bounded semantic retry,
-   - spoken hook/payoff manifest.
-4. No genuinely postable, floor-clearing V2.1 script has yet been demonstrated under that final combined stack.
-5. Full video certification remains NOT EARNED.
+Earlier live runs are NOT promotion evidence for this final combined stack.
 
-## CREATIVE QUALITY QUESTIONS TO ANSWER ON EVERY LIVE SCRIPT
-- Does the first 1–1.5 seconds create a specific unanswered need-to-know?
-- Does scene 2 escalate rather than explain/setup?
+## QUALITY STACK FOR LATER PROMOTION — DO NOT USE TO MASK WEAK WRITING
+Separate integration lane already contains/adapts grounded evidence/claims, Visual Director, NASA SVS/PubChem, RCSB, deterministic science motion, Gemini/Qwen vision QA, still-first generation, verified-still -> I2V, modern T2V lab, model-promotion controller, video repair, Voice Lab 2.0, restrained Sound Brain, holistic final-video QA, preflight, human-review readiness.
+
+Writer V2.1 must produce multiple genuinely postable scripts before convergence/certification.
+
+## CREATIVE REVIEW QUESTIONS — APPLY TO EVERY LIVE CANDIDATE
+- Does 0–1.5s create a specific unanswered need-to-know?
+- Does scene 2 escalate rather than merely set up/explain?
 - Does every beat add a new fact/mechanism/scale/reversal?
-- Does the syntax sound like a smart human speaking rather than an article/LLM?
-- Is the treatment genuinely structurally different from adjacent videos?
-- Can every beat be shown with a specific subject/mechanism?
-- Are visual changes purposeful pattern interrupts rather than random flashing?
-- Does the payoff specifically answer/reframe the opening rather than moralize?
-- Is there a natural reason to save/share/comment without a forced CTA?
-- Would a strong human science creator actually post this exact script?
+- Does it sound like a smart human speaking aloud?
+- Is the treatment structurally different from adjacent videos?
+- Can each beat be shown with a specific real/mechanistic visual?
+- Are visual changes purposeful pattern interrupts, not noise?
+- Does payoff specifically answer/reframe opening instead of moralizing?
+- Is there a natural save/share/comment reason without forced CTA?
+- Would a strong human science creator post this exact script?
 
 ## NEXT EXACT ACTION
-Build PURE round-to-round repair-regression telemetry on the Writer takeover branch, without changing selection:
-- compare before/after repaired beat text and editorial diagnostics;
-- flag hook/payoff word inflation after repair;
-- flag newly introduced generic AI moralizing;
-- flag lower information gain / higher repetition after repair;
-- flag critic craft average decline and score-vs-critic disagreement movement;
-- preserve exact before/after lines in diagnostics;
-- add zero-network tests;
-- keep `gating=False` until corrected live evidence shows whether selection policy needs to change.
+1. Inspect workflow run `33837656200` for head `7a7baff...`. If red, diagnose/fix repair-regression implementation/tests before proceeding. If green, record exact check count.
+2. FREEZE further Writer architecture changes unless another proven P0 correctness/render-contract bug appears. We now need evidence, not endless redesign.
+3. Check whether secret-backed Groq quota is actually available. If available, run the corrected five-topic panel through `wr21_run.py`/manual branch diagnostic; ruthlessly read all five scripts and analyze:
+   - factual/semantic verification;
+   - true floor pass;
+   - scorer vs critic disagreement;
+   - editorial diagnostics;
+   - repair regression;
+   - human postability.
+4. If quota is unavailable, do NOT idle. Advance zero-quota V2.1 -> quality-stack compatibility and pre-production visual plans for the five canonical topics, but do not infer script promotion.
+5. Promotion requires multiple factual-clean, floor-clearing scripts a human editor would actually post. Only then converge into the quality stack and consider asking Jacob for one certification-only render.
 
-Then:
-A) if secret-backed Groq quota is available, run `wr21_run.py` through branch_recon/manual diagnostics and ruthlessly read all five scripts;
-B) if quota is still unavailable, continue zero-quota V2.1-to-quality-stack compatibility and pre-production visual planning; do not idle and do not invent acceptance evidence.
-
-## APPROVAL / SPEND STATUS
-- Merge: no approval requested; forbidden overnight.
-- Deploy/publish: forbidden overnight.
-- Paid spend from SuperChad takeover: $0 known.
-- Full render: NOT EARNED.
+## APPROVAL / SPEND
+- main untouched; no merge/deploy/publish.
+- SuperChad takeover known spend: $0.
+- full video render: NOT EARNED.
