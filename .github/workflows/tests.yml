@@ -9,6 +9,7 @@ on:
       - main
       - claude/epic-edison-jybjd1
       - superchad/writer-v2-semantic-failclosed-01
+      - claude/p0-manifest-semantic-merge-01
 permissions:
   contents: read
 concurrency:
