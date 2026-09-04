@@ -21,11 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # PR workflows normally test GitHub's synthetic refs/pull/N/merge.
-          # During the Writer V2.1 takeover that merge ref repeatedly omitted
-          # newly-added head files while retaining tests that import them. Test
-          # the exact PR head instead; main/base drift is separately re-read by
-          # the overnight control loop and the PR itself still shows mergeability.
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Prove checkout identity and required Writer V2.1 paths
         run: |
@@ -40,6 +35,10 @@ jobs:
       - name: Run zero-quota test suites
         env:
           GROQ_API_KEY: x
+          # Python 3.11 sets sys.path[0] to tests/ when a test file is executed
+          # by path. Keep the checked-out repository root explicitly importable
+          # so top-level Writer modules are tested exactly from this head.
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           set -uo pipefail
           failed=0
