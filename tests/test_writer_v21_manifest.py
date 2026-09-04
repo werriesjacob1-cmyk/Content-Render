@@ -23,6 +23,15 @@ def check(cond, label):
     print(f"PASS {label}")
 
 
+def expect_contract_error(m, label):
+    try:
+        N.spoken_text(m)
+    except N.NarrationContractError:
+        check(True, label)
+    else:
+        check(False, label)
+
+
 def fixture():
     writer_out = {
         "title": "The Double Hit",
@@ -92,20 +101,10 @@ def test_spoken_text_preserves_legacy_terminal_punctuation_behavior():
 def test_top_level_endpoints_cannot_drift_from_spoken_scenes():
     _, _, m = manifest()
     bad_hook = {**m, "hook": "A different top-level hook."}
-    try:
-        N.spoken_text(bad_hook)
-    except N.NarrationContractError:
-        check(True, "top-level hook drift fails closed")
-    else:
-        check(False, "top-level hook drift must fail closed")
+    expect_contract_error(bad_hook, "top-level hook drift fails closed")
 
     bad_payoff = {**m, "payoff": "A different top-level payoff."}
-    try:
-        N.spoken_text(bad_payoff)
-    except N.NarrationContractError:
-        check(True, "top-level payoff drift fails closed")
-    else:
-        check(False, "top-level payoff drift must fail closed")
+    expect_contract_error(bad_payoff, "top-level payoff drift fails closed")
 
 
 def test_old_broken_manifest_mutation_is_detected():
@@ -116,12 +115,54 @@ def test_old_broken_manifest_mutation_is_detected():
     # Keep the certified count marker: this is exactly the dangerous condition
     # where certified hook/payoff still exist top-level but disappear from what
     # main.py would synthesize if it read scenes blindly.
-    try:
-        N.spoken_text(broken)
-    except N.NarrationContractError:
-        check(True, "mutation dropping hook/payoff from scenes is caught before narration")
-    else:
-        check(False, "old broken beats-only manifest must never reach narration")
+    expect_contract_error(broken, "mutation dropping hook/payoff from scenes is caught before narration")
+
+
+def test_v21_blank_or_missing_spoken_units_fail_closed():
+    for idx, description in ((0, "hook"), (3, "middle beat"), (7, "payoff")):
+        _, _, m = manifest()
+        broken = dict(m)
+        broken["scenes"] = [dict(s) for s in m["scenes"]]
+        broken["scenes"][idx]["voiceover"] = "   "
+        if idx == 0:
+            broken["hook"] = "   "
+        elif idx == 7:
+            broken["payoff"] = "   "
+        expect_contract_error(broken, f"blank V2.1 {description} cannot become punctuation-only narration")
+
+    _, _, m = manifest()
+    missing = dict(m)
+    missing["scenes"] = [dict(s) for s in m["scenes"]]
+    missing["scenes"][2].pop("voiceover")
+    expect_contract_error(missing, "missing V2.1 beat voiceover fails at narration boundary")
+
+
+def test_v21_scene_ids_are_load_bearing():
+    _, _, m = manifest()
+    duplicate = dict(m)
+    duplicate["scenes"] = [dict(s) for s in m["scenes"]]
+    duplicate["scenes"][3]["id"] = duplicate["scenes"][2]["id"]
+    expect_contract_error(duplicate, "duplicate V2.1 scene ID fails closed")
+
+    _, _, m = manifest()
+    gap = dict(m)
+    gap["scenes"] = [dict(s) for s in m["scenes"]]
+    gap["scenes"][4]["id"] = 99
+    expect_contract_error(gap, "gapped/out-of-order V2.1 scene ID fails closed")
+
+    _, _, m = manifest()
+    boolean_id = dict(m)
+    boolean_id["scenes"] = [dict(s) for s in m["scenes"]]
+    boolean_id["scenes"][1]["id"] = True
+    expect_contract_error(boolean_id, "boolean V2.1 scene ID is not accepted as integer identity")
+
+
+def test_script_is_derived_metadata_not_second_narration_authority():
+    writer_out, _, m = manifest()
+    drifted = dict(m)
+    drifted["script"] = "This stale compatibility copy must not become TTS authority."
+    check(N.spoken_text(drifted).startswith(writer_out["hook"]),
+          "renderer narration remains scene-authoritative even if derived script metadata drifts")
 
 
 def test_claim_ids_move_with_exact_spoken_line():
@@ -161,6 +202,9 @@ def main():
     test_spoken_text_preserves_legacy_terminal_punctuation_behavior()
     test_top_level_endpoints_cannot_drift_from_spoken_scenes()
     test_old_broken_manifest_mutation_is_detected()
+    test_v21_blank_or_missing_spoken_units_fail_closed()
+    test_v21_scene_ids_are_load_bearing()
+    test_script_is_derived_metadata_not_second_narration_authority()
     test_claim_ids_move_with_exact_spoken_line()
     test_hook_and_payoff_get_distinct_visual_queries()
     test_single_query_does_not_force_same_payoff_visual()
