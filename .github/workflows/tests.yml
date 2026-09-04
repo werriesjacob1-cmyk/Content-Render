@@ -51,5 +51,5 @@ jobs:
           run_check "story shape + first 8s" python tests/test_writer_v21_story_shape.py
           run_check "hook surfaces + payoff proof" python tests/test_writer_v21_hook_payoff.py
           run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
-          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_feasibility.py
+          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py
           exit "$failed"
