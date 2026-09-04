@@ -3297,6 +3297,100 @@ def test_writer_v2_semantic_support():
           "a malformed (non-list) claim_support never raises")
 
 
+def test_writer_v2_claim_support_shape_tolerance():
+    section("writer_v2_repair._normalize_claim_support: real live-observed non-array shapes (2026-09-04 fix)")
+    # 2026-09-04: the FIRST V2.1 live bakeoff found the critic's non-structured
+    # fallback call (Groq TPM contention forces this path often) returning
+    # claim_support in shapes the schema never allows but the model still
+    # produces -- these silently dropped genuine semantic catches (a real
+    # "kitchen blender" hallucination on mantis_shrimp went unrepaired because
+    # of exactly this). All three shapes below are VERBATIM from that run's log.
+
+    # shape 1: proper schema-conformant array (the normal/expected case)
+    proper = [{"beat_index": 1, "verdict": "UNSUPPORTED_ADDITION", "unsupported_proposition": "x"}]
+    check(WR._normalize_claim_support(proper, 3) == proper, "a proper array passes through unchanged")
+
+    # shape 2 (verbatim from the mantis_shrimp live run): dict keyed by beat_index-as-string,
+    # values are proper sub-dicts
+    dict_of_dicts = {"0": {"verdict": "UNSUPPORTED_ADDITION", "unsupported_proposition": "blender comparison"}}
+    norm2 = WR._normalize_claim_support(dict_of_dicts, 3)
+    check(len(norm2) == 1 and norm2[0]["beat_index"] == 0 and norm2[0]["verdict"] == "UNSUPPORTED_ADDITION"
+          and norm2[0]["unsupported_proposition"] == "blender comparison",
+          "dict-of-dicts keyed by beat_index-as-string is normalized correctly")
+    sem2 = WR.derive_semantic_violations({"claim_support": dict_of_dicts}, num_beats=3)
+    check(len(sem2) == 1 and sem2[0].beat_index == 0 and sem2[0].value == "blender comparison",
+          "the dict-of-dicts shape now actually reaches derive_semantic_violations as a real hard violation "
+          "-- this is the exact case that silently vanished live before the fix")
+
+    # shape 3 (verbatim from the neutron_star_spoon live run): dict keyed by beat_index-as-string,
+    # BARE STRING verdict values, proposition in a separate sibling "{i}_proposition" key
+    dict_of_strings = {"0": "SUPPORTED", "5": "UNSUPPORTED_ADDITION", "5_proposition": "density is extreme"}
+    norm3 = WR._normalize_claim_support(dict_of_strings, 6)
+    entry5 = next(e for e in norm3 if e["beat_index"] == 5)
+    check(entry5["verdict"] == "UNSUPPORTED_ADDITION" and entry5["unsupported_proposition"] == "density is extreme",
+          "dict-of-bare-strings with a sibling '{i}_proposition' key is normalized correctly")
+    check(not any(e["beat_index"] == "5_proposition" for e in norm3),
+          "the sibling '_proposition' key is consumed, never misread as its own beat_index")
+    sem3 = WR.derive_semantic_violations({"claim_support": dict_of_strings}, num_beats=6)
+    check(len(sem3) == 1 and sem3[0].beat_index == 5 and sem3[0].value == "density is extreme",
+          "the dict-of-bare-strings shape also now reaches derive_semantic_violations correctly")
+
+    # a genuinely unparseable shape (e.g. a bare string, or a list of non-dicts) still fails closed
+    check(WR._normalize_claim_support("not valid at all", 3) == [], "a bare string -> empty, never raises")
+    check(WR._normalize_claim_support([1, 2, 3], 3) == [], "a list of non-dicts -> empty, never raises")
+    check(WR._normalize_claim_support({"not_a_number": {"verdict": "SUPPORTED"}}, 3) == [],
+          "a dict key that isn't parseable as an integer is dropped, not guessed at")
+
+
+def test_writer_v2_entity_possessive_and_plural_number():
+    section("writer_v2_repair: possessive entity + plural number-word normalization (2026-09-04 fix)")
+    # 2026-09-04: "Everest's" survived all 3 repair rounds live (mauna_kea bakeoff) because exact-string
+    # entity matching treated it as different from the cited claim's bare "Everest"
+    check(WR._strip_possessive("everest's") == "everest", "_strip_possessive strips a trailing 's")
+    check(WR._strip_possessive("dinosaurs'") == "dinosaurs", "_strip_possessive strips a bare trailing '")
+    check(WR._strip_possessive("everest") == "everest", "a word with no possessive is returned unchanged")
+
+    mauna = {"id": "mauna_kea", "fact": "Mauna Kea is a mountain.",
+            "wow": "Everest loses its crown to Mauna Kea, which stands over 10,000 metres tall.",
+            "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(mauna, [], False)
+    cbi = {c["claim_id"]: c for c in inv["claims"]}
+    v = WR._check_line(1, "That hidden bulk pushes its total height past 10,000 metres, eclipsing Everest's crown.",
+                       ["base_002"], cbi, [])
+    check(not any(x.value == "Everest's" for x in WR.hard_violations(v)),
+          "a possessive form ('Everest's') of an entity the claim genuinely contains is no longer HARD-flagged")
+    # and the reverse direction: a claim itself using a possessive form still allows the bare form
+    mauna2 = {"id": "mauna_kea2", "fact": "x", "wow": "Everest's summit sits above sea level.",
+             "whatif": "", "angle": "", "key_terms": []}
+    inv2 = W2.build_claim_inventory(mauna2, [], False)
+    cbi2 = {c["claim_id"]: c for c in inv2["claims"]}
+    v2 = WR._check_line(1, "Everest sits above sea level.", ["base_002"], cbi2, [])
+    check(not any(x.value == "Everest" for x in WR.hard_violations(v2)),
+          "a claim using the possessive form ('Everest's') still allows a writer's bare form ('Everest')")
+
+    # 2026-09-04: "zero" (from an "80-zero" paraphrase) failed to match the claim's own plural "zeros"
+    # live (chess_possible_games bakeoff) -- \bzero\b never matched inside "zeros" at all
+    chess = {"id": "chess", "fact": "Chess is a game.",
+            "wow": "Because the moves branch so fast that the count blows past a number with 120 zeros, "
+                   "while the universe has only about 80.",
+            "whatif": "", "angle": "", "key_terms": []}
+    inv3 = W2.build_claim_inventory(chess, [], False)
+    cbi3 = {c["claim_id"]: c for c in inv3["claims"]}
+    v3 = WR._check_line(1, "far more than the roughly 80-zero count for atoms in the universe.",
+                        ["base_002"], cbi3, [])
+    check(not any(x.value == "zero" for x in WR.hard_violations(v3)),
+          "the singular 'zero' is accepted when the cited claim's own text says the plural 'zeros' -- "
+          "same word, not a new unsupported number")
+    tok_plural = W2._extract_factual_tokens("a number with 120 zeros")
+    check("zero" in tok_plural["numbers"], "the plural form itself extracts to the same base number-word")
+    # a genuinely different number word is still correctly rejected -- normalization matches the SAME
+    # word's plural/singular forms, it doesn't blanket-allow any spelled number
+    v4 = WR._check_line(1, "far more than the roughly 80-million count for atoms in the universe.",
+                        ["base_002"], cbi3, [])
+    check(bool(WR.hard_violations(v4)), "a genuinely different number word ('million' vs the cited 'zeros') "
+                                        "is still correctly rejected")
+
+
 def test_writer_v2_claim_inventory_whatif_question():
     section("writer_v2.build_claim_inventory: bare-question whatif fields (2026-09-03 fix)")
     # ~21% of real topic_bank.json entries (70/336, confirmed live) store `whatif` as a bare
@@ -3823,6 +3917,8 @@ def main():
     test_writer_v2_number_normalization()
     test_writer_v2_punctuation_normalization()
     test_writer_v2_semantic_support()
+    test_writer_v2_claim_support_shape_tolerance()
+    test_writer_v2_entity_possessive_and_plural_number()
     test_writer_v2_claim_inventory_whatif_question()
     test_writer_v2_manifest_preserves_claim_ids()
     test_writer_v2_repair_critic()

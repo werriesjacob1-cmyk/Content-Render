@@ -251,7 +251,14 @@ _NUMBER_WORD_RE = re.compile(
     # the kind of quantitative comparison that must be hard-checkable, and
     # without this "twice"/"double"/etc were invisible to the numeric check
     # entirely (neither a digit nor one of the digit-count words above).
-    r"twice|thrice|double|triple|quadruple|half|quarter)\b", re.I)
+    r"twice|thrice|double|triple|quadruple|half|quarter)s?\b", re.I)
+# trailing s? (outside the capture group, so "zeros" still captures as
+# "zero") -- 2026-09-04 V2.1 fix: a claim saying "a number with 120 zeros"
+# and a paraphrase saying "an 80-zero count" refer to the same word: plural
+# vs singular, not a new unsupported number. Confirmed live (chess bakeoff
+# run): "zero" from "80-zero" failed to match the claim's own "zeros"
+# because \bzero\b requires a boundary immediately after "zero", which the
+# plural's "s" broke -- neither form matched the other at all before this.
 _DIGIT_NUMBER_RE = re.compile(r"\b\d[\d,]*(?:\.\d+)?\b")
 _UNIT_RE = re.compile(
     r"\b(kg|kilograms?|grams?|tons?|tonnes?|mm|cm|km|kilometers?|kilometres?|miles?|"

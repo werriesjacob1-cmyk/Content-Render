@@ -206,6 +206,22 @@ def _number_value(token):
         return None
 
 
+def _strip_possessive(word):
+    """2026-09-04 V2.1 live-bug fix: "Everest's" and "Everest" refer to the
+    identical real-world entity, but exact-string entity matching treated
+    them as different -- confirmed live (mauna_kea bakeoff run), where
+    "Everest's" survived all 3 repair rounds unrepaired because the model
+    had no clear signal that adding a possessive 's was the problem.
+    Strips a trailing 's or bare trailing ' (both straight and the
+    typographic form -- callers already normalize quotes before this point,
+    but this stays defensive)."""
+    if word.endswith("'s") and len(word) > 2:
+        return word[:-2]
+    if word.endswith("'") and len(word) > 1:
+        return word[:-1]  # plural possessive, e.g. "dinosaurs'" -> "dinosaurs"
+    return word
+
+
 def _stem(word):
     """Very light suffix-stripping so a natural paraphrase using a different
     verb inflection of an already-supported word ("compressed" in the cited
@@ -343,6 +359,9 @@ def _allowed_vocab(cited_claims, key_terms):
         terms.update(w.lower() for w in re.findall(r"[a-zA-Z]{3,}", kt))
     stems = {_stem(t) for t in terms}
     number_values = {_number_value(n) for n in numbers} - {None}
+    # possessive-stripped forms too ("earth's" in a claim must also allow a
+    # writer's bare "earth", not just the reverse) -- see _strip_possessive
+    entities |= {_strip_possessive(e) for e in entities}
     return {"numbers": numbers, "units": units, "entities": entities, "terms": terms,
             "stems": stems, "number_values": number_values}
 
@@ -420,12 +439,18 @@ def _check_line(beat_index, text, cited_ids, claims_by_id, key_terms):
                 beat_index, "unsupported_unit", u, cited_ids,
                 detail=f"unit {u!r} not found in the cited claim(s) or key_terms", severity="hard"))
     for e in strong_entities:
-        if e.lower() not in allowed["entities"] and e.lower() not in allowed["terms"]:
+        e_l = e.lower()
+        e_base = _strip_possessive(e_l)
+        if (e_l not in allowed["entities"] and e_l not in allowed["terms"]
+                and e_base not in allowed["entities"] and e_base not in allowed["terms"]):
             violations.append(TraceabilityViolation(
                 beat_index, "unsupported_entity", e, cited_ids,
                 detail=f"entity {e!r} not found in the cited claim(s) or key_terms", severity="hard"))
     for e in payload["weak_entities"]:
-        if e.lower() not in allowed["entities"] and e.lower() not in allowed["terms"]:
+        e_l = e.lower()
+        e_base = _strip_possessive(e_l)
+        if (e_l not in allowed["entities"] and e_l not in allowed["terms"]
+                and e_base not in allowed["entities"] and e_base not in allowed["terms"]):
             violations.append(TraceabilityViolation(
                 beat_index, "unsupported_entity", e, cited_ids,
                 detail=f"sentence-initial single-word entity {e!r} not in cited claim(s) (soft signal only)",
@@ -646,25 +671,76 @@ def build_critic_prompt(writer_out, claim_inventory=None, traceability_violation
         + "\n\nSCRIPT TO JUDGE:\n" + script_block
         + "\n\nEXACT CLAIM(S) CITED PER BEAT (fact-check against ONLY this text):\n" + citation_block
         + violations_block
+        + "\n\nReturn claim_support as a JSON ARRAY (not an object keyed by beat number), one entry per "
+          "beat_index shown above, in EXACTLY this shape:\n"
+          '"claim_support": [{"beat_index": 0, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""}, '
+          '{"beat_index": 1, "verdict": "UNSUPPORTED_ADDITION", "unsupported_proposition": "..."}]'
     )
 
 
+def _normalize_claim_support(raw, num_beats):
+    """2026-09-04 V2.1 live-bug fix. The schema-enforced structured-output
+    path always returns claim_support as a proper array of {beat_index,
+    verdict, unsupported_proposition} objects -- but every real live bakeoff
+    run showed the critic call frequently falling back to the non-
+    structured path (Groq TPM contention), where a model asked for the
+    exact same content improvises DIFFERENT shapes for it that all failed
+    to parse silently, dropping genuine semantic catches entirely:
+      - a dict keyed by beat_index-as-string, values are proper sub-dicts:
+        {"0": {"verdict": "...", "unsupported_proposition": "..."}, ...}
+      - a dict keyed by beat_index-as-string, values are BARE verdict
+        strings, with the proposition in a separate sibling key:
+        {"0": "SUPPORTED", "5": "UNSUPPORTED_ADDITION", "5_proposition": "..."}
+    This normalizes any of the three shapes (the proper list, and both
+    observed dict variants) into a single list of {beat_index, verdict,
+    unsupported_proposition} dicts. Never raises; an unrecognized shape
+    just yields an empty list rather than guessing."""
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        out = []
+        for i, e in enumerate(raw):
+            if isinstance(e, dict):
+                idx = e.get("beat_index", i)
+                out.append({"beat_index": idx, "verdict": e.get("verdict"),
+                           "unsupported_proposition": e.get("unsupported_proposition", "")})
+        return out
+    if isinstance(raw, dict):
+        out = []
+        for key, val in raw.items():
+            key_str = str(key)
+            if key_str.endswith("_proposition"):
+                continue  # consumed alongside its paired index key below
+            try:
+                idx = int(key_str)
+            except ValueError:
+                continue
+            if isinstance(val, dict):
+                out.append({"beat_index": idx, "verdict": val.get("verdict"),
+                           "unsupported_proposition": val.get("unsupported_proposition", "")})
+            elif isinstance(val, str):
+                prop = raw.get(f"{key_str}_proposition", "")
+                out.append({"beat_index": idx, "verdict": val, "unsupported_proposition": prop})
+        return out
+    return []
+
+
 def derive_semantic_violations(critic_verdict, num_beats):
-    """Pure: turns the critic's claim_support array (PART 2 of its verdict)
-    into TraceabilityViolation objects, severity='hard' -- this is the
-    backstop for a hallucination that uses only ordinary words and no
-    number/proper noun, which check_traceability() structurally cannot
-    catch (there is no word-level signal for it at all). The critic gets NO
-    authority to supply replacement facts here, only to flag a beat_index
-    and name the unsupported proposition in prose; the actual repair still
-    only fixes from the same claim inventory, exactly like a mechanical
-    violation. Malformed/missing input -> empty list, never raises."""
+    """Pure: turns the critic's claim_support (PART 2 of its verdict,
+    normalized via _normalize_claim_support to tolerate the live-observed
+    non-array fallback shapes above) into TraceabilityViolation objects,
+    severity='hard' -- this is the backstop for a hallucination that uses
+    only ordinary words and no number/proper noun, which check_traceability()
+    structurally cannot catch (there is no word-level signal for it at
+    all). The critic gets NO authority to supply replacement facts here,
+    only to flag a beat_index and name the unsupported proposition in
+    prose; the actual repair still only fixes from the same claim
+    inventory, exactly like a mechanical violation. Malformed/missing input
+    -> empty list, never raises."""
     critic_verdict = critic_verdict or {}
-    entries = critic_verdict.get("claim_support") or []
+    entries = _normalize_claim_support(critic_verdict.get("claim_support"), num_beats)
     violations = []
     for e in entries:
-        if not isinstance(e, dict):
-            continue
         idx = e.get("beat_index")
         verdict = e.get("verdict")
         if not isinstance(idx, int) or not (0 <= idx <= num_beats + 1):
