@@ -19,8 +19,7 @@ def scene_visual_feasibility(scene: Mapping[str, Any]) -> dict[str, Any]:
     voice = str(scene.get("voiceover") or "").strip()
     vt = _tokens(visual); content = [t for t in vt if len(t)>2 and t not in GENERIC]
     voice_tokens = {t for t in _tokens(voice) if len(t)>2}
-    visual_tokens = set(content)
-    shared = sorted(voice_tokens & visual_tokens)
+    shared = sorted(voice_tokens & set(content))
     generic_only = bool(vt) and not content
     abstract_only = bool(content) and all(t in ABSTRACT for t in content)
     action = bool(VISIBLE_ACTION.search(visual))
