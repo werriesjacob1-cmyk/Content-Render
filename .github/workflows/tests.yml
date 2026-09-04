@@ -1,11 +1,7 @@
 name: tests
 
-# Gate every PR (and pushes to the working branch) on the zero-quota test suite —
-# 99 pure-logic checks over validate(), caption alignment, footage anchoring,
-# the brightness shadow-lift, the script buffer, etc. The suite needs NO network,
-# NO ffmpeg, NO LLM key and NO pip install (main.py / generate.py import only the
-# stdlib + the local profiles module), so this runs in a few seconds.
-
+# Gate every PR on zero-quota logic tests. The integration quality-stack tests
+# import the grafted modules and verify safe defaults without network calls.
 on:
   pull_request:
   push:
@@ -32,8 +28,18 @@ jobs:
           python-version: "3.11"
 
       - name: Run zero-quota test suite
-        # GROQ_API_KEY is set to a dummy so the provider-chain code paths the tests
-        # exercise see a key present; the tests never make a network call.
         env:
           GROQ_API_KEY: x
-        run: python tests/test_pipeline.py
+        run: |
+          python tests/test_pipeline.py
+          # Remove the dummy key so integration tests can prove provider calls
+          # fail closed rather than mistaking CI scaffolding for a credential.
+          env -u GROQ_API_KEY python tests/test_quality_stack.py
+          env -u GROQ_API_KEY python tests/test_story_packet.py
+          env -u GROQ_API_KEY python tests/test_quality_session.py
+          env -u GROQ_API_KEY python tests/test_image_to_video_bakeoff.py
+          env -u GROQ_API_KEY python tests/test_generated_media_controller.py
+          env -u GROQ_API_KEY python tests/test_capability_preflight.py
+          env -u GROQ_API_KEY python tests/test_review_readiness.py
+          env -u GROQ_API_KEY python quality_stack_cli.py --status-only > /dev/null
+          env -u GROQ_API_KEY python quality_stack_cli.py --preflight > /dev/null
