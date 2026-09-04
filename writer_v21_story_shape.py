@@ -1,16 +1,15 @@
 """Deterministic narrative-shape and first-8-second diagnostics for Writer V2.1.
 
-Treatment names are not evidence of real structural variety.  This module looks
-at the surface FUNCTION of each spoken beat (question, evidence, reversal,
-mechanism, scale, consequence, etc.) and compares the resulting sequence across
-scripts.  It also estimates what a viewer hears in the first eight seconds so a
-strong whole-script score cannot hide a slow opening.
+Treatment names are not evidence of real structural variety. This module looks
+at the surface FUNCTION of each spoken beat (observation, question, evidence,
+reversal, mechanism, scale, consequence, etc.) and compares the resulting
+sequence across scripts. It also estimates what a viewer hears in the first
+eight seconds so a strong whole-script score cannot hide a slow opening.
 
-Everything here is non-gating telemetry.  No virality probability is invented.
+Everything here is non-gating telemetry. No virality probability is invented.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
 import re
 from typing import Any, Mapping, Sequence
@@ -18,22 +17,31 @@ from typing import Any, Mapping, Sequence
 
 FEATURE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("question", re.compile(r"\?|\b(?:why|how|what if|could|can|would)\b", re.I)),
+    # A mystery/case-file opener is often an OBSERVATION without literally saying
+    # "evidence". Treat "a signal appeared" and "a reading showed up" as the same
+    # narrative function so lexical rewording cannot fake structural diversity.
+    ("observation", re.compile(r"\b(?:observation|signal|reading|anomaly|pattern)\b.*\b(?:appeared|showed up|emerged|started|began|was found|was detected)\b|\b(?:appeared|showed up|emerged)\b.*\b(?:signal|reading|anomaly|pattern)\b", re.I)),
     ("evidence", re.compile(r"\b(?:evidence|measured|observed|found|recorded|detected|study|data|clue)\b", re.I)),
     ("wrong_hypothesis", re.compile(r"\b(?:assumed|thought|believed|seemed|expected|supposed|wrong)\b", re.I)),
-    ("reversal", re.compile(r"\b(?:but|instead|actually|except|yet|turns out|rather than)\b", re.I)),
+    ("reversal", re.compile(r"\b(?:but|instead|actually|except|yet|turns out|rather than|revers(?:e|es|ed|ing|al)|broke that idea|broke the explanation)\b", re.I)),
     ("mechanism", re.compile(r"\b(?:because|causes?|triggers?|works by|mechanism|pressure|reaction|gravity|friction|absorbs?|releases?|converts?)\b", re.I)),
     ("scale", re.compile(r"\b(?:times|million|billion|trillion|larger|smaller|taller|heavier|faster|slower|scale|enormous|tiny)\b|\d", re.I)),
     ("timeline", re.compile(r"\b(?:years? ago|seconds? later|before|after|eventually|first|then|today|now|over time)\b", re.I)),
     ("journey", re.compile(r"\b(?:enters?|leaves?|travels?|moves?|crosses?|passes?|ends up|begins?|starts?)\b", re.I)),
-    ("consequence", re.compile(r"\b(?:means|therefore|so that|result|consequence|leads to|allows?|prevents?|matters|changes?)\b", re.I)),
+    ("consequence", re.compile(r"\b(?:means|therefore|so that|result|consequence|leads to|allows?|prevents?|matters|changes?|changed|changing|forces?|forced|reframes?|reframed)\b", re.I)),
     ("viewer_reframe", re.compile(r"\b(?:you|your|we|our)\b.*\b(?:see|think|feel|experience|notice|realize|remember)\b", re.I)),
     ("comparison", re.compile(r"\b(?:than|compared with|compared to|versus|vs\.?|like a|as .* as)\b", re.I)),
     ("experiment", re.compile(r"\b(?:test|experiment|try this|set up|drop|pour|place|watch what happens)\b", re.I)),
 )
 
+# Priority encodes narrative FUNCTION, not word importance. Consequence/reframe
+# outrank generic evidence vocabulary so a payoff such as "the evidence forced a
+# new way to see it" is classified as a consequence/reframe rather than merely
+# "evidence". Observation outranks evidence for case-file mystery openers.
 PRIMARY_PRIORITY = (
-    "question", "wrong_hypothesis", "evidence", "reversal", "experiment",
-    "mechanism", "scale", "journey", "timeline", "consequence", "viewer_reframe", "comparison",
+    "question", "wrong_hypothesis", "reversal", "experiment", "mechanism",
+    "journey", "timeline", "consequence", "viewer_reframe", "comparison",
+    "scale", "observation", "evidence",
 )
 
 
@@ -142,7 +150,7 @@ def first_eight_seconds_audit(
 ) -> dict[str, Any]:
     """Estimate the spoken narrative exposed before ~8 seconds.
 
-    Uses a transparent WPS estimate until real TTS timings exist.  It preserves
+    Uses a transparent WPS estimate until real TTS timings exist. It preserves
     exact word/time assumptions so later audio-backed analysis can replace it.
     """
     if not math.isfinite(words_per_second) or words_per_second <= 0:
