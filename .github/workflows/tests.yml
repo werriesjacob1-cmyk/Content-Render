@@ -36,4 +36,6 @@ jobs:
         # exercise see a key present; the tests never make a network call.
         env:
           GROQ_API_KEY: x
-        run: python tests/test_pipeline.py
+        run: |
+          python tests/test_pipeline.py
+          python tests/test_video_repair_lab.py
