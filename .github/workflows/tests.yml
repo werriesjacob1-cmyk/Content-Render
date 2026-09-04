@@ -1,11 +1,7 @@
 name: tests
 
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
-# semantic-safety, scorer telemetry, editorial diagnostics, spoken manifest,
-# repair-regression telemetry, blind pairwise judging, the permanent known-bad
-# torture corpus, story-shape / first-8-second diagnostics, and hook/payoff
-# surface diagnostics. No suite makes network calls.
-
+# diagnostics. No suite makes network calls.
 on:
   pull_request:
   push:
@@ -13,25 +9,20 @@ on:
       - main
       - claude/epic-edison-jybjd1
       - superchad/writer-v2-semantic-failclosed-01
-
 permissions:
   contents: read
-
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Run zero-quota test suites
         env:
           GROQ_API_KEY: x
@@ -46,3 +37,5 @@ jobs:
           python tests/test_writer_v21_torture_corpus.py
           python tests/test_writer_v21_story_shape.py
           python tests/test_writer_v21_hook_payoff.py
+          python tests/test_writer_v21_visual_feasibility.py
+          python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_feasibility.py
