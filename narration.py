@@ -25,18 +25,37 @@ def _assert_v21_contract(manifest: dict, scenes: list[dict]) -> None:
 
     Legacy manifests intentionally do not carry ``_v2_spoken_scene_count`` and
     therefore keep their historical scene-only narration behavior unchanged.
-    V2.1 manifests do carry it, so top-level hook/payoff may never silently drift
-    away from the exact first/last scenes the renderer will speak.
+    V2.1 manifests do carry it, so every certified spoken unit must be present,
+    ordered, nonblank, and identity-stable before renderer narration begins.
     """
     expected = manifest.get("_v2_spoken_scene_count")
     if expected is None:
         return
-    if not isinstance(expected, int) or expected < 2:
+    if type(expected) is not int or expected < 2:
         raise NarrationContractError("invalid _v2_spoken_scene_count")
+    if not isinstance(scenes, list):
+        raise NarrationContractError("V2.1 scenes must be a list")
     if len(scenes) != expected:
         raise NarrationContractError(
             f"V2.1 scene count drift: expected {expected}, found {len(scenes)}"
         )
+    if any(not isinstance(scene, dict) for scene in scenes):
+        raise NarrationContractError("V2.1 every scene must be an object")
+
+    ids = [scene.get("id") for scene in scenes]
+    if any(type(scene_id) is not int for scene_id in ids):
+        raise NarrationContractError("V2.1 scene IDs must be integers")
+    expected_ids = list(range(1, expected + 1))
+    if ids != expected_ids:
+        raise NarrationContractError(
+            f"V2.1 scene ID drift: expected {expected_ids}, found {ids}"
+        )
+
+    for scene_id, scene in zip(ids, scenes):
+        voiceover = scene.get("voiceover")
+        if not isinstance(voiceover, str) or not voiceover.strip():
+            raise NarrationContractError(f"V2.1 scene {scene_id} has blank or missing voiceover")
+
     first = scenes[0]
     last = scenes[-1]
     if first.get("_v2_role") != "hook" or last.get("_v2_role") != "payoff":
@@ -45,9 +64,9 @@ def _assert_v21_contract(manifest: dict, scenes: list[dict]) -> None:
         raise NarrationContractError("V2.1 middle scene role drift: expected only beats")
     hook = (manifest.get("hook") or "").strip()
     payoff = (manifest.get("payoff") or "").strip()
-    if hook != (first.get("voiceover") or "").strip():
+    if hook != first["voiceover"].strip():
         raise NarrationContractError("top-level hook drifted from first spoken scene")
-    if payoff != (last.get("voiceover") or "").strip():
+    if payoff != last["voiceover"].strip():
         raise NarrationContractError("top-level payoff drifted from final spoken scene")
 
 
@@ -57,8 +76,11 @@ def spoken_text(manifest: dict) -> str:
     This deliberately uses ``manifest[\"scenes\"][*][\"voiceover\"]`` and the
     exact terminal-punctuation normalization main.py used before this function
     existed. Missing structural keys continue to raise rather than silently
-    inventing/falling back.  V2.1 manifests additionally fail closed if their
-    certified hook/payoff surfaces have drifted from the spoken scenes.
+    inventing/falling back. V2.1 manifests additionally fail closed on scene
+    count/identity/role/text drift and hook/payoff endpoint disagreement.
+
+    ``manifest[\"script\"]`` remains derived compatibility metadata, not a
+    second narration authority; renderer correctness depends only on scenes.
     """
     scenes = manifest["scenes"]
     _assert_v21_contract(manifest, scenes)
