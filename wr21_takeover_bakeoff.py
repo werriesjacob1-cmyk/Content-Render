@@ -2,26 +2,27 @@
 """Corrected Writer V2.1 promotion torture panel — SCRIPT ONLY.
 
 Runs the exact five topics used in Claude's V2/V2.1 evidence so results remain
-directly comparable, but calls the fail-closed takeover orchestrator rather than
-``generate.generate_candidate_v2``.
+directly comparable, but calls the fail-closed takeover runtime rather than the
+old fail-open ``generate.generate_candidate_v2`` path.
 
-No render, no publishing, no memory/queue writes. The script makes only the
+No render, publishing, memory, or queue writes. The script makes only the
 writer/critic/repair/scorer/research calls inside one candidate run. It does NOT
-perform a duplicate research call for pretty-printing.
+perform a duplicate research call merely to pretty-print provenance.
 
-Evidence printed per topic:
-- treatment / grounding / call count;
-- every candidate round's complete script text;
+Each topic emits one coherent editorial dossier:
+- complete script for every repair round;
 - mechanical + semantic verification state;
-- validate + production quality-floor state;
-- critic diagnosis/claim support;
-- score_script vs independent critic disagreement telemetry;
-- targeted repair plan/stall state;
+- validate + true production quality-floor state;
+- score_script vs independent critic disagreement;
+- deterministic retention/editorial warnings;
+- narrative function/shape and estimated first-eight-second exposure;
+- targeted repair plan and round-to-round craft regression;
+- blind pairwise-judge plans for eligible clean repair transitions;
 - accepted/aborted with explicit reason;
-- full final script if accepted.
+- corrected render-manifest scene order if accepted.
 
-This runner does not alter any quality threshold. Human editorial judgment is
-still required after reading the scripts.
+All diagnostic layers are telemetry only. Human editorial judgment remains the
+promotion authority.
 """
 from __future__ import annotations
 
@@ -31,9 +32,12 @@ import sys
 import time
 
 import generate as G
-import writer_v2_repair as R
+import writer_v21_editorial_diagnostics as E
 import writer_v21_orchestrator as O
+import writer_v21_pairwise as P
 import writer_v21_quality_signals as Q
+import writer_v21_repair_regression as RR
+import writer_v21_story_shape as S
 
 
 TOPIC_IDS = (
@@ -44,12 +48,29 @@ TOPIC_IDS = (
     "mantis_shrimp",
 )
 
-# 60s preserved from Claude's last live-run pacing. Override upward only when
-# current rate-limit evidence justifies it; never shorten merely for speed.
+# Preserves Claude's last inter-topic pacing. Never shorten merely for speed.
 INTER_TOPIC_DELAY_SECONDS = int(os.getenv("WR21_INTER_TOPIC_DELAY_SECONDS", "60"))
 
 
-def _print_round(r, quality):
+def _editorial_for_round(r):
+    return E.editorial_diagnostics(
+        hook=r.get("hook") or "",
+        beats=r.get("beats") or [],
+        payoff=r.get("payoff") or "",
+    )
+
+
+def _shape_for_round(r):
+    hook = r.get("hook") or ""
+    beats = r.get("beats") or []
+    payoff = r.get("payoff") or ""
+    return {
+        "signature": S.shape_signature(hook, beats, payoff),
+        "first_8_seconds": S.first_eight_seconds_audit(hook, beats),
+    }
+
+
+def _print_round(r, quality, editorial, shape):
     print(f"  -- ROUND {r.get('round')} --")
     print(f"     HOOK: {r.get('hook')}")
     for i, text in enumerate(r.get("beats") or [], 1):
@@ -84,6 +105,36 @@ def _print_round(r, quality):
             f"delta={pair['critic_minus_legacy']:+.2f}"
         )
 
+    print(
+        "     editorial telemetry: "
+        f"warnings={editorial.get('warning_kinds')} "
+        f"hook_words={editorial.get('hook_word_count')} "
+        f"hook_payoff_overlap={editorial.get('hook_payoff_overlap')}"
+    )
+    info_gain = editorial.get("beat_information_gain") or []
+    if info_gain:
+        print(
+            "     information gain: "
+            + ", ".join(
+                f"b{x.get('beat_index')}={x.get('new_content_ratio')}" for x in info_gain
+            )
+        )
+
+    sig = shape.get("signature") or {}
+    first8 = shape.get("first_8_seconds") or {}
+    print(
+        "     story shape: "
+        f"primary={sig.get('primary_sequence')} "
+        f"unique_functions={sig.get('unique_function_count')}"
+    )
+    print(
+        "     first 8s: "
+        f"hook_est={first8.get('hook_estimated_seconds')}s "
+        f"fully_heard_beats_after_hook={first8.get('fully_heard_beats_after_hook')} "
+        f"functions={first8.get('opening_primary_functions')} "
+        f"warnings={first8.get('warnings')}"
+    )
+
     cv = r.get("critic_verdict")
     if cv:
         print(f"     critic claim_support: {cv.get('claim_support')}")
@@ -113,6 +164,37 @@ def _print_round(r, quality):
         print(f"     repair error: {r.get('repair_error')}")
 
 
+def _render_manifest_story(manifest):
+    scenes = list(manifest.get("scenes") or [])
+    print("  FINAL RENDER-MANIFEST STORY:")
+    for scene in scenes:
+        role = scene.get("_v2_role") or "scene"
+        print(
+            f"    scene {scene.get('id')} [{role}] {scene.get('voiceover')} "
+            f"claims={scene.get('source_claim_ids')} query={scene.get('search_query')!r}"
+        )
+    print(f"    script={manifest.get('script')}")
+    print(f"    semantic_verified={manifest.get('_semantic_verified')}")
+
+    # Reconstruct the actual writer shape without accidentally counting the
+    # promoted hook/payoff scenes as middle beats a second time.
+    middle = [s for s in scenes if s.get("_v2_role") == "beat"]
+    writer_shape = {
+        "hook": manifest.get("hook"),
+        "hook_source_claim_ids": manifest.get("hook_source_claim_ids") or [],
+        "beats": [
+            {
+                "voiceover": s.get("voiceover"),
+                "source_claim_ids": s.get("source_claim_ids") or [],
+            }
+            for s in middle
+        ],
+        "payoff": manifest.get("payoff"),
+        "payoff_source_claim_ids": manifest.get("payoff_source_claim_ids") or [],
+    }
+    print(f"    claim-bound writer shape retained: {json.dumps(writer_shape, ensure_ascii=False)}")
+
+
 def run_topic(tid, fact):
     print(f"\n{'#' * 88}\n# TOPIC: {tid} ({fact.get('domain')})\n# FACT: {fact.get('fact')}\n{'#' * 88}")
     manifest, debug = O.generate_candidate_v21(
@@ -124,6 +206,8 @@ def run_topic(tid, fact):
         use_structured=True,
     )
     q = Q.analyze_debug(debug)
+    regression = RR.analyze_debug(debug)
+    pairwise_plans = P.pairwise_plans_from_debug(debug)
 
     print(
         f"orchestrator={debug.get('orchestrator')} treatment={debug.get('treatment')} "
@@ -141,52 +225,57 @@ def run_topic(tid, fact):
             f"error={call.get('error')}"
         )
 
-    for round_info, quality in zip(debug.get("rounds") or [], q.get("rounds") or []):
-        _print_round(round_info, quality)
+    rounds = list(debug.get("rounds") or [])
+    quality_rounds = list(q.get("rounds") or [])
+    for idx, round_info in enumerate(rounds):
+        quality = quality_rounds[idx] if idx < len(quality_rounds) else Q.quality_signal_report(
+            round_info.get("score"), round_info.get("critic_verdict")
+        )
+        _print_round(
+            round_info,
+            quality,
+            _editorial_for_round(round_info),
+            _shape_for_round(round_info),
+        )
 
     print(f"  QUALITY SIGNAL SUMMARY: {json.dumps(q, sort_keys=True)}")
+    print(f"  REPAIR REGRESSION SUMMARY: {json.dumps(regression, ensure_ascii=False, sort_keys=True)}")
+    print(
+        "  BLIND PAIRWISE PLANS: "
+        f"{len(pairwise_plans)} eligible clean transition(s); "
+        "prompts prepared but NOT called by this runner"
+    )
+    for plan in pairwise_plans:
+        print(
+            f"    rounds {plan.get('from_round')}->{plan.get('to_round')} "
+            f"aliases={plan.get('packet', {}).get('aliases')}"
+        )
+
     print(f"  ACCEPTED: {debug.get('accepted')}  error={debug.get('error')!r}")
     print(f"  selected_score={debug.get('score')} repair_rounds={debug.get('repair_rounds')}")
 
     if manifest:
-        print("  FINAL SCRIPT:")
-        print(f"    HOOK: {manifest.get('hook')}")
-        for i, scene in enumerate(manifest.get("scenes") or [], 1):
-            print(f"    [{i}] {scene.get('voiceover')}")
-        print(f"    PAYOFF: {manifest.get('payoff')}")
-        print(f"    semantic_verified={manifest.get('_semantic_verified')}")
-
-        # Belt-and-suspenders mechanical re-check using the claim IDs already
-        # retained in the manifest. Full semantic evidence remains in debug.
-        writer_shape = {
-            "hook": manifest.get("hook"),
-            "hook_source_claim_ids": manifest.get("hook_source_claim_ids") or [],
-            "beats": [
-                {
-                    "voiceover": s.get("voiceover"),
-                    "source_claim_ids": s.get("source_claim_ids") or [],
-                }
-                for s in (manifest.get("scenes") or [])
-            ],
-            "payoff": manifest.get("payoff"),
-            "payoff_source_claim_ids": manifest.get("payoff_source_claim_ids") or [],
-        }
-        # We intentionally do NOT call research again to reconstruct the claim
-        # inventory here. The orchestrator already performed traceability before
-        # selection; an extra dossier request would waste quota and could change
-        # evidence mid-run.
-        print(f"    claim-bound writer shape retained: {json.dumps(writer_shape, ensure_ascii=False)}")
+        _render_manifest_story(manifest)
     else:
         print(f"  ABORTED: validate_err={debug.get('validate_err')!r}")
 
+    last_round = rounds[-1] if rounds else {}
+    last_editorial = _editorial_for_round(last_round) if last_round else {}
+    last_shape = _shape_for_round(last_round) if last_round else {}
     return {
         "topic": tid,
+        "treatment": debug.get("treatment"),
         "accepted": bool(debug.get("accepted")),
         "score": debug.get("score"),
         "calls": debug.get("total_calls"),
         "semantic_retries": debug.get("semantic_retries_used"),
         "repair_rounds": debug.get("repair_rounds"),
         "quality_signal": q,
+        "repair_regression": regression,
+        "pairwise_plan_count": len(pairwise_plans),
+        "final_editorial_warning_kinds": last_editorial.get("warning_kinds") or [],
+        "final_story_shape": (last_shape.get("signature") or {}).get("primary_sequence"),
+        "final_first8_warnings": (last_shape.get("first_8_seconds") or {}).get("warnings") or [],
         "error": debug.get("error"),
     }
 
@@ -210,14 +299,38 @@ def main():
     for r in results:
         qs = r["quality_signal"]
         print(
-            f"{r['topic']}: accepted={r['accepted']} score={r['score']} calls={r['calls']} "
-            f"semantic_retries={r['semantic_retries']} repair_rounds={r['repair_rounds']} "
-            f"max_judge_disagreement={qs.get('max_disagreement_band')} "
+            f"{r['topic']}: treatment={r['treatment']} accepted={r['accepted']} score={r['score']} "
+            f"calls={r['calls']} semantic_retries={r['semantic_retries']} repair_rounds={r['repair_rounds']} "
+            f"judge_disagreement={qs.get('max_disagreement_band')} "
             f"winner_disagreement={(qs.get('selection') or {}).get('winner_disagreement')} "
-            f"error={r['error']!r}"
+            f"repair_regressions={r['repair_regression'].get('all_regression_flag_kinds')} "
+            f"editorial={r['final_editorial_warning_kinds']} first8={r['final_first8_warnings']} "
+            f"shape={r['final_story_shape']} error={r['error']!r}"
         )
+
+    # Portfolio-level structure matters: treatment labels alone are not proof of
+    # variety. Use the best/latest text from every topic attempt available.
+    script_shapes = []
+    for r in results:
+        shape = r.get("final_story_shape")
+        if shape:
+            script_shapes.append({
+                "hook": "",
+                "beats": [],
+                "payoff": "",
+                "treatment": r.get("treatment"),
+                "_precomputed_shape": shape,
+            })
+    # Raw shape sequences are already printed per topic. Full cross-script
+    # S.portfolio_diversity() requires script text; retain a future-safe note
+    # instead of fabricating comparison inputs from only the signature.
+    print(f"topics_with_shape_evidence={len(script_shapes)}/{len(results)}")
+
     accepted = sum(1 for r in results if r["accepted"])
-    print(f"accepted={accepted}/{len(results)} — this is NOT a promotion verdict until a human reads the scripts")
+    print(
+        f"accepted={accepted}/{len(results)} — NOT a promotion verdict until a human reads the scripts "
+        "and reviews factual safety, first-8-second momentum, repair regressions, and actual postability"
+    )
     return 0
 
 
