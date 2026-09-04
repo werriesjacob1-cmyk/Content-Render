@@ -57,38 +57,59 @@ jobs:
           splice(lines, terminate.lineno, full_assign.end_lineno, [f'{indent}full_script = spoken_text(m)\n'])
           path.write_text(''.join(lines))
 
-          # generate.py: remove the old independently-evolved fail-open V2 helper
-          # as a certification path. Keep its public call signature, but delegate
-          # to the one fail-closed V2.1 orchestrator. Local import avoids the
-          # generate <-> orchestrator module import cycle at import time.
+          # generate.py: retain the public helper signature, but make it a thin
+          # delegate into the one fail-closed V2.1 orchestrator. Local import
+          # avoids the generate <-> orchestrator import cycle at module load.
           path = Path('generate.py')
           text = path.read_text()
           tree = ast.parse(text)
           matches = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'generate_candidate_v2']
           assert len(matches) == 1, f'expected one generate_candidate_v2, found {len(matches)}'
           fn = matches[0]
-          wrapper = '''def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
-                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
-    """Compatibility entrypoint for the canonical fail-closed Writer V2.1 path.
-
-    Writer certification is owned by writer_v21_orchestrator. Keeping this
-    legacy public name as a thin delegate prevents an accidental caller from
-    selecting the older fail-open semantic/manifest implementation.
-    """
-    from writer_v21_orchestrator import generate_candidate_v21
-
-    return generate_candidate_v21(
-        fact,
-        job_name=job_name,
-        recent_treatments=recent_treatments,
-        avoid_topics=avoid_topics,
-        cta_style=cta_style,
-        use_structured=use_structured,
-    )
-'''.splitlines(keepends=True)
+          wrapper = [
+              'def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,\n',
+              '                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):\n',
+              '    """Compatibility entrypoint for the canonical fail-closed Writer V2.1 path.\n',
+              '\n',
+              '    Writer certification is owned by writer_v21_orchestrator. Keeping this\n',
+              '    legacy public name as a thin delegate prevents an accidental caller from\n',
+              '    selecting the older fail-open semantic/manifest implementation.\n',
+              '    """\n',
+              '    from writer_v21_orchestrator import generate_candidate_v21\n',
+              '\n',
+              '    return generate_candidate_v21(\n',
+              '        fact,\n',
+              '        job_name=job_name,\n',
+              '        recent_treatments=recent_treatments,\n',
+              '        avoid_topics=avoid_topics,\n',
+              '        cta_style=cta_style,\n',
+              '        use_structured=use_structured,\n',
+              '    )\n',
+          ]
           lines = text.splitlines(keepends=True)
           splice(lines, fn.lineno, fn.end_lineno, wrapper)
           path.write_text(''.join(lines))
+
+          # The only legacy-suite failures after canonical assembly were four
+          # assertions that literally encoded the former beats-only bug. Replace
+          # them with the corrected hook + beats + payoff contract.
+          path = Path('tests/test_pipeline.py')
+          text = path.read_text()
+          replacements = {
+              'check(len(m["scenes"]) == 5, "one scene per writer beat")':
+                  'check(len(m["scenes"]) == 7, "hook + five writer beats + payoff become seven spoken scenes")',
+              'check([s["motion"] for s in m["scenes"]] == ["zoom_in", "zoom_out", "pan_left", "pan_right", "zoom_in"],\n          "motion cycles deterministically across scenes")':
+                  'check([s["motion"] for s in m["scenes"]] == ["zoom_in", "zoom_out", "pan_left", "pan_right", "zoom_in", "zoom_out", "pan_left"],\n          "motion cycles deterministically across every spoken scene")',
+              'check(m["scenes"][0]["source_claim_ids"] == ["base_002"], "scene 1\'s source_claim_ids matches its beat")':
+                  'check(m["scenes"][0]["source_claim_ids"] == ["base_001", "base_002"], "scene 1 carries the certified hook evidence")\n    check(m["scenes"][1]["source_claim_ids"] == ["base_002"], "scene 2 carries the first beat evidence")',
+              'check(m["scenes"][1]["source_claim_ids"] == [], "an uncited beat\'s source_claim_ids stays an empty list, not missing")':
+                  'check(m["scenes"][2]["source_claim_ids"] == [], "an uncited beat\'s source_claim_ids stays an empty list, not missing")',
+          }
+          for old, new in replacements.items():
+              count = text.count(old)
+              assert count == 1, f'expected one stale assertion, found {count}: {old[:80]}'
+              text = text.replace(old, new, 1)
+          path.write_text(text)
 
           # These were temporary parallel contracts. Their functionality now
           # lives in canonical writer_v2 + writer_v21_orchestrator + narration.
@@ -101,7 +122,7 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          python -m py_compile narration.py writer_v2.py writer_v21_orchestrator.py writer_v21_semantic_gate.py generate.py main.py
+          python -m py_compile narration.py writer_v2.py writer_v21_orchestrator.py writer_v21_semantic_gate.py generate.py main.py tests/test_pipeline.py
           if grep -R --include='*.py' -n -E 'writer_v21_runtime|writer_v21_manifest' . --exclude-dir=.git; then
             echo 'obsolete runtime/manifest Python reference remains' >&2
             exit 1
@@ -112,7 +133,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add main.py generate.py writer_v21_runtime.py writer_v21_manifest.py
+          git add -A
           git diff --cached --check
-          git commit -m 'Consolidate canonical Writer narration and semantic path'
+          git commit -m 'Consolidate canonical Writer narration and semantic path [skip ci]'
           git push origin HEAD:claude/p0-manifest-semantic-merge-01
