@@ -1,9 +1,9 @@
-# Overnight Quality Control Addendum — through 2026-09-05 16:16 CT
+# Overnight Quality Control Addendum — through 2026-09-05 17:18 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
-- `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
+- `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — freshly reverified unchanged.
 - Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged from prior verified checkpoint.
 - SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from prior verified checkpoint.
 - Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from prior verified checkpoint.
@@ -19,21 +19,20 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 15:20 CT
+## DELTA SINCE 16:16 CT
 No application-code branch head changed during this audit window.
 
 Freshly reverified:
 - main remains `6a045e50...`;
 - Mission 1A remains `04ef8a3f...`;
 - Mission 1B remains `4e014946...`;
-- combined integration-cert remains `c46532af...`;
-- PR #57 remains open/draft, head `04ef8a3f...`, base `main`, while its body names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as base authority and says `DO NOT MERGE`.
+- combined integration-cert remains `c46532af...`.
 
-No new implementation slice, CI head, or live creative evidence was detected that changes the prior verdict.
+No new implementation slice, CI head, live creative evidence, or authorization record was detected that changes the prior verdict.
 
 ## CURRENT WARNINGS
 ### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
-The sequencing discrepancy remains unresolved. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded authorization gate was not closed first. PR #57 remains a broad direct-to-main draft surface instead of a clean narrow Mission-1A-over-authoritative-base review topology.
+The sequencing discrepancy remains unresolved. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded authorization gate was not closed first. PR #57 remains the known broad direct-to-main Mission 1A review surface from the prior audit and has not been recorded as corrected/closed in the durable state.
 
 Do not treat branch existence, draft PRs, synthetic integration surfaces, or green CI as authorization to merge or advance.
 
