@@ -1,0 +1,47 @@
+name: control-plane-tests
+
+# Zero-secret regression for security-sensitive diagnostic workflow changes.
+# This workflow never exposes provider credentials and checks the exact branch
+# head rather than relying on mutable/default-branch state.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/branch_recon.yml"
+      - ".github/workflows/control_plane_tests.yml"
+      - "tests/test_branch_recon_security.py"
+  push:
+    branches:
+      - main
+      - superchad/mission-1b-branch-recon-hardening-01
+    paths:
+      - ".github/workflows/branch_recon.yml"
+      - ".github/workflows/control_plane_tests.yml"
+      - "tests/test_branch_recon_security.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-plane-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  branch-recon-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Prove checkout identity
+        run: echo "checked_out_sha=$(git rev-parse HEAD)"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Enforce branch-recon security contract
+        run: python tests/test_branch_recon_security.py
