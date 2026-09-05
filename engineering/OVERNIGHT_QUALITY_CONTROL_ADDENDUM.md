@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-04 23:16 CT
+# Overnight Quality Control Addendum — through 2026-09-05 00:21 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -13,7 +13,7 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 22:18 AUDIT
+## DELTA SINCE 23:16 AUDIT
 No application-code delta was observed.
 
 Reverification found:
@@ -21,7 +21,7 @@ Reverification found:
 - `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
 - Claude Writer base, SuperChad takeover, and quality-stack heads are unchanged.
 - PR #57 remains open and draft; its head remains `04ef8a3f...` and GitHub base remains `main @ 6a045e50...`.
-- PR #57 body still names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and says `DO NOT MERGE`.
+- PR #57 body still names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and still says `DO NOT MERGE`.
 - No newly authorized implementation branch was detected from the current checkpoint/PR surface.
 
 This audit intentionally made no application-code changes.
@@ -63,7 +63,7 @@ Smallest recommended authorized-builder action remains: retarget or recreate the
 - Main remains untouched.
 
 ## SECURITY
-- `main` remains unchanged and therefore still contains the permissive `branch_recon.yml` arbitrary-ref/arbitrary-script execution path with provider secrets identified in prior audits.
+- `main` remains unchanged and still contains the permissive `branch_recon.yml` arbitrary-ref/arbitrary-script execution path with provider secrets identified in prior audits.
 - Mission 1B remains blocked until Mission 1A review surface is corrected and independently clean.
 - No secret-backed live Writer panel should run before hardening.
 
