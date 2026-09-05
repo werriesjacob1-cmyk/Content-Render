@@ -1,29 +1,26 @@
-# Overnight Quality Control Addendum — through 2026-09-05 11:19 CT
+# Overnight Quality Control Addendum — through 2026-09-05 12:21 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged from canonical checkpoint.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from canonical checkpoint.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from canonical checkpoint.
 - Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 10:20 AUDIT
+## DELTA SINCE 11:19 AUDIT
 No application-code delta was observed.
 
 Fresh verification found:
 - Mission 1A remains at `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
 - `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
-- Claude Writer base remains `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6`.
-- SuperChad takeover remains `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`.
-- Quality stack remains `8d93f4e71489674f4bc95aade72f9c411620d30b`.
 - PR #57 remains open, draft, head `04ef8a3f...`, and base `main @ 6a045e50...`.
-- PR #57 body still identifies `claude/writer-v2-traceability-repair-01 @ 2256f22...` as base authority and says `DO NOT MERGE`.
+- PR #57 still spans 87 commits / 34 changed files and its body still identifies `claude/writer-v2-traceability-repair-01 @ 2256f22...` as base authority while explicitly saying `DO NOT MERGE`.
 - No newly authorized implementation branch was detected from the canonical checkpoint/PR surface.
 
 This audit intentionally made no application-code changes.
@@ -53,7 +50,7 @@ Mission 1A application correctness remains GREEN at exact head `04ef8a3f...` on 
 ## STOP WARNING — PR INTEGRATION SURFACE STILL UNRESOLVED
 PR #57 remains the blocking integration-control defect. It still targets `main @ 6a045e50...` despite its own body naming `claude/writer-v2-traceability-repair-01 @ 2256f22...` as base authority and despite the explicit `DO NOT MERGE` instruction.
 
-This presents a broad inherited Writer/takeover history as a direct-to-main review surface rather than the narrow Mission 1A delta. That increases accidental-merge and review-scope risk even though the application code itself is technically green.
+The PR therefore still presents broad inherited Writer/takeover history as a direct-to-main review surface rather than the narrow Mission 1A delta. This increases accidental-merge and review-scope risk even though the application code itself is technically green.
 
 Smallest recommended authorized-builder action remains: retarget or recreate the review PR against the intended Writer integration base, then independently review that corrected surface at the same exact application head. Shadow auditor did not mutate PR metadata.
 
