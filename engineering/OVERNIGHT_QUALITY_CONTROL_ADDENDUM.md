@@ -1,12 +1,12 @@
-# Overnight Quality Control Addendum — through 2026-09-05 17:18 CT
+# Overnight Quality Control Addendum — through 2026-09-05 18:20 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — freshly reverified unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged from prior verified checkpoint.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from prior verified checkpoint.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from prior verified checkpoint.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — freshly reverified unchanged.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — freshly reverified unchanged.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — freshly reverified unchanged.
 - Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged.
 - Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified unchanged.
 - Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged.
@@ -19,20 +19,26 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 16:16 CT
+## DELTA SINCE 17:18 CT
 No application-code branch head changed during this audit window.
 
 Freshly reverified:
-- main remains `6a045e50...`;
+- `main` remains `6a045e50...`;
 - Mission 1A remains `04ef8a3f...`;
 - Mission 1B remains `4e014946...`;
-- combined integration-cert remains `c46532af...`.
+- combined integration-cert remains `c46532af...`;
+- Claude Writer base, SuperChad takeover, and quality-stack heads are unchanged.
 
-No new implementation slice, CI head, live creative evidence, or authorization record was detected that changes the prior verdict.
+PR topology also remains unchanged:
+- PR #57 is still OPEN + DRAFT, base `main`, head `claude/p0-manifest-semantic-merge-01`, with body explicitly saying `DO NOT MERGE` and naming Claude Writer V2.1 as its base authority.
+- PR #60 is still OPEN + DRAFT, base `main`, head `superchad/mission-1ab-integration-cert-02`, explicitly `DO NOT MERGE` and requiring Jacob authorization.
+- No PR #57 or PR #60 discussion comments were present, so no GitHub-side authorization record was found in this audit window.
+
+No new exact-head CI was required because none of the relevant heads moved. Existing green exact-head evidence remains the latest technical evidence; it must not be reinterpreted as authorization.
 
 ## CURRENT WARNINGS
 ### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
-The sequencing discrepancy remains unresolved. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded authorization gate was not closed first. PR #57 remains the known broad direct-to-main Mission 1A review surface from the prior audit and has not been recorded as corrected/closed in the durable state.
+The sequencing discrepancy remains unresolved. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded authorization gate was not closed first. PR #57 remains a broad direct-to-main Mission 1A review surface even though its own body identifies a non-main Writer base authority and says `DO NOT MERGE`.
 
 Do not treat branch existence, draft PRs, synthetic integration surfaces, or green CI as authorization to merge or advance.
 
@@ -43,12 +49,14 @@ WARNING — unchanged.
 DRIFTING / BLOCKED — unchanged pending explicit reconciliation of authorization and review topology.
 
 ## SECURITY
-Main still contains the original generic `branch_recon.yml` capable of running arbitrary branch code with provider secrets. Mission 1B contains the hardened alternative, but because main is unchanged, the default-branch risk remains live.
+Main still contains the original generic `branch_recon.yml` capable of running arbitrary checked-out branch code with provider secrets. Mission 1B contains the hardened zero-secret alternative, and PR #60 demonstrates the combined surface, but because `main` is unchanged the default-branch risk remains live.
 
 Until explicitly authorized integration lands, do not use main's generic branch runner for secret-backed arbitrary branch diagnostics.
 
 ## CORRECTNESS / PROVENANCE
-No new correctness regression, test weakening, provenance loss, raw file-copy integration, accidental publish/render enablement, or production mutation was observed in this window. Existing Mission 1A correctness evidence remains green from prior exact-head CI; this run found no new head requiring retest.
+No new correctness regression, test weakening, provenance loss, raw file-copy integration, accidental publish/render enablement, or production mutation was observed in this window. Existing Mission 1A correctness evidence and Mission 1B/integration security evidence remain green from prior exact-head CI; this run found no new head requiring retest.
+
+PR #60's body continues to describe its provenance explicitly: the combined cert branch starts from PR #57's synthetic main+Mission-1A merge object and layers only the three final Mission 1B control-plane files. This is evidence of intended ancestry, not approval to merge.
 
 ## CREATIVE QUALITY
 No new live scripts or renders were observed, so there is no new evidence on hook quality, first-8-second escalation, spoken naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or postability. Writer promotion remains unearned.
