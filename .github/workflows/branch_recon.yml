@@ -43,31 +43,43 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate diagnostic path
+      # Do not invoke Python before this guard: Python startup from an untrusted
+      # checkout can import sitecustomize.py from the working directory.
+      - name: Validate diagnostic path without executing branch Python
+        shell: bash
         env:
           RECON_SCRIPT: ${{ inputs.script }}
         run: |
-          python - <<'PY'
-          import os
-          from pathlib import Path
+          set -euo pipefail
+          if [[ -z "$RECON_SCRIPT" || "$RECON_SCRIPT" != *.py ]]; then
+            echo "::error::script must be a non-empty .py path"
+            exit 1
+          fi
 
-          raw = os.environ.get("RECON_SCRIPT", "")
-          if not raw or not raw.endswith(".py"):
-              raise SystemExit("::error::script must be a non-empty .py path")
+          workspace="$(realpath -e -- "$GITHUB_WORKSPACE")"
+          if ! candidate="$(realpath -e -- "$RECON_SCRIPT")"; then
+            echo "::error::script does not exist in the checked-out ref"
+            exit 1
+          fi
+          if [[ ! -f "$candidate" ]]; then
+            echo "::error::script must resolve to a regular file"
+            exit 1
+          fi
 
-          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
-          candidate = (workspace / raw).resolve()
-          try:
-              candidate.relative_to(workspace)
-          except ValueError:
-              raise SystemExit("::error::script must remain inside GITHUB_WORKSPACE")
-
-          if not candidate.is_file():
-              raise SystemExit("::error::script does not exist as a file in the checked-out ref")
-          PY
+          case "$candidate" in
+            "$workspace"/*) ;;
+            *)
+              echo "::error::script must remain inside GITHUB_WORKSPACE"
+              exit 1
+              ;;
+          esac
 
       - name: Run zero-secret recon script
+        shell: bash
         env:
           RECON_SCRIPT: ${{ inputs.script }}
           BRANCH_RECON_ZERO_SECRET: "1"
-        run: python "$RECON_SCRIPT"
+        run: |
+          set -euo pipefail
+          script_path="$(realpath -e -- "$RECON_SCRIPT")"
+          exec python "$script_path"
