@@ -1,19 +1,19 @@
-# Overnight Quality Control Addendum — through 2026-09-04 20:16 CT
+# Overnight Quality Control Addendum — through 2026-09-04 21:17 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
-- SuperChad takeover: `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
-- Quality stack: `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
-- Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged since prior audit.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
+- Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed in this audit.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 19:17 AUDIT
+## DELTA SINCE 20:16 AUDIT
 No application-code delta was observed.
 
 Reverification found:
@@ -21,6 +21,7 @@ Reverification found:
 - `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
 - Claude Writer base, SuperChad takeover, and quality-stack heads are unchanged.
 - PR #57 remains open and draft; its head remains `04ef8a3f...` and GitHub base remains `main @ 6a045e50...`.
+- PR #57 still has 87 commits / 34 changed files because it is presented directly against main rather than the intended Writer integration base.
 - No newly authorized implementation branch was detected from the current checkpoint/PR surface.
 
 This audit intentionally made no application-code changes.
@@ -28,11 +29,10 @@ This audit intentionally made no application-code changes.
 ## CI / TEST EVIDENCE
 Latest exact-head Mission 1A evidence remains:
 - run `33917421337`
-- workflow `.github/workflows/tests.yml`
+- workflow `tests`
 - head SHA `04ef8a3f6f23ff1aaef22482c89767612494f9ab`
-- event `pull_request`
-- conclusion `SUCCESS`
-- exact tested PR surface remains head `04ef8a3f...` against base `main @ 6a045e50...`
+- status `completed`
+- conclusion `success`
 
 No newer Mission 1A application head exists, so no newer exact-head CI is required for code changes this hour.
 
