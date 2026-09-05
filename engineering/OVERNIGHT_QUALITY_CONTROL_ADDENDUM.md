@@ -1,92 +1,81 @@
-# Overnight Quality Control Addendum — through 2026-09-05 02:21 CT
+# Overnight Quality Control Addendum — through 2026-09-05 03:18 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — unchanged from prior canonical state.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from prior canonical state.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from prior canonical state.
 - Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged.
-- Prior shadow-audit branch head before this checkpoint: `1ea08e1e5acde0a58e6106cc9886769ca1d11dd3`.
+- Shadow-audit branch before this update: `a2c44f8a5bcf88ed5c0e2e7df495d45fbd35eb3d`.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 01:17 AUDIT
+## DELTA SINCE 02:21 AUDIT
 No application-code delta was observed.
 
 Reverification found:
-- Mission 1A head remains `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
+- Mission 1A remains at `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
 - `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
-- Claude Writer V2.1 base remains `2256f229...`.
-- SuperChad takeover remains `5669d2d3...`.
-- Quality stack remains `8d93f4e7...`.
-- PR #57 remains open and draft with head `04ef8a3f...`.
-- PR #57 still targets `main @ 6a045e50...`.
-- Its body still names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and still says `DO NOT MERGE`.
-- No newly authorized implementation branch was detected from the checkpoint/PR surface.
+- PR #57 remains open and draft.
+- PR #57 still has head `04ef8a3f...` and GitHub base `main @ 6a045e50...`.
+- Its body still identifies `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and still says `DO NOT MERGE`.
+- No newly authorized implementation branch was detected from the canonical checkpoint/PR surface.
 
 This audit intentionally made no application-code changes.
 
 ## CI / TEST EVIDENCE
 Latest exact-head Mission 1A evidence remains:
-- run `33917421337`
-- workflow `tests`
-- head SHA `04ef8a3f6f23ff1aaef22482c89767612494f9ab`
-- event `pull_request`
-- status `completed`
-- conclusion `success`
+- workflow/run: `tests` / `33917421337`
+- exact head: `04ef8a3f6f23ff1aaef22482c89767612494f9ab`
+- conclusion: SUCCESS
+- event: pull_request
 - PR base recorded by the run: `main @ 6a045e50...`
 
-No newer Mission 1A application head exists, so no newer exact-head CI is required for code changes this hour.
+Because the application head did not move, no newer exact-head CI is required this hour.
 
 ## INVARIANT STATUS
-No new evidence changes the prior technical verdict:
-- canonical V2.1 spoken order remains hook → beats → payoff;
-- `narration.py::spoken_text()` remains the single explicit narration/TTS contract under Mission 1A;
-- malformed semantic identities and incomplete/malformed coverage remain fail-closed;
-- blank/malformed V2 scenes and hook/payoff/scene-count drift remain covered by regressions;
+No evidence changes the prior technical verdict:
+- V2.1 spoken order is hook → beats → payoff;
+- `narration.py::spoken_text()` is the single explicit narration/TTS contract under Mission 1A;
+- malformed/incomplete semantic coverage remains fail-closed;
+- blank/malformed V2 scenes and hook/payoff/scene-count drift remain regression-covered;
 - semantic retry remains bounded;
-- quality floors were not changed or weakened;
-- no provider-backed test evidence was introduced.
+- quality floors were not weakened;
+- no provider-backed evidence was introduced.
 
-Mission 1A application correctness remains GREEN at exact head `04ef8a3f...` based on existing evidence.
+Mission 1A application correctness therefore remains GREEN at exact head `04ef8a3f...` on the existing evidence.
 
 ## STOP WARNING — PR INTEGRATION SURFACE STILL UNRESOLVED
-PR #57 remains open/draft with head `04ef8a3f6f23ff1aaef22482c89767612494f9ab` and GitHub base `main @ 6a045e50a33408ecafdfa21c9ff951d731347bd9`.
+PR #57 remains the blocking integration-control defect. It still targets `main @ 6a045e50...` despite its own body naming `claude/writer-v2-traceability-repair-01 @ 2256f22...` as base authority and despite the explicit `DO NOT MERGE` instruction.
 
-Its own body names `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and says `DO NOT MERGE`. The direct-to-main PR surface therefore remains the wrong review/integration surface and still conflates inherited Writer/takeover history with the narrow Mission 1A consolidation.
+This still presents a broad inherited Writer/takeover history as a direct-to-main review surface rather than the narrow Mission 1A delta. That increases accidental-merge and review-scope risk even though the application code itself is technically green.
 
-Smallest recommended authorized-builder action remains: retarget or recreate the review PR against the intended Writer integration base, then independently review that corrected surface. Shadow auditor did not mutate PR metadata.
+Smallest recommended authorized-builder action remains: retarget or recreate the review PR against the intended Writer integration base, then independently review that corrected surface at the same exact application head. Shadow auditor did not mutate PR metadata.
 
 ## PROVENANCE / CONVERGENCE
-- CONVERGENCE STATUS: WARNING because PR #57 still targets main.
-- No application-code branch divergence occurred this hour.
-- No raw-file-copy provenance loss newly observed.
-- No new competing implementation branch detected.
+- CONVERGENCE STATUS: WARNING — wrong PR base remains unresolved.
+- ROADMAP STATUS: ON PLAN but integration/review BLOCKED.
+- No new competing implementation branch observed.
+- No new raw-file-copy provenance loss observed.
 - Main remains untouched.
 
 ## SECURITY
-- `main` remains unchanged and still contains the permissive `branch_recon.yml` arbitrary-ref/arbitrary-script execution path with provider secrets identified in prior audits.
+- Main still contains the previously identified permissive `branch_recon.yml` arbitrary-ref/arbitrary-script execution path with provider secrets.
 - Mission 1B remains blocked until Mission 1A review surface is corrected and independently clean.
-- No secret-backed live Writer panel should run before hardening.
+- No secret-backed Writer panel should run before hardening.
 
 ## CREATIVE QUALITY
-No new live scripts or renders were produced. This hour adds no new evidence on postability, hook strength, first-8-second escalation, spoken naturalness, visual specificity, payoff quality, sound/pacing, or AI smell. Writer promotion remains unearned.
-
-## ROADMAP STATUS
-- Mission 1A correctness evidence: GREEN on exact current head `04ef8a3f...`.
-- Mission 1A scope discipline: ON PLAN.
-- Mission 1A integration/review surface: BLOCKED on PR #57 base targeting main.
-- Full roadmap: ON PLAN; do not advance to Mission 1B or provider-backed evidence yet.
+No new live scripts or renders appeared this hour. There is no new evidence on hook strength, first-8-second escalation, naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or human postability. Writer promotion remains unearned.
 
 ## NEXT AUTHORIZED ACTION
-1. Authorized builder corrects the Mission 1A review/PR base so it does not present the branch as a direct main integration candidate.
+1. Authorized builder corrects the Mission 1A PR/review base so the branch is not presented as a direct main integration candidate.
 2. Independently review the corrected Mission 1A integration surface at exact head `04ef8a3f...`; stop before merge.
-3. Mission 1B (`branch_recon.yml` hardening) begins only after 1A review is clean.
-4. No secret-backed Writer panel, provider quota use, certification render, deploy, publish, or main merge before the relevant authorization/gates.
+3. Begin Mission 1B (`branch_recon.yml` hardening) only after Mission 1A review is clean.
+4. No secret-backed Writer panel, provider quota use, certification render, deploy, publish, or main merge before the relevant gates/authorization.
 
 ## APPROVAL / SPEND
 - Jacob remains final integration authority.
