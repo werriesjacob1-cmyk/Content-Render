@@ -43,20 +43,34 @@ def main():
           "arbitrary branch execution has a short bounded timeout")
 
     check("ref: ${{ inputs.ref }}" in text,
-          "requested ref is passed only through checkout's ref input")
+          "requested ref is passed through checkout's ref input")
     check("RECON_SCRIPT: ${{ inputs.script }}" in text,
           "requested script is transferred through an environment variable")
-    check('run: python "$RECON_SCRIPT"' in text,
-          "shell does not interpolate the script input into executable syntax")
-    check('raw.endswith(".py")' in text,
-          "diagnostic path must be a Python file")
-    check("Path(os.environ[\"GITHUB_WORKSPACE\"]).resolve()" in text,
-          "path guard anchors resolution to GITHUB_WORKSPACE")
-    check("candidate.relative_to(workspace)" in text,
-          "path guard rejects traversal/absolute paths outside the workspace")
-    check("candidate.is_file()" in text,
-          "path guard requires an existing regular file")
+    check('${{ inputs.script }}' not in "\n".join(
+        line for line in text.splitlines() if line.lstrip().startswith("run:")
+    ), "script input is not directly interpolated into a run command")
 
+    check("Validate diagnostic path without executing branch Python" in text,
+          "path validation explicitly precedes untrusted Python execution")
+    guard_start = text.index("- name: Validate diagnostic path without executing branch Python")
+    run_start = text.index("- name: Run zero-secret recon script")
+    guard = text[guard_start:run_start]
+    check("python " not in guard.lower(),
+          "pre-execution path guard invokes no Python from the untrusted checkout")
+    check('"$RECON_SCRIPT" != *.py' in guard,
+          "diagnostic path must have a .py suffix")
+    check('realpath -e -- "$GITHUB_WORKSPACE"' in guard,
+          "path guard anchors to the resolved GITHUB_WORKSPACE")
+    check('realpath -e -- "$RECON_SCRIPT"' in guard,
+          "path guard resolves symlinks and traversal before execution")
+    check('[[ ! -f "$candidate" ]]' in guard,
+          "path guard requires an existing regular file")
+    check('"$workspace"/*' in guard,
+          "path guard rejects resolved paths outside GITHUB_WORKSPACE")
+
+    run_block = text[run_start:]
+    check('exec python "$script_path"' in run_block,
+          "only the validated resolved diagnostic is handed to Python")
     check('BRANCH_RECON_ZERO_SECRET: "1"' in text,
           "diagnostic receives an explicit zero-secret mode marker")
     check("purpose-built workflows" in text,
