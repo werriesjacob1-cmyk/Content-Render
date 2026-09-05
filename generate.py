@@ -10,6 +10,9 @@ Env: GROQ_API_KEY
 
 import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
 
+import writer_v2
+import writer_v2_repair as wr2_repair
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.environ.get("PAGE", "science")
 SERIES = os.environ.get("SERIES", "").strip()        # e.g. "The Body's Hidden Systems"
@@ -349,6 +352,31 @@ QUALITY_HARD_FLOOR = 6.8   # RESTORED 2026-07-30 (was briefly 6.0 2026-07-29). T
                             # range is not trustworthy enough to lower the bar for; 6.8
                             # + the new coherence floor (7) + the mechanical dangling-
                             # comparative check are the actual quality backstop now.
+def _clears_quality_floor(score):
+    """Pure. The SAME hard-floor gate main()'s legacy path applies at
+    acceptance time (QUALITY_HARD_FLOOR overall + QUALITY_CRITERION_FLOORS
+    per-criterion) -- extracted so generate_candidate_v2()'s V2 repair loop
+    enforces the identical production bar instead of silently accepting
+    anything that merely cleared traceability/validate(). 2026-09-04 V2.1
+    live-bug fix: the first two "ACCEPTED=True" results the live bakeoff
+    ever produced (mantis_shrimp overall 6.86 hook=5, stomach_lining overall
+    5.29) were NEVER actually checked against this floor at all -- the V2
+    selection logic only checked for zero hard violations and a clean
+    validate(), never the score itself, so a mechanically-clean but
+    editorially-weak script could report ACCEPTED. score=None (unscoreable)
+    is treated as NOT clearing the floor here -- unlike the legacy path's
+    fail-open behavior for an unscoreable-but-otherwise-clean script, V2's
+    repair loop has a real critic score available in normal operation, so
+    treating "we couldn't score it" as a pass would mask a scorer outage
+    the same way the mantis_shrimp/stomach_lining bugs did with the critic."""
+    if not score:
+        return False
+    overall = score.get("overall")
+    if overall is None or overall < QUALITY_HARD_FLOOR:
+        return False
+    return not any(score.get(k, 10) < fl for k, fl in QUALITY_CRITERION_FLOORS.items())
+
+
 QUALITY_MAX_REGENERATIONS = 2   # extra attempts beyond the first (so 3 total).
                                  # RAISED 1 -> 2 (2026-08-02): with only 2 attempts, a
                                  # run that missed threshold on both fell straight to
@@ -3442,6 +3470,137 @@ def research_dossier(fact):
     except Exception as e:
         print(f"  [research] dossier unavailable ({e}); writing from the base fact only")
         return []
+
+
+# ---------------------------------------------------------------------------
+# WRITER V2 EXPERIMENT (WRITER_V2=1) -- 2026-09-03 mission. See writer_v2.py's
+# own module docstring for the full rationale (the legacy build_prompt() call
+# above measures ~10,043 est. tokens for a representative fact, already past
+# Groq's current 8,000 TPM cap before any completion budget, and produced
+# 3.4-5.3/10 drafts even when it DID get through -- both a capacity problem
+# and a quality problem). This does NOT replace the legacy path (still the
+# default, WRITER_V2 unset/"0"); it is a fully separate, independently
+# testable generation function callers opt into explicitly.
+# ---------------------------------------------------------------------------
+WRITER_V2 = os.environ.get("WRITER_V2", "0") == "1"
+
+
+def estimate_tokens(text):
+    """Cheap chars/4 heuristic (see writer_v2.estimate_tokens for the same
+    function + the live-evidence note on its accuracy). Exposed here too so
+    the LEGACY prompt's size can be logged/compared the same way."""
+    return len(text or "") // 4
+
+
+def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name="writer_v2_output"):
+    """Same contract as _call_openai_compat, but requests STRICT JSON-SCHEMA
+    structured output (response_format: json_schema) instead of the plain
+    json_object mode + a giant prose paragraph describing the manifest shape
+    + after-the-fact repair. Raises on any failure -- including the account/
+    model simply not supporting structured output -- exactly like every other
+    provider call here, so callers fall back the same way they already do.
+
+    2026-09-04 V2.1 fix (mission Phase 6): the live bakeoff showed Groq's
+    gpt-oss-20b/120b returning HTTP 400 "max completion tokens reached
+    before generating a valid document" on 2/5 topics, both repeatably
+    across separate runs. Root cause, confirmed against Groq's own docs:
+    openai/gpt-oss-* are reasoning models that support a `reasoning_effort`
+    parameter ("low"/"medium"/"high", default "medium" when unset) -- our
+    calls never set it, so the model spent an unpredictable, sometimes-large
+    share of the max_tokens budget on chain-of-thought before ever emitting
+    the JSON payload (live evidence: one successful call used 1247 of 1573
+    completion tokens purely on reasoning). This is the same class of bug
+    CLAUDE.md documents for Gemini's thinking budget, now showing up here.
+    Fix is two-part, not a blind token-budget increase alone:
+    reasoning_effort="low" for this well-scoped extraction/repair task (it
+    doesn't need heavy chain-of-thought), PLUS a modest max_tokens raise
+    (2000->3000) for real headroom, since even successful live calls were
+    already using up to ~1979 completion tokens with the default effort."""
+    body_dict = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+        "max_tokens": 3000,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": schema_name, "schema": schema, "strict": True},
+        },
+    }
+    if "gpt-oss" in model:
+        body_dict["reasoning_effort"] = "low"
+    body = json.dumps(body_dict).encode()
+    req = urllib.request.Request(
+        url, data=body,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                 "User-Agent": "content-render/1.0"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        data = json.loads(r.read().decode())
+    msg = data["choices"][0]["message"]
+    out = msg.get("content") or msg.get("reasoning") or ""
+    if not out.strip():
+        raise ValueError("empty content from model")
+    return out, (data.get("usage") or {})
+
+
+def _v2_structured_call(prompt, schema, schema_name, debug_calls):
+    """Shared structured-output-then-fallback call used by both the initial
+    draft and every critic/repair round. Tries Groq structured output first
+    (schema-enforced JSON, no markdown-fence repair needed); on any failure
+    falls back to the plain call_groq() provider chain (still asked for JSON
+    via the prompt text, parsed the normal way). Appends one entry to
+    debug_calls (mutated in place) recording provider/model/usage/structured
+    for every network call actually made, so callers can sum tokens/calls
+    across a whole repair loop. Returns (raw_text_or_None, structured_bool)."""
+    if GROQ_KEY:
+        model0 = MODEL_CHAIN[0]
+        try:
+            raw, usage = _call_openai_compat_structured(
+                "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, model0, prompt,
+                schema, schema_name=schema_name)
+            debug_calls.append({"provider": "groq", "model": model0, "usage": usage, "structured": True})
+            return raw, True
+        except Exception as e:  # noqa: BLE001
+            print(f"  [writer-v2] structured output unavailable/failed for {schema_name} ({e}); "
+                  f"falling back to call_groq chain")
+    try:
+        raw = call_groq(prompt)
+    except Exception as e:  # noqa: BLE001
+        debug_calls.append({"provider": None, "model": None, "usage": None, "structured": False,
+                            "error": str(e)})
+        return None, False
+    provider, model = _WORKING_MODEL if _WORKING_MODEL else (None, None)
+    debug_calls.append({"provider": provider, "model": model, "usage": None, "structured": False})
+    return raw, False
+
+
+def _v2_parse_json_obj(raw):
+    try:
+        obj = json.loads(raw)
+        if not isinstance(obj, dict):
+            raise ValueError(f"model returned a {type(obj).__name__}, not a JSON object")
+        return obj, None
+    except Exception as e:  # noqa: BLE001
+        return None, f"JSON parse failed: {e}"
+
+
+def generate_candidate_v2(fact, job_name="CURIOSITY_ITCH", recent_treatments=None,
+                          avoid_topics="", cta_style="SAVE_WORTHY", use_structured=True):
+    """Compatibility entrypoint for the canonical fail-closed Writer V2.1 path.
+
+    Writer certification is owned by writer_v21_orchestrator. Keeping this
+    legacy public name as a thin delegate prevents an accidental caller from
+    selecting the older fail-open semantic/manifest implementation.
+    """
+    from writer_v21_orchestrator import generate_candidate_v21
+
+    return generate_candidate_v21(
+        fact,
+        job_name=job_name,
+        recent_treatments=recent_treatments,
+        avoid_topics=avoid_topics,
+        cta_style=cta_style,
+        use_structured=use_structured,
+    )
 
 
 def _trim_scene_to_cap(vo, cap):
