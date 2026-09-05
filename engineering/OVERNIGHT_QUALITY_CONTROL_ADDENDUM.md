@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-04 18:20 CT
+# Overnight Quality Control Addendum — through 2026-09-04 19:17 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -13,7 +13,7 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 17:18 AUDIT
+## DELTA SINCE 18:20 AUDIT
 No application-code delta was observed.
 
 Reverification found:
