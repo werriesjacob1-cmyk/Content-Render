@@ -1,46 +1,73 @@
 name: branch-recon
 
-# GENERIC one-off diagnostic runner: checks out an arbitrary branch/SHA and
-# runs a script from it, so a diagnostic script written on an EXPERIMENT
-# branch (which doesn't otherwise have GROQ_API_KEY/other secret access --
-# only workflows registered on the default branch can be dispatched) can
-# still get real live evidence without merging that branch's application
-# code into main. Same category and intent as groq_healthcheck.yml -- a
-# manual-dispatch-only diagnostic tool, not part of the render/publish
-# pipeline. It does NOT touch render.yml, does NOT merge anything, does NOT
-# render or publish.
+# Generic zero-secret diagnostic runner for experiment branches.
 #
-# First use (2026-09-03): running wr2_recon.py from
-# claude/writer-v2-experiment to gather live evidence for the WRITER_V2
-# mega-prompt decomposition experiment (real Groq token usage, structured-
-# output viability, Compound/Compound-mini research-stage viability, Orpheus
-# voice reconnaissance) before any of that branch's code is judged ready to
-# merge.
+# SECURITY CONTRACT:
+# - This workflow may check out arbitrary repository refs and execute a Python
+#   diagnostic from that ref, so the checked-out code is intentionally treated
+#   as untrusted.
+# - Untrusted branch code MUST NOT receive repository/provider secrets.
+# - The job has read-only repository permissions and checkout credentials are
+#   removed before the diagnostic runs.
+# - Secret-backed/provider diagnostics belong in purpose-built workflows whose
+#   executable logic is trusted on the default branch. Do not re-add secrets to
+#   this generic runner.
+# - Manual dispatch only. No render, publish, deploy, merge, or posting action.
 
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Branch, tag, or SHA to check out"
+        description: "Branch, tag, or SHA to inspect"
         required: true
       script:
-        description: "Python script path (relative to repo root) to run from that ref"
+        description: "Python diagnostic path inside that ref (repo-relative)"
         required: true
         default: "wr2_recon.py"
+
+permissions:
+  contents: read
 
 jobs:
   recon:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout requested ref without retained credentials
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Run recon script
+
+      - name: Validate diagnostic path
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python "${{ github.event.inputs.script }}"
+          RECON_SCRIPT: ${{ inputs.script }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          raw = os.environ.get("RECON_SCRIPT", "")
+          if not raw or not raw.endswith(".py"):
+              raise SystemExit("::error::script must be a non-empty .py path")
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          candidate = (workspace / raw).resolve()
+          try:
+              candidate.relative_to(workspace)
+          except ValueError:
+              raise SystemExit("::error::script must remain inside GITHUB_WORKSPACE")
+
+          if not candidate.is_file():
+              raise SystemExit("::error::script does not exist as a file in the checked-out ref")
+          PY
+
+      - name: Run zero-secret recon script
+        env:
+          RECON_SCRIPT: ${{ inputs.script }}
+          BRANCH_RECON_ZERO_SECRET: "1"
+        run: python "$RECON_SCRIPT"
