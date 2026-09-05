@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-05 06:21 CT
+# Overnight Quality Control Addendum — through 2026-09-05 07:19 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -8,18 +8,19 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 - SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from the canonical handoff.
 - Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from the canonical handoff.
 - Authorized implementation branch: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — unchanged.
-- Shadow-audit branch before this update: `1c201f0e236487b659b09f4939c8b34eb763a971`.
+- Shadow-audit branch before this update: `822a7a48823df91815131927edc190c035f02153`.
 - Main remains untouched. No merge/deploy/publish/render/provider call observed.
 
 ## AUTHORIZED ROADMAP SLICE
 Mission 1A — P0 Writer contract consolidation only: permanently compose corrected hook→beats→payoff manifest scenes, one canonical narration/TTS text function, fail-closed semantic orchestration, remove temporary monkeypatch composition, preserve legacy behavior, add adversarial/regression proof, exact-head CI, stop before merge.
 
-## DELTA SINCE 05:16 AUDIT
+## DELTA SINCE 06:21 AUDIT
 No application-code delta was observed.
 
 Reverification found:
 - Mission 1A remains at `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
 - `origin/main` remains `6a045e50a33408ecafdfa21c9ff951d731347bd9`.
+- Claude Writer V2.1 remains `2256f229...`; SuperChad takeover remains `5669d2d...`; quality stack remains `8d93f4e...`.
 - PR #57 remains open and draft.
 - PR #57 still has head `04ef8a3f...` and GitHub base `main @ 6a045e50...`.
 - Its body still identifies `claude/writer-v2-traceability-repair-01 @ 2256f22...` as the base authority and still says `DO NOT MERGE`.
