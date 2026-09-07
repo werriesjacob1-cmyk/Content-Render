@@ -64,6 +64,13 @@ jobs:
             --seed writer-v21-quality-proof-v1 \
             --out artifacts/wr21_quality_plan.json
 
+      - name: Preregister exact execution SHA and causal provider thresholds
+        run: |
+          set -euo pipefail
+          python wr21_quality_preregister.py \
+            --plan artifacts/wr21_quality_plan.json \
+            --execution-sha "$GITHUB_SHA"
+
       - name: Generate paired scripts only
         env:
           WR21_QUALITY_BAKEOFF_LIVE: I_ACCEPT_PROVIDER_CALLS
