@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-07 03:16 CT
+# Overnight Quality Control Addendum — through 2026-09-07 04:16 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -9,7 +9,7 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 - Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — freshly reverified unchanged.
 - Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged; PR #57 remains open/draft against `main` and explicitly `DO NOT MERGE`.
 - Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified unchanged.
-- Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged.
+- Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged; PR #60 remains open/draft and explicitly `DO NOT MERGE`.
 - Main remains untouched. No merge/deploy/publish/render/provider-backed generation was observed in this audit window.
 
 ## AUTHORIZED ROADMAP SLICE
@@ -19,10 +19,10 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 02:22 CT
-No relevant application-code branch head or `main` SHA changed during this audit window. Mission 1A, Mission 1B, and the combined certification branch all remain pinned to the same previously audited heads. PR #57 remains open/draft directly against `main`; no evidence of topology correction or explicit sequencing authorization was found in this pass.
+## DELTA SINCE 03:16 CT
+No relevant application-code branch head or `main` SHA changed during this audit window. Mission 1A, Mission 1B, the combined certification branch, Claude Writer base, takeover branch, and quality-stack branch all remain pinned to the same previously audited heads. PR #57 remains open/draft directly against `main`; PR #60 remains an evidence-only combined certification surface. No evidence of topology correction or explicit sequencing authorization was found in this pass.
 
-No new exact-head CI was required because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
+The repository's latest push activity in this window is attributable to the durable audit/checkpoint lane rather than application-code movement. No new exact-head CI was required because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
 
 ## CURRENT WARNINGS
 ### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
