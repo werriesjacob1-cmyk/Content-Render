@@ -13,6 +13,7 @@ import re
 from typing import Any, Mapping, Sequence
 
 import writer_v21_quality_bakeoff as Q
+import writer_v21_provider_guardrail as P
 
 FACT_STATUSES = ("CLEAN", "UNSUPPORTED", "UNKNOWN")
 _HASH_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -303,4 +304,4 @@ def aggregate_with_factual_audit(
     report.setdefault("checks", []).append(check)
     if v21_failures:
         report["verdict"] = "NOT_PROMOTION_READY"
-    return report
+    return P.apply_provider_guardrail(report, editorial_mapped, protocol=protocol)
