@@ -1,16 +1,16 @@
-# Overnight Quality Control Addendum — through 2026-09-06 20:20 CT
+# Overnight Quality Control Addendum — through 2026-09-06 21:18 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — freshly reverified unchanged.
 - Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — freshly reverified unchanged.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — freshly reverified unchanged.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — freshly reverified unchanged.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — unchanged from prior checkpoint.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — unchanged from prior checkpoint.
 - Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified from PR #57; PR remains open/draft against `main`, explicitly `DO NOT MERGE`, while its body identifies the Claude Writer branch as base authority.
 - Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified from PR #58; PR remains open/draft against `main` and `DO NOT MERGE`.
 - Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified from PR #60; PR remains open/draft against `main` and `DO NOT MERGE`.
-- Audit/control branch before this write: `superchad/overnight-quality-control-01` @ `aa889fb100ae996111b55d15a764225471db4772`.
+- Audit/control branch before this write: `superchad/overnight-quality-control-01` @ `26ae7984d7e306f8a65bcb37d337a9eab0cf0d70`.
 - Main remains untouched. No merge/deploy/publish/render/provider-backed generation was observed in this audit window.
 
 ## AUTHORIZED ROADMAP SLICE
@@ -20,18 +20,16 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 19:20 CT
+## DELTA SINCE 20:20 CT
 No relevant application-code branch head, main SHA, Mission 1A/Mission 1B/combined-cert PR state, or combined-cert head changed during this audit window.
 
 Fresh verification confirms:
 - `main` remains `6a045e50...`;
 - Claude Writer base remains `2256f229...`;
-- SuperChad takeover remains `5669d2d3...`;
-- quality stack remains `8d93f4e7...`;
 - Mission 1A remains `04ef8a3f...` and PR #57 remains draft/open against `main`;
 - Mission 1B remains `4e014946...` and PR #58 remains draft/open against `main`;
 - combined certification remains `c46532af...` and PR #60 remains draft/open against `main`;
-- the only observed repository movement in this interval was the prior 19:20 CT audit checkpoint commit, not application-code movement.
+- the only repository movement visible to this shadow auditor in the interval was the previous audit checkpoint commit on the dedicated control branch, not application-code movement.
 
 No new exact-head CI was required because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
 
