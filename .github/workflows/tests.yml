@@ -31,10 +31,12 @@ jobs:
           test -f wr21_takeover_bakeoff.py
           test -f wr21_run.py
           test -f writer_v21_quality_bakeoff.py
+          test -f writer_v21_factual_audit.py
           test -f wr21_quality_bakeoff.py
           test -f wr21_quality_generate.py
           test -f tests/test_writer_v21_quality_bakeoff.py
           test -f tests/test_writer_v21_quality_bakeoff_integrity.py
+          test -f tests/test_writer_v21_factual_audit.py
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -71,6 +73,7 @@ jobs:
           run_check "hook surfaces + payoff proof" python tests/test_writer_v21_hook_payoff.py
           run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
           run_check "quality proof harness" python tests/test_writer_v21_quality_bakeoff.py
+          run_check "symmetric factual audit" python tests/test_writer_v21_factual_audit.py
           run_check "sealed quality evidence" python tests/test_writer_v21_quality_bakeoff_integrity.py
-          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py writer_v21_quality_bakeoff.py wr21_quality_bakeoff.py wr21_quality_generate.py
+          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py writer_v21_quality_bakeoff.py writer_v21_factual_audit.py wr21_quality_bakeoff.py wr21_quality_generate.py
           exit "$failed"
