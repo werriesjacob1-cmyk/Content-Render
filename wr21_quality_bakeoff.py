@@ -2,8 +2,9 @@
 """Zero-provider CLI for Writer V2.1 blind quality-proof experiments.
 
 prepare freezes a deterministic panel and thresholds; blind builds anonymous A/B
-packets from sealed generation evidence; score requires every comparable pair's
-verdict before mapping identities and applying the pre-registered promotion gates.
+editorial and factual packets from sealed generation evidence; score requires exact
+verdict coverage bound to those packets before identities are mapped and promotion
+gates are applied.
 """
 from __future__ import annotations
 
@@ -12,14 +13,17 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import sys
 from typing import Any, Mapping
 
 import writer_v21_quality_bakeoff as Q
+import writer_v21_factual_audit as F
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_BANK = ROOT / "topic_bank.json"
 DEFAULT_QUARANTINE = ROOT / "topic_quarantine.json"
+_HASH_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _load(path: str | os.PathLike[str]) -> Any:
@@ -38,6 +42,12 @@ def _write(path: str | os.PathLike[str], data: Any) -> None:
 def _digest(data: Any) -> str:
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _packet_hash(packet: Mapping[str, Any]) -> str:
+    payload = dict(packet)
+    payload.pop("packet_sha256", None)
+    return _digest(payload)
 
 
 def _verify_envelope_hash(doc: Mapping[str, Any], field: str) -> None:
@@ -74,6 +84,7 @@ def _read_sealed_results(path: str, plan: Mapping[str, Any]) -> list[dict[str, A
         raise Q.BakeoffProtocolError("generation evidence belongs to a different frozen plan")
 
     expected_topics = {str(x["topic_id"]) for x in plan["topics"]}
+    planned_facts = {str(x["topic_id"]): str(x.get("fact") or "").strip() for x in plan["topics"]}
     seen: set[tuple[str, str]] = set()
     by_topic: dict[str, set[str]] = {t: set() for t in expected_topics}
     normalized: list[dict[str, Any]] = []
@@ -111,10 +122,18 @@ def _read_sealed_results(path: str, plan: Mapping[str, Any]) -> list[dict[str, A
         orders = {tuple(r.get("generation_order") or []) for r in raw_rows}
         if len(orders) != 1 or next(iter(orders), ()) not in {("legacy", "v21"), ("v21", "legacy")}:
             raise Q.BakeoffProtocolError(f"generation order evidence malformed for {topic}")
+        verified = [F.verified_evidence(r) for r in raw_rows]
+        evidence_lists = {tuple(x[0]) for x in verified}
+        evidence_hashes = {x[1] for x in verified}
+        if len(evidence_lists) != 1 or len(evidence_hashes) != 1:
+            raise Q.BakeoffProtocolError(f"paired systems did not share identical factual evidence for {topic}")
+        required_base = f"BASE_FACT: {planned_facts.get(topic, '')}".strip()
+        if required_base not in next(iter(evidence_lists)):
+            raise Q.BakeoffProtocolError(f"factual evidence for {topic} is not bound to the frozen base fact")
     return normalized
 
 
-def _read_private_key(path: str, *, plan: Mapping[str, Any], results_sha256: str) -> list[dict[str, Any]]:
+def _read_private_key(path: str, *, plan: Mapping[str, Any], results_sha256: str) -> tuple[list[dict[str, Any]], str]:
     doc = _load(path)
     if not isinstance(doc, dict) or not isinstance(doc.get("keys"), list):
         raise Q.BakeoffProtocolError("private key must contain keys[]")
@@ -128,7 +147,60 @@ def _read_private_key(path: str, *, plan: Mapping[str, Any], results_sha256: str
     ids = [str(k.get("pair_id") or "") for k in doc["keys"] if isinstance(k, dict)]
     if len(ids) != len(doc["keys"]) or len(set(ids)) != len(ids) or any(not x for x in ids):
         raise Q.BakeoffProtocolError("private pair identities are missing or duplicated")
-    return list(doc["keys"])
+    for key in doc["keys"]:
+        for field in ("editorial_packet_sha256", "factual_packet_sha256"):
+            if not _HASH_RE.fullmatch(str(key.get(field) or "")):
+                raise Q.BakeoffProtocolError(f"private key missing valid {field}")
+    return list(doc["keys"]), str(doc["private_sha256"])
+
+
+def _read_public(path: str, *, plan: Mapping[str, Any], results_sha256: str, keys: list[dict[str, Any]]) -> tuple[dict[str, Any], str]:
+    doc = _load(path)
+    if not isinstance(doc, dict):
+        raise Q.BakeoffProtocolError("public judge packet must be an object")
+    _verify_envelope_hash(doc, "public_sha256")
+    public_sha = str(doc["public_sha256"])
+    if str(doc.get("plan_sha256") or "") != str(plan.get("plan_sha256") or ""):
+        raise Q.BakeoffProtocolError("public judge packet belongs to a different frozen plan")
+    if str(doc.get("results_sha256") or "") != results_sha256:
+        raise Q.BakeoffProtocolError("public judge packet belongs to different generation evidence")
+    editorial = doc.get("packets")
+    factual = doc.get("factual_packets")
+    if not isinstance(editorial, list) or not isinstance(factual, list):
+        raise Q.BakeoffProtocolError("public judge packet requires packets[] and factual_packets[]")
+    if int(doc.get("packet_count") or -1) != len(editorial) or int(doc.get("factual_packet_count") or -1) != len(factual):
+        raise Q.BakeoffProtocolError("public packet counts do not match packet arrays")
+    e_by_id: dict[str, Mapping[str, Any]] = {}
+    f_by_id: dict[str, Mapping[str, Any]] = {}
+    for packet in editorial:
+        if not isinstance(packet, Mapping):
+            raise Q.BakeoffProtocolError("editorial packet row must be object")
+        pair_id = str(packet.get("pair_id") or "")
+        claimed = str(packet.get("packet_sha256") or "")
+        if not pair_id or pair_id in e_by_id or not _HASH_RE.fullmatch(claimed) or claimed != _packet_hash(packet):
+            raise Q.BakeoffProtocolError("editorial packet identity/hash malformed")
+        e_by_id[pair_id] = packet
+    for packet in factual:
+        if not isinstance(packet, Mapping):
+            raise Q.BakeoffProtocolError("factual packet row must be object")
+        pair_id = str(packet.get("pair_id") or "")
+        claimed = str(packet.get("packet_sha256") or "")
+        if not pair_id or pair_id in f_by_id or not _HASH_RE.fullmatch(claimed) or claimed != F.packet_sha256(packet):
+            raise Q.BakeoffProtocolError("factual packet identity/hash malformed")
+        f_by_id[pair_id] = packet
+    key_by_id = {str(k["pair_id"]): k for k in keys}
+    if set(e_by_id) != set(key_by_id) or set(f_by_id) != set(key_by_id):
+        raise Q.BakeoffProtocolError("public/private packet coverage mismatch")
+    for pair_id, key in key_by_id.items():
+        e = e_by_id[pair_id]
+        f = f_by_id[pair_id]
+        if str(e["packet_sha256"]) != str(key["editorial_packet_sha256"]):
+            raise Q.BakeoffProtocolError(f"editorial packet/private-key hash mismatch for {pair_id}")
+        if str(f["packet_sha256"]) != str(key["factual_packet_sha256"]):
+            raise Q.BakeoffProtocolError(f"factual packet/private-key hash mismatch for {pair_id}")
+        if Q._script(e.get("candidate_A")) != Q._script(f.get("candidate_A")) or Q._script(e.get("candidate_B")) != Q._script(f.get("candidate_B")):
+            raise Q.BakeoffProtocolError(f"editorial/factual candidate order drift for {pair_id}")
+    return doc, public_sha
 
 
 def cmd_prepare(args: argparse.Namespace) -> int:
@@ -161,6 +233,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         "rules": {
             "generation": "same frozen topic panel and research dossier; record all failures/provider traces",
             "editorial_judging": "identity-blind A/B; factual integrity evaluated separately",
+            "factual_judging": "identity-blind, source-bounded, exact same evidence and candidate order",
             "promotion": "pre-registered checks only; passing never auto-activates production",
             "render_publish": "forbidden during script-only quality proof",
         },
@@ -174,12 +247,33 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _editorial_prompt(packet: Mapping[str, Any]) -> str:
+    claimed = str(packet.get("packet_sha256") or "")
+    if not _HASH_RE.fullmatch(claimed) or claimed != _packet_hash(packet):
+        raise Q.BakeoffProtocolError("editorial packet hash missing or mismatched")
+    return Q.build_judge_prompt(packet) + (
+        "\n\nThe returned JSON MUST also include this exact top-level field: "
+        f'"packet_sha256":"{claimed}". This binds your verdict to the exact packet.'
+    )
+
+
 def cmd_blind(args: argparse.Namespace) -> int:
     plan = _read_plan(args.plan)
     result_doc = _load(args.results)
     results = _read_sealed_results(args.results, plan)
     results_sha = str(result_doc["results_sha256"])
     packets, keys, exclusions = Q.build_blind_packets(results, seed=args.seed)
+    for packet in packets:
+        packet["packet_sha256"] = _packet_hash(packet)
+    factual_packets = F.build_factual_packets(results, keys)
+    e_by_id = {str(p["pair_id"]): p for p in packets}
+    f_by_id = {str(p["pair_id"]): p for p in factual_packets}
+    if set(e_by_id) != set(f_by_id) or set(e_by_id) != {str(k["pair_id"]) for k in keys}:
+        raise Q.BakeoffProtocolError("editorial/factual/private pair coverage drift while blinding")
+    for key in keys:
+        pair_id = str(key["pair_id"])
+        key["editorial_packet_sha256"] = str(e_by_id[pair_id]["packet_sha256"])
+        key["factual_packet_sha256"] = str(f_by_id[pair_id]["packet_sha256"])
     public = {
         "experiment": "writer-v21-quality-proof",
         "plan_sha256": plan["plan_sha256"],
@@ -187,7 +281,10 @@ def cmd_blind(args: argparse.Namespace) -> int:
         "seed": args.seed,
         "packet_count": len(packets),
         "packets": packets,
-        "judge_prompts": [Q.build_judge_prompt(p) for p in packets],
+        "judge_prompts": [_editorial_prompt(p) for p in packets],
+        "factual_packet_count": len(factual_packets),
+        "factual_packets": factual_packets,
+        "factual_judge_prompts": [F.build_factual_prompt(p) for p in factual_packets],
     }
     private = {
         "experiment": "writer-v21-quality-proof-private-key",
@@ -202,18 +299,31 @@ def cmd_blind(args: argparse.Namespace) -> int:
     private["private_sha256"] = _digest(private)
     _write(args.public_out, public)
     _write(args.key_out, private)
-    print(f"built {len(packets)} blind packets -> {args.public_out}")
+    print(f"built {len(packets)} editorial + factual blind packets -> {args.public_out}")
     print(f"private key -> {args.key_out}; exclusions={len(exclusions)}")
     return 0
 
 
-def _read_verdicts(path: str) -> list[dict[str, Any]]:
+def _read_verdict_envelope(path: str, *, public_sha256: str, field: str) -> list[dict[str, Any]]:
     data = _load(path)
-    if isinstance(data, list):
-        return list(data)
-    if isinstance(data, dict) and isinstance(data.get("verdicts"), list):
-        return list(data["verdicts"])
-    raise Q.BakeoffProtocolError("verdicts must be a list or object with verdicts[]")
+    if not isinstance(data, dict) or not isinstance(data.get(field), list):
+        raise Q.BakeoffProtocolError(f"judge output must be object with {field}[]")
+    if str(data.get("public_sha256") or "") != public_sha256:
+        raise Q.BakeoffProtocolError("judge output belongs to a different public packet artifact")
+    return list(data[field])
+
+
+def _exact_ids(rows: list[dict[str, Any]], expected_ids: set[str], *, label: str) -> None:
+    ids = [str(v.get("pair_id") or "") for v in rows if isinstance(v, Mapping)]
+    if len(ids) != len(rows) or len(set(ids)) != len(ids) or any(not x for x in ids):
+        raise Q.BakeoffProtocolError(f"{label} pair identities are missing or duplicated")
+    actual_ids = set(ids)
+    if actual_ids != expected_ids:
+        missing = sorted(expected_ids - actual_ids)
+        unknown = sorted(actual_ids - expected_ids)
+        raise Q.BakeoffProtocolError(
+            f"{label} coverage must be exact; missing={missing}, unknown={unknown}"
+        )
 
 
 def cmd_score(args: argparse.Namespace) -> int:
@@ -221,29 +331,43 @@ def cmd_score(args: argparse.Namespace) -> int:
     result_doc = _load(args.results)
     results = _read_sealed_results(args.results, plan)
     results_sha = str(result_doc["results_sha256"])
-    keys = _read_private_key(args.key, plan=plan, results_sha256=results_sha)
+    keys, private_sha = _read_private_key(args.key, plan=plan, results_sha256=results_sha)
+    public, public_sha = _read_public(args.public, plan=plan, results_sha256=results_sha, keys=keys)
     by_id = {str(k["pair_id"]): k for k in keys}
-    verdicts = _read_verdicts(args.verdicts)
-    ids = [str(v.get("pair_id") or "") for v in verdicts if isinstance(v, Mapping)]
-    if len(ids) != len(verdicts) or len(set(ids)) != len(ids) or any(not x for x in ids):
-        raise Q.BakeoffProtocolError("verdict pair identities are missing or duplicated")
-    expected_ids, actual_ids = set(by_id), set(ids)
-    if actual_ids != expected_ids:
-        missing = sorted(expected_ids - actual_ids)
-        unknown = sorted(actual_ids - expected_ids)
-        raise Q.BakeoffProtocolError(
-            f"verdict coverage must be exact; missing={missing}, unknown={unknown}"
-        )
-    mapped = [Q.map_verdict(v, by_id[str(v["pair_id"])]) for v in verdicts]
-    report = Q.aggregate_promotion(mapped, results, protocol=plan["protocol"])
+    expected_ids = set(by_id)
+
+    verdicts = _read_verdict_envelope(args.verdicts, public_sha256=public_sha, field="verdicts")
+    factual_verdicts = _read_verdict_envelope(
+        args.factual_verdicts, public_sha256=public_sha, field="factual_verdicts"
+    )
+    _exact_ids(verdicts, expected_ids, label="editorial verdict")
+    _exact_ids(factual_verdicts, expected_ids, label="factual verdict")
+
+    mapped: list[dict[str, Any]] = []
+    for verdict in verdicts:
+        pair_id = str(verdict["pair_id"])
+        expected_packet = str(by_id[pair_id]["editorial_packet_sha256"])
+        if str(verdict.get("packet_sha256") or "") != expected_packet:
+            raise Q.BakeoffProtocolError(f"editorial verdict belongs to a different packet for {pair_id}")
+        mapped.append(Q.map_verdict(verdict, by_id[pair_id]))
+
+    factual_mapped = [
+        F.map_factual_verdict(v, by_id[str(v["pair_id"])]) for v in factual_verdicts
+    ]
+    report = F.aggregate_with_factual_audit(
+        mapped, factual_mapped, results, protocol=plan["protocol"]
+    )
     out = {
         "experiment": "writer-v21-quality-proof",
         "plan_sha256": plan["plan_sha256"],
         "results_sha256": results_sha,
-        "private_key_sha256": _load(args.key)["private_sha256"],
+        "private_key_sha256": private_sha,
+        "public_sha256": public_sha,
         "verdict_count": len(verdicts),
+        "factual_verdict_count": len(factual_verdicts),
         "report": report,
         "mapped_verdicts": mapped,
+        "mapped_factual_verdicts": factual_mapped,
     }
     out["report_sha256"] = _digest(out)
     _write(args.out, out)
@@ -272,8 +396,10 @@ def build_parser() -> argparse.ArgumentParser:
     x = sub.add_parser("score")
     x.add_argument("--plan", required=True)
     x.add_argument("--results", required=True)
+    x.add_argument("--public", required=True)
     x.add_argument("--key", required=True)
     x.add_argument("--verdicts", required=True)
+    x.add_argument("--factual-verdicts", required=True)
     x.add_argument("--out", default="artifacts/wr21_quality_report.json")
     x.set_defaults(func=cmd_score)
     return p
