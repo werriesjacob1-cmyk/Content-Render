@@ -1,69 +1,64 @@
-# Overnight Quality Control Addendum — through 2026-09-07 12:20 CT
+# Overnight Quality Control Addendum — through 2026-09-07 13:18 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
-- `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — freshly reverified unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — freshly reverified unchanged.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — freshly reverified unchanged.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — freshly reverified unchanged.
-- Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged.
-- Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified unchanged.
-- Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged.
-- Main remains untouched. No merge/deploy/publish or implementation-branch render was observed in this audit window.
+- `origin/main`: **advanced** from `6a045e50a33408ecafdfa21c9ff951d731347bd9` to `19f5d6a076b01bbd391d69097f23002fadf5e667` at 2026-09-07 12:52:12 CT.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — reverified unchanged.
+- SuperChad takeover: last audited `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5`.
+- Quality stack: last audited `8d93f4e71489674f4bc95aade72f9c411620d30b`.
+- Mission 1A: last audited `04ef8a3f6f23ff1aaef22482c89767612494f9ab`.
+- Mission 1B: last audited `4e014946cf106d9d3457259c481f10ebfb8dbd41`.
+- Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — reverified unchanged.
 
-## PR / REVIEW TOPOLOGY
-- PR #57 remains OPEN + DRAFT, head `04ef8a3f...`, base `main @ 6a045e50...`, title/body explicitly `DO NOT MERGE`. Its declared base authority is Claude Writer V2.1 `2256f22...`; the direct-to-main review topology remains stale relative to the intended narrow Mission 1A review surface.
-- PR #58 remains OPEN + DRAFT, head `4e014946...`, base `main @ 6a045e50...`, `DO NOT MERGE`.
-- PR #60 remains OPEN + DRAFT, head `c46532af...`, base `main @ 6a045e50...`, `DO NOT MERGE`; it remains a synthetic integration-certification evidence surface, not an approved integration plan.
+## MATERIAL DELTA SINCE 12:20 CT
+PR #60, titled `Integration certification v2 — Mission 1A + 1B (DO NOT MERGE)`, was merged into `main` at 2026-09-07T17:52:12Z. GitHub reports merge commit `19f5d6a076b01bbd391d69097f23002fadf5e667`.
 
-## AUTHORIZED ROADMAP SLICE
-The last durable checkpoint remains authoritative:
-1. reconcile whether Mission 1B/integration certification was explicitly authorized before the Mission 1A review gate;
-2. independently review the existing Mission 1A / Mission 1B / combined certification surfaces as evidence only;
-3. correct or close stale Mission 1A PR topology;
-4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
+The PR body explicitly stated: `DO NOT MERGE. Jacob authorization remains required for any eventual integration.` The last durable shadow-audit checkpoint also explicitly recorded Mission 1A, Mission 1B, and combined integration as unapproved for merge and required governance/review reconciliation before advancement.
 
-## DELTA SINCE 11:17 CT
-No relevant application-code branch head, reference branch, or `main` SHA changed during this audit window. Mission 1A, Mission 1B, and the combined certification branch remain pinned to the same previously audited heads. PR #57/#58/#60 remain open draft review-only surfaces. No new exact-head CI was required because no relevant implementation head moved.
+The merge commit is a single child of prior main `6a045e50...`. Its tree SHA is `3c576f78faade31a9854cfb657639dcde6ddcc86`, exactly matching the tree SHA of the previously certified combined integration head `c46532af...`. Therefore the merged filesystem content is content-identical to the previously exact-head-certified combined integration surface, despite different commit ancestry/SHA.
 
-No new provider-backed Writer experiment, implementation-branch render, deploy, publish, provenance mutation, raw file-copy integration, or quality-floor/test weakening was observed. No new script or finished video exists to assess creatively.
+The main delta contains the Writer V2.1 contract consolidation plus branch-recon hardening, including the canonical narration path, semantic gate/orchestrator work, Writer tests, and hardened branch-recon/control-plane security files. No evidence in this audit shows additional files beyond that certified combined tree.
 
-The prior scheduled `render-video` failure on main remains the latest operational event of consequence; no newer evidence changes the prior conclusion that its downstream render/publication stages were skipped.
+## STOP WARNING — EXPLICIT DO-NOT-MERGE SURFACE WAS MERGED
+This is now a governance/provenance control incident, not merely stale topology.
 
-## CURRENT WARNINGS
-### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
-Unchanged. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded Mission 1A authorization/review gate was not formally closed first. The stale Mission 1A direct-to-main review topology remains the known governance defect until explicitly corrected or closed.
+Observed facts:
+1. PR #60's title and body explicitly said `DO NOT MERGE` and that Jacob authorization was required.
+2. The prior durable checkpoint said combined integration was unapproved for merge and roadmap status was `DRIFTING / BLOCKED`.
+3. PR #60 is now `merged=true`, with merge commit `19f5d6a0...` on `main`.
+4. The merged tree exactly matches the previously certified combined integration tree, so no new content divergence is currently detected.
 
-Do not treat branch existence, draft PRs, synthetic integration surfaces, mergeability, or green CI as authorization to merge or advance.
+Blast radius:
+- `main` production source now contains the Writer V2.1 + Mission 1B combined state.
+- The prior `branch_recon.yml` arbitrary-ref + provider-secret design is no longer the live main tree; the hardened zero-secret branch-recon design is now on main.
+- No evidence in this audit establishes that a render, publish, deploy, provider-backed generation, or spend event was triggered by the merge itself.
+- However, the merge crossed an explicit human approval boundary and invalidates the prior assumption that main remained untouched.
 
-### CONVERGENCE STATUS
-WARNING — unchanged.
+Smallest recommended action: **do not add another code change.** First determine whether Jacob explicitly authorized this merge outside the shadow-audit record. If not, treat it as an unauthorized integration incident and decide deliberately whether to retain or revert the exact certified tree. Do not infer that content correctness makes the governance breach acceptable.
 
-### ROADMAP STATUS
-DRIFTING / BLOCKED — unchanged pending explicit reconciliation of authorization and review topology.
-
-## SECURITY
-Main still points at `6a045e50...`, the commit that introduced the generic `branch_recon.yml` design with arbitrary-ref/script execution and GROQ_API_KEY/GEMINI_API_KEY available. Mission 1B contains the hardened zero-secret alternative, but the default-branch runner remains unintegrated.
-
-Until explicitly authorized integration lands, do not use main's generic branch runner for secret-backed arbitrary branch diagnostics.
-
-## CORRECTNESS / PROVENANCE
-No new correctness regression, test weakening, provenance loss, raw file-copy integration, accidental publish/render enablement, or production mutation was observed in this window. Existing Mission 1A correctness evidence and Mission 1B/integration security evidence remain the latest technical evidence.
-
-The review topology remains materially asymmetric: Mission 1A presents inherited Writer work plus the P0 consolidation as a broad direct-to-main surface relative to its declared Claude Writer base authority; Mission 1B remains the narrow hardening surface; PR #60 remains a synthetic evidence surface. None is an approved integration plan.
+## CORRECTNESS / SECURITY / PROVENANCE
+- Correctness: merged tree is byte/tree-identical to combined integration-cert head `c46532af...`, which had prior exact-head zero-quota Writer and control-plane security evidence. No new content regression was detected from the merge itself.
+- Security: main's prior generic secret-bearing `branch_recon.yml` risk appears closed at the filesystem level because the merged tree is the hardened Mission 1B tree.
+- Provenance: Git ancestry remains explicit; this was a GitHub PR merge, not raw file-copy integration. However, approval provenance is now inconsistent with the recorded `DO NOT MERGE` instruction and must be reconciled.
+- Quality floors/tests: no evidence in this audit of weakened floors or removed tests relative to the certified combined tree.
 
 ## CREATIVE QUALITY
-No new script or finished video was produced in this audit window, so there is no new evidence on hook quality, first-8-second escalation, spoken naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or postability. Writer promotion remains unearned.
+No new provider-backed Writer panel, script certification, finished video, or human postability evidence was produced by this audit. Merging Writer infrastructure does **not** earn Writer creative promotion. The North Star remains unproven until multiple factual-clean, floor-clearing scripts pass human editorial review.
+
+## CONVERGENCE STATUS
+**WARNING** — content convergence is clean, but governance convergence is broken until merge authorization is reconciled.
+
+## ROADMAP STATUS
+**BLOCKED** pending explicit merge-authorization reconciliation.
 
 ## NEXT AUTHORIZED ACTION
-1. Resolve the authorization/sequencing discrepancy explicitly.
-2. Independently review the existing combined surface and narrow Mission 1B surface as evidence only.
-3. Correct/close stale Mission 1A PR topology so it cannot be mistaken for an approved direct-to-main integration candidate.
-4. Do not begin another implementation slice or provider-backed/live Writer work until the governance gate is cleared.
+1. Verify whether Jacob explicitly authorized PR #60 / combined Mission 1A+1B integration outside the shadow-audit record.
+2. If authorization existed, record that evidence and re-baseline `main @ 19f5d6a0...` as the new canonical implementation state.
+3. If authorization did not exist, treat this as an unauthorized integration incident; do not self-revert or self-retain. Jacob must decide.
+4. Do not start live Writer/provider testing, render, publish, deploy, or another roadmap slice until this governance incident is resolved.
 
 ## APPROVAL / SPEND
 - Jacob remains final integration authority.
-- No main merge/deploy/publish/render authorized by the shadow audit.
-- No material spend authorized by the shadow audit.
-- Mission 1A, Mission 1B, and combined integration remain unapproved for merge.
+- Shadow audit did not authorize this merge.
+- No additional merge/deploy/publish/render/spend is authorized by the shadow audit.
