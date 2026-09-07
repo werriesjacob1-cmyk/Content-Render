@@ -6084,6 +6084,240 @@
         "water vapor extraction",
         "sustainable water solutions"
       ]
+    },
+    {
+      "id": "octopus_detached_arm",
+      "domain": "neurology",
+      "fact": "A detached octopus arm can still flex and solve simple tasks for several minutes after being cut off.",
+      "angle": "detached_control",
+      "key_terms": [
+        "octopus",
+        "arm",
+        "autonomy"
+      ],
+      "whatif": "What if a severed limb could keep solving puzzles on its own?",
+      "wow": "The arm can unscrew a bottle cap up to 8 minutes after separation.",
+      "queries": [
+        "octopus arm detachment",
+        "octopus limb movement",
+        "octopus arm solving puzzle"
+      ]
+    },
+    {
+      "id": "bouncing_supercooled_liquid",
+      "domain": "physics",
+      "fact": "When a liquid is supercooled just below its freezing point, a quick tap makes it bounce like a solid before it finally solidifies.",
+      "angle": "bouncy_liquid",
+      "key_terms": [
+        "supercooled",
+        "liquid",
+        "bounce"
+      ],
+      "whatif": "What if a splash of water could rebound off a surface?",
+      "wow": "The bounce can reach heights of 30 cm in microseconds before freezing.",
+      "queries": [
+        "supercooled liquid bounce",
+        "liquid bounce experiment",
+        "liquid freezing bounce"
+      ]
+    },
+    {
+      "id": "rainbow_after_volcano",
+      "domain": "earth",
+      "fact": "Volcanic ash can act like a giant prism, creating vivid rainbows in the sky even without rain.",
+      "angle": "ash_rainbow",
+      "key_terms": [
+        "volcano",
+        "ash",
+        "rainbow"
+      ],
+      "whatif": "What if a mountain eruption painted the sky with colors?",
+      "wow": "The rainbow can span 180° across the horizon for up to an hour after the eruption.",
+      "queries": [
+        "volcanic ash rainbow",
+        "rainbow without rain",
+        "volcano sky colors"
+      ]
+    },
+    {
+      "id": "scent_memory_of_rocks",
+      "domain": "earth",
+      "fact": "Certain sedimentary rocks retain the exact scent of the ancient forests that once grew on them, detectable after millions of years.",
+      "angle": "rock_scent",
+      "key_terms": [
+        "sedimentary",
+        "scent",
+        "ancient forest"
+      ],
+      "whatif": "What if you could smell a dinosaur-era jungle by touching a stone?",
+      "wow": "Scientists have identified pine-like terpenes in rocks dated 150 million years old.",
+      "queries": [
+        "scent in rocks",
+        "ancient forest smell rock",
+        "terpenes fossil rock"
+      ]
+    },
+    {
+      "id": "electric_eel_laser",
+      "domain": "biology",
+      "fact": "The electric discharge of an eel can ionize water enough to produce a faint, visible blue flash, like a tiny underwater laser.",
+      "angle": "eel_laser",
+      "key_terms": [
+        "electric eel",
+        "ionize",
+        "blue flash"
+      ],
+      "whatif": "What if a fish could shoot a laser beam?",
+      "wow": "The flash can travel up to 2 cm in the murky water before fading.",
+      "queries": [
+        "electric eel flash",
+        "eel water ionization",
+        "electric eel blue light"
+      ]
+    },
+    {
+      "id": "self_healing_ice",
+      "domain": "chemistry",
+      "fact": "When a thin sheet of ice cracks, the edges can spontaneously refreeze and seal the crack within seconds if the temperature rises just a degree.",
+      "angle": "self_healing_ice",
+      "key_terms": [
+        "ice",
+        "crack",
+        "refreeze"
+      ],
+      "whatif": "What if broken ice could patch itself like a wound?",
+      "wow": "The repaired area regains 95% of its original strength in under 5 seconds.",
+      "queries": [
+        "ice self healing",
+        "ice crack refreeze",
+        "ice repair experiment"
+      ]
+    },
+    {
+      "id": "mirror_neurons_in_crowd",
+      "domain": "psychology",
+      "fact": "Humans unconsciously mirror the breathing rhythm of strangers standing nearby, syncing breaths without speaking.",
+      "angle": "breath_sync",
+      "key_terms": [
+        "mirror neurons",
+        "breathing",
+        "sync"
+      ],
+      "whatif": "What if you could feel a stranger’s breath pattern?",
+      "wow": "The synchronization can lower heart rate by up to 7 bpm within a minute.",
+      "queries": [
+        "human breath synchronization",
+        "mirror neurons breathing",
+        "people sync breathing"
+      ]
+    },
+    {
+      "id": "magnetic_plant_growth",
+      "domain": "biology",
+      "fact": "Some plants grow their roots directly toward a weak magnetic field, effectively “magnetotaxis” like bacteria do.",
+      "angle": "magnetotaxis_plants",
+      "key_terms": [
+        "plant roots",
+        "magnetic field",
+        "growth direction"
+      ],
+      "whatif": "What if you could steer a seed with a magnet?",
+      "wow": "Roots can change direction by up to 45° within 24 hours when exposed to a 0.5 gauss field.",
+      "queries": [
+        "plant magnetotaxis",
+        "roots grow toward magnet",
+        "magnetic field plant growth"
+      ]
+    },
+    {
+      "id": "sound_speed_in_helium_balloon",
+      "domain": "physics",
+      "fact": "A voice spoken inside a helium balloon travels 30% faster than in normal air, making words sound oddly crisp when recorded from outside.",
+      "angle": "helium_speed",
+      "key_terms": [
+        "helium",
+        "sound speed",
+        "voice"
+      ],
+      "whatif": "What if you could speed up your speech without moving your lips?",
+      "wow": "The effect is measurable even with a balloon only 30 cm in diameter.",
+      "queries": [
+        "helium balloon sound speed",
+        "voice in helium balloon",
+        "helium fast sound"
+      ]
+    },
+    {
+      "id": "color_changing_sand",
+      "domain": "earth",
+      "fact": "Certain desert sands contain mineral grains that shift hue from red to blue when wet, creating a temporary rainbow carpet.",
+      "angle": "wet_sand_rainbow",
+      "key_terms": [
+        "desert sand",
+        "color change",
+        "wet"
+      ],
+      "whatif": "What if stepping on sand could paint the ground?",
+      "wow": "The color shift occurs within seconds of light rain and fades as the sand dries.",
+      "queries": [
+        "color changing sand",
+        "wet desert sand colors",
+        "rainbow sand phenomenon"
+      ]
+    },
+    {
+      "id": "memory_of_amoeba",
+      "domain": "biology",
+      "fact": "A single-celled amoeba can remember the location of a food source for days after the food is removed, altering its movement pattern.",
+      "angle": "amoeba_memory",
+      "key_terms": [
+        "amoeba",
+        "memory",
+        "food location"
+      ],
+      "whatif": "What if a blob could recall a snack spot?",
+      "wow": "The altered path persists for up to 72 hours despite constant environmental changes.",
+      "queries": [
+        "amoeba memory food",
+        "single cell memory",
+        "amoeba navigation experiment"
+      ]
+    },
+    {
+      "id": "gravity_wave_in_fountain",
+      "domain": "physics",
+      "fact": "A high‑pressure water fountain can generate detectable micro‑gravity ripples that momentarily make nearby objects feel 0.01 % lighter.",
+      "angle": "fountain_gravity",
+      "key_terms": [
+        "water fountain",
+        "gravity ripple",
+        "microgravity"
+      ],
+      "whatif": "What if a garden fountain could make you feel lighter?",
+      "wow": "Sensitive scales show a 0.2 gram dip for a 2 kg mass during the fountain’s peak pulse.",
+      "queries": [
+        "water fountain gravity ripple",
+        "microgravity fountain",
+        "fountain weight change"
+      ]
+    },
+    {
+      "id": "lightning_in_snow",
+      "domain": "earth",
+      "fact": "When lightning strikes fresh powder snow, the snow can fluoresce blue for a fraction of a second, creating a ghostly glow.",
+      "angle": "snow_fluorescence",
+      "key_terms": [
+        "lightning",
+        "snow",
+        "fluorescence"
+      ],
+      "whatif": "What if a snowstorm lit up like a neon sign?",
+      "wow": "The blue flash can be seen from up to 500 m away under clear night skies.",
+      "queries": [
+        "lightning snow fluorescence",
+        "snow glow lightning",
+        "blue flash snow storm"
+      ]
     }
   ]
 }
