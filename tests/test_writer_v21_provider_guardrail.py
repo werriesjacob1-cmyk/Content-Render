@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import copy
+import json
 from pathlib import Path
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import wr21_quality_bakeoff as C  # noqa: E402
+import wr21_quality_preregister as R  # noqa: E402
 import writer_v21_provider_guardrail as P  # noqa: E402
 import writer_v21_quality_bakeoff as Q  # noqa: E402
 
@@ -44,6 +48,54 @@ def base_report():
         "checks": [],
         "external_factual_audit": {"excluded_pairs": []},
     }
+
+
+def test_preregistration():
+    plan = {
+        "experiment": "writer-v21-quality-proof",
+        "protocol": dict(Q.DEFAULT_PROTOCOL),
+        "seed": "s",
+        "topic_count": 2,
+        "topics": [
+            {"topic_id": "a", "domain": "x", "fact": "fact a"},
+            {"topic_id": "b", "domain": "x", "fact": "fact b"},
+        ],
+    }
+    plan["plan_sha256"] = C._digest(plan)
+    sha = "a" * 40
+    sealed = R.preregister(plan, sha)
+    check(sealed["execution_sha"] == sha, "preregistered plan records exact trusted execution SHA")
+    check(sealed["protocol"]["provider_guardrail_version"] == P.VERSION,
+          "preregistered plan records provider guardrail version")
+    check(all(sealed["protocol"][k] == v for k, v in P.DEFAULTS.items()),
+          "preregistered plan freezes every provider-causal threshold")
+    C._verify_envelope_hash(sealed, "plan_sha256")
+    check(True, "preregistered plan is resealed after execution/threshold stamp")
+
+    altered = copy.deepcopy(sealed)
+    altered["protocol"]["min_same_draft_model_pairs"] = 1
+    try:
+        C._verify_envelope_hash(altered, "plan_sha256")
+    except Q.BakeoffProtocolError:
+        check(True, "post-preregistration threshold tampering breaks plan seal")
+    else:
+        check(False, "threshold tampering must break plan seal")
+
+    try:
+        R.preregister(plan, "not-a-git-sha")
+    except Q.BakeoffProtocolError:
+        check(True, "preregistration rejects non-exact execution SHA")
+    else:
+        check(False, "invalid execution SHA must fail")
+
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "plan.json"
+        p.write_text(json.dumps(plan), encoding="utf-8")
+        check(R.main(["--plan", str(p), "--execution-sha", sha]) == 0,
+              "preregistration CLI seals a real plan file zero-network")
+        disk = json.loads(p.read_text(encoding="utf-8"))
+        check(disk["execution_sha"] == sha and disk["protocol"]["provider_guardrail_version"] == P.VERSION,
+              "preregistration CLI persists exact causal contract")
 
 
 def main():
@@ -92,6 +144,7 @@ def main():
 
     check(P.DEFAULTS["min_same_draft_model_pairs"] == 8 and P.DEFAULTS["max_same_draft_model_sign_test_p"] == 0.20,
           "causal matched-provider thresholds are explicit and version-controlled before live evidence")
+    test_preregistration()
     print(f"{PASS} provider-guardrail checks passed")
 
 
