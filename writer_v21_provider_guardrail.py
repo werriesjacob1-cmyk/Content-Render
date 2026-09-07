@@ -11,6 +11,7 @@ from typing import Any, Mapping, Sequence
 
 import writer_v21_quality_bakeoff as Q
 
+VERSION = "same-draft-model-v1"
 DEFAULTS: dict[str, Any] = {
     "min_same_draft_model_pairs": 8,
     "min_same_draft_model_decisive_pairs": 6,
@@ -78,6 +79,7 @@ def apply_provider_guardrail(
         add(f"same_draft_model_criterion_{criterion}_net", counts["net"] >= 0, counts["net"], ">=0")
 
     out["causal_provider_guardrail"] = {
+        "version": VERSION,
         "factually_clean_editorial_pairs": len(factually_clean),
         "same_draft_model_pairs": len(same),
         "provider_mismatched_pairs": len(factually_clean) - len(same),
