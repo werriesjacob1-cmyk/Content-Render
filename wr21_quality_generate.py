@@ -197,6 +197,7 @@ def main(argv: list[str] | None = None) -> int:
     import narration as N  # noqa: PLC0415
     import writer_v21_orchestrator as O  # noqa: PLC0415
     import writer_v21_repair_regression as RR  # noqa: PLC0415
+    import writer_v21_factual_audit as F  # noqa: PLC0415
 
     bank = {str(f.get("id")): f for f in G.load_bank() if isinstance(f, dict) and f.get("id")}
     topics = list(plan["topics"])
@@ -207,8 +208,13 @@ def main(argv: list[str] | None = None) -> int:
         prior = _load(args.out)
         if isinstance(prior, dict) and prior.get("plan_sha256") == plan.get("plan_sha256"):
             for row in prior.get("results") or []:
-                if isinstance(row, dict):
-                    existing[(str(row.get("topic_id")), str(row.get("side")))] = row
+                if not isinstance(row, dict):
+                    continue
+                try:
+                    F.verified_evidence(row)
+                except Exception:
+                    continue
+                existing[(str(row.get("topic_id")), str(row.get("side")))] = row
 
     doc: dict[str, Any] = {
         "experiment": "writer-v21-quality-proof-live-generation",
@@ -237,6 +243,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"dossier failure: {type(exc).__name__}: {exc}; using empty dossier")
             dossier = []
         dossier_sha = hashlib.sha256(json.dumps(dossier, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+        source_evidence = F.build_source_evidence(fact, dossier)
+        source_evidence_sha = F.evidence_sha256(source_evidence)
         order = _order(str(plan.get("seed") or ""), topic)
         for side in order:
             key = (topic, side)
@@ -246,6 +254,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {side}: generate script only")
             row = _run_legacy(G, N, fact, dossier) if side == "legacy" else _run_v21(G, N, O, RR, fact, dossier)
             row["dossier_sha256"] = dossier_sha
+            row["source_evidence"] = list(source_evidence)
+            row["source_evidence_sha256"] = source_evidence_sha
             row["generation_order"] = list(order)
             existing[key] = row
             doc["results"] = list(existing.values())
