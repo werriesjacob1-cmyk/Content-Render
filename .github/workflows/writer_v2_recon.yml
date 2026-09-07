@@ -1,0 +1,28 @@
+name: writer-v2-recon
+
+# ONE-OFF live reconnaissance for the WRITER_V2 experiment (2026-09-03
+# mission, branch claude/writer-v2-experiment). Runs wr2_recon.py: real
+# Groq-reported token usage for legacy vs V2 prompts, structured-output
+# (json_schema strict) viability, Compound/Compound-mini research-stage
+# viability, and Orpheus voice endpoint reconnaissance. NOT part of the
+# production pipeline -- manual dispatch only, no render, no publish, no
+# artifact produced besides this run's log. generate.py/writer_v2.py only
+# need the stdlib, so this skips the full (TTS-heavy) requirements.txt
+# install for speed.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  recon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run V2 writer recon
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python wr2_recon.py

@@ -27,6 +27,7 @@ OUT  = os.path.join(ROOT, "out")
 MUSIC = os.path.join(ROOT, "music.mp3")  # set per-profile below
 PEXELS_KEY  = os.environ.get("PEXELS_API_KEY", "")
 import profiles
+from narration import spoken_text
 PROFILE, PAGE = profiles.get_profile()
 ELEVEN_VOICE = PROFILE["eleven_voice"]
 MUSIC = os.path.join(ROOT, PROFILE.get("music", "music.mp3"))
@@ -3517,10 +3518,7 @@ def main():
     # and edge-tts insert a natural sentence pause. This changes only the spoken
     # text's punctuation, not the words, so per-scene word counts (and thus the
     # caption/scene-cut word indexing) are unchanged.
-    def _terminate(vo):
-        vo = (vo or "").strip()
-        return vo if vo[-1:] in ".!?…:" else vo + "."
-    full_script = " ".join(_terminate(s["voiceover"]) for s in m["scenes"])
+    full_script = spoken_text(m)
     full_mp3 = os.path.join(WORK, "full_vo.mp3")
     if not tts_full(full_script, full_mp3, voice, rate):
         silent_track(sum(float(s.get("duration", 3)) for s in m["scenes"]), full_mp3)
