@@ -15,6 +15,7 @@ from typing import Any, Mapping, Sequence
 import writer_v21_quality_bakeoff as Q
 
 FACT_STATUSES = ("CLEAN", "UNSUPPORTED", "UNKNOWN")
+_HASH_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class FactualAuditError(Q.BakeoffProtocolError):
@@ -25,10 +26,21 @@ def _clean(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
 
 
+def _digest(data: Any) -> str:
+    raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
 def evidence_sha256(evidence: Sequence[str]) -> str:
     normalized = [_clean(x) for x in evidence if _clean(x)]
     raw = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def packet_sha256(packet: Mapping[str, Any]) -> str:
+    payload = dict(packet)
+    payload.pop("packet_sha256", None)
+    return _digest(payload)
 
 
 def build_source_evidence(fact: Mapping[str, Any], dossier: Sequence[Any]) -> list[str]:
@@ -70,7 +82,7 @@ def _result_lookup(results: Sequence[Mapping[str, Any]]) -> dict[tuple[str, str]
     return out
 
 
-def _verified_evidence(raw: Mapping[str, Any]) -> tuple[list[str], str]:
+def verified_evidence(raw: Mapping[str, Any]) -> tuple[list[str], str]:
     evidence = raw.get("source_evidence")
     if not isinstance(evidence, list) or not evidence or any(not isinstance(x, str) or not _clean(x) for x in evidence):
         raise FactualAuditError("generation row missing non-empty source_evidence[]")
@@ -122,8 +134,8 @@ def build_factual_packets(
         raw_b = lookup.get((topic, aliases["B"]))
         if raw_a is None or raw_b is None:
             raise FactualAuditError(f"missing generation evidence for factual pair {pair_id}")
-        ev_a, sha_a = _verified_evidence(raw_a)
-        ev_b, sha_b = _verified_evidence(raw_b)
+        ev_a, sha_a = verified_evidence(raw_a)
+        ev_b, sha_b = verified_evidence(raw_b)
         if sha_a != sha_b or ev_a != ev_b:
             raise FactualAuditError(f"paired candidates do not share identical source evidence for {pair_id}")
         script_a = Q._script(raw_a.get("script"))
@@ -142,12 +154,16 @@ def build_factual_packets(
             ),
         }
         _assert_blind(packet)
+        packet["packet_sha256"] = packet_sha256(packet)
         packets.append(packet)
     return packets
 
 
 def build_factual_prompt(packet: Mapping[str, Any]) -> str:
     _assert_blind(packet)
+    packet_hash = str(packet.get("packet_sha256") or "")
+    if not _HASH_RE.fullmatch(packet_hash) or packet_hash != packet_sha256(packet):
+        raise FactualAuditError("factual packet hash missing or mismatched")
     evidence = "\n".join(f"- {x}" for x in packet["source_evidence"])
     return f"""You are a strict factual-support auditor. Two ANONYMOUS short-form science scripts were generated from the SAME source packet.
 
@@ -163,7 +179,7 @@ CANDIDATE B:
 For each candidate, identify whether every factual proposition is supported by the source evidence. Ordinary connective/editorial language, rhetorical questions, transitions, and clearly non-factual framing are allowed. Do not use outside knowledge. Do not infer which candidate is newer. If the source packet is insufficient to decide a factual proposition, use UNKNOWN rather than guessing.
 
 Return ONLY JSON:
-{{"pair_id":"{packet['pair_id']}","status_A":"CLEAN|UNSUPPORTED|UNKNOWN","status_B":"CLEAN|UNSUPPORTED|UNKNOWN","unsupported_propositions_A":[],"unsupported_propositions_B":[],"notes_A":[],"notes_B":[]}}"""
+{{"pair_id":"{packet['pair_id']}","packet_sha256":"{packet_hash}","status_A":"CLEAN|UNSUPPORTED|UNKNOWN","status_B":"CLEAN|UNSUPPORTED|UNKNOWN","unsupported_propositions_A":[],"unsupported_propositions_B":[],"notes_A":[],"notes_B":[]}}"""
 
 
 def parse_factual_verdict(raw: Mapping[str, Any] | str) -> dict[str, Any]:
@@ -172,9 +188,12 @@ def parse_factual_verdict(raw: Mapping[str, Any] | str) -> dict[str, Any]:
     except Exception as exc:
         raise FactualAuditError("factual verdict is not valid JSON") from exc
     pair_id = str(d.get("pair_id") or "")
+    packet_hash = str(d.get("packet_sha256") or "").lower()
     if not pair_id:
         raise FactualAuditError("factual verdict missing pair_id")
-    out: dict[str, Any] = {"pair_id": pair_id}
+    if not _HASH_RE.fullmatch(packet_hash):
+        raise FactualAuditError("factual verdict missing valid packet_sha256")
+    out: dict[str, Any] = {"pair_id": pair_id, "packet_sha256": packet_hash}
     for alias in ("A", "B"):
         status = str(d.get(f"status_{alias}") or "").upper()
         if status not in FACT_STATUSES:
@@ -199,6 +218,9 @@ def map_factual_verdict(verdict: Mapping[str, Any] | str, key: Mapping[str, Any]
     d = parse_factual_verdict(verdict)
     if d["pair_id"] != key.get("pair_id"):
         raise FactualAuditError("factual verdict/key pair_id mismatch")
+    expected_hash = str(key.get("factual_packet_sha256") or "")
+    if not expected_hash or d["packet_sha256"] != expected_hash:
+        raise FactualAuditError("factual verdict belongs to a different packet")
     aliases = key.get("aliases") or {}
     if set(aliases) != {"A", "B"} or set(aliases.values()) != set(Q.SIDES):
         raise FactualAuditError("malformed private aliases")
