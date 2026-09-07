@@ -88,10 +88,11 @@ jobs:
             --inter-topic-delay 60 \
             --allow-provider-calls
 
-      - name: Build identity-blind editorial packets
+      - name: Build identity-blind editorial packets from sealed evidence
         run: |
           set -euo pipefail
           python wr21_quality_bakeoff.py blind \
+            --plan artifacts/wr21_quality_plan.json \
             --results artifacts/wr21_generation_results.json \
             --seed writer-v21-quality-proof-v1 \
             --public-out artifacts/wr21_blind_packets.json \
