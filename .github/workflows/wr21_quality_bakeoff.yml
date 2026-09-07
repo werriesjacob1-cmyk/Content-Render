@@ -1,0 +1,117 @@
+name: writer-v21-quality-bakeoff
+
+# Purpose-built trusted workflow for the SCRIPT-ONLY Writer V2.1 quality proof.
+# Manual-only and main-only: provider secrets never accompany arbitrary branch code.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_provider_calls:
+        description: "Explicit acknowledgement: this makes provider-backed SCRIPT generation calls"
+        required: true
+        type: choice
+        default: "NO"
+        options:
+          - "NO"
+          - "YES_SCRIPT_ONLY_PROVIDER_CALLS"
+      topic_count:
+        description: "12 = Stage 1; 20 = pre-registered Stage 2 expansion"
+        required: true
+        type: choice
+        default: "12"
+        options:
+          - "12"
+          - "20"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: writer-v21-quality-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  script-only-bakeoff:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_provider_calls == 'YES_SCRIPT_ONLY_PROVIDER_CALLS' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact trusted main dispatch SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prove trusted checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "trusted_main_sha=$GITHUB_SHA"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Freeze deterministic zero-provider panel
+        env:
+          TOPIC_COUNT: ${{ inputs.topic_count }}
+        run: |
+          set -euo pipefail
+          case "$TOPIC_COUNT" in 12|20) ;; *) echo "invalid topic count" >&2; exit 2 ;; esac
+          python wr21_quality_bakeoff.py prepare \
+            --count "$TOPIC_COUNT" \
+            --seed writer-v21-quality-proof-v1 \
+            --out artifacts/wr21_quality_plan.json
+
+      - name: Generate paired scripts only
+        env:
+          WR21_QUALITY_BAKEOFF_LIVE: I_ACCEPT_PROVIDER_CALLS
+          # Mirror production writer routing, without invoking render.yml.
+          GEMINI_GENERATION: "1"
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
+          TOGETHER_MODEL: ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
+        run: |
+          set -euo pipefail
+          python wr21_quality_generate.py \
+            --plan artifacts/wr21_quality_plan.json \
+            --out artifacts/wr21_generation_results.json \
+            --inter-topic-delay 60 \
+            --allow-provider-calls
+
+      - name: Build identity-blind editorial packets
+        run: |
+          set -euo pipefail
+          python wr21_quality_bakeoff.py blind \
+            --results artifacts/wr21_generation_results.json \
+            --seed writer-v21-quality-proof-v1 \
+            --public-out artifacts/wr21_blind_packets.json \
+            --key-out artifacts/wr21_blind_answer_key.json
+
+      - name: Upload blind judge packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: wr21-blind-quality-packets-${{ github.sha }}
+          path: artifacts/wr21_blind_packets.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload private generation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: wr21-private-quality-evidence-${{ github.sha }}
+          path: |
+            artifacts/wr21_quality_plan.json
+            artifacts/wr21_generation_results.json
+            artifacts/wr21_blind_answer_key.json
+          if-no-files-found: error
+          retention-days: 14
