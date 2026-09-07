@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-07 10:19 CT
+# Overnight Quality Control Addendum — through 2026-09-07 11:17 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -13,7 +13,7 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 - Main remains untouched. No merge/deploy/publish or implementation-branch render was observed in this audit window.
 
 ## PR / REVIEW TOPOLOGY
-- PR #57 remains OPEN + DRAFT, head `04ef8a3f...`, base `main @ 6a045e50...`, title/body still explicitly `DO NOT MERGE`. Its declared base authority is Claude Writer V2.1 `2256f22...`; the direct-to-main review topology therefore remains stale relative to the intended narrow Mission 1A review surface.
+- PR #57 remains OPEN + DRAFT, head `04ef8a3f...`, base `main @ 6a045e50...`, title/body explicitly `DO NOT MERGE`. Its declared base authority is Claude Writer V2.1 `2256f22...`; the direct-to-main review topology remains stale relative to the intended narrow Mission 1A review surface.
 - PR #58 remains OPEN + DRAFT, head `4e014946...`, base `main @ 6a045e50...`, `DO NOT MERGE`.
 - PR #60 remains OPEN + DRAFT, head `c46532af...`, base `main @ 6a045e50...`, `DO NOT MERGE`; it remains a synthetic integration-certification evidence surface, not an approved integration plan.
 
@@ -24,17 +24,12 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 09:19 CT
-No relevant application-code branch head or `main` SHA changed during this audit window. Mission 1A, Mission 1B, and the combined certification branch remain pinned to the same previously audited heads. PR #57/#58/#60 remain open draft review-only surfaces.
+## DELTA SINCE 10:19 CT
+No relevant application-code branch head, reference branch, or `main` SHA changed during this audit window. Mission 1A, Mission 1B, and the combined certification branch remain pinned to the same previously audited heads. PR #57/#58/#60 remain open draft review-only surfaces. No new exact-head CI was required because no relevant implementation head moved.
 
-One scheduled main-branch production workflow did execute after the prior checkpoint:
-- `render-video` run `34133849934`, job `101780077006`, on exact `main @ 6a045e50...`, started 09:36 CT and completed FAILURE at 09:39 CT.
-- Failure localized to step `Auto-generate a fresh video idea`.
-- Crucially, `Render`, output proof, repackage, platform-cut upload, GitHub Release publication, and direct Publer steps were all SKIPPED.
-- Therefore this was a fail-closed generation abort, not a finished render or publication event. The current workflow contract explicitly aborts after generation failure rather than substituting the old duplicate example manifest.
-- The available workflow metadata does not expose the provider-level error text, so this audit does not claim whether the immediate cause was Gemini/Groq/OpenRouter quota, API failure, quality rejection, or another generation-path exception.
+No new provider-backed Writer experiment, implementation-branch render, deploy, publish, provenance mutation, raw file-copy integration, or quality-floor/test weakening was observed. No new script or finished video exists to assess creatively.
 
-No new exact-head CI was required on the implementation branches because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
+The prior scheduled `render-video` failure on main remains the latest operational event of consequence; no newer evidence changes the prior conclusion that its downstream render/publication stages were skipped.
 
 ## CURRENT WARNINGS
 ### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
@@ -56,12 +51,10 @@ Until explicitly authorized integration lands, do not use main's generic branch 
 ## CORRECTNESS / PROVENANCE
 No new correctness regression, test weakening, provenance loss, raw file-copy integration, accidental publish/render enablement, or production mutation was observed in this window. Existing Mission 1A correctness evidence and Mission 1B/integration security evidence remain the latest technical evidence.
 
-The scheduled 09:36 CT production run reinforces one existing fail-closed property: when automatic idea generation fails, downstream render and publication stages remain skipped rather than emitting a duplicate fallback video. This is operational safety evidence only; it is not Writer V2.1 promotion evidence and does not resolve the roadmap governance gate.
-
 The review topology remains materially asymmetric: Mission 1A presents inherited Writer work plus the P0 consolidation as a broad direct-to-main surface relative to its declared Claude Writer base authority; Mission 1B remains the narrow hardening surface; PR #60 remains a synthetic evidence surface. None is an approved integration plan.
 
 ## CREATIVE QUALITY
-No new script or finished video was produced by the 09:36 CT scheduled run, so there is no new evidence on hook quality, first-8-second escalation, spoken naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or postability. Writer promotion remains unearned.
+No new script or finished video was produced in this audit window, so there is no new evidence on hook quality, first-8-second escalation, spoken naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or postability. Writer promotion remains unearned.
 
 ## NEXT AUTHORIZED ACTION
 1. Resolve the authorization/sequencing discrepancy explicitly.
