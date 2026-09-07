@@ -1,16 +1,21 @@
-# Overnight Quality Control Addendum — through 2026-09-07 08:26 CT
+# Overnight Quality Control Addendum — through 2026-09-07 09:19 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
 ## LIVE STATE
 - `origin/main`: `6a045e50a33408ecafdfa21c9ff951d731347bd9` — freshly reverified unchanged.
-- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — freshly reverified unchanged.
-- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — freshly reverified unchanged.
-- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — freshly reverified unchanged.
-- Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged; prior review-topology warning remains unresolved.
+- Claude Writer V2.1 base: `claude/writer-v2-traceability-repair-01` @ `2256f229be0c5b245cb5c1a2ec7cd4b0d8b3c2e6` — no contrary movement observed.
+- SuperChad takeover: `superchad/writer-v2-semantic-failclosed-01` @ `5669d2d3f7d3a0865ba69d6cc42aa0fa3d09c3d5` — no contrary movement observed.
+- Quality stack: `superchad/quality-stack-integration-01` @ `8d93f4e71489674f4bc95aade72f9c411620d30b` — no contrary movement observed.
+- Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged.
 - Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified unchanged.
 - Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged.
 - Main remains untouched. No merge/deploy/publish/render/provider-backed generation was observed in this audit window.
+
+## PR / REVIEW TOPOLOGY
+- PR #57 remains OPEN + DRAFT, head `04ef8a3f...`, base `main @ 6a045e50...`, title/body still explicitly `DO NOT MERGE`. Its declared base authority is Claude Writer V2.1 `2256f22...`; the direct-to-main review topology therefore remains stale relative to the intended narrow Mission 1A review surface.
+- PR #58 remains OPEN + DRAFT, head `4e014946...`, base `main @ 6a045e50...`, `DO NOT MERGE`.
+- PR #60 remains OPEN + DRAFT, head `c46532af...`, base `main @ 6a045e50...`, `DO NOT MERGE`; it remains a synthetic integration-certification evidence surface, not an approved integration plan.
 
 ## AUTHORIZED ROADMAP SLICE
 The last durable checkpoint remains authoritative:
@@ -19,8 +24,8 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 07:21 CT
-No relevant application-code branch head or `main` SHA changed during this audit window. Mission 1A, Mission 1B, the combined certification branch, Claude Writer base, takeover branch, and quality-stack branch all remain pinned to the same previously audited heads.
+## DELTA SINCE 08:26 CT
+No relevant application-code branch head or `main` SHA changed during this audit window. Mission 1A, Mission 1B, and the combined certification branch remain pinned to the same previously audited heads. PR #57/#58/#60 remain open draft review-only surfaces.
 
 No new exact-head CI was required because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
 
@@ -44,7 +49,7 @@ Until explicitly authorized integration lands, do not use main's generic branch 
 ## CORRECTNESS / PROVENANCE
 No new correctness regression, test weakening, provenance loss, raw file-copy integration, accidental publish/render enablement, or production mutation was observed in this window. Existing Mission 1A correctness evidence and Mission 1B/integration security evidence remain the latest technical evidence.
 
-The review topology remains materially asymmetric: Mission 1A presents inherited Writer work plus the P0 consolidation as a broad review surface relative to its declared Claude Writer base authority; Mission 1B remains the narrow hardening surface; the combined certification branch remains a synthetic evidence surface. None is an approved integration plan.
+The review topology remains materially asymmetric: Mission 1A presents inherited Writer work plus the P0 consolidation as a broad direct-to-main surface relative to its declared Claude Writer base authority; Mission 1B remains the narrow hardening surface; PR #60 remains a synthetic evidence surface. None is an approved integration plan.
 
 ## CREATIVE QUALITY
 No new live scripts or renders were observed, so there is no new evidence on hook quality, first-8-second escalation, spoken naturalness, information gain, visual specificity, payoff, sound/pacing, AI smell, or postability. Writer promotion remains unearned.
