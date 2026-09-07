@@ -1,4 +1,4 @@
-# Overnight Quality Control Addendum — through 2026-09-06 23:19 CT
+# Overnight Quality Control Addendum — through 2026-09-07 00:19 CT
 
 Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CONTROL.md`.
 
@@ -10,7 +10,6 @@ Canonical shadow-audit continuation. Read with `engineering/OVERNIGHT_QUALITY_CO
 - Mission 1A: `claude/p0-manifest-semantic-merge-01` @ `04ef8a3f6f23ff1aaef22482c89767612494f9ab` — freshly reverified unchanged; PR #57 remains open/draft against `main`, explicitly `DO NOT MERGE`, while its body identifies the Claude Writer branch as base authority.
 - Mission 1B: `superchad/mission-1b-branch-recon-hardening-01` @ `4e014946cf106d9d3457259c481f10ebfb8dbd41` — freshly reverified unchanged; PR #58 remains open/draft against `main` and `DO NOT MERGE`.
 - Combined integration-cert: `superchad/mission-1ab-integration-cert-02` @ `c46532af91bb55696b4cfafc7a7ece38cf3b99ae` — freshly reverified unchanged; PR #60 remains open/draft against `main` and `DO NOT MERGE`.
-- Audit/control branch before this write: `superchad/overnight-quality-control-01` @ `13b492490dafb0d3a82ba38134aa4a6e5919a3ee`.
 - Main remains untouched. No merge/deploy/publish/render/provider-backed generation was observed in this audit window.
 
 ## AUTHORIZED ROADMAP SLICE
@@ -20,7 +19,7 @@ The last durable checkpoint remains authoritative:
 3. correct or close stale Mission 1A PR topology;
 4. do not advance to live Writer/provider testing, promotion, render, deploy, publish, or another implementation slice until governance/review state is reconciled.
 
-## DELTA SINCE 22:16 CT
+## DELTA SINCE 23:19 CT
 No relevant application-code branch head, main SHA, Mission 1A/Mission 1B/combined-cert PR state, or combined-cert head changed during this audit window.
 
 Fresh verification confirms:
@@ -29,8 +28,8 @@ Fresh verification confirms:
 - SuperChad takeover remains `5669d2d3...`;
 - quality-stack integration remains `8d93f4e7...`;
 - Mission 1A remains `04ef8a3f...` and PR #57 remains draft/open against `main`;
-- Mission 1B remains `4e014946...` and PR #58 remains draft/open against `main`;
-- combined certification remains `c46532af...` and PR #60 remains draft/open against `main`.
+- Mission 1B remains `4e014946...`; PR #58 remains draft/open, mergeable, 3 changed files, explicitly `DO NOT MERGE`;
+- combined certification remains `c46532af...`; PR #60 remains draft/open, mergeable, and explicitly describes itself as a certification surface built from PR #57's synthetic main+Mission-1A merge plus only the three Mission 1B control-plane files.
 
 No new exact-head CI was required because no relevant implementation head moved. Existing green exact-head evidence remains technical evidence only, not authorization.
 
@@ -38,7 +37,7 @@ No new exact-head CI was required because no relevant implementation head moved.
 ### STOP WARNING — GOVERNANCE / REVIEW TOPOLOGY STILL OPEN
 Unchanged. Mission 1B and combined certification exist and were technically green from prior evidence, but the recorded Mission 1A authorization/review gate was not formally closed first. The stale Mission 1A direct-to-main review topology remains the known governance defect until explicitly corrected or closed.
 
-Do not treat branch existence, draft PRs, synthetic integration surfaces, or green CI as authorization to merge or advance.
+Do not treat branch existence, draft PRs, synthetic integration surfaces, mergeability, or green CI as authorization to merge or advance.
 
 ### CONVERGENCE STATUS
 WARNING — unchanged.
