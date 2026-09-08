@@ -48,6 +48,7 @@ jobs:
             quality_render_bridge.py quality_science_motion.py quality_science_render.py \
             quality_postrender_review.py quality_audio_qa.py quality_certification_generate.py \
             quality_certification_retry.py quality_writer_provider_resilience.py \
+            quality_writer_evidence_seed.py \
             research_grounding.py review_readiness.py science_motion.py scientific_media.py \
             sound_brain.py still_model_bakeoff.py story_packet.py writer_story_bridge.py \
             video_model_bakeoff.py video_repair_lab.py vision_gateway.py visual_director.py \
@@ -99,6 +100,7 @@ jobs:
           run_check "quality session" env -u GROQ_API_KEY python tests/test_quality_session.py
           run_check "quality certification generator" env -u GROQ_API_KEY python tests/test_quality_certification_generate.py
           run_check "quality certification retry" env -u GROQ_API_KEY python tests/test_quality_certification_retry.py
+          run_check "deterministic evidence seed" env -u GROQ_API_KEY python tests/test_quality_writer_evidence_seed.py
           run_check "flagship Writer provider resilience" env -u GROQ_API_KEY python tests/test_quality_writer_provider_resilience.py
           run_check "quality certification workflow" env -u GROQ_API_KEY python tests/test_quality_certification_workflow.py
           run_check "quality render bridge" env -u GROQ_API_KEY python tests/test_quality_render_bridge.py
@@ -125,6 +127,7 @@ jobs:
             quality_render_bridge.py quality_science_motion.py quality_science_render.py \
             quality_postrender_review.py quality_audio_qa.py quality_certification_generate.py \
             quality_certification_retry.py quality_writer_provider_resilience.py \
+            quality_writer_evidence_seed.py \
             research_grounding.py review_readiness.py science_motion.py scientific_media.py \
             sound_brain.py still_model_bakeoff.py story_packet.py writer_story_bridge.py \
             video_model_bakeoff.py video_repair_lab.py vision_gateway.py visual_director.py \
