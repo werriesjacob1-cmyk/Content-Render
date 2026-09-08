@@ -21,8 +21,7 @@ def test_manual_plus_one_shot_main_only_read_only_contract():
           "certification workflow has no schedule or external trigger")
     check("push:" in text and '".github/quality-certification-trigger"' in text,
           "temporary push bridge is restricted to one inert marker path")
-    check("branches:\n      - main" in text,
-          "temporary push bridge is main-only")
+    check("branches:\n      - main" in text, "temporary push bridge is main-only")
     check("github.event_name == 'push'" in text,
           "push bridge is explicit rather than silently bypassing provider acknowledgement")
     check("github.ref == 'refs/heads/main'" in text, "provider-backed certification is main-only")
@@ -59,8 +58,12 @@ def test_generated_visual_and_paid_voice_side_doors_are_closed():
 
 def test_evidence_bound_generator_and_bridge_are_load_bearing():
     text = WF.read_text(encoding="utf-8")
-    check("quality_certification_generate.py" in text and "--allow-provider-calls" in text,
-          "workflow uses guarded V2.1 certification bundle generator")
+    check("quality_certification_retry.py" in text and "--allow-provider-calls" in text,
+          "workflow uses bounded resilient V2.1 certification wrapper")
+    check("--max-writer-attempts 3" in text and 'QUALITY_CERTIFICATION_WRITER_ATTEMPTS: "3"' in text,
+          "flagship Writer retry budget is explicit and capped in workflow")
+    check("quality_certification_generate.py" not in text,
+          "workflow cannot bypass resilience wrapper by invoking one-shot generator directly")
     check("quality_science_render.py artifacts/quality_certification/manifest.json" in text,
           "exact sealed manifest is handed to authentic-first deterministic-science renderer")
     check("quality_render_bridge.py artifacts/quality_certification/manifest.json" not in text,
@@ -83,14 +86,10 @@ def test_audio_mastering_gate_is_local_and_load_bearing():
 
 def test_independent_holistic_qa_is_scene_aware_load_bearing_and_actionable():
     text = WF.read_text(encoding="utf-8")
-    review = "python quality_postrender_review.py"
-    check(review in text, "assembled MP4 receives independent modular holistic QA")
-    check("--report out/holistic_qa_report.json" in text,
-          "independent holistic verdict is retained")
-    check("--repair-plan out/targeted_repair_plan.json" in text,
-          "failed dimensions produce bounded repair targets")
-    check("--scene-timeline out/scene_timeline.json" in text,
-          "repair planner receives exact rendered scene boundaries")
+    check("python quality_postrender_review.py" in text, "assembled MP4 receives independent modular holistic QA")
+    check("--report out/holistic_qa_report.json" in text, "independent holistic verdict is retained")
+    check("--repair-plan out/targeted_repair_plan.json" in text, "failed dimensions produce bounded repair targets")
+    check("--scene-timeline out/scene_timeline.json" in text, "repair planner receives exact rendered scene boundaries")
     qa_block = text.split("Independent holistic QA + bounded repair targets", 1)[1].split("Collect viewer-facing evidence", 1)[0]
     check("continue-on-error" not in qa_block, "holistic QA failure remains load-bearing")
 
