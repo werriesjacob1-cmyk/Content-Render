@@ -1,0 +1,189 @@
+name: quality-certification-render
+
+# Private flagship-quality lane. This workflow NEVER publishes, releases,
+# commits, deploys, or changes the unattended production cron.
+on:
+  workflow_dispatch:
+    inputs:
+      topic_id:
+        description: "Eligible topic_bank id, or auto for deterministic quality-stack-first fresh selection"
+        required: true
+        default: "auto"
+        type: string
+      confirm_provider_calls:
+        description: "Acknowledge Writer/QA provider calls"
+        required: true
+        type: choice
+        default: "NO"
+        options:
+          - "NO"
+          - "YES_PRIVATE_CERTIFICATION_PROVIDER_CALLS"
+      confirm_free_science_network:
+        description: "Allow free NASA/PubChem/RCSB authentic-science retrieval"
+        required: true
+        type: choice
+        default: "YES"
+        options:
+          - "YES"
+          - "NO"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-certification-render
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_provider_calls == 'YES_PRIVATE_CERTIFICATION_PROVIDER_CALLS' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PAGE: science
+    steps:
+      - name: Checkout exact trusted main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prove trusted private-certification checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "trusted_main_sha=$GITHUB_SHA"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ensure ffmpeg and fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -version >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          fc-list | grep -qi dejavu || (sudo apt-get update && sudo apt-get install -y fonts-dejavu-core)
+          fc-cache -f >/dev/null 2>&1 || true
+
+      - name: Install render dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Piper voice
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-en_US-ryan-high-v1
+
+      - name: Fetch offline neural voice fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p voices
+          BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
+          if [ ! -s voices/voice.onnx ]; then
+            curl -fsSL -o voices/voice.onnx "$BASE/en_US-ryan-high.onnx"
+            curl -fsSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json"
+          fi
+          test -s voices/voice.onnx
+
+      - name: Generate sealed Writer V2.1 certification bundle
+        env:
+          QUALITY_CERTIFICATION_LIVE: I_ACCEPT_PROVIDER_CALLS
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_GENERATION: "1"
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
+          TOGETHER_MODEL: ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
+          TOPIC_ID: ${{ inputs.topic_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_certification_generate.py \
+            --topic "$TOPIC_ID" \
+            --out artifacts/quality_certification \
+            --allow-provider-calls
+
+      - name: Render through authentic-first + deterministic-science certification bridge
+        env:
+          QUALITY_RENDER_FREE_NETWORK: ${{ inputs.confirm_free_science_network == 'YES' && 'I_ACCEPT_FREE_NETWORK' || 'DISABLED' }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          AI_IMAGE: "0"
+          FAL_KEY: ""
+          FAL_API_KEY: ""
+          ELEVENLABS_API_KEY: ""
+          SFX_CUTS: "0"
+          MUSIC_DUCK: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_science_render.py artifacts/quality_certification/manifest.json
+
+      - name: Local final-audio mastering QA
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_audio_qa.py \
+            --video out/final.mp4 \
+            --manifest artifacts/quality_certification/manifest.json \
+            --report out/audio_qa_report.json
+
+      - name: Independent holistic QA + bounded repair targets
+        if: ${{ always() }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_postrender_review.py \
+            --manifest artifacts/quality_certification/manifest.json \
+            --video out/final.mp4 \
+            --report out/holistic_qa_report.json \
+            --repair-plan out/targeted_repair_plan.json \
+            --scene-timeline out/scene_timeline.json \
+            --work-dir work/holistic_qa
+
+      - name: Collect viewer-facing evidence even on QA failure
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p artifacts/quality_certification/render
+          if [ -s out/final.mp4 ]; then
+            ffprobe -v error -show_entries format=duration,size \
+              -of default=noprint_wrappers=1 out/final.mp4 || true
+            cp out/final.mp4 artifacts/quality_certification/render/final.mp4
+          fi
+          for f in cover.jpg qa_report.json audio_qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json post.json; do
+            test -f "out/$f" && cp "out/$f" "artifacts/quality_certification/render/$f" || true
+          done
+
+      - name: Upload private certification package
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-certification-${{ github.sha }}
+          path: artifacts/quality_certification
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Assert workflow never created publish state
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain | grep -E '^.. (docs/|releases/)' || true)"
+          echo "PRIVATE CERTIFICATION COMPLETE — artifact only; no Release/Publer/publish step exists"
