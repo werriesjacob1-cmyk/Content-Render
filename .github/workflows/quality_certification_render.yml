@@ -145,16 +145,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Evidence seed is private-certification-only. It replaces only the
-          # initial creative writer call; the canonical independent semantic,
-          # traceability, validate(), quality, evidence-bridge and session gates
-          # still decide whether a manifest exists. If it fails, the bounded
-          # provider candidates remain available as fallback.
+          # The default flagship path proves the FACTORY: generic topic
+          # selection into the generic Writer V2.1 path. --prefer-evidence-seed
+          # is deliberately NOT passed here -- that seed is hand-authored for
+          # one specific topic, so preferring it would certify a handcrafted
+          # input rather than the system that has to write every future video.
+          # It remains available in quality_certification_retry.py for explicit
+          # manual/forensic reruns and regression reproduction.
+          # The canonical independent semantic, traceability, validate(),
+          # quality, evidence-bridge and session gates decide whether a
+          # manifest exists either way.
           python quality_certification_retry.py \
             --topic "$TOPIC_ID" \
             --out artifacts/quality_certification \
             --max-writer-attempts 3 \
-            --prefer-evidence-seed \
             --allow-provider-calls
 
       - name: Render through authentic-first + deterministic-science certification bridge

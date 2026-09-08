@@ -2,7 +2,10 @@
 """Push a finished render to Publer through the Publer API.
 
 HARD KILL SWITCH: this module is inert unless AUTO_PUBLISH_ENABLED is exactly
-"true" (case-insensitive). Credentials alone are never sufficient to activate
+the lowercase string "true" (surrounding whitespace is trimmed, nothing else).
+"TRUE", "True", "1", "yes", empty and unset all leave publishing OFF, matching
+the workflow-level `AUTO_PUBLISH_ENABLED == 'true'` condition exactly so the two
+gates can never disagree. Credentials alone are never sufficient to activate
 posting. This keeps publishing independently disabled while render quality is
 being certified and makes the eventual production cutover an explicit switch.
 
@@ -10,7 +13,7 @@ The caller may still choose draft or scheduled Publer state, but both are behind
 the same master switch.
 
 Env:
-  AUTO_PUBLISH_ENABLED  master switch; exact "true" required, otherwise no-op
+  AUTO_PUBLISH_ENABLED  master switch; exact lowercase "true" required, else no-op
   PUBLER_API_KEY        Publer Business/Enterprise API key
   PUBLER_WORKSPACE_ID   workspace to post into
   PUBLER_ACCOUNT_IDS    optional comma-separated social-account ids; unset = all
@@ -33,7 +36,10 @@ WS = os.environ.get("PUBLER_WORKSPACE_ID", "").strip()
 
 
 def _autopublish_enabled():
-    return os.environ.get("AUTO_PUBLISH_ENABLED", "").strip().lower() == "true"
+    # Exact lowercase "true" only -- identical to the workflow-level condition.
+    # Case-folding here would let TRUE/True open this gate while the workflow
+    # kept it shut, so the two layers would no longer agree on one contract.
+    return os.environ.get("AUTO_PUBLISH_ENABLED", "").strip() == "true"
 
 
 def _headers(extra=None):
@@ -131,7 +137,8 @@ def _caption(argv):
 
 def main():
     if not _autopublish_enabled():
-        print("[publer] AUTO_PUBLISH_ENABLED is not true — hard publishing kill switch is OFF")
+        print("[publer] PUBLISHING DISABLED — master kill switch active "
+              "(AUTO_PUBLISH_ENABLED is not exactly \"true\"); nothing was posted")
         return 0
     if not KEY or not WS:
         print("[publer] publishing enabled but PUBLER_API_KEY / PUBLER_WORKSPACE_ID are not set — skipping")

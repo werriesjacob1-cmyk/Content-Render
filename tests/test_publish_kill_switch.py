@@ -63,19 +63,25 @@ def test_workflow_gates_every_publish_surface():
           "manual certification remains an independent Publer block")
 
 
-def test_exact_true_is_required_inside_publer_module():
+def test_exact_lowercase_true_is_required_inside_publer_module():
+    # The module gate must agree EXACTLY with the workflow condition
+    # (AUTO_PUBLISH_ENABLED == 'true'). Case-folding here would let TRUE/True
+    # open the module gate while the workflow kept it shut.
     old = os.environ.get("AUTO_PUBLISH_ENABLED")
     try:
-        for value in (None, "", "0", "1", "false", "yes", "TRUE-ish"):
+        disabled = (None, "", "0", "1", "false", "yes", "TRUE-ish",
+                    "TRUE", "True", "tRuE", "true1", "truthy")
+        for value in disabled:
             if value is None:
                 os.environ.pop("AUTO_PUBLISH_ENABLED", None)
             else:
                 os.environ["AUTO_PUBLISH_ENABLED"] = value
             check(not P._autopublish_enabled(), f"{value!r} does not enable publishing")
         os.environ["AUTO_PUBLISH_ENABLED"] = "true"
-        check(P._autopublish_enabled(), "exact true enables the internal gate")
-        os.environ["AUTO_PUBLISH_ENABLED"] = "TRUE"
-        check(P._autopublish_enabled(), "case-insensitive exact true is accepted")
+        check(P._autopublish_enabled(), "exact lowercase true enables the internal gate")
+        os.environ["AUTO_PUBLISH_ENABLED"] = "  true  "
+        check(P._autopublish_enabled(),
+              "surrounding whitespace is trimmed, but the value itself stays exact")
     finally:
         if old is None:
             os.environ.pop("AUTO_PUBLISH_ENABLED", None)
@@ -83,8 +89,35 @@ def test_exact_true_is_required_inside_publer_module():
             os.environ["AUTO_PUBLISH_ENABLED"] = old
 
 
+def test_module_gate_and_workflow_gate_agree_on_one_contract():
+    text = (ROOT / ".github/workflows/render.yml").read_text(encoding="utf-8")
+    check("vars.AUTO_PUBLISH_ENABLED == 'true'" in text,
+          "workflow independently requires the exact lowercase literal 'true'")
+    source = (ROOT / "publish_publer.py").read_text(encoding="utf-8")
+    check('.strip().lower() == "true"' not in source,
+          "module gate does not case-fold, so it cannot be looser than the workflow")
+    check('.strip() == "true"' in source,
+          "module gate compares the trimmed value against exact lowercase true")
+
+
+def test_disabled_publishing_is_reported_without_implying_the_guard_is_off():
+    text = (ROOT / ".github/workflows/render.yml").read_text(encoding="utf-8")
+    report = text.split("- name: Report publishing switch", 1)[1].split("- name:", 1)[0]
+    check("HARD PUBLISHING KILL SWITCH IS OFF" not in report,
+          "disabled state is not described as the safety mechanism being off")
+    check("PUBLISHING DISABLED" in report and "PUBLISHING ENABLED" in report,
+          "both publishing states are reported in terms of publishing, not the guard")
+    source = (ROOT / "publish_publer.py").read_text(encoding="utf-8")
+    check("hard publishing kill switch is OFF" not in source,
+          "module no-op message does not claim the kill switch is off")
+    check("PUBLISHING DISABLED" in source,
+          "module states plainly that publishing is disabled")
+
+
 if __name__ == "__main__":
     test_publer_credentials_cannot_bypass_master_switch()
     test_workflow_gates_every_publish_surface()
-    test_exact_true_is_required_inside_publer_module()
+    test_exact_lowercase_true_is_required_inside_publer_module()
+    test_module_gate_and_workflow_gate_agree_on_one_contract()
+    test_disabled_publishing_is_reported_without_implying_the_guard_is_off()
     print("publishing kill-switch tests: PASS")

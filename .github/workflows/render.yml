@@ -315,9 +315,9 @@ jobs:
       - name: Report publishing switch
         run: |
           if [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
-            echo "AUTO_PUBLISH_ENABLED=true — publish steps may run only if all other guards pass"
+            echo "PUBLISHING ENABLED — AUTO_PUBLISH_ENABLED is exactly 'true'; publish steps may run only if all other guards pass"
           else
-            echo "AUTO_PUBLISH_ENABLED is unset/not true — HARD PUBLISHING KILL SWITCH IS OFF"
+            echo "PUBLISHING DISABLED — master kill switch active (AUTO_PUBLISH_ENABLED is not exactly 'true'); no Release and no Publer push can run"
           fi
 
       - name: Publish video as a GitHub Release (Buffer/Zapier pickup)

@@ -6,11 +6,15 @@ purpose-built graphics without another model call. It never infers a process or
 quantity from arbitrary narration. Every visual step/value is copied from
 already-accepted spoken lines carrying sealed Writer claim IDs.
 
-Eligible v1 treatments:
+Eligible production treatments:
 - ONE_OBJECT_JOURNEY: path begins -> transformation -> obstacle -> destination
 - HIDDEN_MECHANISM: beneath surface -> mechanism -> consequence
 - INSIDE_THE_SYSTEM: internal component -> connection -> critical interaction
-- SCALE_REVEAL: only dimensionless ``N times`` ratios that are safe to compare
+
+SCALE_REVEAL is deliberately NOT in that list. See
+``SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED`` below: sealed provenance proves each
+ratio is real, but nothing currently proves two ratios measure comparable
+quantities, so the production planner refuses to chart them.
 
 The resulting graphic is deterministic FFmpeg output, makes zero network/AI
 calls, and is used only when a higher-priority authentic NASA/PubChem asset did
@@ -44,6 +48,17 @@ _TREATMENT_FLOW = {
 }
 
 _RATIO_RE = re.compile(r"\b(\d+(?:\.\d+)?)\s+(times)\b", re.I)
+
+# Fail-closed switch for the SCALE_REVEAL lane. Matching sealed "N times"
+# ratios proves each number was actually said and cited -- it does NOT prove the
+# two ratios measure comparable quantities. "4 times faster" and "100 times
+# denser" are both dimensionless, both sealed, and putting them on one axis
+# would assert a comparison the evidence never makes. Until claims carry an
+# explicit machine-readable comparability contract (a shared quantity/dimension
+# the planner can check rather than infer), no deterministic comparison graphic
+# is emitted. The planner below is retained, unreferenced by production, so that
+# contract can be built against working machinery instead of from scratch.
+SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED = False
 
 
 @dataclass(frozen=True)
@@ -107,15 +122,19 @@ def _ratio_tail_label(text: str, match: re.Match[str], max_chars: int = 32) -> s
     return _short_accepted_label(tail, max_chars=max_chars)
 
 
-def _plan_dimensionless_scale(
+def _inert_plan_dimensionless_scale(
     manifest: Mapping[str, Any],
     allowed: set[str],
 ) -> dict[str, ScienceMotionPlan]:
-    """Plan a SCALE_COMPARE only for accepted dimensionless ``N times`` ratios.
+    """NOT PRODUCTION. Retained machinery for a future comparability contract.
 
-    Ordinary measurements with unlike units are deliberately refused. The
-    motivating eclipse case compares ``400 times wider`` and ``400 times farther``;
-    two equal bars make the cancellation legible without inventing new science.
+    Nothing in production calls this. It plans a SCALE_COMPARE from accepted
+    dimensionless ``N times`` ratios, which is safe only when the ratios happen
+    to describe comparable quantities -- something this function cannot verify
+    and never claimed to. It refuses unlike-unit measurements and unsealed
+    claims, but two sealed ratios of unrelated quantities would still be
+    charted together, which is exactly why ``plan_manifest`` no longer routes
+    here. See ``SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED``.
     """
     scenes = [s for s in (manifest.get("scenes") or []) if isinstance(s, Mapping)]
     if not scenes or not allowed:
@@ -198,7 +217,10 @@ def plan_manifest(
     treatment = str(manifest.get("treatment") or "").strip()
     allowed = {str(x).strip() for x in allowed_claim_ids if str(x).strip()}
     if treatment == "SCALE_REVEAL":
-        return _plan_dimensionless_scale(manifest, allowed)
+        # Fail closed: no deterministic comparison graphic without explicit
+        # proof of semantic comparability. The scene keeps its normal
+        # authentic-science/stock routing instead.
+        return {}
 
     rule = _TREATMENT_FLOW.get(treatment)
     if not rule:

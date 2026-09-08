@@ -72,11 +72,9 @@ def test_evidence_bound_generator_and_bridge_are_load_bearing():
           "workflow uses bounded resilient V2.1 certification wrapper")
     check("--max-writer-attempts 3" in text and 'QUALITY_CERTIFICATION_WRITER_ATTEMPTS: "3"' in text,
           "flagship provider Writer retry budget remains explicit and capped")
-    check("--prefer-evidence-seed" in text,
-          "deterministic evidence seed is an explicit private-certification option")
-    seed_note = text.split("Evidence seed is private-certification-only", 1)[1].split("python quality_certification_retry.py", 1)[0]
-    check("semantic" in seed_note and "traceability" in seed_note and "quality" in seed_note,
-          "workflow documents that seed does not bypass canonical Writer acceptance gates")
+    gen_note = text.split("- name: Generate sealed Writer V2.1 certification bundle", 1)[1]
+    check("semantic" in gen_note and "traceability" in gen_note and "quality" in gen_note,
+          "workflow documents that generation does not bypass canonical Writer acceptance gates")
     check("quality_certification_generate.py" not in text,
           "workflow cannot bypass resilience wrapper by invoking one-shot generator directly")
     check("quality_science_render.py artifacts/quality_certification/manifest.json" in text,
@@ -122,6 +120,29 @@ def test_failed_certification_still_preserves_all_viewer_evidence():
     check("if: ${{ always() }}" in upload_block, "private artifact upload survives failed QA")
 
 
+def test_default_flagship_path_proves_the_factory_not_a_handcrafted_seed():
+    text = WF.read_text(encoding="utf-8")
+    gen_step = text.split("- name: Generate sealed Writer V2.1 certification bundle", 1)[1]
+    # Compare the executed command only: a comment may legitimately explain why
+    # the flag is absent, and that explanation must not read as the flag itself.
+    executed = "\n".join(
+        line for line in gen_step.splitlines() if not line.strip().startswith("#")
+    )
+    check("--prefer-evidence-seed" not in executed,
+          "default flagship run does not prefer the hand-authored topic-specific evidence seed")
+    check("python quality_certification_trigger.py" in text and '--topic "$TOPIC_ID"' in executed,
+          "generic resolved topic remains the generation input on the default path")
+    check("venus" not in text.lower(),
+          "no topic-specific handcrafted input survives anywhere in the flagship workflow")
+    # The seed machinery itself stays available for explicit manual/forensic
+    # reruns and regression reproduction -- it is just never the default.
+    retry = (ROOT / "quality_certification_retry.py").read_text(encoding="utf-8")
+    check('p.add_argument("--prefer-evidence-seed", action="store_true")' in retry,
+          "evidence seed remains an explicit opt-in flag rather than being deleted")
+    check("prefer_evidence_seed: bool = False" in retry,
+          "evidence seed is off by default at the library boundary too")
+
+
 def test_fast_reliable_prerequisite_check_replaces_false_font_probe():
     text = WF.read_text(encoding="utf-8")
     prereq_block = text.split("Ensure ffmpeg and fonts", 1)[1].split("Install render dependencies", 1)[0]
@@ -153,6 +174,7 @@ if __name__ == "__main__":
     test_audio_mastering_gate_is_local_and_load_bearing()
     test_independent_holistic_qa_is_scene_aware_load_bearing_and_actionable()
     test_failed_certification_still_preserves_all_viewer_evidence()
+    test_default_flagship_path_proves_the_factory_not_a_handcrafted_seed()
     test_fast_reliable_prerequisite_check_replaces_false_font_probe()
     test_real_render_dependencies_are_proved_before_execution()
     print("quality certification workflow tests: PASS")

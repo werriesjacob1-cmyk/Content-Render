@@ -91,41 +91,90 @@ def test_mechanism_and_system_are_explicitly_supported_but_arbitrary_treatments_
     check(myth == {}, "arbitrary narrative order is never misrepresented as a physical process")
 
 
-def test_scale_reveal_uses_only_dimensionless_accepted_ratios():
+def _unrelated_ratio_manifest():
+    """Two sealed, dimensionless, entirely NON-comparable ratios.
+
+    Both lines pass every provenance check the ratio planner can make, yet
+    charting "4 times faster" against "100 times denser" on one axis would
+    assert a comparison the evidence never makes.
+    """
+    lines = [
+        ("Neutron stars break almost every intuition you have about matter.", ["base_001"]),
+        ("Their surface material spins about 4 times faster than a kitchen blender.", ["base_001"]),
+        ("Their core is roughly 100 times denser than an atomic nucleus.", ["base_002"]),
+        ("Those two facts describe completely different physical quantities.", ["base_002"]),
+        ("Speed and density share no axis, no unit, and no meaningful ratio.", ["base_002"]),
+        ("A single teaspoon would still outweigh a mountain range.", ["base_002"]),
+        ("Nothing about the spin rate predicts the density.", ["base_001"]),
+        ("Two true numbers are not automatically two comparable numbers.", ["base_001", "base_002"]),
+    ]
+    return {
+        "title": "Neutron star extremes",
+        "treatment": "SCALE_REVEAL",
+        "scenes": [
+            {"id": i, "voiceover": line, "source_claim_ids": refs,
+             "_v2_role": "hook" if i == 1 else ("payoff" if i == 8 else "beat")}
+            for i, (line, refs) in enumerate(lines, 1)
+        ],
+    }
+
+
+def test_production_never_charts_unrelated_sealed_ratios():
+    # The adversarial case: every ratio is real, dimensionless and sealed, and
+    # the old routing would still have drawn one bar chart out of them.
+    m = _unrelated_ratio_manifest()
+    check(QSM.plan_manifest(m, ["base_001", "base_002"]) == {},
+          "unrelated sealed ratios (4x faster vs 100x denser) produce no comparison graphic")
+
+
+def test_scale_reveal_production_routing_is_failed_closed():
+    # Even the well-behaved eclipse case is refused: sealed provenance proves
+    # each ratio is real, never that two ratios are comparable.
     m = _eclipse_manifest()
-    plans = QSM.plan_manifest(m, ["base_001", "base_002"])
-    check(set(plans) == {"3"},
-          "eclipse scale comparison lands on the second 400x reveal, after both ratios have been spoken")
+    check(QSM.plan_manifest(m, ["base_001", "base_002"]) == {},
+          "SCALE_REVEAL emits no deterministic comparison without proof of semantic comparability")
+    check(QSM.SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED is False,
+          "the SCALE_REVEAL lane is explicitly marked disabled rather than silently dropped")
+    check(not hasattr(QSM, "_plan_dimensionless_scale"),
+          "the unproven planner is not reachable under its old production name")
+    source = (os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                           "quality_science_motion.py"))
+    with open(source, encoding="utf-8") as fh:
+        text = fh.read()
+    body = text.split("def plan_manifest(", 1)[1]
+    check("_inert_plan_dimensionless_scale" not in body,
+          "production planner contains no call into the inert ratio machinery")
+
+
+def test_inert_ratio_planner_is_preserved_for_a_future_comparability_contract():
+    # Exercises the NON-PRODUCTION helper directly, so the machinery a future
+    # explicit comparability contract will build on stays regression-covered.
+    m = _eclipse_manifest()
+    plans = QSM._inert_plan_dimensionless_scale(m, {"base_001", "base_002"})
     p = plans["3"]
     check(p.spec.kind == SM.MotionKind.SCALE_COMPARE,
-          "SCALE_REVEAL uses the deterministic scale-comparison renderer")
-    check(p.source_scene_ids == ("2", "3"),
-          "comparison uses only the two accepted 400-times scale beats")
+          "inert planner still produces the deterministic scale-comparison spec")
     check([item.value for item in p.spec.scale_items] == [400.0, 400.0],
-          "equal 400x width/distance ratios render as equal scale values")
+          "equal 400x width/distance ratios still render as equal scale values")
     check([item.display_value for item in p.spec.scale_items] == ["400 TIMES", "400 TIMES"],
-          "display values are copied from accepted narration rather than reformulated")
+          "display values are still copied from accepted narration rather than reformulated")
     check([item.label for item in p.spec.scale_items] == ["WIDER THAN THE MOON", "FARTHER AWAY"],
-          "bar labels stay concise while remaining literal substrings of accepted narration")
-    check(p.source_claim_ids == ("base_001",),
-          "scale comparison provenance is bound to the exact sealed central claim")
+          "bar labels remain literal substrings of accepted narration")
     graph = SM.compile_filtergraph(p.spec)
     check("400 TIMES" in graph and "SCALE COMPARISON" in graph,
-          "existing deterministic FFmpeg backend can compile the eclipse comparison")
+          "deterministic FFmpeg backend still compiles the retained comparison spec")
 
-
-def test_scale_reveal_refuses_unsafe_or_underpowered_comparisons():
     m = _eclipse_manifest()
     m["scenes"][2]["voiceover"] = "The Sun is about 150 million kilometers away."
-    check(QSM.plan_manifest(m, ["base_001", "base_002"]) == {},
-          "one dimensionless ratio plus one unlike-unit measurement does not create a misleading bar chart")
+    check(QSM._inert_plan_dimensionless_scale(m, {"base_001", "base_002"}) == {},
+          "one dimensionless ratio plus one unlike-unit measurement is still refused")
 
     m = _eclipse_manifest()
     m["scenes"][2]["source_claim_ids"] = ["unsealed_999"]
     try:
-        QSM.plan_manifest(m, ["base_001", "base_002"])
+        QSM._inert_plan_dimensionless_scale(m, {"base_001", "base_002"})
     except ValueError as exc:
-        check("unsealed claim" in str(exc), "unsealed ratio evidence fails closed")
+        check("unsealed claim" in str(exc), "unsealed ratio evidence still fails closed")
     else:
         raise AssertionError("unsealed scale-comparison claim should fail")
 
@@ -159,8 +208,9 @@ def test_provenance_declares_zero_network_and_zero_ai():
 if __name__ == "__main__":
     test_journey_builds_one_late_nonspoiling_flow()
     test_mechanism_and_system_are_explicitly_supported_but_arbitrary_treatments_are_not()
-    test_scale_reveal_uses_only_dimensionless_accepted_ratios()
-    test_scale_reveal_refuses_unsafe_or_underpowered_comparisons()
+    test_production_never_charts_unrelated_sealed_ratios()
+    test_scale_reveal_production_routing_is_failed_closed()
+    test_inert_ratio_planner_is_preserved_for_a_future_comparability_contract()
     test_missing_or_unsealed_evidence_never_generates_a_graphic()
     test_provenance_declares_zero_network_and_zero_ai()
     print("quality_science_motion tests: PASS")
