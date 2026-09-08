@@ -14,15 +14,25 @@ def check(cond, label):
     print(f"PASS {label}")
 
 
-def test_manual_main_only_read_only_contract():
+def test_manual_plus_one_shot_main_only_read_only_contract():
     text = WF.read_text(encoding="utf-8")
-    check("workflow_dispatch:" in text, "certification workflow is manually dispatchable")
+    check("workflow_dispatch:" in text, "certification workflow remains manually dispatchable")
     check("schedule:" not in text and "repository_dispatch:" not in text,
-          "certification workflow has no unattended or external trigger")
+          "certification workflow has no schedule or external trigger")
+    check("push:" in text and '".github/quality-certification-trigger"' in text,
+          "temporary push bridge is restricted to one inert marker path")
+    check("branches:\n      - main" in text,
+          "temporary push bridge is main-only")
+    check("github.event_name == 'push'" in text,
+          "push bridge is explicit rather than silently bypassing provider acknowledgement")
     check("github.ref == 'refs/heads/main'" in text, "provider-backed certification is main-only")
     check("contents: read" in text and "contents: write" not in text, "token is read-only")
     check("persist-credentials: false" in text, "checkout credentials are not persisted")
     check('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"' in text, "exact trusted SHA is proved before calls")
+    check("github.event_name == 'workflow_dispatch' && inputs.topic_id || 'auto'" in text,
+          "path-triggered certification deterministically uses auto topic selection")
+    check("github.event_name == 'push' || inputs.confirm_free_science_network == 'YES'" in text,
+          "path-triggered certification explicitly enables only free authentic-science network")
 
 
 def test_no_publish_or_write_capability_is_present():
@@ -108,7 +118,7 @@ def test_real_render_dependencies_are_proved_before_execution():
 
 
 if __name__ == "__main__":
-    test_manual_main_only_read_only_contract()
+    test_manual_plus_one_shot_main_only_read_only_contract()
     test_no_publish_or_write_capability_is_present()
     test_generated_visual_and_paid_voice_side_doors_are_closed()
     test_evidence_bound_generator_and_bridge_are_load_bearing()
