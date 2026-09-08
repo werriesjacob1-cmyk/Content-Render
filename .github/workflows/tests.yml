@@ -1,7 +1,8 @@
 name: tests
 
 # Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
-# diagnostics. No suite makes network calls.
+# diagnostics and the additive production-quality stack. No suite makes
+# network calls; provider-aware quality-stack tests run with GROQ_API_KEY unset.
 on:
   pull_request:
   push:
@@ -23,9 +24,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      - name: Prove checkout identity and required Writer V2.1 paths
+      - name: Prove checkout identity and required quality paths
         run: |
           echo "checked_out_sha=$(git rev-parse HEAD)"
+          # Canonical Writer V2.1 / Mission 2 paths.
           test -f writer_v21_visual_preflight.py
           test -f tests/test_writer_v21_visual_feasibility.py
           test -f wr21_takeover_bakeoff.py
@@ -40,6 +42,20 @@ jobs:
           test -f tests/test_writer_v21_quality_bakeoff_integrity.py
           test -f tests/test_writer_v21_factual_audit.py
           test -f tests/test_writer_v21_provider_guardrail.py
+          # Current-main quality-stack carry-forward. The obsolete September-4
+          # writer_v21_adapter is intentionally NOT required: canonical Writer
+          # V2.1 remains the source of truth.
+          for f in \
+            asset_gateway.py capability_preflight.py final_video_qa.py \
+            generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
+            quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
+            research_grounding.py review_readiness.py science_motion.py scientific_media.py \
+            sound_brain.py still_model_bakeoff.py story_packet.py video_model_bakeoff.py \
+            video_repair_lab.py vision_gateway.py visual_director.py visual_torture_corpus.py \
+            voice_bakeoff.py; do
+            test -f "$f"
+          done
+          test ! -f writer_v21_adapter.py
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -48,7 +64,7 @@ jobs:
           GROQ_API_KEY: x
           # Python 3.11 sets sys.path[0] to tests/ when a test file is executed
           # by path. Keep the checked-out repository root explicitly importable
-          # so top-level Writer modules are tested exactly from this head.
+          # so top-level modules are tested exactly from this head.
           PYTHONPATH: ${{ github.workspace }}
         run: |
           set -uo pipefail
@@ -79,5 +95,30 @@ jobs:
           run_check "symmetric factual audit" python tests/test_writer_v21_factual_audit.py
           run_check "provider comparability" python tests/test_writer_v21_provider_guardrail.py
           run_check "sealed quality evidence" python tests/test_writer_v21_quality_bakeoff_integrity.py
-          run_check "live runner syntax preflight" python -m py_compile wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py writer_v21_quality_bakeoff.py writer_v21_factual_audit.py writer_v21_provider_guardrail.py wr21_quality_bakeoff.py wr21_quality_preregister.py wr21_quality_generate.py
+
+          # Production-quality stack regressions. Unset the CI dummy key so
+          # provider-aware modules prove their fail-closed zero-spend behavior.
+          run_check "quality stack" env -u GROQ_API_KEY python tests/test_quality_stack.py
+          run_check "story packet" env -u GROQ_API_KEY python tests/test_story_packet.py
+          run_check "quality session" env -u GROQ_API_KEY python tests/test_quality_session.py
+          run_check "image-to-video controller" env -u GROQ_API_KEY python tests/test_image_to_video_bakeoff.py
+          run_check "generated-media controller" env -u GROQ_API_KEY python tests/test_generated_media_controller.py
+          run_check "capability preflight" env -u GROQ_API_KEY python tests/test_capability_preflight.py
+          run_check "review readiness" env -u GROQ_API_KEY python tests/test_review_readiness.py
+          run_check "visual torture routing" env -u GROQ_API_KEY python tests/test_visual_torture_corpus.py
+          run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
+          run_check "quality-stack preflight" env -u GROQ_API_KEY python quality_stack_cli.py --preflight
+
+          run_check "live runner + quality-stack syntax preflight" python -m py_compile \
+            wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py \
+            writer_v21_quality_bakeoff.py writer_v21_factual_audit.py \
+            writer_v21_provider_guardrail.py wr21_quality_bakeoff.py \
+            wr21_quality_preregister.py wr21_quality_generate.py \
+            asset_gateway.py capability_preflight.py final_video_qa.py \
+            generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
+            quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
+            research_grounding.py review_readiness.py science_motion.py scientific_media.py \
+            sound_brain.py still_model_bakeoff.py story_packet.py video_model_bakeoff.py \
+            video_repair_lab.py vision_gateway.py visual_director.py visual_torture_corpus.py \
+            voice_bakeoff.py
           exit "$failed"
