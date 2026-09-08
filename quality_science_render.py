@@ -3,12 +3,13 @@
 
 This is a thin layer over the already-green ``quality_render_bridge``. It keeps
 that bridge's evidence gate, NASA/PubChem resolution, legacy footage selection,
-caption/audio/final-QA behavior, and provenance. The only added behavior is:
+caption/audio/final-QA behavior, and provenance. The only added visual behavior is:
 
   authentic NASA/PubChem > evidence-bound deterministic science motion > stock
 
-for a small set of V2.1 treatments whose frozen beat semantics license an ordered
-process graphic. Generated media remains disabled here.
+It also records exact rendered scene boundaries so post-render QA can identify
+which concrete scenes overlap a failing time window instead of asking for broad
+whole-video regeneration. Generated media remains disabled here.
 """
 from __future__ import annotations
 
@@ -47,6 +48,41 @@ def _augment_provenance(
     payload["science_motion"] = rows
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+
+
+def _write_scene_timeline(manifest: Mapping[str, Any]) -> dict[str, Any]:
+    """Measure final per-scene MP4s and persist exact chronological boundaries."""
+    rows: list[dict[str, Any]] = []
+    cursor = 0.0
+    scenes = [s for s in (manifest.get("scenes") or []) if isinstance(s, Mapping)]
+    for idx, scene in enumerate(scenes, 1):
+        path = Path(legacy.WORK) / f"s{idx}.mp4"
+        duration = float(legacy.ffprobe_dur(str(path))) if path.is_file() else 0.0
+        start = cursor
+        end = cursor + max(0.0, duration)
+        rows.append({
+            "scene_id": B._scene_key(scene, idx),
+            "scene_index": idx,
+            "role": str(scene.get("_v2_role") or "scene"),
+            "start_s": round(start, 3),
+            "end_s": round(end, 3),
+            "duration_s": round(max(0.0, duration), 3),
+            "search_query": str(scene.get("search_query") or ""),
+            "source_claim_ids": list(scene.get("source_claim_ids") or []),
+            "rendered_scene_file_present": path.is_file() and duration > 0,
+        })
+        cursor = end
+    payload = {
+        "schema": "quality-scene-timeline-v1",
+        "scene_count": len(rows),
+        "measured_body_duration_s": round(cursor, 3),
+        "scenes": rows,
+    }
+    Path(legacy.OUT).mkdir(parents=True, exist_ok=True)
+    (Path(legacy.OUT) / "scene_timeline.json").write_text(
+        json.dumps(payload, indent=2), encoding="utf-8"
+    )
+    return payload
 
 
 def main() -> None:
@@ -104,6 +140,16 @@ def main() -> None:
     try:
         legacy.main()
     finally:
+        # Capture scene boundaries before any cleanup/restore can hide which
+        # concrete scene files were produced. This runs even when final QA exits.
+        try:
+            timeline = _write_scene_timeline(manifest)
+            print(
+                f"[quality-science] measured {timeline['scene_count']} scene boundaries "
+                f"across {timeline['measured_body_duration_s']:.3f}s"
+            )
+        except Exception as exc:  # noqa: BLE001 -- provenance aid cannot hide primary result
+            print(f"[quality-science] scene timeline capture failed: {exc}")
         # Restore in reverse order so no process-global monkeypatch survives even
         # when final assembled-video QA exits non-zero.
         legacy.build_scene = bridged_build_scene
