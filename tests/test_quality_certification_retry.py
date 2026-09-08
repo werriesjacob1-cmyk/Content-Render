@@ -2,6 +2,7 @@
 """Zero-network regressions for resilient private certification runner."""
 from __future__ import annotations
 
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -64,6 +65,8 @@ def test_retries_rejected_candidate_then_accepts_without_weakening_gate():
           "runner returns only after canonical Writer reports accepted")
     check(evidence["attempts"][0]["accepted"] is False and evidence["attempts"][1]["accepted"] is True,
           "attempt evidence preserves rejected and accepted outcomes separately")
+    check(all(a["candidate_kind"] == "provider_writer" for a in evidence["attempts"]),
+          "normal certification path remains provider-only when seed flag is absent")
 
 
 def test_all_rejections_fail_closed_and_persist_debug():
@@ -104,11 +107,89 @@ def test_all_rejections_fail_closed_and_persist_debug():
 
     check(raised, "three rejected candidates still fail certification closed")
     check(calls["n"] == R.MAX_HARD_ATTEMPTS,
-          "operator value cannot exceed hard three-attempt ceiling")
+          "operator value cannot exceed hard three-provider-attempt ceiling")
     check(attempts["accepted"] is False and attempts["attempt_count"] == R.MAX_HARD_ATTEMPTS,
           "failure artifact retains every bounded Writer attempt")
     check(failure["stage"] == "writer_v21_bundle",
           "failure artifact identifies Writer stage instead of masquerading as render failure")
+
+
+def test_explicit_seed_first_uses_seed_as_input_but_canonical_acceptance_stays_required():
+    fact = {
+        "id": "venus_day",
+        "domain": "space",
+        "fact": "A day on Venus is longer than its year: one rotation takes 243 Earth days, while one trip around the Sun takes only 225.",
+        "angle": "time itself works differently elsewhere",
+        "key_terms": ["243 Earth days", "225 days", "retrograde"],
+        "whatif": "What if you tried to live out a single year on Venus? You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year.",
+        "wow": "Venus also spins in retrograde, the opposite direction to almost every other planet, so the Sun there rises in the west and sets in the east.",
+        "queries": ["planet venus surface", "planets orbiting sun", "space planet rotation"],
+    }
+    original_build = R.C.build_bundle
+    original_generate = R.C.O.generate_candidate_v21
+    original_research = R.C.G.research_dossier
+    original_structured = R.C.O.G._v2_structured_call
+    original_policy = R.P.certification_provider_policy
+    calls = {"generate": 0, "provider_writer": 0}
+
+    @contextmanager
+    def no_policy():
+        yield
+
+    def base_structured(prompt, schema, label, call_log):
+        if label == "writer_v2_output":
+            calls["provider_writer"] += 1
+        return None, None
+
+    def fake_generate(current_fact, *args, **kwargs):
+        calls["generate"] += 1
+        raw, _ = R.C.O.G._v2_structured_call("writer", {}, "writer_v2_output", [])
+        if raw is None:
+            return None, {"accepted": False, "error": "provider draft unavailable", "rounds": [], "calls": []}
+        seed = json.loads(raw)
+        # This fake stands in for the rest of canonical V2.1 after proving that
+        # the deterministic seed entered ONLY through the normal writer-output
+        # surface.  Acceptance remains an explicit result of that canonical call.
+        return {"_semantic_verified": True, "hook": seed["hook"]}, {
+            "accepted": True,
+            "treatment": "TIMELINE_TRANSFORMATION",
+            "rounds": [{"semantic_verified": True}],
+            "calls": [],
+            "total_calls": 1,
+        }
+
+    def fake_build(topic, out_dir):
+        manifest, debug = R.C.O.generate_candidate_v21(fact)
+        if not manifest or not debug.get("accepted"):
+            raise RuntimeError(debug.get("error") or "rejected")
+        return {"topic_id": "venus_day", "accepted": True}
+
+    R.C.build_bundle = fake_build
+    R.C.O.generate_candidate_v21 = fake_generate
+    R.C.G.research_dossier = lambda _fact: []
+    R.C.O.G._v2_structured_call = base_structured
+    R.P.certification_provider_policy = no_policy
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            result = R.run_bundle(
+                "venus_day", td, max_attempts=3, prefer_evidence_seed=True
+            )
+            evidence = json.loads((Path(td) / "writer_attempts.json").read_text())
+    finally:
+        R.C.build_bundle = original_build
+        R.C.O.generate_candidate_v21 = original_generate
+        R.C.G.research_dossier = original_research
+        R.C.O.G._v2_structured_call = original_structured
+        R.P.certification_provider_policy = original_policy
+
+    check(result["accepted"] is True and result["evidence_seed_enabled"] is True,
+          "explicit seed-first mode can complete only after canonical call returns accepted")
+    check(calls["generate"] == 1 and calls["provider_writer"] == 0,
+          "accepted seed avoids burning a fresh provider-writer call")
+    check(evidence["attempt_count"] == 1 and evidence["attempts"][0]["candidate_kind"] == "deterministic_evidence_seed",
+          "artifact explicitly labels deterministic seed rather than disguising it as model output")
+    check(evidence["attempts"][0]["deterministic_evidence_seed"] is True,
+          "seed provenance remains visible in certification evidence")
 
 
 def test_live_guard_refuses_before_any_bundle_work():
@@ -128,5 +209,6 @@ def test_live_guard_refuses_before_any_bundle_work():
 if __name__ == "__main__":
     test_retries_rejected_candidate_then_accepts_without_weakening_gate()
     test_all_rejections_fail_closed_and_persist_debug()
+    test_explicit_seed_first_uses_seed_as_input_but_canonical_acceptance_stays_required()
     test_live_guard_refuses_before_any_bundle_work()
     print("quality_certification_retry tests: PASS")
