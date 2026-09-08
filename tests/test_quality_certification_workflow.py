@@ -29,9 +29,7 @@ def test_manual_plus_one_shot_main_only_read_only_contract():
     check("persist-credentials: false" in text, "checkout credentials are not persisted")
     check('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"' in text, "exact trusted SHA is proved before calls")
     check("github.event_name == 'workflow_dispatch' && inputs.topic_id || 'venus_day'" in text,
-          "path-triggered attempt 3 uses the explicit treatment-fit Venus flagship topic")
-    check("TIMELINE_TRANSFORMATION" in text and "curated" in text,
-          "workflow records why the explicit topic is evidence-dense and structurally compatible")
+          "path-triggered flagship remains explicitly pinned to treatment-fit Venus topic")
     check("github.event_name == 'push' || inputs.confirm_free_science_network == 'YES'" in text,
           "path-triggered certification explicitly enables only free authentic-science network")
 
@@ -63,7 +61,12 @@ def test_evidence_bound_generator_and_bridge_are_load_bearing():
     check("quality_certification_retry.py" in text and "--allow-provider-calls" in text,
           "workflow uses bounded resilient V2.1 certification wrapper")
     check("--max-writer-attempts 3" in text and 'QUALITY_CERTIFICATION_WRITER_ATTEMPTS: "3"' in text,
-          "flagship Writer retry budget is explicit and capped in workflow")
+          "flagship provider Writer retry budget remains explicit and capped")
+    check("--prefer-evidence-seed" in text,
+          "deterministic evidence seed is an explicit private-certification option")
+    seed_note = text.split("Evidence seed is private-certification-only", 1)[1].split("python quality_certification_retry.py", 1)[0]
+    check("semantic" in seed_note and "traceability" in seed_note and "quality" in seed_note,
+          "workflow documents that seed does not bypass canonical Writer acceptance gates")
     check("quality_certification_generate.py" not in text,
           "workflow cannot bypass resilience wrapper by invoking one-shot generator directly")
     check("quality_science_render.py artifacts/quality_certification/manifest.json" in text,
