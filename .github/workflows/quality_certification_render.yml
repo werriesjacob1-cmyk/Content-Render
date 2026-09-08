@@ -113,7 +113,7 @@ jobs:
             --out artifacts/quality_certification \
             --allow-provider-calls
 
-      - name: Render through quality-first certification bridge
+      - name: Render through authentic-first + deterministic-science certification bridge
         env:
           QUALITY_RENDER_FREE_NETWORK: ${{ inputs.confirm_free_science_network == 'YES' && 'I_ACCEPT_FREE_NETWORK' || 'DISABLED' }}
           # Existing real-footage + independent QA inputs. No FAL key is exposed
@@ -136,7 +136,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python quality_render_bridge.py artifacts/quality_certification/manifest.json
+          python quality_science_render.py artifacts/quality_certification/manifest.json
 
       - name: Prove private artifact and collect viewer-facing evidence
         shell: bash
