@@ -96,6 +96,21 @@ jobs:
           fi
           test -s voices/voice.onnx
 
+      - name: Resolve trusted certification topic
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_TOPIC: ${{ inputs.topic_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOPIC_ID="$(python quality_certification_trigger.py \
+            --event-name "$EVENT_NAME" \
+            --dispatch-topic "$DISPATCH_TOPIC" \
+            --marker .github/quality-certification-trigger)"
+          test -n "$TOPIC_ID"
+          echo "TOPIC_ID=$TOPIC_ID" >> "$GITHUB_ENV"
+          echo "resolved_certification_topic=$TOPIC_ID"
+
       - name: Generate sealed Writer V2.1 certification bundle
         env:
           QUALITY_CERTIFICATION_LIVE: I_ACCEPT_PROVIDER_CALLS
@@ -112,9 +127,6 @@ jobs:
           TOGETHER_MODEL: ${{ vars.TOGETHER_MODEL }}
           FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
-          # The connector cannot POST workflow_dispatch. For the temporary
-          # path-trigger bridge, use the explicit treatment-fit flagship topic.
-          TOPIC_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.topic_id || 'venus_day' }}
         shell: bash
         run: |
           set -euo pipefail
