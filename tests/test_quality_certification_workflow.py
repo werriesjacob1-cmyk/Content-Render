@@ -28,8 +28,10 @@ def test_manual_plus_one_shot_main_only_read_only_contract():
     check("contents: read" in text and "contents: write" not in text, "token is read-only")
     check("persist-credentials: false" in text, "checkout credentials are not persisted")
     check('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"' in text, "exact trusted SHA is proved before calls")
-    check("github.event_name == 'workflow_dispatch' && inputs.topic_id || 'auto'" in text,
-          "path-triggered certification deterministically uses auto topic selection")
+    check("github.event_name == 'workflow_dispatch' && inputs.topic_id || 'venus_day'" in text,
+          "path-triggered attempt 3 uses the explicit treatment-fit Venus flagship topic")
+    check("TIMELINE_TRANSFORMATION" in text and "curated" in text,
+          "workflow records why the explicit topic is evidence-dense and structurally compatible")
     check("github.event_name == 'push' || inputs.confirm_free_science_network == 'YES'" in text,
           "path-triggered certification explicitly enables only free authentic-science network")
 
