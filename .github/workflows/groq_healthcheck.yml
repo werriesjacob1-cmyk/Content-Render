@@ -15,8 +15,18 @@ name: groq-healthcheck
 on:
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   check:
+    # 2026-09-08 hardening: this workflow injects GROQ_API_KEY and makes no
+    # checkout of ref-selectable code, but workflow_dispatch still lets a
+    # caller pick ANY ref containing this file to run it from. Pin execution
+    # to main so a secret-bearing dispatch can only ever run the reviewed
+    # version of this file, matching quality_certification_render.yml and
+    # wr21_quality_bakeoff.yml's containment pattern.
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

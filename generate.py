@@ -2693,8 +2693,36 @@ def validate(m, job_name, fact=None):
         restated = [i + 1 for i, vo in enumerate(vos[:-1])
                     if difflib.SequenceMatcher(None, vo, fact_text).ratio() > 0.40]
         if len(restated) > 1:
-            return (f"the verified fact is restated in {len(restated)} scenes {restated} "
-                    f"instead of being revealed once and escalated from")
+            # 2026-09-08 flagship attempt #4 (venus_day) false-positive, proven
+            # against the live production seed: a two-QUANTITY comparison fact
+            # ("one rotation takes 243 Earth days, while one trip around the Sun
+            # takes only 225") necessarily produces two adjacent, NECESSARY
+            # beats -- one per number -- that each lexically overlap the
+            # combined fact sentence heavily enough to trip this heuristic, even
+            # though they state two different pieces of required evidence, not
+            # the same reveal twice. Distinguish "two flagged scenes that are
+            # actually about different key numbers" from "the same idea
+            # repeated": if the flagged scenes between them name >=2 DIFFERENT
+            # numeric key_terms, that many scenes are complementary evidence,
+            # not restatement, and are exempted from the count. A genuine
+            # restatement (the same non-numeric reveal paraphrased twice, e.g.
+            # the "empty space"/"sugar cube" case this check was built for)
+            # names no such distinguishing numbers and is caught exactly as
+            # before -- see test_validate_venus_style_comparison_not_restated /
+            # test_validate_genuine_restatement_still_rejected.
+            numeric_terms = [kt for kt in (fact.get("key_terms") or []) if kt and kt[0].isdigit()]
+            exempt = 0
+            if len(numeric_terms) >= 2:
+                flagged_vos = [vos[i - 1] for i in restated]
+                distinct_terms_covered = {
+                    kt for kt in numeric_terms
+                    if any(_key_term_present(kt, vo) for vo in flagged_vos)
+                }
+                if len(distinct_terms_covered) >= 2:
+                    exempt = len(distinct_terms_covered)
+            if len(restated) - exempt > 1:
+                return (f"the verified fact is restated in {len(restated)} scenes {restated} "
+                        f"instead of being revealed once and escalated from")
     # reject if the title's key noun appears in nearly every scene (circling one idea)
     # (collections is imported at module level above)
     words = collections.Counter(re.sub(r"[^a-z ]", "", " ".join(vos)).split())
@@ -3619,6 +3647,84 @@ def _trim_scene_to_cap(vo, cap):
     if kept and count <= cap:
         return " ".join(kept)
     return " ".join(vo.split()[:cap]).rstrip(",;:") + "."
+
+
+_SCENE_TOO_LONG_RE = re.compile(r"^scene (\d+) voiceover too long \((\d+) words, cap is (\d+)\)")
+_WORD_COUNT_RANGE_RE = re.compile(r"^script word count \d+ out of range")
+
+
+def deterministic_mechanical_trim(manifest, validate_err):
+    """Pure. Mechanically fix ONLY the two validate() failure shapes that are
+    pure word-count near-misses, never a factual/structural defect: a single
+    scene over SCENE_WORD_CAP, or the total script over the LENGTH_MODE hard
+    ceiling. Returns a new manifest with the same scenes/claim_ids/hook/payoff
+    and only the offending voiceover(s) shortened (reusing _trim_scene_to_cap,
+    the same sentence-boundary-preferring trim the legacy generate_candidate()
+    path has used for months), or None if validate_err isn't one of these two
+    exact shapes -- never guesses, never invents text, never drops a whole
+    scene, never touches the hook/payoff scenes when middle beats exist.
+
+    2026-09-08 flagship attempt #4 (venus_day, run 34264652218): 2 of 4
+    rejected certification candidates failed on exactly this class of near-miss
+    (a total word count 4 over the hard ceiling; one scene 3 words over its
+    cap) AFTER writer_v21_orchestrator's bounded 2-round repair budget was
+    entirely spent clearing Tier 1 mechanical/semantic violations -- Tier 2
+    (this class of defect) never got a repair attempt at all. This is the
+    zero-network, zero-risk safety net writer_v21_orchestrator never inherited
+    from the legacy path. The caller is responsible for re-running validate()
+    (and re-scoring) the trimmed manifest -- this function only trims text, it
+    never asserts the result is acceptable."""
+    scenes = manifest.get("scenes") or []
+    if not scenes:
+        return None
+
+    sm = _SCENE_TOO_LONG_RE.match(validate_err or "")
+    if sm:
+        scene_id, cap = int(sm.group(1)), int(sm.group(3))
+        new_scenes = [dict(s) for s in scenes]
+        for s in new_scenes:
+            if s.get("id") == scene_id:
+                s["voiceover"] = _trim_scene_to_cap(s.get("voiceover") or "", cap)
+                break
+        else:
+            return None
+        out = dict(manifest)
+        out["scenes"] = new_scenes
+        out["script"] = " ".join(s["voiceover"] for s in new_scenes if s.get("voiceover"))
+        return out
+
+    if _WORD_COUNT_RANGE_RE.match(validate_err or ""):
+        total = len((manifest.get("script") or "").split())
+        excess = total - WORD_HI  # aim at the soft target, not just under the hard ceiling
+        if excess <= 0:
+            return None
+        new_scenes = [dict(s) for s in scenes]
+        # never touch the certified hook (scene 0) or payoff (last scene) when
+        # middle beats exist to trim instead -- those two lines are the exact
+        # content the semantic/quality gates already certified as the story's
+        # opening and closing beats.
+        middle_idxs = list(range(1, len(new_scenes) - 1)) if len(new_scenes) > 2 else list(range(len(new_scenes)))
+        order = sorted(middle_idxs,
+                       key=lambda i: len((new_scenes[i].get("voiceover") or "").split()),
+                       reverse=True)
+        for i in order:
+            if excess <= 0:
+                break
+            cur = new_scenes[i].get("voiceover") or ""
+            cur_words = len(cur.split())
+            room = max(0, cur_words - 6)  # never shrink a scene below 6 words
+            take = min(room, excess)
+            if take <= 0:
+                continue
+            trimmed = _trim_scene_to_cap(cur, cur_words - take)
+            excess -= (cur_words - len(trimmed.split()))
+            new_scenes[i]["voiceover"] = trimmed
+        out = dict(manifest)
+        out["scenes"] = new_scenes
+        out["script"] = " ".join(s["voiceover"] for s in new_scenes if s.get("voiceover"))
+        return out
+
+    return None
 
 
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,

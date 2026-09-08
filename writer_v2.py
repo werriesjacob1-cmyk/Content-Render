@@ -326,8 +326,33 @@ def _extract_factual_tokens(text):
             cand = m.group(0).strip()
             if cand.lower() in _SENTENCE_START_STOP:
                 continue
+            # 2026-09-08 flagship attempt #4 (venus_day) live bug: a
+            # sentence-initial ordinary connector ("Because", "So", "When"...)
+            # immediately followed by a genuine entity ("Because Venus spins
+            # in retrograde...") gets greedily fused by _PROPER_NOUN_RE into
+            # ONE bogus two-word candidate, "Because Venus" -- neither the
+            # whole-phrase stopword filter above (which only matches a SINGLE
+            # stopword, not "because venus") nor the single-word weak-entity
+            # softening below (which requires no space) catches this shape,
+            # so it hard-blocked a beat that only ever named the real,
+            # already-cited entity "Venus". Strip a leading sentence-start
+            # stopword off a sentence-initial multi-word match and evaluate
+            # what's left as the real candidate -- exactly as if the sentence
+            # had started at the genuine entity, which is unambiguous
+            # regardless of position and needs no weak-entity softening.
+            stripped_connector = False
+            if m.start() == 0 and " " in cand:
+                head, _, rest = cand.partition(" ")
+                if head.lower() in _SENTENCE_START_STOP and rest:
+                    cand = rest
+                    stripped_connector = True
             entities.add(cand)
-            if " " not in cand and m.start() == 0:
+            # a genuine entity revealed by stripping a leading connector is
+            # unambiguous (real capitalization, not sentence-position
+            # capitalization) and does not need weak-entity softening --
+            # only an UNMODIFIED single-word sentence-initial match is
+            # ambiguous in the way weak_entities exists to soften.
+            if " " not in cand and m.start() == 0 and not stripped_connector:
                 weak_entities.add(cand)
     # strip apostrophes before word-splitting so a contraction ("didn't")
     # tokenizes as one clean word ("didnt") instead of splitting into a

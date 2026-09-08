@@ -185,8 +185,37 @@ def generate_candidate_v21(
         if semantic_failure is not None:
             candidate_hard.append(semantic_failure)
 
+        # 2026-09-08 flagship attempt #4 (venus_day, run 34264652218): the
+        # bounded LLM repair budget can be entirely consumed clearing Tier 1
+        # (mechanical + semantic) violations, so a purely mechanical Tier 2
+        # near-miss (one scene a few words over its cap, or the total script
+        # a few words over the hard ceiling) never gets a repair attempt at
+        # all -- 2 of that run's 4 rejected candidates failed on exactly this
+        # class of defect. Only attempt the zero-network mechanical trim when
+        # Tier 1 is ALREADY fully clear (no hard violations, semantic fully
+        # verified, zero semantic violations) -- this never touches factual
+        # content and never fires while a real factual/structural problem
+        # still needs an LLM repair round, so it can only help, never mask a
+        # real defect.
+        mechanical_trim_applied = False
+        trimmed = (G.deterministic_mechanical_trim(manifest, validate_err)
+                  if (not candidate_hard and coverage_ok and validate_err) else None)
+        if trimmed is not None:
+            trimmed_err = G.validate(trimmed, job_name, fact=fact)
+            if trimmed_err is None:
+                trimmed_score = G.score_script(trimmed, fact=fact, cta_style=cta_style)
+                trimmed_score_overall = (trimmed_score.get("overall")
+                                         if (trimmed_score and G._clears_quality_floor(trimmed_score))
+                                         else None)
+                mechanical_trim_applied = True
+                manifest = trimmed
+                validate_err = trimmed_err
+                score = trimmed_score
+                score_overall = trimmed_score_overall
+
         round_info = {
             "round": round_idx,
+            "mechanical_trim_applied": mechanical_trim_applied,
             "mechanical_violation_count": len(mech_violations),
             "mechanical_hard_count": len(mech_hard),
             "semantic_verified": coverage_ok,
