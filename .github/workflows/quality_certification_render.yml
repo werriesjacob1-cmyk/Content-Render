@@ -99,6 +99,7 @@ jobs:
       - name: Generate sealed Writer V2.1 certification bundle
         env:
           QUALITY_CERTIFICATION_LIVE: I_ACCEPT_PROVIDER_CALLS
+          QUALITY_CERTIFICATION_WRITER_ATTEMPTS: "3"
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_GENERATION: "1"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -115,9 +116,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python quality_certification_generate.py \
+          python quality_certification_retry.py \
             --topic "$TOPIC_ID" \
             --out artifacts/quality_certification \
+            --max-writer-attempts 3 \
             --allow-provider-calls
 
       - name: Render through authentic-first + deterministic-science certification bridge
