@@ -1,6 +1,7 @@
-flagship-certification-requested=2026-09-08T12:31:00-05:00
-topic=auto
+flagship-certification-requested=2026-09-08T12:40:00-05:00
+topic=venus_day
+treatment=TIMELINE_TRANSFORMATION
 free_science_network=yes
 writer_policy=resilient-strict-120b-then-bounded-retry
-attempt=2
+attempt=3
 purpose=private-artifact-only
