@@ -116,20 +116,15 @@ jobs:
       - name: Render through authentic-first + deterministic-science certification bridge
         env:
           QUALITY_RENDER_FREE_NETWORK: ${{ inputs.confirm_free_science_network == 'YES' && 'I_ACCEPT_FREE_NETWORK' || 'DISABLED' }}
-          # Existing real-footage + independent QA inputs. No FAL key is exposed
-          # here: direct generated video is intentionally unavailable until an
-          # exact model is promoted by generated_media_controller evidence.
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # Shut the legacy unverified image-generation side door. Generated
-          # visuals must come through the new promoted-model + independent-vision
-          # controller in a later certified phase, never Pollinations/Imagen here.
+          # Generated visuals are deliberately closed until an exact promoted
+          # model + independent vision path is activated through the new stack.
           AI_IMAGE: "0"
           FAL_KEY: ""
           FAL_API_KEY: ""
-          # Use the proven free/offline narration path for this lane until Voice
-          # Lab has an explicitly promoted winner. Do not silently spend Eleven.
+          # Use proven free/offline narration until Voice Lab has a promoted winner.
           ELEVENLABS_API_KEY: ""
           SFX_CUTS: "0"
           MUSIC_DUCK: "1"
@@ -150,6 +145,7 @@ jobs:
             --video out/final.mp4 \
             --report out/holistic_qa_report.json \
             --repair-plan out/targeted_repair_plan.json \
+            --scene-timeline out/scene_timeline.json \
             --work-dir work/holistic_qa
 
       - name: Collect viewer-facing evidence even on QA failure
@@ -163,7 +159,7 @@ jobs:
               -of default=noprint_wrappers=1 out/final.mp4 || true
             cp out/final.mp4 artifacts/quality_certification/render/final.mp4
           fi
-          for f in cover.jpg qa_report.json holistic_qa_report.json targeted_repair_plan.json quality_asset_provenance.json post.json; do
+          for f in cover.jpg qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json post.json; do
             test -f "out/$f" && cp "out/$f" "artifacts/quality_certification/render/$f" || true
           done
 
@@ -181,7 +177,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Read-only token + no persisted credentials means this job cannot
-          # commit/push even if a future script accidentally tries.
           test -z "$(git status --porcelain | grep -E '^.. (docs/|releases/)' || true)"
           echo "PRIVATE CERTIFICATION COMPLETE — artifact only; no Release/Publer/publish step exists"
