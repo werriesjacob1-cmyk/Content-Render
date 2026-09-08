@@ -26,12 +26,14 @@ from typing import Any, Mapping
 
 import generate as G
 import quality_session as QS
+import scientific_media as SCI
 import writer_story_bridge as WSB
 import writer_v2 as W
 import writer_v21_orchestrator as O
 
 
 LIVE_ACK = "I_ACCEPT_PROVIDER_CALLS"
+_MOTION_TREATMENTS = {"ONE_OBJECT_JOURNEY", "HIDDEN_MECHANISM", "INSIDE_THE_SYSTEM"}
 
 
 def _load_history() -> list[dict[str, Any]]:
@@ -49,53 +51,6 @@ def _eligible_bank() -> list[dict[str, Any]]:
     return list(G.selectable_bank(bank_all, quarantined))
 
 
-def _visual_rank(fact: Mapping[str, Any]) -> tuple[float, int, int, str]:
-    report = W.visual_scout_score(dict(fact), banned_re=G.UNSTOCKABLE_Q)
-    score = float(report.get("score") or 0.0)
-    queries = len([q for q in (fact.get("queries") or []) if str(q).strip()])
-    specifics = len([k for k in (fact.get("key_terms") or []) if str(k).strip()])
-    return (score, queries, specifics, str(fact.get("id") or ""))
-
-
-def select_topic(topic_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Pick an explicit topic or deterministic visual-first fresh hero topic."""
-    bank = _eligible_bank()
-    if not bank:
-        raise RuntimeError("no eligible topic-bank facts")
-    by_id = {str(f.get("id")): f for f in bank}
-    if topic_id and topic_id != "auto":
-        if topic_id not in by_id:
-            raise ValueError(f"topic {topic_id!r} is absent or quarantined")
-        fact = dict(by_id[topic_id])
-        return fact, {
-            "mode": "explicit",
-            "selected_topic_id": topic_id,
-            "visual_scout": W.visual_scout_score(fact, banned_re=G.UNSTOCKABLE_Q),
-        }
-
-    history = _load_history()
-    used = {str(h.get("fact_id")) for h in history if h.get("fact_id")}
-    fresh = [f for f in bank if str(f.get("id")) not in used] or bank
-    ranked = sorted(fresh, key=_visual_rank, reverse=True)
-    fact = dict(ranked[0])
-    shortlist = []
-    for row in ranked[:8]:
-        shortlist.append({
-            "topic_id": row.get("id"),
-            "domain": row.get("domain"),
-            "rank": list(_visual_rank(row)[:3]),
-            "visual_scout": W.visual_scout_score(dict(row), banned_re=G.UNSTOCKABLE_Q),
-        })
-    return fact, {
-        "mode": "auto_visual_first_fresh",
-        "selected_topic_id": fact.get("id"),
-        "used_topic_count": len(used),
-        "eligible_topic_count": len(bank),
-        "fresh_topic_count": len(fresh),
-        "shortlist": shortlist,
-    }
-
-
 def _recent_treatments(history: list[dict[str, Any]], n: int = 6) -> list[str]:
     vals = []
     for row in history[-n:]:
@@ -103,6 +58,113 @@ def _recent_treatments(history: list[dict[str, Any]], n: int = 6) -> list[str]:
         if t:
             vals.append(t)
     return vals
+
+
+def _quality_lane_profile(
+    fact: Mapping[str, Any],
+    recent_treatments: list[str],
+) -> dict[str, Any]:
+    """Score what the *finished-video stack* can do with a topic, with zero calls.
+
+    This is deliberately richer than Writer V2's generic stock-oriented visual
+    scout. Authentic NASA/PubChem compatibility and an evidence-safe deterministic
+    motion treatment earn modest bonuses; the underlying visual-scout score still
+    dominates so a niche tool match cannot rescue a fundamentally untellable story.
+    """
+    scout = W.visual_scout_score(dict(fact), banned_re=G.UNSTOCKABLE_Q)
+    scout_score = float(scout.get("score") or 0.0)
+    queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
+    key_terms = [str(k).strip() for k in (fact.get("key_terms") or []) if str(k).strip()]
+    nasa_hits = sum(1 for q in queries if SCI.svs_relevant(q))
+    pubchem_hits = sum(1 for q in queries if SCI.pubchem_relevant(q))
+    treatment = W.select_treatment(
+        str(fact.get("id") or ""),
+        recent_treatments=recent_treatments,
+    ) or ""
+    motion = treatment in _MOTION_TREATMENTS
+
+    # ~72% of the score remains the existing visual-tellability signal. Authentic
+    # scientific media can move a close contest, not turn a weak story into a hero.
+    quality_score = (
+        scout_score * 0.72
+        + min(nasa_hits + pubchem_hits, 2) * 0.90
+        + (0.55 if motion else 0.0)
+        + min(len(queries), 4) * 0.15
+        + min(len(key_terms), 4) * 0.10
+    )
+    quality_score = round(min(10.0, max(0.0, quality_score)), 3)
+    return {
+        "quality_stack_score": quality_score,
+        "visual_scout": scout,
+        "planned_treatment": treatment,
+        "nasa_query_hits": nasa_hits,
+        "pubchem_query_hits": pubchem_hits,
+        "authentic_science_query_hits": nasa_hits + pubchem_hits,
+        "deterministic_motion_eligible": motion,
+        "query_count": len(queries),
+        "key_term_count": len(key_terms),
+    }
+
+
+def _visual_rank(
+    fact: Mapping[str, Any],
+    recent_treatments: list[str] | None = None,
+) -> tuple[float, float, int, int, str]:
+    profile = _quality_lane_profile(fact, recent_treatments or [])
+    return (
+        float(profile["quality_stack_score"]),
+        float((profile["visual_scout"] or {}).get("score") or 0.0),
+        int(profile["authentic_science_query_hits"]),
+        int(profile["query_count"]),
+        str(fact.get("id") or ""),
+    )
+
+
+def select_topic(topic_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Pick explicit topic or deterministic fresh flagship with strongest render potential."""
+    bank = _eligible_bank()
+    if not bank:
+        raise RuntimeError("no eligible topic-bank facts")
+    by_id = {str(f.get("id")): f for f in bank}
+    history = _load_history()
+    recent = _recent_treatments(history)
+
+    if topic_id and topic_id != "auto":
+        if topic_id not in by_id:
+            raise ValueError(f"topic {topic_id!r} is absent or quarantined")
+        fact = dict(by_id[topic_id])
+        return fact, {
+            "mode": "explicit",
+            "selected_topic_id": topic_id,
+            "quality_lane_profile": _quality_lane_profile(fact, recent),
+        }
+
+    used = {str(h.get("fact_id")) for h in history if h.get("fact_id")}
+    fresh = [f for f in bank if str(f.get("id")) not in used] or bank
+    ranked = sorted(fresh, key=lambda f: _visual_rank(f, recent), reverse=True)
+    fact = dict(ranked[0])
+    shortlist = []
+    for row in ranked[:8]:
+        profile = _quality_lane_profile(row, recent)
+        shortlist.append({
+            "topic_id": row.get("id"),
+            "domain": row.get("domain"),
+            "quality_stack_score": profile["quality_stack_score"],
+            "planned_treatment": profile["planned_treatment"],
+            "authentic_science_query_hits": profile["authentic_science_query_hits"],
+            "deterministic_motion_eligible": profile["deterministic_motion_eligible"],
+            "visual_scout": profile["visual_scout"],
+        })
+    return fact, {
+        "mode": "auto_quality_stack_first_fresh",
+        "selected_topic_id": fact.get("id"),
+        "used_topic_count": len(used),
+        "eligible_topic_count": len(bank),
+        "fresh_topic_count": len(fresh),
+        "recent_treatments": recent,
+        "selected_quality_lane_profile": _quality_lane_profile(fact, recent),
+        "shortlist": shortlist,
+    }
 
 
 def _write_json(path: Path, payload: Any) -> None:
@@ -192,7 +254,7 @@ def build_bundle(topic_id: str, out_dir: str) -> dict[str, Any]:
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser()
-    p.add_argument("--topic", default="auto", help="eligible topic_bank id, or 'auto' for deterministic visual-first fresh selection")
+    p.add_argument("--topic", default="auto", help="eligible topic_bank id, or 'auto' for deterministic quality-stack-first fresh selection")
     p.add_argument("--out", default="artifacts/quality_certification")
     p.add_argument("--allow-provider-calls", action="store_true")
     return p.parse_args(argv)
