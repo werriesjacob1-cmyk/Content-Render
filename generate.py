@@ -2693,8 +2693,44 @@ def validate(m, job_name, fact=None):
         restated = [i + 1 for i, vo in enumerate(vos[:-1])
                     if difflib.SequenceMatcher(None, vo, fact_text).ratio() > 0.40]
         if len(restated) > 1:
-            return (f"the verified fact is restated in {len(restated)} scenes {restated} "
-                    f"instead of being revealed once and escalated from")
+            # 2026-09-08 flagship attempt #4 (venus_day) false-positive, proven
+            # against the live production seed: a two-QUANTITY comparison fact
+            # ("one rotation takes 243 Earth days, while one trip around the Sun
+            # takes only 225") necessarily produces two adjacent, NECESSARY
+            # beats -- one per number -- that each lexically overlap the
+            # combined fact sentence heavily enough to trip this heuristic, even
+            # though they state two different pieces of required evidence, not
+            # the same reveal twice.
+            #
+            # 2026-09-09 tightened: the exemption is granted ONLY when the
+            # flagged scenes form an exact ONE-TO-ONE bijection with distinct
+            # required numeric key_terms -- every flagged scene names EXACTLY
+            # ONE such number, and no two flagged scenes name the SAME one.
+            # This is intentionally all-or-nothing, not a per-scene discount:
+            # a scene that crams both numbers into one line, a genuinely
+            # extra scene repeating an already-claimed number, or a flagged
+            # scene naming no distinguishing number at all, disqualifies the
+            # WHOLE set from exemption -- "extra flagged restatements remain
+            # failures," they are never partially forgiven by unrelated
+            # legitimate scenes elsewhere in the same flagged set. A genuine
+            # restatement (the same non-numeric reveal paraphrased twice, e.g.
+            # the "empty space"/"sugar cube" case this check was built for)
+            # trivially fails the bijection test (no numeric terms at all)
+            # and is caught exactly as before.
+            numeric_terms = [kt for kt in (fact.get("key_terms") or []) if kt and kt[0].isdigit()]
+            exempted = False
+            if len(numeric_terms) >= 2:
+                flagged_vos = [vos[i - 1] for i in restated]
+                per_scene_terms = [
+                    {kt for kt in numeric_terms if _key_term_present(kt, vo)}
+                    for vo in flagged_vos
+                ]
+                if all(len(terms) == 1 for terms in per_scene_terms):
+                    claimed = [next(iter(terms)) for terms in per_scene_terms]
+                    exempted = len(set(claimed)) == len(claimed)
+            if not exempted:
+                return (f"the verified fact is restated in {len(restated)} scenes {restated} "
+                        f"instead of being revealed once and escalated from")
     # reject if the title's key noun appears in nearly every scene (circling one idea)
     # (collections is imported at module level above)
     words = collections.Counter(re.sub(r"[^a-z ]", "", " ".join(vos)).split())
@@ -3619,6 +3655,120 @@ def _trim_scene_to_cap(vo, cap):
     if kept and count <= cap:
         return " ".join(kept)
     return " ".join(vo.split()[:cap]).rstrip(",;:") + "."
+
+
+_SCENE_TOO_LONG_RE = re.compile(r"^scene (\d+) voiceover too long \((\d+) words, cap is (\d+)\)")
+_WORD_COUNT_RANGE_RE = re.compile(r"^script word count (\d+) out of range")
+
+# a tiny, explicit safety margin below the hard ceiling -- large enough that a
+# 1-word tokenization/counting discrepancy between this function and
+# validate()'s own count can't leave the trim exactly on the boundary, small
+# enough that it is obviously NOT "trim toward the soft target." Documented
+# and exact on purpose: this is a salvage of a near-miss, not an optimization
+# pass over a script that already earned its length.
+_TRIM_SAFETY_MARGIN_WORDS = 2
+
+
+def _writer_out_scene_role(scene_id, num_beats):
+    """Map validate()'s 1-indexed spoken scene id back to which part of the
+    PRE-ASSEMBLY writer_out it came from: scene 1 = hook, scenes 2..N+1 =
+    beats[0..N-1], scene N+2 = payoff (writer_v2.assemble_manifest_v2's exact,
+    documented canonical spoken order). Returns ("hook"|"beat"|"payoff",
+    beat_index_or_None)."""
+    if scene_id == 1:
+        return "hook", None
+    if 2 <= scene_id <= num_beats + 1:
+        return "beat", scene_id - 2
+    if scene_id == num_beats + 2:
+        return "payoff", None
+    return None, None
+
+
+def deterministic_mechanical_trim(writer_out, validate_err, num_beats):
+    """Pure. Mechanically fix ONLY the two validate() failure shapes that are
+    pure word-count near-misses, never a factual/structural defect: a single
+    scene over SCENE_WORD_CAP, or the total script over the LENGTH_MODE hard
+    ceiling. Operates on the PRE-ASSEMBLY writer_out (hook/beats/payoff +
+    source_claim_ids), not the assembled manifest -- so the caller can re-run
+    it through the SAME fresh claim-inventory/traceability/semantic/validate/
+    score pipeline as any other round, rather than patching an already-
+    certified manifest and reusing stale evidence for different text (2026-09-
+    09 correctness fix: a trim is a real content mutation and must be treated
+    as a brand-new candidate, not a patch on an accepted one).
+
+    Returns a new writer_out with only the offending voiceover(s) shortened
+    (reusing _trim_scene_to_cap), or None if: validate_err isn't one of these
+    two exact shapes; the offending scene is the HOOK or PAYOFF (those must
+    go through the normal Writer repair system, never be mechanically
+    rewritten -- a cap violation there is exactly the situation where losing
+    even a clause can change the certified opening/closing beat); or trimming
+    the middle beats can't recover enough words safely. Never guesses, never
+    invents text, never drops a whole scene, never trims below the actual
+    required minimum.
+
+    2026-09-08 flagship attempt #4 (venus_day, run 34264652218): 2 of 4
+    rejected certification candidates failed on exactly this class of near-miss
+    (a total word count 4 over the hard ceiling; one scene 3 words over its
+    cap) AFTER writer_v21_orchestrator's bounded 2-round repair budget was
+    entirely spent clearing Tier 1 mechanical/semantic violations -- Tier 2
+    (this class of defect) never got a repair attempt at all. This is the
+    zero-network, zero-risk safety net writer_v21_orchestrator never inherited
+    from the legacy path."""
+    beats = list(writer_out.get("beats") or [])
+    if not beats:
+        return None
+
+    sm = _SCENE_TOO_LONG_RE.match(validate_err or "")
+    if sm:
+        scene_id, cap = int(sm.group(1)), int(sm.group(3))
+        role, beat_idx = _writer_out_scene_role(scene_id, num_beats)
+        if role != "beat":
+            # hook/payoff (or an unrecognized scene id): never mechanically
+            # rewritten -- let the normal Writer repair system handle it.
+            return None
+        new_beats = [dict(b) for b in beats]
+        vo = new_beats[beat_idx].get("voiceover") or ""
+        new_beats[beat_idx]["voiceover"] = _trim_scene_to_cap(vo, cap)
+        out = dict(writer_out)
+        out["beats"] = new_beats
+        return out
+
+    wc = _WORD_COUNT_RANGE_RE.match(validate_err or "")
+    if wc:
+        total = int(wc.group(1))
+        excess = (total - WORD_HARD_HI) + _TRIM_SAFETY_MARGIN_WORDS
+        if excess <= 0:
+            return None
+        new_beats = [dict(b) for b in beats]
+        # never touch the hook or payoff -- only middle beats are eligible for
+        # mechanical trimming; trim the minimum necessary to clear the HARD
+        # ceiling (plus the small safety margin above), not down to the soft
+        # target -- this is a salvage, not a rewrite toward an "ideal" length.
+        order = sorted(range(len(new_beats)),
+                       key=lambda i: len((new_beats[i].get("voiceover") or "").split()),
+                       reverse=True)
+        for i in order:
+            if excess <= 0:
+                break
+            cur = new_beats[i].get("voiceover") or ""
+            cur_words = len(cur.split())
+            room = max(0, cur_words - 6)  # never shrink a beat below 6 words
+            take = min(room, excess)
+            if take <= 0:
+                continue
+            trimmed = _trim_scene_to_cap(cur, cur_words - take)
+            excess -= (cur_words - len(trimmed.split()))
+            new_beats[i]["voiceover"] = trimmed
+        if excess > 0:
+            # couldn't recover enough words safely without over-shrinking a
+            # beat or touching the hook/payoff -- do not return a candidate
+            # that still won't pass; let the normal repair system handle it.
+            return None
+        out = dict(writer_out)
+        out["beats"] = new_beats
+        return out
+
+    return None
 
 
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,

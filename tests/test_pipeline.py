@@ -537,6 +537,185 @@ def test_validate_rejections():
           f"same-unit measurements (Earth days / billion years) not flagged as contradiction ({err})")
 
 
+def test_validate_two_quantity_comparison_not_restated():
+    section("validate(): anti-restatement false-positive on 2-quantity comparison facts "
+            "(2026-09-08 flagship attempt #4 / venus_day live incident)")
+
+    # EXACT production data: quality_writer_evidence_seed.py's venus_day seed +
+    # topic_bank.json's real venus_day fact, assembled the way
+    # writer_v21_manifest.assemble_manifest_v21 does (scene 1 = hook, last
+    # scene = payoff). Live run 34264652218 rejected this EXACT candidate with
+    # "the verified fact is restated in 2 scenes [3, 4]" — scenes 3/4 are the
+    # two beats that each state one half of the required rotation-vs-orbit
+    # comparison (243 vs 225 days), not the same idea repeated. Word counts
+    # below are padded slightly from the live seed's own wording only to clear
+    # LENGTH_MODE=long's word-count floor (the zero-quota suite pins LONG for
+    # determinism) -- content and structure are unchanged from the real seed.
+    fact = {
+        "id": "venus_day", "domain": "space",
+        "fact": ("A day on Venus is longer than its year: one rotation takes 243 Earth "
+                 "days, while one trip around the Sun takes only 225."),
+        "key_terms": ["243 Earth days", "225 days", "retrograde"],
+    }
+    seed_vos = [
+        "Venus has one day that outlasts its whole year, and that is genuinely hard to picture.",
+        "What if you tried living through one full calendar year on Venus itself?",
+        "Venus takes 243 Earth days just to complete a single full rotation.",
+        "Its whole trip around the Sun only takes 225 Earth days to finish.",
+        "Venus also spins in retrograde, opposite almost every other planet.",
+        "Stand there and the Sun would rise in the west and set in the east.",
+        "If you lived through one entire Venus year, you still wouldn't finish a day.",
+        "Venus somehow completes a whole year before one of its own days ends.",
+    ]
+    m = manifest("Venus Time Paradox", seed_vos[0], scenes(
+        *[(vo, "X", "planet venus surface") for vo in seed_vos]))
+    m["hook_headline"] = "A DAY OUTLASTS A YEAR"
+    err = G.validate(m, "EXPLAIN", fact=fact)
+    check(err is None,
+          f"the real venus_day seed (proven live to fail on this exact check) now clears "
+          f"validate() entirely -- got {err!r}")
+
+    # A genuine restatement (the ORIGINAL bug this check exists for: the same
+    # non-numeric reveal paraphrased in 3 different scenes, no distinguishing
+    # numeric evidence) must still be rejected -- the fix must not have
+    # loosened the general case, only the two-distinct-numbers case.
+    restatement_fact = {
+        "id": "test_empty_space", "domain": "physics",
+        "fact": "Your body is almost entirely empty space, so tightly packed atoms leave almost nothing solid.",
+        "key_terms": ["empty space", "particle"],
+    }
+    restatement_vos = [
+        "Nearly all of your entire body is completely empty space on the inside.",
+        "What if you could somehow remove every single gap between your own atoms?",
+        "Every tiny particle inside your body is mostly just nothing at all.",
+        "Scientists have carefully measured just how little of an atom is solid.",
+        "So your whole entire body is really almost entirely empty space itself.",
+        "It is strange to think about how little of you is actually solid.",
+        "That constant emptiness is why matter can be compressed so dramatically.",
+        "Understanding this fact truly changes how solid the world really feels.",
+    ]
+    restatement_queries = ["dense metal block", "crystal lattice macro", "steel beam closeup",
+                           "compressed rock sample", "solid metal bar", "science lab beaker",
+                           "shiny metal surface", "heavy iron block"]
+    m2 = manifest("The Empty Space Inside You", restatement_vos[0], scenes(
+        *zip(restatement_vos, ["X"] * 8, restatement_queries)))
+    m2["hook_headline"] = "YOU ARE MOSTLY NOTHING"
+    err2 = G.validate(m2, "EXPLAIN", fact=restatement_fact)
+    check(err2 is not None and "restated" in err2,
+          f"a genuine restatement (same non-numeric idea paraphrased 3x, no distinguishing "
+          f"numbers) is STILL rejected -- the fix did not weaken the general case; got {err2!r}")
+
+    # boundary: only ONE numeric key_term actually named among the FLAGGED
+    # scenes (not two DIFFERENT ones -- "225" only appears in the final,
+    # already-excluded payoff scene) must NOT be exempted. The exemption
+    # requires proof that the flagged scenes themselves cover >=2 distinct
+    # required numbers, not merely that the fact has 2 numeric key_terms
+    # somewhere or that one appears elsewhere in the script.
+    one_number_fact = {
+        "id": "test_one_number", "domain": "space",
+        "fact": ("A day on Venus is longer than its year: one rotation takes 243 Earth "
+                 "days, while one trip around the Sun takes only 225."),
+        "key_terms": ["243 Earth days", "225 days"],
+    }
+    one_number_vos = [
+        "Venus somehow has a single day that outlasts its entire calendar year.",
+        "Picture trying to survive a single sunrise-to-sunrise cycle on that planet.",
+        "Venus takes 243 Earth days just to spin all the way around once.",
+        "That planet needs 243 Earth days to turn just once on its own axis.",
+        "That single repeated fact makes the timing on Venus feel truly alien.",
+        "No ordinary calendar built on Earth could make sense of that at all.",
+        "It remains a genuine astronomical oddity that is worth actually remembering.",
+        "Venus somehow outlasts its own 225 day year with just one single day.",
+    ]
+    m3 = manifest("A Day Longer Than A Year", one_number_vos[0], scenes(
+        *[(vo, "X", "planet venus surface") for vo in one_number_vos]))
+    m3["hook_headline"] = "VENUS TIME ODDITY"
+    err3 = G.validate(m3, "EXPLAIN", fact=one_number_fact)
+    check(err3 is not None and "restated" in err3,
+          f"two flagged scenes both naming the SAME number (the other required number "
+          f"appears only in the excluded final scene) are still correctly rejected as "
+          f"restatement -- the exemption requires >=2 DISTINCT numeric key_terms actually "
+          f"covered BY THE FLAGGED SCENES, not merely present somewhere in the script; "
+          f"got {err3!r}")
+
+    # 2026-09-09 tightened per PR review: the exemption is a strict ONE-TO-ONE
+    # bijection, not "count of distinct terms found anywhere among the
+    # flagged scenes" -- the old count-based design allowed extra flagged
+    # restatements to hide behind two genuinely legitimate scenes elsewhere
+    # in the same flagged set. Three adversarial cases below, each proving a
+    # set that the OLD `len(restated) - exempt > 1` logic would have wrongly
+    # passed but the new bijection logic correctly rejects.
+    two_num_fact = {
+        "id": "test_bijection", "domain": "space",
+        "fact": ("A day on Venus is longer than its year: one rotation takes 243 Earth "
+                 "days, while one trip around the Sun takes only 225."),
+        "key_terms": ["243 Earth days", "225 days"],
+    }
+
+    # (a) 3 flagged scenes, only 2 distinct numeric key_terms (243, 225, 243
+    # again) -- pigeonhole forces a duplicate; the OLD logic computed
+    # exempt=2 (2 distinct terms found), so 3-2=1 (not >1) wrongly PASSED.
+    vos_a = [
+        "Venus somehow has a single day that outlasts its own entire calendar year completely.",
+        "Picture trying to survive just one sunrise to sunrise cycle on that whole planet.",
+        "Venus takes 243 Earth days just to complete one full rotation on its axis.",
+        "Meanwhile one trip around the Sun takes only 225 Earth days for Venus.",
+        "Remember that one rotation there still takes 243 Earth days, just like before today.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    ma = manifest("test", vos_a[0], scenes(*[(v, "X", "planet venus surface") for v in vos_a]))
+    ma["hook_headline"] = "VENUS TRIPLE FLAG"
+    erra = G.validate(ma, "EXPLAIN", fact=two_num_fact)
+    check(erra is not None and "restated" in erra,
+          f"3 flagged scenes with only 2 distinct numeric key_terms (243 named twice) is REJECTED "
+          f"-- the old count-based exemption would have wrongly passed this; got {erra!r}")
+
+    # (b) one flagged scene contains BOTH numbers, another scene repeats one
+    # of them -- a scene cramming both required numbers into one line does
+    # not count as a valid single-number carrier for the bijection.
+    vos_b = [
+        "Venus somehow has a single day that outlasts its own entire calendar year today.",
+        "Picture trying to survive just one sunrise to sunrise cycle on that whole planet.",
+        "Venus takes 243 Earth days to rotate but only 225 Earth days to orbit the Sun.",
+        "That 243 day rotation on Venus is genuinely strange to think about for a while.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Scientists have confirmed this timing oddity through careful, repeated planetary observation over decades.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    mb = manifest("test", vos_b[0], scenes(*[(v, "X", "planet venus surface") for v in vos_b]))
+    mb["hook_headline"] = "BOTH NUMBERS ONE LINE"
+    errb = G.validate(mb, "EXPLAIN", fact=two_num_fact)
+    check(errb is not None and "restated" in errb,
+          f"a scene containing BOTH required numbers plus another scene repeating one of them is "
+          f"REJECTED -- cramming both numbers into one line is not a valid bijection carrier; "
+          f"got {errb!r}")
+
+    # (c) the same number repeated twice while the OTHER number appears in a
+    # different, non-flagged scene -- the two flagged scenes both claim the
+    # SAME term, which is not a one-to-one mapping even though the fact's
+    # other number is genuinely present somewhere in the script.
+    vos_c = [
+        "Venus somehow has a single day that outlasts its own entire calendar year today.",
+        "Venus takes 243 Earth days to complete one rotation on its axis.",
+        "Remember, that same rotation still takes 243 Earth days, just like before.",
+        "Its orbit lasts 225 Earth days, a fact worth remembering for later.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Scientists have confirmed this timing oddity through careful, repeated planetary observation over decades.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    mc = manifest("test", vos_c[0], scenes(*[(v, "X", "planet venus surface") for v in vos_c]))
+    mc["hook_headline"] = "SAME NUMBER TWICE"
+    errc = G.validate(mc, "EXPLAIN", fact=two_num_fact)
+    check(errc is not None and "restated" in errc,
+          f"the same number repeated across 2 flagged scenes is REJECTED even though the OTHER "
+          f"required number genuinely appears elsewhere in the script -- a term used twice is "
+          f"never a valid one-to-one bijection; got {errc!r}")
+
+
 # --------------------------------------------------------------------------
 # 2. _align_words_by_content: caption content alignment
 # --------------------------------------------------------------------------
@@ -2183,6 +2362,265 @@ def test_trim_scene_to_cap():
     check(len(out3.rstrip(".").split()) == 12, "an over-cap FIRST sentence alone also hard-truncates to the cap")
 
 
+def test_deterministic_mechanical_trim():
+    section("generate.deterministic_mechanical_trim: MINIMAL zero-network salvage for word-count "
+            "near-misses, operating on writer_out pre-assembly (2026-09-09 correctness fixes)")
+
+    def _writer_out(beats_text):
+        return {
+            "hook": beats_text[0], "hook_source_claim_ids": ["h1"],
+            "beats": [{"voiceover": v, "visual_intent": "x", "source_claim_ids": [f"b{i}"]}
+                     for i, v in enumerate(beats_text[1:-1])],
+            "payoff": beats_text[-1], "payoff_source_claim_ids": ["p1"],
+        }
+
+    # EXACT production data (writer_attempts.json, run 34264652218, attempt 4
+    # round 2): "scene 5 voiceover too long (28 words, cap is 25)". Scene 5 in
+    # spoken order (hook=1, beats=2..7, payoff=8) is beats[3] (0-indexed).
+    beats_text = [
+        "Venus shows that a planet's day can be longer than its year.",
+        "A single rotation of Venus takes 243 Earth days.",
+        "Its orbit takes 225 days, shorter than its 243-day rotation.",
+        "Because Venus spins in retrograde, its Sun rises in the west.",
+        ("If you tried to live through a full Venus year, you wouldn't even finish "
+         "one day, because a Venus day of 243 Earth days outlasts its 225-day year."),
+        "So on Venus, a year outlasts a day, reversing the order we take for granted.",
+        "It shows that time is a local construct, not a universal constant.",
+        "Time can behave differently on other planets.",
+    ]
+    wo = _writer_out(beats_text)
+    num_beats = len(wo["beats"])
+    check(len(beats_text[4].split()) == 28, "fixture reproduces the exact live 28-word over-cap scene")
+    out = G.deterministic_mechanical_trim(wo, "scene 5 voiceover too long (28 words, cap is 25)", num_beats)
+    check(out is not None, "the scene-cap near-miss is recognized and trimmed")
+    check(len(out["beats"][3]["voiceover"].split()) <= 25, "the trimmed beat now fits the 25-word cap")
+    check(out["hook"] == wo["hook"] and out["payoff"] == wo["payoff"],
+          "hook and payoff text is untouched")
+    check(out["beats"][3]["source_claim_ids"] == wo["beats"][3]["source_claim_ids"],
+          "source_claim_ids are preserved across the trim -- only the voiceover text changes")
+    check(all(out["beats"][i]["voiceover"] == wo["beats"][i]["voiceover"]
+             for i in range(num_beats) if i != 3),
+          "every OTHER beat is untouched")
+
+    # HOOK over-cap: a scene-cap failure mapping to scene 1 (the hook) must
+    # NEVER be mechanically trimmed -- let the normal Writer repair system
+    # handle it, since losing even a clause from the certified opening beat
+    # is exactly the kind of change that must go through full re-certification
+    # via the writer, not a silent local edit.
+    check(G.deterministic_mechanical_trim(wo, "scene 1 voiceover too long (30 words, cap is 25)", num_beats) is None,
+          "a scene-cap failure on the HOOK (scene 1) is never mechanically trimmed")
+
+    # PAYOFF over-cap: scene num_beats+2 is the payoff -- same protection.
+    payoff_scene_id = num_beats + 2
+    check(G.deterministic_mechanical_trim(
+              wo, f"scene {payoff_scene_id} voiceover too long (30 words, cap is 25)", num_beats) is None,
+          "a scene-cap failure on the PAYOFF (final scene) is never mechanically trimmed")
+
+    # MINIMAL total-word trim: 112 against a hard ceiling of 108 must remove
+    # only the minimum necessary (+ the small explicit safety margin), NOT
+    # trim all the way down toward the soft target (78-98 in short mode) --
+    # this is a salvage of a near-miss, not an optimization pass.
+    padded_beats = [
+        "Our Earth calendar would not match how time works on Venus at all today.",
+        "A full calendar year on Venus lasts about two hundred twenty five whole Earth days total.",
+        "A single full rotation of Venus takes two hundred forty three Earth days, longer than its year.",
+        "So if you honestly tried to live out a Venus year, would you ever even see one sunrise.",
+        "Venus also spins in retrograde, so the Sun there rises in the west instead of the east.",
+        "In practice, you would finish the entire planet's year before completing even one of its own days.",
+        "This clearly shows that timekeeping itself is planetary, reminding us clocks are just one of many measures.",
+        "Time on other worlds follows its own rules, so our Earth centric clocks are only one measure we use.",
+    ]
+    wo2 = _writer_out(padded_beats)
+    total_before = len(" ".join(padded_beats).split())
+    hard_hi = G.WORD_HARD_HI
+    out2 = G.deterministic_mechanical_trim(
+        wo2, f"script word count {total_before} out of range (target {G.WORD_LO}-{G.WORD_HI}, "
+             f"hard {G.WORD_HARD_LO}-{hard_hi}, mode {G.LENGTH_MODE})", len(wo2["beats"]))
+    check(out2 is not None, "the total-word-count near-miss is recognized and trimmed")
+    total_after = len(" ".join([out2["hook"]] + [b["voiceover"] for b in out2["beats"]]
+                              + [out2["payoff"]]).split())
+    removed = total_before - total_after
+    required_minimum = max(0, total_before - hard_hi)
+    check(total_after <= hard_hi + G._TRIM_SAFETY_MARGIN_WORDS,
+          f"the trimmed total ({total_after}) clears the hard ceiling ({hard_hi}) plus only the "
+          f"small explicit safety margin, not the soft target ({G.WORD_HI})")
+    check(removed <= required_minimum + G._TRIM_SAFETY_MARGIN_WORDS + 6,
+          f"only approximately the required excess was removed ({removed} words removed for a "
+          f"{required_minimum}-word deficit), not trimmed down toward the soft target -- the old "
+          f"design would have removed {total_before - G.WORD_HI} words to reach WORD_HI, "
+          f"materially more whenever WORD_HI is well below the hard ceiling")
+    check(out2["hook"] == wo2["hook"] and out2["payoff"] == wo2["payoff"],
+          "the hook and payoff are never trimmed when middle beats exist")
+    check(all(len(b["voiceover"].split()) >= 6 for b in out2["beats"]),
+          "no beat is ever shrunk below 6 words")
+
+    # a validate_err shape this function doesn't recognize (a real factual/
+    # structural defect) returns None -- it never guesses, never invents a
+    # fix for something it doesn't understand.
+    check(G.deterministic_mechanical_trim(wo, "scenes 1 and 3 too similar (repetition)", num_beats) is None,
+          "an unrecognized validate_err shape is left alone, not guessed at")
+    check(G.deterministic_mechanical_trim(wo, "the verified fact is restated in 2 scenes [3, 4] "
+                                          "instead of being revealed once and escalated from", num_beats) is None,
+          "a structural/content defect is never treated as a word-count near-miss")
+
+
+def test_orchestrator_mechanical_trim_reruns_full_certification():
+    section("writer_v21_orchestrator: a mechanical trim is treated as a NEW candidate -- every "
+            "load-bearing check is rerun against the trimmed narration, never stale pre-trim "
+            "evidence (2026-09-09 correctness fix for the flagship attempt #4 PR review)")
+    import writer_v21_orchestrator as O
+
+    fact = {"id": "test_topic", "domain": "space", "fact": "x", "wow": "", "whatif": "", "angle": "", "key_terms": []}
+    filler_words = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"]
+    draft = {
+        "title": "test", "hook": "an opening statement about nothing in particular", "hook_source_claim_ids": [],
+        "beats": [{"voiceover": f"a plain connective sentence about {w} and nothing else",
+                  "visual_intent": "planet venus surface", "source_claim_ids": []} for w in filler_words],
+        "payoff": "a closing statement about nothing in particular", "payoff_source_claim_ids": [],
+    }
+    critic_clean = {"scores": {k: 8 for k in WR.CRITIC_SCORE_DIMENSIONS},
+                    "claim_support": [{"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE",
+                                       "unsupported_proposition": ""} for i in range(8)],
+                    "repair_type": "NONE", "target_beats": [], "diagnosis": "fine", "must_preserve": []}
+    # what the critic says about the TRIMMED text is DELIBERATELY DIFFERENT
+    # from what it said pre-trim (a real semantic problem newly introduced by
+    # the trim, e.g. removing a clause that made beat 4 a clean paraphrase).
+    # If the orchestrator ever reused the PRE-trim critic_clean verdict for
+    # the trimmed text, this test would show the candidate wrongly accepted.
+    critic_flags_trimmed_beat = {
+        "scores": {k: 6 for k in WR.CRITIC_SCORE_DIMENSIONS},
+        "claim_support": [
+            {"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""}
+            for i in range(3)
+        ] + [
+            {"beat_index": 3, "verdict": "UNSUPPORTED_ADDITION",
+             "unsupported_proposition": "trimming removed the qualifier that made this true"},
+        ] + [
+            {"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""}
+            for i in range(4, 8)
+        ],
+        "repair_type": "NONE", "target_beats": [], "diagnosis": "beat 3 now unsupported after trim",
+        "must_preserve": [],
+    }
+
+    critic_call_count = {"n": 0}
+
+    def fake_call(prompt, schema, schema_name, debug_calls):
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
+        if schema_name == "writer_v2_output":
+            return _json.dumps(draft), True
+        if schema_name == "critic_verdict":
+            critic_call_count["n"] += 1
+            # round 0 (pre-trim): clean. round 1+ (post-trim): flags the beat
+            # the trim touched -- proving the orchestrator actually asks
+            # again rather than reusing round 0's verdict.
+            verdict = critic_clean if critic_call_count["n"] == 1 else critic_flags_trimmed_beat
+            return _json.dumps(verdict), True
+        if schema_name == "repair_output":
+            # the fresh post-trim critic call correctly finds a NEW semantic
+            # problem (proving evidence isn't reused stale) -- the loop
+            # legitimately tries one bounded LLM repair for it, exactly as it
+            # would for any other newly-discovered violation. Return a no-op
+            # so the violation persists and the candidate is correctly
+            # rejected once the round budget is exhausted, rather than this
+            # test asserting an unrealistic "zero repair calls ever" bound.
+            return _json.dumps({"repairs": []}), True
+        raise AssertionError(f"unexpected schema {schema_name}")
+
+    validate_calls = []
+
+    def fake_validate(m, job_name, fact=None):
+        validate_calls.append(m)
+        # round 0: pure word-count near-miss. round 1+ (post-trim): clean --
+        # isolates the test to "does stale SEMANTIC evidence get reused",
+        # matching the PR-review finding precisely.
+        return "script word count 120 out of range (target 78-98, hard 68-108, mode short)" \
+            if len(validate_calls) == 1 else None
+
+    trim_calls = []
+
+    def fake_trim(writer_out, validate_err, num_beats):
+        trim_calls.append(validate_err)
+        out = dict(writer_out)
+        out["beats"] = [dict(b) for b in writer_out.get("beats", [])]
+        out["beats"][3]["voiceover"] += " (trimmed)"
+        return out
+
+    real_call = G._v2_structured_call
+    real_validate = G.validate
+    real_trim = G.deterministic_mechanical_trim
+    real_score = G.score_script
+    G._v2_structured_call = fake_call
+    G.validate = fake_validate
+    G.deterministic_mechanical_trim = fake_trim
+    G.score_script = lambda m, fact=None, cta_style="SAVE_WORTHY": {
+        **{k: 9 for k in G.QUALITY_RUBRIC_CRITERIA}, "overall": 9.0}
+    try:
+        m, debug = O.generate_candidate_v21(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                            avoid_topics="none", cta_style="SAVE_WORTHY",
+                                            use_structured=True)
+    finally:
+        G._v2_structured_call = real_call
+        G.validate = real_validate
+        G.deterministic_mechanical_trim = real_trim
+        G.score_script = real_score
+
+    check(len(trim_calls) == 1, "the trim is invoked exactly once, with the real pre-trim validate_err")
+    check(critic_call_count["n"] >= 2,
+          "the critic is called AGAIN after the trim -- fresh semantic evidence is spent on the "
+          "actual modified narration, never assumed from the pre-trim round")
+    check(len(validate_calls) >= 2, "validate() is rerun against the trimmed manifest, not skipped")
+    r0 = debug["rounds"][0]
+    check(r0.get("mechanical_trim_applied") is True,
+          "round 0 (pre-trim) is marked as having triggered a mechanical trim, for audit")
+    # THE key assertion: because the critic flags the trimmed beat as
+    # UNSUPPORTED_ADDITION on the fresh, post-trim call, this candidate must
+    # NOT be accepted using the stale pre-trim "everything clean" verdict.
+    check(m is None and debug.get("accepted") is False,
+          "the mutated candidate is REJECTED once fresh post-trim semantic evidence finds a real "
+          "problem -- it is never accepted using semantic/traceability evidence computed for "
+          "DIFFERENT (pre-trim) text")
+
+    # Tier 1 NOT clean (a real hard violation present) -> the trim must never
+    # even be consulted, regardless of what validate_err says.
+    trim_calls.clear()
+    validate_calls.clear()
+    critic_call_count["n"] = 0
+
+    def fake_call_dirty(prompt, schema, schema_name, debug_calls):
+        debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
+        if schema_name == "writer_v2_output":
+            dirty = dict(draft)
+            dirty["beats"] = [dict(b) for b in draft["beats"]]
+            dirty["beats"][0]["voiceover"] = "The Golden Gate Bridge appears here unsupported."
+            return _json.dumps(dirty), True
+        if schema_name == "critic_verdict":
+            return _json.dumps(critic_clean), True
+        if schema_name == "repair_output":
+            return _json.dumps({"repairs": []}), True
+        raise AssertionError(f"unexpected schema {schema_name}")
+
+    def fake_validate_wordcount_always(m, job_name, fact=None):
+        return "script word count 120 out of range (target 78-98, hard 68-108, mode short)"
+
+    G._v2_structured_call = fake_call_dirty
+    G.validate = fake_validate_wordcount_always
+    G.deterministic_mechanical_trim = fake_trim
+    G.score_script = lambda m, fact=None, cta_style="SAVE_WORTHY": None
+    try:
+        O.generate_candidate_v21(fact, job_name="CURIOSITY_ITCH", recent_treatments=[],
+                                 avoid_topics="none", cta_style="SAVE_WORTHY", use_structured=True)
+    finally:
+        G._v2_structured_call = real_call
+        G.validate = real_validate
+        G.deterministic_mechanical_trim = real_trim
+        G.score_script = real_score
+
+    check(len(trim_calls) == 0,
+          "the trim is NEVER consulted while a real Tier-1 hard violation is present, even though "
+          "validate_err looks like a word-count near-miss -- Tier 1 always gates the salvage attempt")
+
+
 def test_reference_worthy_spelled_numbers():
     section("generate.REFERENCE_WORTHY_RE: catches spelled-out numbers, not just digits (render 194-200 bug)")
     # a script whose only "number" is spelled out in words must still pass --
@@ -3175,6 +3613,58 @@ def test_writer_v2_entity_hard_soft_split():
     check(bool(WR.hard_violations(v2)), "a genuinely unsupported multi-word entity stays HARD-caught")
 
 
+def test_writer_v2_connector_fused_entity_not_hard():
+    section("writer_v2._extract_factual_tokens: sentence-initial connector fused with a real entity "
+            "is not a bogus multi-word HARD entity (2026-09-08 flagship attempt #4 live bug)")
+
+    # Live production text (writer_attempts.json, run 34264652218, attempt 4
+    # round 2): "Because Venus spins in retrograde, its Sun rises in the
+    # west." was HARD-flagged as unsupported_entity 'Because Venus' -- the
+    # ordinary sentence-initial connector "Because" got greedily fused with
+    # the genuine, already-cited entity "Venus" into one bogus two-word
+    # candidate. This was the one remaining hard violation blocking an
+    # otherwise semantically-clean, floor-clearing candidate.
+    tok = W2._extract_factual_tokens("Because Venus spins in retrograde, its Sun rises in the west.")
+    check("Because Venus" not in tok["entities"],
+          "the fused connector+entity phrase 'Because Venus' is never produced as a candidate")
+    check("Venus" in tok["entities"] and "Venus" not in tok["weak_entities"],
+          "the real entity 'Venus' is recovered as a full-strength (non-weak) entity once the "
+          "leading connector is stripped -- it is genuinely capitalized regardless of position")
+
+    # other common sentence-initial connectors must be stripped the same way
+    for line, entity in [
+        ("So Venus takes 243 Earth days to complete one rotation.", "Venus"),
+        ("When Everest was first surveyed, its height was underestimated.", "Everest"),
+        ("But Mauna Kea is taller when measured from its true base.", "Mauna Kea"),
+    ]:
+        tok2 = W2._extract_factual_tokens(line)
+        check(entity in tok2["entities"] and not any(v.lower().startswith(("so ", "when ", "but "))
+              for v in tok2["entities"]),
+              f"connector correctly stripped, real entity {entity!r} recovered cleanly: {line!r}")
+
+    # end-to-end: the exact live sentence, cited to a claim that genuinely
+    # supports "Venus", must NOT be hard-flagged at all.
+    fact = {"id": "venus_day", "fact": "Venus also spins in retrograde, the opposite direction to almost every other planet.",
+           "wow": "", "whatif": "", "angle": "", "key_terms": []}
+    inv = W2.build_claim_inventory(fact, [], False)
+    cbi = {c["claim_id"]: c for c in inv["claims"]}
+    v3 = WR._check_line(1, "Because Venus spins in retrograde, that direction is opposite most planets.",
+                        ["base_001"], cbi, [])
+    check(not WR.hard_violations(v3),
+          "the exact live-production sentence shape, cited to the claim that supports 'Venus', is "
+          "no longer HARD-blocked by the connector-fusion false positive")
+
+    # the fix must not grant blanket immunity to whatever follows a
+    # connector: a genuinely DIFFERENT, uncited entity is still HARD-caught
+    # exactly as it would be anywhere else in the sentence -- only the
+    # legitimate, already-cited entity's own bogus fusion with "Because" is
+    # fixed, not entity checking in general.
+    v4 = WR._check_line(1, "Because Krakatoa erupted violently, ash filled the sky.", ["base_001"], cbi, [])
+    check(bool(WR.hard_violations(v4)),
+          "an uncited DIFFERENT entity revealed after stripping a connector is still HARD-caught "
+          "-- the fix only recovers entities claims genuinely cite, it is not blanket immunity")
+
+
 def test_writer_v2_number_normalization():
     section("writer_v2_repair: numeric value normalization (V2.1 -- 'thousand' vs '1,000')")
     fact = {"id": "mauna_kea", "domain": "earth", "fact": "x",
@@ -3979,6 +4469,7 @@ def main():
     print("LOCAL PIPELINE TESTS (zero quota, no network, no ffmpeg)")
     test_validate_clean()
     test_validate_rejections()
+    test_validate_two_quantity_comparison_not_restated()
     test_content_alignment()
     test_diversify_queries()
     test_diversify_motions()
@@ -4024,6 +4515,8 @@ def main():
     test_vibe_music_filter()
     test_vibe_sting_freqs()
     test_trim_scene_to_cap()
+    test_deterministic_mechanical_trim()
+    test_orchestrator_mechanical_trim_reruns_full_certification()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
     test_apply_scene_rewrite()
@@ -4048,6 +4541,7 @@ def main():
     test_writer_v2_visual_scout()
     test_writer_v2_traceability()
     test_writer_v2_entity_hard_soft_split()
+    test_writer_v2_connector_fused_entity_not_hard()
     test_writer_v2_number_normalization()
     test_writer_v2_punctuation_normalization()
     test_writer_v2_semantic_support()

@@ -2,16 +2,19 @@
 """Evidence-bound deterministic science-motion lane for private certification.
 
 This module turns a *small, explicit subset* of Writer V2.1 treatments into
-purpose-built process graphics without another model call. It never infers a
-process from arbitrary narration. A treatment is eligible only when its frozen
-beat progression itself encodes an ordered journey/mechanism/system, and every
-visual step is copied from an already-accepted spoken line carrying sealed
-Writer claim IDs.
+purpose-built graphics without another model call. It never infers a process or
+quantity from arbitrary narration. Every visual step/value is copied from
+already-accepted spoken lines carrying sealed Writer claim IDs.
 
-Eligible v1 treatments:
+Eligible production treatments:
 - ONE_OBJECT_JOURNEY: path begins -> transformation -> obstacle -> destination
 - HIDDEN_MECHANISM: beneath surface -> mechanism -> consequence
 - INSIDE_THE_SYSTEM: internal component -> connection -> critical interaction
+
+SCALE_REVEAL is deliberately NOT in that list. See
+``SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED`` below: sealed provenance proves each
+ratio is real, but nothing currently proves two ratios measure comparable
+quantities, so the production planner refuses to chart them.
 
 The resulting graphic is deterministic FFmpeg output, makes zero network/AI
 calls, and is used only when a higher-priority authentic NASA/PubChem asset did
@@ -26,27 +29,36 @@ from typing import Any, Mapping, Sequence
 import science_motion as SM
 
 
-# Zero-based manifest scene indices. Writer V2.1 assembly is canonical:
-# 0=hook, 1..6=treatment beats, 7=payoff.
-# target_index is deliberately the LAST displayed process step so the graphic
-# cannot visually reveal a later beat before narration has reached it.
 _TREATMENT_FLOW = {
     "ONE_OBJECT_JOURNEY": {
-        "step_indexes": (2, 3, 4, 5),  # beat2 begin, beat3 transform, beat4 obstacle, beat5 destination
+        "step_indexes": (2, 3, 4, 5),
         "target_index": 5,
         "title": "THE JOURNEY",
     },
     "HIDDEN_MECHANISM": {
-        "step_indexes": (3, 4, 5),     # beat3 beneath surface, beat4 mechanism, beat5 consequence
+        "step_indexes": (3, 4, 5),
         "target_index": 5,
         "title": "WHAT'S HAPPENING",
     },
     "INSIDE_THE_SYSTEM": {
-        "step_indexes": (3, 4, 5),     # beat3 component, beat4 connection, beat5 critical interaction
+        "step_indexes": (3, 4, 5),
         "target_index": 5,
         "title": "INSIDE THE SYSTEM",
     },
 }
+
+_RATIO_RE = re.compile(r"\b(\d+(?:\.\d+)?)\s+(times)\b", re.I)
+
+# Fail-closed switch for the SCALE_REVEAL lane. Matching sealed "N times"
+# ratios proves each number was actually said and cited -- it does NOT prove the
+# two ratios measure comparable quantities. "4 times faster" and "100 times
+# denser" are both dimensionless, both sealed, and putting them on one axis
+# would assert a comparison the evidence never makes. Until claims carry an
+# explicit machine-readable comparability contract (a shared quantity/dimension
+# the planner can check rather than infer), no deterministic comparison graphic
+# is emitted. The planner below is retained, unreferenced by production, so that
+# contract can be built against working machinery instead of from scratch.
+SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED = False
 
 
 @dataclass(frozen=True)
@@ -74,12 +86,7 @@ def _scene_id(scene: Mapping[str, Any], fallback: int) -> str:
 
 
 def _short_accepted_label(text: str, max_chars: int = 38) -> str:
-    """Make a compact display label using only words from the accepted line.
-
-    No synonym generation, summarization, or model call is allowed here. We take
-    a whole-word prefix so the graphic cannot add a factual proposition that the
-    Writer did not already say and semantically certify.
-    """
+    """Make a compact display label using only words from the accepted line."""
     clean = re.sub(r"[\r\n\t]+", " ", str(text or "")).strip()
     clean = re.sub(r"\s+", " ", clean)
     words = clean.split()
@@ -102,18 +109,119 @@ def _short_accepted_label(text: str, max_chars: int = 38) -> str:
     return " ".join(out).upper()
 
 
+def _ratio_tail_label(text: str, match: re.Match[str], max_chars: int = 32) -> str:
+    """Use the accepted words immediately after ``N times`` as the bar label.
+
+    For the eclipse seed this yields ``WIDER THAN ITSELF`` and ``FARTHER AWAY``
+    rather than repeating the whole sentence above a 400-times display value.
+    The label remains literal accepted narration; no synonym or summary is added.
+    """
+    tail = str(text or "")[match.end():].strip(" \t\r\n,.;:!?—–-")
+    if not tail:
+        return _short_accepted_label(text, max_chars=max_chars)
+    return _short_accepted_label(tail, max_chars=max_chars)
+
+
+def _inert_plan_dimensionless_scale(
+    manifest: Mapping[str, Any],
+    allowed: set[str],
+) -> dict[str, ScienceMotionPlan]:
+    """NOT PRODUCTION. Retained machinery for a future comparability contract.
+
+    Nothing in production calls this. It plans a SCALE_COMPARE from accepted
+    dimensionless ``N times`` ratios, which is safe only when the ratios happen
+    to describe comparable quantities -- something this function cannot verify
+    and never claimed to. It refuses unlike-unit measurements and unsealed
+    claims, but two sealed ratios of unrelated quantities would still be
+    charted together, which is exactly why ``plan_manifest`` no longer routes
+    here. See ``SCALE_REVEAL_PRODUCTION_ROUTING_ENABLED``.
+    """
+    scenes = [s for s in (manifest.get("scenes") or []) if isinstance(s, Mapping)]
+    if not scenes or not allowed:
+        return {}
+
+    selected: list[tuple[str, str, float, str, tuple[str, ...]]] = []
+    seen_labels: set[str] = set()
+    for idx, scene in enumerate(scenes, 1):
+        voice = str(scene.get("voiceover") or "").strip()
+        match = _RATIO_RE.search(voice)
+        if not match:
+            continue
+        refs = tuple(dict.fromkeys(
+            str(x).strip() for x in (scene.get("source_claim_ids") or []) if str(x).strip()
+        ))
+        if not refs:
+            continue
+        unknown = [x for x in refs if x not in allowed]
+        if unknown:
+            raise ValueError(
+                f"science-motion scene {_scene_id(scene, idx)} references unsealed claim IDs: {unknown}"
+            )
+        label = _ratio_tail_label(voice, match)
+        if not label or label in seen_labels:
+            continue
+        seen_labels.add(label)
+        selected.append((
+            _scene_id(scene, idx),
+            label,
+            float(match.group(1)),
+            match.group(0).upper(),
+            refs,
+        ))
+        if len(selected) >= 4:
+            break
+
+    if len(selected) < 2:
+        return {}
+
+    selected = selected[:4]
+    target_id = selected[1][0]
+    source_scene_ids = tuple(row[0] for row in selected)
+    all_refs = tuple(dict.fromkeys(ref for row in selected for ref in row[4]))
+    items = tuple(
+        SM.ScaleItem(
+            label=row[1],
+            value=row[2],
+            display_value=row[3],
+            source_claim_id=row[4][0],
+        )
+        for row in selected
+    )
+    spec = SM.ScienceMotionSpec(
+        kind=SM.MotionKind.SCALE_COMPARE,
+        title="SCALE COMPARISON",
+        duration=4.0,
+        source_claim_ids=all_refs,
+        scale_items=items,
+        subtitle="EVIDENCE-BOUND RATIOS",
+    )
+    errors = spec.validate()
+    if errors:
+        raise ValueError("invalid deterministic scale-motion plan: " + "; ".join(errors))
+    return {
+        target_id: ScienceMotionPlan(
+            target_scene_id=target_id,
+            treatment="SCALE_REVEAL",
+            source_scene_ids=source_scene_ids,
+            source_claim_ids=all_refs,
+            spec=spec,
+        )
+    }
+
+
 def plan_manifest(
     manifest: Mapping[str, Any],
     allowed_claim_ids: Sequence[str],
 ) -> dict[str, ScienceMotionPlan]:
-    """Return at most one deterministic process graphic for this manifest.
-
-    The allowed IDs must come from the already-verified sealed Writer evidence
-    handoff. An unsupported treatment simply produces no deterministic motion.
-    An eligible treatment also produces no motion if any selected line is pure
-    connective tissue with no claim IDs; we never invent evidence to fill it.
-    """
+    """Return at most one deterministic science graphic for this manifest."""
     treatment = str(manifest.get("treatment") or "").strip()
+    allowed = {str(x).strip() for x in allowed_claim_ids if str(x).strip()}
+    if treatment == "SCALE_REVEAL":
+        # Fail closed: no deterministic comparison graphic without explicit
+        # proof of semantic comparability. The scene keeps its normal
+        # authentic-science/stock routing instead.
+        return {}
+
     rule = _TREATMENT_FLOW.get(treatment)
     if not rule:
         return {}
@@ -123,8 +231,6 @@ def plan_manifest(
     target_index = int(rule["target_index"])
     if not scenes or max((*indexes, target_index)) >= len(scenes):
         return {}
-
-    allowed = {str(x).strip() for x in allowed_claim_ids if str(x).strip()}
     if not allowed:
         return {}
 
@@ -160,7 +266,7 @@ def plan_manifest(
     spec = SM.ScienceMotionSpec(
         kind=SM.MotionKind.PROCESS_FLOW,
         title=str(rule["title"]),
-        duration=4.0,  # replaced with the real spoken-segment duration at render time
+        duration=4.0,
         source_claim_ids=refs,
         flow_steps=tuple(flow_steps),
         subtitle="EVIDENCE-BOUND EXPLANATION",

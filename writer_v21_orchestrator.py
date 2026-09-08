@@ -187,6 +187,7 @@ def generate_candidate_v21(
 
         round_info = {
             "round": round_idx,
+            "mechanical_trim_applied": False,
             "mechanical_violation_count": len(mech_violations),
             "mechanical_hard_count": len(mech_hard),
             "semantic_verified": coverage_ok,
@@ -244,6 +245,40 @@ def generate_candidate_v21(
             break
         if plan["repair_type"] == "NONE":
             break
+
+        # 2026-09-08 flagship attempt #4 (venus_day, run 34264652218): the
+        # bounded LLM repair budget can be entirely consumed clearing Tier 1
+        # (mechanical + semantic) violations, so a purely mechanical Tier 2
+        # near-miss (one scene a few words over its cap, or the total script
+        # a few words over the hard ceiling) never gets a repair attempt at
+        # all. Only attempt the zero-network mechanical trim when Tier 1 is
+        # ALREADY fully clear (no hard violations, semantic fully verified) --
+        # this never touches factual content and never fires while a real
+        # factual/structural problem still needs an LLM repair round.
+        #
+        # 2026-09-09 correctness fix: a trim is a genuine content mutation.
+        # The OLD design patched the already-assembled manifest and only
+        # re-ran validate()/score_script(), then accepted the trimmed text
+        # using mechanical/semantic evidence that was computed for the
+        # PRE-TRIM text -- stale-evidence acceptance, unacceptable for a
+        # system whose entire premise is that acceptance evidence must match
+        # the exact text being certified. The trim now operates on writer_out
+        # itself (before assembly) and, on success, becomes the writer_out
+        # for a genuinely NEW round: `continue` re-enters the loop from the
+        # top, so mechanical/provenance checks, semantic coverage, the
+        # critic, validate(), and the quality floor are ALL recomputed fresh
+        # against the actual modified narration, spending a real (bounded,
+        # same MAX_REPAIR_ROUNDS-counted) critic call exactly like any other
+        # repair round would. Nothing is ever stamped accepted/semantic-
+        # verified using evidence generated for different text.
+        if not candidate_hard and coverage_ok and validate_err:
+            trimmed_writer_out = G.deterministic_mechanical_trim(writer_out, validate_err, num_beats)
+            if trimmed_writer_out is not None:
+                round_info["mechanical_trim_applied"] = True
+                writer_out = trimmed_writer_out
+                stalled = False
+                round_idx += 1
+                continue
 
         repair_prompt = R.build_repair_prompt(
             writer_out, claim_inventory, treatment, plan, stalled=stalled

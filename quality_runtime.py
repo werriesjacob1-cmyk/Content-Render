@@ -41,9 +41,21 @@ class SceneResolution:
 
 
 def _query(spec: VD.SceneSpec) -> str:
-    parts = list(spec.must_show) + [spec.scientific_subject, spec.mechanism]
-    text = " ".join(str(x).strip() for x in parts if str(x).strip())
-    return re.sub(r"\s+", " ", text).strip()[:240]
+    # Visual Director often repeats the same exact subject across must_show and
+    # scientific_subject. Sending "venus retrograde rotation venus retrograde
+    # rotation" to a scientific search API is strictly less specific than the
+    # accepted scene contract. Preserve order while removing exact duplicate
+    # phrases; do not synthesize or rewrite any scientific terminology.
+    raw_parts = list(spec.must_show) + [spec.scientific_subject, spec.mechanism]
+    parts: list[str] = []
+    seen: set[str] = set()
+    for value in raw_parts:
+        part = re.sub(r"\s+", " ", str(value).strip())
+        key = part.casefold()
+        if part and key not in seen:
+            seen.add(key)
+            parts.append(part)
+    return " ".join(parts).strip()[:240]
 
 
 def _route_classes(spec: VD.SceneSpec) -> tuple[VD.VisualClass, ...]:

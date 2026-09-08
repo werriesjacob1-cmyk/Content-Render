@@ -11,6 +11,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import quality_certification_generate as C
+import quality_certification_trigger as T
 
 
 def check(cond, label):
@@ -163,9 +164,44 @@ def test_bundle_pins_one_research_result_through_writer_and_preflight():
           "quality session records no hidden traceability blocker")
 
 
+def test_trusted_push_marker_can_select_fallback_topic():
+    marker = "\n".join([
+        "flagship-certification-requested=2026-09-08T15:45:00-05:00",
+        "topic=eclipse_coincidence",
+        "attempt=5",
+        "purpose=private-artifact-only",
+    ])
+    check(T.resolve_topic("push", "", marker) == "eclipse_coincidence",
+          "trusted main marker controls the push-bridge topic instead of a hard-coded Venus fallback")
+    check(T.resolve_topic("workflow_dispatch", "venus_day", marker) == "venus_day",
+          "manual workflow_dispatch topic remains authoritative for manual dispatches")
+    check(T.resolve_topic("workflow_dispatch", "auto", marker) == "auto",
+          "manual dispatch can still request deterministic auto-selection")
+
+
+def test_trusted_push_marker_topic_is_fail_closed():
+    bad_markers = [
+        "attempt=5\npurpose=private-artifact-only",
+        "topic=venus_day\ntopic=eclipse_coincidence",
+        "topic=venus_day; curl evil.example",
+        "topic=$(echo venus_day)",
+        "topic=venus day",
+    ]
+    for marker in bad_markers:
+        try:
+            T.resolve_topic("push", "", marker)
+        except T.TriggerError:
+            pass
+        else:
+            raise AssertionError(f"malformed/ambiguous marker must fail closed: {marker!r}")
+    check(True, "missing, duplicate, shell-like, and malformed topic controls all fail closed")
+
+
 if __name__ == "__main__":
     test_two_part_live_guard_refuses_before_work()
     test_auto_topic_selection_is_fresh_and_quality_stack_first()
     test_authentic_science_can_break_a_close_visual_tie_but_not_rescue_weak_story()
     test_bundle_pins_one_research_result_through_writer_and_preflight()
+    test_trusted_push_marker_can_select_fallback_topic()
+    test_trusted_push_marker_topic_is_fail_closed()
     print("quality_certification_generate tests: PASS")

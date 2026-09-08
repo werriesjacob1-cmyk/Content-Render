@@ -16,37 +16,17 @@ on:
         default: ""
       certification_only:
         description: "Run the REAL pipeline (script, TTS, footage, render, repackage, final-QA,
-          cover) but SKIP the GitHub Release + direct-Publer publish steps, so the finished video
-          only reaches this run's private Actions artifact for human review -- never a public
-          Release, never anything an external Zapier/Buffer hook on that Release event could pick
-          up. Only affects a manual dispatch with this box checked; the scheduled cron is
-          untouched (inputs.certification_only is unset there, so publish runs as normal)."
+          cover) but SKIP all publish steps, so the finished video only reaches this run's private
+          Actions artifact for human review. This is an additional per-run safety gate; the global
+          AUTO_PUBLISH_ENABLED repo variable must independently be exact 'true' before any publish
+          step can run."
         type: boolean
         default: false
   schedule:
-    # Once a day, 13:00 UTC. The "science" profile's intended posting window
-    # is evening (7-10pm) in its audience's local time (see profiles.py
-    # post_window) -- 13:00 UTC lands mid-afternoon US/EU, leaving a buffer
-    # before evening posting for the run to finish (~15-20 min) and for a
-    # human/n8n hand-off to review the artifact before it goes out. One run
-    # per day matches one video per day: the manifest generator's dedup
-    # memory (memory_science.json / used_footage_science.json) is sized and
-    # tuned for a daily cadence, and GitHub Actions cron has no sub-hourly
-    # resolution anyway. Bump the schedule (or add a second cron line for a
-    # different PAGE) if/when the channel is ready to post more than 1x/day.
-    # FOUR renders/day. Each first tries the pre-generated buffer
-    # (generate.py --dequeue, ZERO LLM calls — buffer.yml fills it at 07:20 when
-    # the free buckets are fresh), and only live-generates if the buffer is
-    # empty. So more render slots = more videos/day WITHOUT more generation-quota
-    # pressure, as long as the morning buffer-fill keeps up. They serialize via
-    # the render-video concurrency group, so they never clobber each other's
-    # memory/queue commits.
-    # 2 renders/day (user cadence choice 2026-07-22). Spaced ~10h apart so the
-    # two main-branch memory commits never collide, and each finishes well BEFORE
-    # a Central-time posting wave: 09:00 UTC = 4am CT -> ready for the ~11am-1pm CT
-    # midday posts; 19:00 UTC = 2pm CT -> ready for the ~5-7pm CT evening posts.
-    # Both are after the 07:00 UTC Gemini quota reset. Bump back to 3-4 crons for
-    # more volume once the channel is proven.
+    # 2 renders/day. Rendering and publishing are deliberately independent:
+    # scheduled renders may produce private Actions artifacts while the global
+    # AUTO_PUBLISH_ENABLED switch remains unset/off. No social/public publishing
+    # is permitted merely because a scheduled render succeeds.
     - cron: "0 9 * * *"     # 4:00 AM CT — feeds the midday CT posting wave
     - cron: "0 19 * * *"    # 2:00 PM CT — feeds the evening CT posting wave
 
@@ -332,25 +312,27 @@ jobs:
             out/proof_frame.png
           retention-days: 7
 
+      - name: Report publishing switch
+        run: |
+          if [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
+            echo "PUBLISHING ENABLED — AUTO_PUBLISH_ENABLED is exactly 'true'; publish steps may run only if all other guards pass"
+          else
+            echo "PUBLISHING DISABLED — master kill switch active (AUTO_PUBLISH_ENABLED is not exactly 'true'); no Release and no Publer push can run"
+          fi
+
       - name: Publish video as a GitHub Release (Buffer/Zapier pickup)
-        # Gives each finished render a stable PUBLIC url with no extra storage
-        # account and no new secret (uses the built-in GITHUB_TOKEN; the job
-        # already has `permissions: contents: write`). A Zapier "New Release in
-        # GitHub" trigger -> "Buffer: Add to Queue" action fans the attached
-        # cuts + captions out to every connected channel. Runs only on a
-        # successful render (no always()), so a broken run never publishes.
-        # certification_only=true skips this step entirely -- the finished
-        # video still exists as this run's private Actions artifact (uploaded
-        # above) for human review, it just never becomes a public Release that
-        # an external Zapier hook could act on.
-        if: ${{ github.event.inputs.certification_only != 'true' }}
+        # PUBLIC Release creation is itself a publishing boundary because an
+        # external Zapier/Buffer trigger can fan it out to social accounts.
+        # Credentials or a successful scheduled render are never sufficient:
+        # AUTO_PUBLISH_ENABLED must be exact "true", and manual certification
+        # runs remain blocked independently.
+        if: ${{ vars.AUTO_PUBLISH_ENABLED == 'true' && github.event.inputs.certification_only != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VID=$(python -c "import json;print((json.load(open('out/post.json')).get('video_id') or '').strip())" 2>/dev/null || true)
           [ -z "$VID" ] && VID="render-${{ github.run_number }}"
           TITLE=$(python -c "import json;print((json.load(open('out/post.json')).get('title') or '').strip())" 2>/dev/null || true)
-          # attach only the files that actually got produced this run
           FILES=""
           for f in tiktok_reels_shorts instagram_reels youtube_shorts facebook_reels square landscape final; do
             [ -f "out/$f.mp4" ] && FILES="$FILES out/$f.mp4"
@@ -358,35 +340,22 @@ jobs:
           for f in post platforms platform_text funnel qa_report; do
             [ -f "out/$f.json" ] && FILES="$FILES out/$f.json"
           done
-          # the designed cover thumbnail (bold hook on the best clean frame) so
-          # whoever posts has a ready cover instead of TikTok's black default
           [ -f "out/cover.jpg" ] && FILES="$FILES out/cover.jpg"
-          # release body = the CLEAN universal caption + hashtags (repackage.py
-          # writes it). It is the post caption verbatim: the Zap maps Publer's Text
-          # field straight to the GitHub {{Body}} field, so NOTHING else may go in
-          # here — no "Source run" footer, no boilerplate — or it would land in the
-          # social caption. (The run link is still on the Actions run + the commit.)
-          # Fall back to just the title if the body file is somehow missing.
           if [ -f out/release_body.md ]; then
             cp out/release_body.md out/release_notes.md
           else
             echo "${TITLE:-New science video}" > out/release_notes.md
           fi
-          # a same-day re-run would collide on the tag; fall back to a run-suffixed tag
           gh release create "$VID" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || gh release create "${VID}-r${{ github.run_number }}" $FILES --title "${TITLE:-$VID}" --notes-file out/release_notes.md \
             || echo "release publish skipped"
 
-      - name: Push draft to Publer (direct API, optional)
-        # DIRECT replacement for the "Release -> Zapier -> Publer" hop, which stalls
-        # whenever Zapier's free task cap or Publer OAuth expires. Dormant unless the
-        # PUBLER_* secrets are set (publish_publer.py exits 0 as a no-op), so nothing
-        # changes for anyone not on Publer's Business plan. Never fails the run — the
-        # video is already on the Release regardless. Also skipped outright
-        # under certification_only, as belt-and-suspenders on top of the
-        # secrets already being unset -- see the Release step above.
-        if: ${{ success() && github.event.inputs.certification_only != 'true' }}
+      - name: Push to Publer (direct API, optional)
+        # Defense in depth: workflow condition AND publish_publer.py both require
+        # AUTO_PUBLISH_ENABLED=true. Publer credentials alone can never activate it.
+        if: ${{ success() && vars.AUTO_PUBLISH_ENABLED == 'true' && github.event.inputs.certification_only != 'true' }}
         env:
+          AUTO_PUBLISH_ENABLED: ${{ vars.AUTO_PUBLISH_ENABLED }}
           PUBLER_API_KEY:      ${{ secrets.PUBLER_API_KEY }}
           PUBLER_WORKSPACE_ID: ${{ secrets.PUBLER_WORKSPACE_ID }}
           PUBLER_ACCOUNT_IDS:  ${{ vars.PUBLER_ACCOUNT_IDS }}
