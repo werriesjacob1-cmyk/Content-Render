@@ -104,20 +104,23 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
     c = str(central["claim_id"])
     w = str(wow["claim_id"])
 
-    # Lead with the visual paradox rather than a detached statistic. Every line
-    # remains a direct paraphrase of the two curated claims above.
+    # Deliberately follows SCALE_REVEAL's progression instead of merely listing
+    # the same facts in a convenient order: familiar phenomenon -> first scale
+    # jump -> second scale jump -> true apparent-size result -> real consequence
+    # -> the larger implication. Every factual proposition is still a direct
+    # paraphrase of the two curated claims above and must pass the normal critic.
     return {
         "title": "Why the Moon Fits the Sun So Perfectly",
-        "hook": "The Moon covers a Sun roughly 400 times wider than itself.",
+        "hook": "The Moon can cover the Sun almost perfectly during a total eclipse.",
         "hook_source_claim_ids": [c],
         "beats": [
             {
-                "voiceover": "So how can their disks look almost exactly the same size?",
-                "visual_intent": "total solar eclipse moon covering sun",
+                "voiceover": "Start with scale: the Sun is about 400 times wider than the Moon.",
+                "visual_intent": "Sun Moon diameter scale comparison",
                 "source_claim_ids": [c],
             },
             {
-                "voiceover": "Because the Sun is also about 400 times farther away.",
+                "voiceover": "Now jump to distance: the Sun is also about 400 times farther away.",
                 "visual_intent": "Sun Earth Moon distance comparison",
                 "source_claim_ids": [c],
             },
@@ -127,7 +130,7 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
                 "source_claim_ids": [c],
             },
             {
-                "voiceover": "That coincidence is what makes total solar eclipses possible.",
+                "voiceover": "That apparent-size match is what makes total solar eclipses possible.",
                 "visual_intent": "solar eclipse totality corona",
                 "source_claim_ids": [c],
             },
@@ -137,13 +140,13 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
                 "source_claim_ids": [w],
             },
             {
-                "voiceover": "In a few hundred million years, that perfect overlap will disappear.",
+                "voiceover": "In a few hundred million years, total eclipses will vanish from our sky.",
                 "visual_intent": "future annular eclipse Sun Moon geometry",
                 "source_claim_ids": [w],
             },
         ],
-        "payoff": "Total eclipses are temporary. One day, Earth will lose them.",
-        "payoff_source_claim_ids": [w],
+        "payoff": "The perfect total eclipse is a temporary feature of Earth.",
+        "payoff_source_claim_ids": [c, w],
     }
 
 
