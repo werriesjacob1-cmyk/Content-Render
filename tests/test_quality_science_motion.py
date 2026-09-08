@@ -39,6 +39,28 @@ def _manifest(treatment="ONE_OBJECT_JOURNEY"):
     return {"title": "Oxygen journey", "treatment": treatment, "scenes": scenes}
 
 
+def _eclipse_manifest():
+    lines = [
+        ("The Sun is about 400 times wider than the Moon.", ["base_001"]),
+        ("So why can the Moon cover it almost perfectly?", ["base_001"]),
+        ("Because the Sun is also about 400 times farther away.", ["base_001"]),
+        ("Those two ratios make their disks look nearly the same size.", ["base_001"]),
+        ("That coincidence is what makes total solar eclipses possible.", ["base_001"]),
+        ("But the Moon drifts about 3.8 centimeters farther away every year.", ["base_002"]),
+        ("In a few hundred million years, that perfect overlap will disappear.", ["base_002"]),
+        ("One day, Earth will lose total eclipses from its sky.", ["base_002"]),
+    ]
+    return {
+        "title": "The Cosmic Coincidence Behind Total Eclipses",
+        "treatment": "SCALE_REVEAL",
+        "scenes": [
+            {"id": i, "voiceover": line, "source_claim_ids": refs,
+             "_v2_role": "hook" if i == 1 else ("payoff" if i == 8 else "beat")}
+            for i, (line, refs) in enumerate(lines, 1)
+        ],
+    }
+
+
 def test_journey_builds_one_late_nonspoiling_flow():
     m = _manifest()
     allowed = [f"claim_{i:03d}" for i in range(1, 9)]
@@ -66,6 +88,43 @@ def test_mechanism_and_system_are_explicitly_supported_but_arbitrary_treatments_
     check(set(system) == {"6"} and len(system["6"].spec.flow_steps) == 3,
           "inside-system graphics use only component/connection/interaction progression")
     check(myth == {}, "arbitrary narrative order is never misrepresented as a physical process")
+
+
+def test_scale_reveal_uses_only_dimensionless_accepted_ratios():
+    m = _eclipse_manifest()
+    plans = QSM.plan_manifest(m, ["base_001", "base_002"])
+    check(set(plans) == {"3"},
+          "eclipse scale comparison lands on the second 400x reveal, after both ratios have been spoken")
+    p = plans["3"]
+    check(p.spec.kind == SM.MotionKind.SCALE_COMPARE,
+          "SCALE_REVEAL uses the deterministic scale-comparison renderer")
+    check(p.source_scene_ids == ("1", "3"),
+          "comparison uses only the two accepted 400-times lines")
+    check([item.value for item in p.spec.scale_items] == [400.0, 400.0],
+          "equal 400x width/distance ratios render as equal scale values")
+    check([item.display_value for item in p.spec.scale_items] == ["400 TIMES", "400 TIMES"],
+          "display values are copied from accepted narration rather than reformulated")
+    check(p.source_claim_ids == ("base_001",),
+          "scale comparison provenance is bound to the exact sealed central claim")
+    graph = SM.compile_filtergraph(p.spec)
+    check("400 TIMES" in graph and "SCALE COMPARISON" in graph,
+          "existing deterministic FFmpeg backend can compile the eclipse comparison")
+
+
+def test_scale_reveal_refuses_unsafe_or_underpowered_comparisons():
+    m = _eclipse_manifest()
+    m["scenes"][2]["voiceover"] = "The Sun is about 150 million kilometers away."
+    check(QSM.plan_manifest(m, ["base_001", "base_002"]) == {},
+          "one dimensionless ratio plus one unlike-unit measurement does not create a misleading bar chart")
+
+    m = _eclipse_manifest()
+    m["scenes"][2]["source_claim_ids"] = ["unsealed_999"]
+    try:
+        QSM.plan_manifest(m, ["base_001", "base_002"])
+    except ValueError as exc:
+        check("unsealed claim" in str(exc), "unsealed ratio evidence fails closed")
+    else:
+        raise AssertionError("unsealed scale-comparison claim should fail")
 
 
 def test_missing_or_unsealed_evidence_never_generates_a_graphic():
@@ -97,6 +156,8 @@ def test_provenance_declares_zero_network_and_zero_ai():
 if __name__ == "__main__":
     test_journey_builds_one_late_nonspoiling_flow()
     test_mechanism_and_system_are_explicitly_supported_but_arbitrary_treatments_are_not()
+    test_scale_reveal_uses_only_dimensionless_accepted_ratios()
+    test_scale_reveal_refuses_unsafe_or_underpowered_comparisons()
     test_missing_or_unsealed_evidence_never_generates_a_graphic()
     test_provenance_declares_zero_network_and_zero_ai()
     print("quality_science_motion tests: PASS")
