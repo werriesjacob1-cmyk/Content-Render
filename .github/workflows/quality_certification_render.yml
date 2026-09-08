@@ -138,21 +138,37 @@ jobs:
           set -euo pipefail
           python quality_science_render.py artifacts/quality_certification/manifest.json
 
-      - name: Prove private artifact and collect viewer-facing evidence
+      - name: Independent holistic QA + bounded repair targets
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          test -s out/final.mp4
-          ffprobe -v error -show_entries format=duration,size \
-            -of default=noprint_wrappers=1 out/final.mp4
+          python quality_postrender_review.py \
+            --manifest artifacts/quality_certification/manifest.json \
+            --video out/final.mp4 \
+            --report out/holistic_qa_report.json \
+            --repair-plan out/targeted_repair_plan.json \
+            --work-dir work/holistic_qa
+
+      - name: Collect viewer-facing evidence even on QA failure
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -uo pipefail
           mkdir -p artifacts/quality_certification/render
-          cp out/final.mp4 artifacts/quality_certification/render/final.mp4
-          test -f out/cover.jpg && cp out/cover.jpg artifacts/quality_certification/render/cover.jpg || true
-          test -f out/qa_report.json && cp out/qa_report.json artifacts/quality_certification/render/qa_report.json || true
-          test -f out/quality_asset_provenance.json && cp out/quality_asset_provenance.json artifacts/quality_certification/render/quality_asset_provenance.json || true
-          test -f out/post.json && cp out/post.json artifacts/quality_certification/render/post.json || true
+          if [ -s out/final.mp4 ]; then
+            ffprobe -v error -show_entries format=duration,size \
+              -of default=noprint_wrappers=1 out/final.mp4 || true
+            cp out/final.mp4 artifacts/quality_certification/render/final.mp4
+          fi
+          for f in cover.jpg qa_report.json holistic_qa_report.json targeted_repair_plan.json quality_asset_provenance.json post.json; do
+            test -f "out/$f" && cp "out/$f" "artifacts/quality_certification/render/$f" || true
+          done
 
       - name: Upload private certification package
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: quality-certification-${{ github.sha }}
@@ -161,6 +177,7 @@ jobs:
           retention-days: 14
 
       - name: Assert workflow never created publish state
+        if: ${{ always() }}
         shell: bash
         run: |
           set -euo pipefail
