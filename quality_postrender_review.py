@@ -6,18 +6,18 @@ modular review surface for private certification: nine chronological samples,
 Gemini first / Qwen fallback, strict mechanical floors, and a deterministic
 translation from evidence-group violations into bounded repair targets.
 
+When the renderer's measured scene timeline is available, each repair target is
+also mapped to the exact rendered scene IDs that overlap the failing window.
 It never edits the video and never publishes. A failed verdict is valuable
-artifact evidence: the report and repair plan are written before returning a
-non-zero status so the certification package can still be inspected.
+artifact evidence: reports are written before returning non-zero.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 import final_video_qa as FQ
 from narration import spoken_text
@@ -57,11 +57,73 @@ def _group_window(packet: FQ.SamplePacket, group: int) -> tuple[float, float]:
     return round(start, 3), round(end, 3)
 
 
+def load_scene_timeline(path: str | None) -> list[dict[str, Any]]:
+    if not path:
+        return []
+    p = Path(path)
+    if not p.is_file():
+        return []
+    try:
+        payload = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    rows = payload.get("scenes") if isinstance(payload, Mapping) else None
+    if not isinstance(rows, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            continue
+        try:
+            start = float(row.get("start_s"))
+            end = float(row.get("end_s"))
+        except (TypeError, ValueError):
+            continue
+        if end <= start:
+            continue
+        out.append({
+            "scene_id": str(row.get("scene_id") or ""),
+            "scene_index": int(row.get("scene_index") or 0),
+            "role": str(row.get("role") or "scene"),
+            "start_s": round(start, 3),
+            "end_s": round(end, 3),
+            "search_query": str(row.get("search_query") or ""),
+            "source_claim_ids": list(row.get("source_claim_ids") or []),
+        })
+    return out
+
+
+def _overlapping_scenes(
+    scene_timeline: Sequence[Mapping[str, Any]],
+    start_s: float,
+    end_s: float,
+) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for row in scene_timeline:
+        try:
+            start = float(row.get("start_s"))
+            end = float(row.get("end_s"))
+        except (TypeError, ValueError):
+            continue
+        if end > start_s and start < end_s:
+            out.append({
+                "scene_id": str(row.get("scene_id") or ""),
+                "scene_index": int(row.get("scene_index") or 0),
+                "role": str(row.get("role") or "scene"),
+                "start_s": round(start, 3),
+                "end_s": round(end, 3),
+                "search_query": str(row.get("search_query") or ""),
+                "source_claim_ids": list(row.get("source_claim_ids") or []),
+            })
+    return out
+
+
 def build_repair_targets(
     verdict: FQ.FinalQAVerdict,
     packet: FQ.SamplePacket,
+    scene_timeline: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
-    """Convert reviewer evidence into bounded repair instructions without AI."""
+    """Convert reviewer evidence into bounded scene-aware instructions without AI."""
     targets: list[dict[str, Any]] = []
     for violation in verdict.violations:
         if violation.severity not in {"critical", "major"}:
@@ -72,12 +134,15 @@ def build_repair_targets(
             category,
             "repair only the cited viewer-facing defect in this window; preserve narration, factual claims, and unaffected footage",
         )
+        affected = _overlapping_scenes(scene_timeline, start, end)
         targets.append({
             "category": category,
             "severity": violation.severity,
             "evidence_group": violation.evidence_group,
             "start_s": start,
             "end_s": end,
+            "affected_scene_ids": [x["scene_id"] for x in affected],
+            "affected_scenes": affected,
             "problem": violation.detail,
             "recommended_action": action,
             "preserve": [
@@ -89,19 +154,18 @@ def build_repair_targets(
             "automatic_repair_authorized": False,
         })
 
-    # Critical failures may not be duplicated in the structured violation list.
-    # Preserve them visibly instead of silently dropping them from the repair plan.
     unlocated = [str(x) for x in verdict.critical_failures if str(x).strip()]
     return {
-        "schema": "quality-targeted-repair-plan-v1",
+        "schema": "quality-targeted-repair-plan-v2",
         "source_provider": verdict.provider,
         "source_model": verdict.model,
         "mechanical_pass": FQ.mechanical_gate(verdict)[0],
+        "scene_timeline_available": bool(scene_timeline),
         "targets": targets,
         "unlocated_critical_failures": unlocated,
         "must_fix": list(verdict.must_fix),
         "automatic_repair_authorized": False,
-        "policy": "repair the smallest failing window; never regenerate the whole video when a bounded fix can preserve good work",
+        "policy": "repair the smallest failing scene/window; never regenerate the whole video when a bounded fix can preserve good work",
     }
 
 
@@ -130,11 +194,13 @@ def review(
     report_path: str,
     repair_path: str,
     work_dir: str,
+    scene_timeline_path: str | None = None,
 ) -> tuple[bool, dict[str, Any]]:
     with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
     context = context_from_manifest(manifest)
     packet = FQ.build_sample_packet(video_path, work_dir)
+    timeline = load_scene_timeline(scene_timeline_path)
     verdict = FQ.final_qa_with_fallback(context, packet)
 
     report_file = Path(report_path)
@@ -150,10 +216,12 @@ def review(
             "reason": "no configured holistic QA provider returned a verdict",
             "human_review_required": True,
             "sample_timestamps_s": list(packet.timestamps_s),
+            "scene_timeline_available": bool(timeline),
         }
         repair = {
-            "schema": "quality-targeted-repair-plan-v1",
+            "schema": "quality-targeted-repair-plan-v2",
             "mechanical_pass": False,
+            "scene_timeline_available": bool(timeline),
             "targets": [],
             "unlocated_critical_failures": ["holistic QA unavailable"],
             "automatic_repair_authorized": False,
@@ -168,8 +236,9 @@ def review(
         "ran": True,
         "sample_timestamps_s": list(packet.timestamps_s),
         "contact_sheet_count": len(packet.sheet_paths),
+        "scene_timeline_available": bool(timeline),
     })
-    repair = build_repair_targets(verdict, packet)
+    repair = build_repair_targets(verdict, packet, timeline)
     report_file.write_text(json.dumps(report, indent=2), encoding="utf-8")
     repair_file.write_text(json.dumps(repair, indent=2), encoding="utf-8")
     return bool(report["mechanical_pass"]), report
@@ -182,6 +251,7 @@ def parse_args(argv=None):
     p.add_argument("--report", default="out/holistic_qa_report.json")
     p.add_argument("--repair-plan", default="out/targeted_repair_plan.json")
     p.add_argument("--work-dir", default="work/holistic_qa")
+    p.add_argument("--scene-timeline", default="out/scene_timeline.json")
     return p.parse_args(argv)
 
 
@@ -189,7 +259,12 @@ def main(argv=None) -> int:
     args = parse_args(argv)
     try:
         passed, report = review(
-            args.manifest, args.video, args.report, args.repair_plan, args.work_dir
+            args.manifest,
+            args.video,
+            args.report,
+            args.repair_plan,
+            args.work_dir,
+            args.scene_timeline,
         )
     except Exception as exc:
         Path(args.report).parent.mkdir(parents=True, exist_ok=True)
