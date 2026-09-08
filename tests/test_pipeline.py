@@ -558,7 +558,7 @@ def test_validate_two_quantity_comparison_not_restated():
         "key_terms": ["243 Earth days", "225 days", "retrograde"],
     }
     seed_vos = [
-        "Venus has one day that is longer than its entire year, which sounds impossible.",
+        "Venus has one day that outlasts its whole year, and that is genuinely hard to picture.",
         "What if you tried living through one full calendar year on Venus itself?",
         "Venus takes 243 Earth days just to complete a single full rotation.",
         "Its whole trip around the Sun only takes 225 Earth days to finish.",
@@ -637,6 +637,83 @@ def test_validate_two_quantity_comparison_not_restated():
           f"restatement -- the exemption requires >=2 DISTINCT numeric key_terms actually "
           f"covered BY THE FLAGGED SCENES, not merely present somewhere in the script; "
           f"got {err3!r}")
+
+    # 2026-09-09 tightened per PR review: the exemption is a strict ONE-TO-ONE
+    # bijection, not "count of distinct terms found anywhere among the
+    # flagged scenes" -- the old count-based design allowed extra flagged
+    # restatements to hide behind two genuinely legitimate scenes elsewhere
+    # in the same flagged set. Three adversarial cases below, each proving a
+    # set that the OLD `len(restated) - exempt > 1` logic would have wrongly
+    # passed but the new bijection logic correctly rejects.
+    two_num_fact = {
+        "id": "test_bijection", "domain": "space",
+        "fact": ("A day on Venus is longer than its year: one rotation takes 243 Earth "
+                 "days, while one trip around the Sun takes only 225."),
+        "key_terms": ["243 Earth days", "225 days"],
+    }
+
+    # (a) 3 flagged scenes, only 2 distinct numeric key_terms (243, 225, 243
+    # again) -- pigeonhole forces a duplicate; the OLD logic computed
+    # exempt=2 (2 distinct terms found), so 3-2=1 (not >1) wrongly PASSED.
+    vos_a = [
+        "Venus somehow has a single day that outlasts its own entire calendar year completely.",
+        "Picture trying to survive just one sunrise to sunrise cycle on that whole planet.",
+        "Venus takes 243 Earth days just to complete one full rotation on its axis.",
+        "Meanwhile one trip around the Sun takes only 225 Earth days for Venus.",
+        "Remember that one rotation there still takes 243 Earth days, just like before today.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    ma = manifest("test", vos_a[0], scenes(*[(v, "X", "planet venus surface") for v in vos_a]))
+    ma["hook_headline"] = "VENUS TRIPLE FLAG"
+    erra = G.validate(ma, "EXPLAIN", fact=two_num_fact)
+    check(erra is not None and "restated" in erra,
+          f"3 flagged scenes with only 2 distinct numeric key_terms (243 named twice) is REJECTED "
+          f"-- the old count-based exemption would have wrongly passed this; got {erra!r}")
+
+    # (b) one flagged scene contains BOTH numbers, another scene repeats one
+    # of them -- a scene cramming both required numbers into one line does
+    # not count as a valid single-number carrier for the bijection.
+    vos_b = [
+        "Venus somehow has a single day that outlasts its own entire calendar year today.",
+        "Picture trying to survive just one sunrise to sunrise cycle on that whole planet.",
+        "Venus takes 243 Earth days to rotate but only 225 Earth days to orbit the Sun.",
+        "That 243 day rotation on Venus is genuinely strange to think about for a while.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Scientists have confirmed this timing oddity through careful, repeated planetary observation over decades.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    mb = manifest("test", vos_b[0], scenes(*[(v, "X", "planet venus surface") for v in vos_b]))
+    mb["hook_headline"] = "BOTH NUMBERS ONE LINE"
+    errb = G.validate(mb, "EXPLAIN", fact=two_num_fact)
+    check(errb is not None and "restated" in errb,
+          f"a scene containing BOTH required numbers plus another scene repeating one of them is "
+          f"REJECTED -- cramming both numbers into one line is not a valid bijection carrier; "
+          f"got {errb!r}")
+
+    # (c) the same number repeated twice while the OTHER number appears in a
+    # different, non-flagged scene -- the two flagged scenes both claim the
+    # SAME term, which is not a one-to-one mapping even though the fact's
+    # other number is genuinely present somewhere in the script.
+    vos_c = [
+        "Venus somehow has a single day that outlasts its own entire calendar year today.",
+        "Venus takes 243 Earth days to complete one rotation on its axis.",
+        "Remember, that same rotation still takes 243 Earth days, just like before.",
+        "Its orbit lasts 225 Earth days, a fact worth remembering for later.",
+        "No ordinary calendar built here on Earth could make real sense of that at all.",
+        "It remains a genuine astronomical oddity that is honestly worth actually remembering later.",
+        "Scientists have confirmed this timing oddity through careful, repeated planetary observation over decades.",
+        "Venus really does outlast its own year with a single one of its own days.",
+    ]
+    mc = manifest("test", vos_c[0], scenes(*[(v, "X", "planet venus surface") for v in vos_c]))
+    mc["hook_headline"] = "SAME NUMBER TWICE"
+    errc = G.validate(mc, "EXPLAIN", fact=two_num_fact)
+    check(errc is not None and "restated" in errc,
+          f"the same number repeated across 2 flagged scenes is REJECTED even though the OTHER "
+          f"required number genuinely appears elsewhere in the script -- a term used twice is "
+          f"never a valid one-to-one bijection; got {errc!r}")
 
 
 # --------------------------------------------------------------------------
@@ -2286,13 +2363,21 @@ def test_trim_scene_to_cap():
 
 
 def test_deterministic_mechanical_trim():
-    section("generate.deterministic_mechanical_trim: zero-network salvage for word-count near-misses "
-            "(2026-09-08 flagship attempt #4 live incident)")
+    section("generate.deterministic_mechanical_trim: MINIMAL zero-network salvage for word-count "
+            "near-misses, operating on writer_out pre-assembly (2026-09-09 correctness fixes)")
+
+    def _writer_out(beats_text):
+        return {
+            "hook": beats_text[0], "hook_source_claim_ids": ["h1"],
+            "beats": [{"voiceover": v, "visual_intent": "x", "source_claim_ids": [f"b{i}"]}
+                     for i, v in enumerate(beats_text[1:-1])],
+            "payoff": beats_text[-1], "payoff_source_claim_ids": ["p1"],
+        }
 
     # EXACT production data (writer_attempts.json, run 34264652218, attempt 4
-    # round 2): "scene 5 voiceover too long (28 words, cap is 25)" was the
-    # sole remaining validate() failure on an otherwise Tier-1-clean round.
-    beats = [
+    # round 2): "scene 5 voiceover too long (28 words, cap is 25)". Scene 5 in
+    # spoken order (hook=1, beats=2..7, payoff=8) is beats[3] (0-indexed).
+    beats_text = [
         "Venus shows that a planet's day can be longer than its year.",
         "A single rotation of Venus takes 243 Earth days.",
         "Its orbit takes 225 days, shorter than its 243-day rotation.",
@@ -2303,69 +2388,86 @@ def test_deterministic_mechanical_trim():
         "It shows that time is a local construct, not a universal constant.",
         "Time can behave differently on other planets.",
     ]
-    m = {
-        "hook": beats[0], "payoff": beats[-1],
-        "scenes": [{"id": i + 1, "voiceover": v} for i, v in enumerate(beats)],
-        "script": " ".join(beats),
-    }
-    check(len(beats[4].split()) == 28, "fixture reproduces the exact live 28-word over-cap scene")
-    out = G.deterministic_mechanical_trim(m, "scene 5 voiceover too long (28 words, cap is 25)")
+    wo = _writer_out(beats_text)
+    num_beats = len(wo["beats"])
+    check(len(beats_text[4].split()) == 28, "fixture reproduces the exact live 28-word over-cap scene")
+    out = G.deterministic_mechanical_trim(wo, "scene 5 voiceover too long (28 words, cap is 25)", num_beats)
     check(out is not None, "the scene-cap near-miss is recognized and trimmed")
-    check(len(out["scenes"][4]["voiceover"].split()) <= 25,
-          "the trimmed scene now fits the 25-word cap")
-    check(out["scenes"][0]["voiceover"] == beats[0] and out["scenes"][-1]["voiceover"] == beats[-1],
-          "every OTHER scene, including hook and payoff, is untouched")
-    check(out["script"] == " ".join(s["voiceover"] for s in out["scenes"]),
-          "the top-level script field is rebuilt from the trimmed scenes")
+    check(len(out["beats"][3]["voiceover"].split()) <= 25, "the trimmed beat now fits the 25-word cap")
+    check(out["hook"] == wo["hook"] and out["payoff"] == wo["payoff"],
+          "hook and payoff text is untouched")
+    check(out["beats"][3]["source_claim_ids"] == wo["beats"][3]["source_claim_ids"],
+          "source_claim_ids are preserved across the trim -- only the voiceover text changes")
+    check(all(out["beats"][i]["voiceover"] == wo["beats"][i]["voiceover"]
+             for i in range(num_beats) if i != 3),
+          "every OTHER beat is untouched")
 
-    # EXACT production data (attempt 3 round 2): "script word count 112 out
-    # of range (target 78-98, hard 68-108, mode short)". Total-word trimming
-    # must never touch the hook (scene 1) or payoff (last scene) when middle
-    # beats exist, and must never drop a scene below 6 words.
-    m2 = {
-        "hook": "Our Earth calendar wouldn't match how time works on Venus at all.",
-        "payoff": "Time on other worlds follows its own rules, so our Earth-centric clocks are just one of many possible measures we could use.",
-        "scenes": [
-            {"id": 1, "voiceover": "Our Earth calendar wouldn't match how time works on Venus at all."},
-            {"id": 2, "voiceover": "A full calendar year on Venus lasts about 225 whole Earth days total."},
-            {"id": 3, "voiceover": "A single full rotation of Venus takes 243 Earth days, longer than its 225-day year."},
-            {"id": 4, "voiceover": "So if you honestly tried to live out a Venus year, would you ever even see a sunrise?"},
-            {"id": 5, "voiceover": "Venus also spins in retrograde, so the Sun there rises in the west instead."},
-            {"id": 6, "voiceover": "In practice, you would finish the entire planet's year before completing even one of its own days."},
-            {"id": 7, "voiceover": "This clearly shows that timekeeping itself is planetary, reminding us clocks are one of many possible measures."},
-            {"id": 8, "voiceover": "Time on other worlds follows its own rules, so our Earth-centric clocks are just one of many possible measures we could use."},
-        ],
-    }
-    m2["script"] = " ".join(s["voiceover"] for s in m2["scenes"])
-    total_before = len(m2["script"].split())
-    check(total_before > G.WORD_HI, f"fixture word count ({total_before}) genuinely exceeds the "
-                                    f"runtime word target (WORD_HI={G.WORD_HI}) regardless of LENGTH_MODE")
+    # HOOK over-cap: a scene-cap failure mapping to scene 1 (the hook) must
+    # NEVER be mechanically trimmed -- let the normal Writer repair system
+    # handle it, since losing even a clause from the certified opening beat
+    # is exactly the kind of change that must go through full re-certification
+    # via the writer, not a silent local edit.
+    check(G.deterministic_mechanical_trim(wo, "scene 1 voiceover too long (30 words, cap is 25)", num_beats) is None,
+          "a scene-cap failure on the HOOK (scene 1) is never mechanically trimmed")
+
+    # PAYOFF over-cap: scene num_beats+2 is the payoff -- same protection.
+    payoff_scene_id = num_beats + 2
+    check(G.deterministic_mechanical_trim(
+              wo, f"scene {payoff_scene_id} voiceover too long (30 words, cap is 25)", num_beats) is None,
+          "a scene-cap failure on the PAYOFF (final scene) is never mechanically trimmed")
+
+    # MINIMAL total-word trim: 112 against a hard ceiling of 108 must remove
+    # only the minimum necessary (+ the small explicit safety margin), NOT
+    # trim all the way down toward the soft target (78-98 in short mode) --
+    # this is a salvage of a near-miss, not an optimization pass.
+    padded_beats = [
+        "Our Earth calendar would not match how time works on Venus at all today.",
+        "A full calendar year on Venus lasts about two hundred twenty five whole Earth days total.",
+        "A single full rotation of Venus takes two hundred forty three Earth days, longer than its year.",
+        "So if you honestly tried to live out a Venus year, would you ever even see one sunrise.",
+        "Venus also spins in retrograde, so the Sun there rises in the west instead of the east.",
+        "In practice, you would finish the entire planet's year before completing even one of its own days.",
+        "This clearly shows that timekeeping itself is planetary, reminding us clocks are just one of many measures.",
+        "Time on other worlds follows its own rules, so our Earth centric clocks are only one measure we use.",
+    ]
+    wo2 = _writer_out(padded_beats)
+    total_before = len(" ".join(padded_beats).split())
+    hard_hi = G.WORD_HARD_HI
     out2 = G.deterministic_mechanical_trim(
-        m2, f"script word count {total_before} out of range (target {G.WORD_LO}-{G.WORD_HI}, "
-            f"hard {G.WORD_HARD_LO}-{G.WORD_HARD_HI}, mode {G.LENGTH_MODE})")
+        wo2, f"script word count {total_before} out of range (target {G.WORD_LO}-{G.WORD_HI}, "
+             f"hard {G.WORD_HARD_LO}-{hard_hi}, mode {G.LENGTH_MODE})", len(wo2["beats"]))
     check(out2 is not None, "the total-word-count near-miss is recognized and trimmed")
-    total_after = len(out2["script"].split())
-    check(total_after < total_before, "the total word count is actually reduced")
-    check(out2["scenes"][0]["voiceover"] == m2["scenes"][0]["voiceover"],
-          "the hook (scene 1) is never trimmed when middle beats exist")
-    check(out2["scenes"][-1]["voiceover"] == m2["scenes"][-1]["voiceover"],
-          "the payoff (final scene) is never trimmed when middle beats exist")
-    check(all(len(s["voiceover"].split()) >= 6 for s in out2["scenes"]),
-          "no scene is ever shrunk below 6 words")
+    total_after = len(" ".join([out2["hook"]] + [b["voiceover"] for b in out2["beats"]]
+                              + [out2["payoff"]]).split())
+    removed = total_before - total_after
+    required_minimum = max(0, total_before - hard_hi)
+    check(total_after <= hard_hi + G._TRIM_SAFETY_MARGIN_WORDS,
+          f"the trimmed total ({total_after}) clears the hard ceiling ({hard_hi}) plus only the "
+          f"small explicit safety margin, not the soft target ({G.WORD_HI})")
+    check(removed <= required_minimum + G._TRIM_SAFETY_MARGIN_WORDS + 6,
+          f"only approximately the required excess was removed ({removed} words removed for a "
+          f"{required_minimum}-word deficit), not trimmed down toward the soft target -- the old "
+          f"design would have removed {total_before - G.WORD_HI} words to reach WORD_HI, "
+          f"materially more whenever WORD_HI is well below the hard ceiling")
+    check(out2["hook"] == wo2["hook"] and out2["payoff"] == wo2["payoff"],
+          "the hook and payoff are never trimmed when middle beats exist")
+    check(all(len(b["voiceover"].split()) >= 6 for b in out2["beats"]),
+          "no beat is ever shrunk below 6 words")
 
     # a validate_err shape this function doesn't recognize (a real factual/
     # structural defect) returns None -- it never guesses, never invents a
     # fix for something it doesn't understand.
-    check(G.deterministic_mechanical_trim(m, "scenes 1 and 3 too similar (repetition)") is None,
+    check(G.deterministic_mechanical_trim(wo, "scenes 1 and 3 too similar (repetition)", num_beats) is None,
           "an unrecognized validate_err shape is left alone, not guessed at")
-    check(G.deterministic_mechanical_trim(m, "the verified fact is restated in 2 scenes [3, 4] "
-                                          "instead of being revealed once and escalated from") is None,
+    check(G.deterministic_mechanical_trim(wo, "the verified fact is restated in 2 scenes [3, 4] "
+                                          "instead of being revealed once and escalated from", num_beats) is None,
           "a structural/content defect is never treated as a word-count near-miss")
 
 
-def test_orchestrator_mechanical_trim_salvage():
-    section("writer_v21_orchestrator: mechanical trim salvages a Tier-1-clean candidate that only "
-            "fails on a word-count near-miss, without spending an extra LLM repair round")
+def test_orchestrator_mechanical_trim_reruns_full_certification():
+    section("writer_v21_orchestrator: a mechanical trim is treated as a NEW candidate -- every "
+            "load-bearing check is rerun against the trimmed narration, never stale pre-trim "
+            "evidence (2026-09-09 correctness fix for the flagship attempt #4 PR review)")
     import writer_v21_orchestrator as O
 
     fact = {"id": "test_topic", "domain": "space", "fact": "x", "wow": "", "whatif": "", "angle": "", "key_terms": []}
@@ -2380,38 +2482,68 @@ def test_orchestrator_mechanical_trim_salvage():
                     "claim_support": [{"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE",
                                        "unsupported_proposition": ""} for i in range(8)],
                     "repair_type": "NONE", "target_beats": [], "diagnosis": "fine", "must_preserve": []}
+    # what the critic says about the TRIMMED text is DELIBERATELY DIFFERENT
+    # from what it said pre-trim (a real semantic problem newly introduced by
+    # the trim, e.g. removing a clause that made beat 4 a clean paraphrase).
+    # If the orchestrator ever reused the PRE-trim critic_clean verdict for
+    # the trimmed text, this test would show the candidate wrongly accepted.
+    critic_flags_trimmed_beat = {
+        "scores": {k: 6 for k in WR.CRITIC_SCORE_DIMENSIONS},
+        "claim_support": [
+            {"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""}
+            for i in range(3)
+        ] + [
+            {"beat_index": 3, "verdict": "UNSUPPORTED_ADDITION",
+             "unsupported_proposition": "trimming removed the qualifier that made this true"},
+        ] + [
+            {"beat_index": i, "verdict": "SUPPORTED_PARAPHRASE", "unsupported_proposition": ""}
+            for i in range(4, 8)
+        ],
+        "repair_type": "NONE", "target_beats": [], "diagnosis": "beat 3 now unsupported after trim",
+        "must_preserve": [],
+    }
+
+    critic_call_count = {"n": 0}
 
     def fake_call(prompt, schema, schema_name, debug_calls):
         debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
         if schema_name == "writer_v2_output":
             return _json.dumps(draft), True
         if schema_name == "critic_verdict":
-            return _json.dumps(critic_clean), True
-        raise AssertionError("no LLM repair call should fire -- Tier 1 is fully clean and the "
-                             "mechanical trim must salvage this candidate directly")
+            critic_call_count["n"] += 1
+            # round 0 (pre-trim): clean. round 1+ (post-trim): flags the beat
+            # the trim touched -- proving the orchestrator actually asks
+            # again rather than reusing round 0's verdict.
+            verdict = critic_clean if critic_call_count["n"] == 1 else critic_flags_trimmed_beat
+            return _json.dumps(verdict), True
+        if schema_name == "repair_output":
+            # the fresh post-trim critic call correctly finds a NEW semantic
+            # problem (proving evidence isn't reused stale) -- the loop
+            # legitimately tries one bounded LLM repair for it, exactly as it
+            # would for any other newly-discovered violation. Return a no-op
+            # so the violation persists and the candidate is correctly
+            # rejected once the round budget is exhausted, rather than this
+            # test asserting an unrealistic "zero repair calls ever" bound.
+            return _json.dumps({"repairs": []}), True
+        raise AssertionError(f"unexpected schema {schema_name}")
 
-    # Directly control validate()/deterministic_mechanical_trim/score_script so
-    # the test isolates the ORCHESTRATOR'S OWN wiring (call the trim exactly
-    # when Tier 1 is clean + validate_err is present; use its result; never
-    # spend a repair round) from whether a hand-written draft happens to
-    # reproduce every interacting validate() rule realistically -- that pure
-    # mechanism is already proven directly by test_deterministic_mechanical_trim.
     validate_calls = []
 
     def fake_validate(m, job_name, fact=None):
         validate_calls.append(m)
-        # first call (the raw draft): a pure word-count near-miss.
-        # second call (after the trim): clean.
+        # round 0: pure word-count near-miss. round 1+ (post-trim): clean --
+        # isolates the test to "does stale SEMANTIC evidence get reused",
+        # matching the PR-review finding precisely.
         return "script word count 120 out of range (target 78-98, hard 68-108, mode short)" \
             if len(validate_calls) == 1 else None
 
     trim_calls = []
 
-    def fake_trim(manifest, validate_err):
+    def fake_trim(writer_out, validate_err, num_beats):
         trim_calls.append(validate_err)
-        out = dict(manifest)
-        out["scenes"] = [dict(s) for s in manifest.get("scenes", [])]
-        out["_trimmed_marker"] = True
+        out = dict(writer_out)
+        out["beats"] = [dict(b) for b in writer_out.get("beats", [])]
+        out["beats"][3]["voiceover"] += " (trimmed)"
         return out
 
     real_call = G._v2_structured_call
@@ -2433,21 +2565,27 @@ def test_orchestrator_mechanical_trim_salvage():
         G.deterministic_mechanical_trim = real_trim
         G.score_script = real_score
 
-    check(len(trim_calls) == 1 and "word count" in trim_calls[0],
-          "the trim is invoked exactly once, with the real validate_err, when Tier 1 is fully clean")
-    check(len(validate_calls) == 2,
-          "the trimmed manifest is re-validated (not just trusted) before being accepted")
+    check(len(trim_calls) == 1, "the trim is invoked exactly once, with the real pre-trim validate_err")
+    check(critic_call_count["n"] >= 2,
+          "the critic is called AGAIN after the trim -- fresh semantic evidence is spent on the "
+          "actual modified narration, never assumed from the pre-trim round")
+    check(len(validate_calls) >= 2, "validate() is rerun against the trimmed manifest, not skipped")
     r0 = debug["rounds"][0]
     check(r0.get("mechanical_trim_applied") is True,
-          "the round is explicitly marked as mechanically trimmed for audit/evidence purposes")
-    check(m is not None and m.get("_trimmed_marker") is True,
-          "the ACCEPTED manifest is the trimmed one, not the original over-length draft")
-    check(debug.get("accepted") is True, "the trimmed, re-validated, floor-clearing candidate is accepted")
+          "round 0 (pre-trim) is marked as having triggered a mechanical trim, for audit")
+    # THE key assertion: because the critic flags the trimmed beat as
+    # UNSUPPORTED_ADDITION on the fresh, post-trim call, this candidate must
+    # NOT be accepted using the stale pre-trim "everything clean" verdict.
+    check(m is None and debug.get("accepted") is False,
+          "the mutated candidate is REJECTED once fresh post-trim semantic evidence finds a real "
+          "problem -- it is never accepted using semantic/traceability evidence computed for "
+          "DIFFERENT (pre-trim) text")
 
     # Tier 1 NOT clean (a real hard violation present) -> the trim must never
     # even be consulted, regardless of what validate_err says.
     trim_calls.clear()
     validate_calls.clear()
+    critic_call_count["n"] = 0
 
     def fake_call_dirty(prompt, schema, schema_name, debug_calls):
         debug_calls.append({"provider": "fake", "model": "fake-model", "usage": None, "structured": True})
@@ -4378,7 +4516,7 @@ def main():
     test_vibe_sting_freqs()
     test_trim_scene_to_cap()
     test_deterministic_mechanical_trim()
-    test_orchestrator_mechanical_trim_salvage()
+    test_orchestrator_mechanical_trim_reruns_full_certification()
     test_reference_worthy_spelled_numbers()
     test_rubric_criterion_text_complete()
     test_apply_scene_rewrite()
