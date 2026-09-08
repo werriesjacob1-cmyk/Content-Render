@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Deterministic evidence-only Writer seeds for private flagship certification.
+"""Deterministic evidence-only Writer seed for private flagship certification.
 
-This module is deliberately NOT part of unattended production generation. It
+This module is deliberately NOT part of unattended production generation.  It
 exists so the private certification lane can turn already-curated source claims
 into one conservative Writer-shaped candidate when live writer providers are
-quota constrained. It does not certify or render anything: every returned
-candidate must still pass canonical Writer V2.1 traceability, semantic critic,
-validate(), quality-floor, story-bridge, and visual-session gates.
+quota constrained.  It does not certify or render anything: the returned
+candidate must still pass the canonical Writer V2.1 traceability, semantic
+critic, validate(), quality-floor, story-bridge, and visual-session gates.
 
-Seeds are fail-closed against topic-bank drift: if the expected source claims or
-evidence tokens are missing, no candidate is returned. No fuzzy fallback and no
-model-memory completion is permitted.
+The first supported seed is ``venus_day`` because the September 8 flagship run
+proved three live candidates were reaching ordinary form failures while the
+curated base evidence itself already contained every beat needed for a strong
+story.  The seed is fail-closed against topic-bank drift: if the expected source
+claims or evidence tokens are missing, no candidate is returned.
 """
 from __future__ import annotations
 
@@ -31,12 +33,27 @@ def _contains_all(claim: Mapping[str, Any] | None, needles: tuple[str, ...]) -> 
     return all(str(n).lower() in text for n in needles)
 
 
-def _venus_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
+def build_evidence_seed(
+    fact: Mapping[str, Any],
+    inventory: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Return one Writer-schema candidate made only from named evidence claims.
+
+    ``None`` means the topic is unsupported or its curated evidence no longer
+    matches the exact assumptions under which this seed was written.  No fuzzy
+    fallback and no model-memory completion is permitted.
+    """
+    if str((fact or {}).get("id") or "") != "venus_day":
+        return None
+
     central = _claim_by_ref(inventory, "topic_bank.fact")
     wow = _claim_by_ref(inventory, "topic_bank.wow")
     question = _claim_by_ref(inventory, "topic_bank.whatif_question")
     answer = _claim_by_ref(inventory, "topic_bank.whatif_answer")
 
+    # Bind the wording below to the actual curated evidence.  If the bank is
+    # edited later, certification must stop rather than silently use a stale
+    # handcrafted script.
     if not _contains_all(central, ("venus", "243", "225", "sun")):
         return None
     if not _contains_all(wow, ("venus", "retrograde", "west", "east")):
@@ -51,6 +68,9 @@ def _venus_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
     q = str(question["claim_id"])
     a = str(answer["claim_id"])
 
+    # 84 spoken words: safely inside the current SHORT hard range (68-108).
+    # Hook is a statement; beat 1 carries the required early curiosity question.
+    # Every factual line cites the exact curated claim(s) that support it.
     return {
         "title": "Venus: A Day Longer Than a Year",
         "hook": "Venus has one day that is longer than its year.",
@@ -90,74 +110,3 @@ def _venus_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
         "payoff": "Venus completes a year before one of its days ends.",
         "payoff_source_claim_ids": [c, a],
     }
-
-
-def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
-    central = _claim_by_ref(inventory, "topic_bank.fact")
-    wow = _claim_by_ref(inventory, "topic_bank.wow")
-
-    if not _contains_all(central, ("sun", "400", "moon", "farther", "same size", "eclipse")):
-        return None
-    if not _contains_all(wow, ("moon", "3.8", "farther", "year", "eclipse", "vanish")):
-        return None
-
-    c = str(central["claim_id"])
-    w = str(wow["claim_id"])
-
-    # Deliberately follows SCALE_REVEAL's progression instead of merely listing
-    # the same facts in a convenient order: familiar phenomenon -> first scale
-    # jump -> second scale jump -> true apparent-size result -> real consequence
-    # -> the larger implication. Every factual proposition is still a direct
-    # paraphrase of the two curated claims above and must pass the normal critic.
-    return {
-        "title": "Why the Moon Fits the Sun So Perfectly",
-        "hook": "The Moon can cover the Sun almost perfectly during a total eclipse.",
-        "hook_source_claim_ids": [c],
-        "beats": [
-            {
-                "voiceover": "Start with scale: the Sun is about 400 times wider than the Moon.",
-                "visual_intent": "Sun Moon diameter scale comparison",
-                "source_claim_ids": [c],
-            },
-            {
-                "voiceover": "Now jump to distance: the Sun is also about 400 times farther away.",
-                "visual_intent": "Sun Earth Moon distance comparison",
-                "source_claim_ids": [c],
-            },
-            {
-                "voiceover": "Those two ratios make their disks look nearly the same size.",
-                "visual_intent": "Sun Moon apparent size comparison",
-                "source_claim_ids": [c],
-            },
-            {
-                "voiceover": "That apparent-size match is what makes total solar eclipses possible.",
-                "visual_intent": "solar eclipse totality corona",
-                "source_claim_ids": [c],
-            },
-            {
-                "voiceover": "But the Moon drifts about 3.8 centimeters farther away every year.",
-                "visual_intent": "Moon receding from Earth orbit diagram",
-                "source_claim_ids": [w],
-            },
-            {
-                "voiceover": "In a few hundred million years, total eclipses will vanish from our sky.",
-                "visual_intent": "future annular eclipse Sun Moon geometry",
-                "source_claim_ids": [w],
-            },
-        ],
-        "payoff": "The perfect total eclipse is a temporary feature of Earth.",
-        "payoff_source_claim_ids": [c, w],
-    }
-
-
-def build_evidence_seed(
-    fact: Mapping[str, Any],
-    inventory: Mapping[str, Any],
-) -> dict[str, Any] | None:
-    """Return one Writer-schema candidate made only from named evidence claims."""
-    topic_id = str((fact or {}).get("id") or "")
-    if topic_id == "venus_day":
-        return _venus_seed(inventory)
-    if topic_id == "eclipse_coincidence":
-        return _eclipse_seed(inventory)
-    return None
