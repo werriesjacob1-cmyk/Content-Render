@@ -49,11 +49,12 @@ jobs:
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
-            quality_render_bridge.py quality_certification_generate.py research_grounding.py \
-            review_readiness.py science_motion.py scientific_media.py sound_brain.py \
-            still_model_bakeoff.py story_packet.py writer_story_bridge.py video_model_bakeoff.py \
-            video_repair_lab.py vision_gateway.py visual_director.py visual_torture_corpus.py \
-            voice_bakeoff.py .github/workflows/quality_certification_render.yml; do
+            quality_render_bridge.py quality_science_motion.py quality_science_render.py \
+            quality_certification_generate.py research_grounding.py review_readiness.py \
+            science_motion.py scientific_media.py sound_brain.py still_model_bakeoff.py \
+            story_packet.py writer_story_bridge.py video_model_bakeoff.py video_repair_lab.py \
+            vision_gateway.py visual_director.py visual_torture_corpus.py voice_bakeoff.py \
+            .github/workflows/quality_certification_render.yml; do
             test -f "$f"
           done
           test ! -f writer_v21_adapter.py
@@ -65,7 +66,7 @@ jobs:
           GROQ_API_KEY: x
           # Python 3.11 sets sys.path[0] to tests/ when a test file is executed
           # by path. Keep the checked-out repository root explicitly importable
-          # so top-level modules are tested exactly from this head.
+          # so top-level Writer modules are tested exactly from this head.
           PYTHONPATH: ${{ github.workspace }}
         run: |
           set -uo pipefail
@@ -106,6 +107,7 @@ jobs:
           run_check "quality certification generator" env -u GROQ_API_KEY python tests/test_quality_certification_generate.py
           run_check "quality certification workflow" env -u GROQ_API_KEY python tests/test_quality_certification_workflow.py
           run_check "quality render bridge" env -u GROQ_API_KEY python tests/test_quality_render_bridge.py
+          run_check "deterministic science motion" env -u GROQ_API_KEY python tests/test_quality_science_motion.py
           run_check "image-to-video controller" env -u GROQ_API_KEY python tests/test_image_to_video_bakeoff.py
           run_check "generated-media controller" env -u GROQ_API_KEY python tests/test_generated_media_controller.py
           run_check "capability preflight" env -u GROQ_API_KEY python tests/test_capability_preflight.py
@@ -122,9 +124,9 @@ jobs:
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
-            quality_render_bridge.py quality_certification_generate.py research_grounding.py \
-            review_readiness.py science_motion.py scientific_media.py sound_brain.py \
-            still_model_bakeoff.py story_packet.py writer_story_bridge.py video_model_bakeoff.py \
-            video_repair_lab.py vision_gateway.py visual_director.py visual_torture_corpus.py \
-            voice_bakeoff.py
+            quality_render_bridge.py quality_science_motion.py quality_science_render.py \
+            quality_certification_generate.py research_grounding.py review_readiness.py \
+            science_motion.py scientific_media.py sound_brain.py still_model_bakeoff.py \
+            story_packet.py writer_story_bridge.py video_model_bakeoff.py video_repair_lab.py \
+            vision_gateway.py visual_director.py visual_torture_corpus.py voice_bakeoff.py
           exit "$failed"
