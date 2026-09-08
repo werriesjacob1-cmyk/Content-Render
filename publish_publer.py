@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-"""Push a finished render to Publer as a DRAFT via the Publer API — a DIRECT
-replacement for the flaky "GitHub Release -> Zapier -> Publer" hop (Zapier's free
-task cap / OAuth expiry silently stops posts reaching Publer).
+"""Push a finished render to Publer through the Publer API.
 
-DORMANT BY DEFAULT: with no PUBLER_API_KEY set this is a clean no-op (exit 0), so
-it is safe in the render workflow and the existing Zapier path is untouched. It
-activates only once the Publer secrets are set. Publer's API needs a BUSINESS plan;
-the key lives at Publer -> Settings -> Access & Login -> API Keys.
+HARD KILL SWITCH: this module is inert unless AUTO_PUBLISH_ENABLED is exactly
+"true" (case-insensitive). Credentials alone are never sufficient to activate
+posting. This keeps publishing independently disabled while render quality is
+being certified and makes the eventual production cutover an explicit switch.
 
-It never fails the workflow: any error is logged and we exit 0, because the video
-is already safely published to the GitHub Release regardless.
+The caller may still choose draft or scheduled Publer state, but both are behind
+the same master switch.
 
 Env:
-  PUBLER_API_KEY       activate; Publer Business plan, Settings -> Access & Login -> API Keys
-  PUBLER_WORKSPACE_ID  the workspace to post into (required with the key)
-  PUBLER_ACCOUNT_IDS   optional comma-separated social-account ids to target;
-                       unset = every connected account in the workspace
-  PUBLER_STATE         'draft' (default — you review/publish in Publer) or 'scheduled'
+  AUTO_PUBLISH_ENABLED  master switch; exact "true" required, otherwise no-op
+  PUBLER_API_KEY        Publer Business/Enterprise API key
+  PUBLER_WORKSPACE_ID   workspace to post into
+  PUBLER_ACCOUNT_IDS    optional comma-separated social-account ids; unset = all
+  PUBLER_STATE          'draft' (default) or 'scheduled'
 Usage: python publish_publer.py <video.mp4> [caption_file]
 API docs: https://publer.com/docs/api-reference/introduction
 """
@@ -32,6 +30,10 @@ import uuid
 API = os.environ.get("PUBLER_API_BASE", "https://app.publer.com/api/v1").rstrip("/")
 KEY = os.environ.get("PUBLER_API_KEY", "").strip()
 WS = os.environ.get("PUBLER_WORKSPACE_ID", "").strip()
+
+
+def _autopublish_enabled():
+    return os.environ.get("AUTO_PUBLISH_ENABLED", "").strip().lower() == "true"
 
 
 def _headers(extra=None):
@@ -128,9 +130,11 @@ def _caption(argv):
 
 
 def main():
+    if not _autopublish_enabled():
+        print("[publer] AUTO_PUBLISH_ENABLED is not true — hard publishing kill switch is OFF")
+        return 0
     if not KEY or not WS:
-        print("[publer] PUBLER_API_KEY / PUBLER_WORKSPACE_ID not set — skipping direct "
-              "push (dormant; the GitHub Release + any Zapier path are unaffected)")
+        print("[publer] publishing enabled but PUBLER_API_KEY / PUBLER_WORKSPACE_ID are not set — skipping")
         return 0
     if len(sys.argv) < 2 or not os.path.exists(sys.argv[1]):
         print("[publer] no video file given/found — nothing to push")
@@ -140,7 +144,7 @@ def main():
     try:
         mid = upload_media(video)
         if not mid:
-            print("[publer] media upload returned no id — video still on the Release, skipping")
+            print("[publer] media upload returned no id — skipping")
             return 0
         accounts = list_accounts()
         if not accounts:
@@ -166,10 +170,10 @@ def main():
             detail = e.read().decode()[:300]
         except Exception:  # noqa: BLE001
             pass
-        print(f"[publer] API HTTP {e.code}: {detail} — video still on the Release, skipping")
+        print(f"[publer] API HTTP {e.code}: {detail} — skipping")
         return 0
     except Exception as e:  # noqa: BLE001 — must never fail the render workflow
-        print(f"[publer] push failed ({type(e).__name__}: {str(e)[:200]}) — video still on the Release")
+        print(f"[publer] push failed ({type(e).__name__}: {str(e)[:200]})")
         return 0
 
 
