@@ -62,6 +62,41 @@ def _parse_repair(raw: str | None) -> tuple[dict[str, Any] | None, str | None]:
     return None, err
 
 
+def _runtime_narration_contract(treatment: str) -> str:
+    """Return the exact narration constraints that ``generate.validate`` enforces.
+
+    Flagship runs 2-5 exposed a control-plane bug: Writer V2.1 was validated
+    against dynamic SHORT/LONG word windows and a per-scene cap that its prompt
+    never received. 17/36 observed repair rounds failed those hidden length
+    constraints. The base V2 prompt also said the hook MUST be a question while
+    production ``validate()`` rejects a question as scene 1. This contract is
+    appended LAST to both the initial Writer call and every repair call, so the
+    model is never asked to satisfy rules it cannot see and the runtime rule wins
+    over any stale/conflicting generic wording upstream.
+
+    Pure/local: zero provider calls and no mutation.
+    """
+    blueprint = W.TREATMENTS.get(treatment) or {}
+    beat_count = len(blueprint.get("beats") or [])
+    spoken_scenes = beat_count + 2  # hook + treatment beats + payoff
+    target_mid = round((G.WORD_LO + G.WORD_HI) / 2)
+    per_scene_target = max(7, round(target_mid / max(spoken_scenes, 1)))
+    return f"""
+
+RUNTIME NARRATION CONTRACT — LOAD-BEARING; THIS OVERRIDES ANY CONFLICTING GENERIC WORDING ABOVE:
+- Shape: exactly {beat_count} treatment beats, producing {spoken_scenes} spoken scenes total: 1 hook + {beat_count} beats + 1 payoff.
+- TOTAL SPOKEN WORDS (hook + every beat + payoff): target {G.WORD_LO}-{G.WORD_HI}; hard range {G.WORD_HARD_LO}-{G.WORD_HARD_HI}. COUNT BEFORE RETURNING. Aim about {per_scene_target} words per scene rather than writing long and expecting a later trim.
+- PER-SCENE HARD CAP: every hook/beat/payoff voiceover must be <= {G.SCENE_WORD_CAP} words.
+- HOOK: scene 1 is a concrete, front-loaded SHOCK STATEMENT. It is NOT a question and must not end with '?'. If a genuine curiosity question helps, put it in scene 2 or later.
+- DISTINCT INFORMATION: each beat must add a new fact, consequence, comparison, obstacle, reveal, or scale shift. Never spend two consecutive beats re-explaining the same mechanism in different words.
+- SPOKEN LANGUAGE: prefer ordinary words. Use a technical name only when it is required for factual precision or a mandatory key term; immediately translate what it means in plain language. Never dump jargon merely because it appears in evidence.
+- KEY TERMS: mandatory key terms remain load-bearing, but weave them into natural speech instead of stacking terminology.
+- PAYOFF: end on one concrete implication/reframe that changes how the viewer sees the subject. Do not summarize the premise and do not end on generic uplift such as 'nature is amazing' or 'a reminder of resilience'.
+- QUESTIONS: never manufacture curiosity by turning a declaration into a question with punctuation alone.
+- REGISTER: do not begin spoken lines with 'Thus' or 'Therefore'.
+""".strip()
+
+
 def generate_candidate_v21(
     fact,
     job_name="CURIOSITY_ITCH",
@@ -86,18 +121,23 @@ def generate_candidate_v21(
     dossier = G.research_dossier(fact) if fact else []
     grounded = bool(dossier)
     claim_inventory = W.build_claim_inventory(fact, dossier_facts=dossier, grounded=grounded)
+    runtime_contract = _runtime_narration_contract(treatment)
     prompt = W.build_writer_prompt_v2(
         treatment,
         claim_inventory,
         avoid_topics=avoid_topics,
         visual_evidence=(fact or {}).get("queries"),
-    )
+    ) + "\n\n" + runtime_contract
     calls: list[dict[str, Any]] = []
     debug: dict[str, Any] = {
-        "orchestrator": "writer_v21_semantic_failclosed_v1",
+        "orchestrator": "writer_v21_semantic_failclosed_v2_runtime_contract",
         "treatment": treatment,
         "prompt_chars": len(prompt),
         "prompt_tokens_est": G.estimate_tokens(prompt),
+        "runtime_length_mode": G.LENGTH_MODE,
+        "runtime_word_target": [G.WORD_LO, G.WORD_HI],
+        "runtime_word_hard": [G.WORD_HARD_LO, G.WORD_HARD_HI],
+        "runtime_scene_word_cap": G.SCENE_WORD_CAP,
         "grounded": grounded,
         "provenance_note": claim_inventory.get("provenance_note"),
         "claim_count": len(claim_inventory.get("claims") or []),
@@ -282,7 +322,7 @@ def generate_candidate_v21(
 
         repair_prompt = R.build_repair_prompt(
             writer_out, claim_inventory, treatment, plan, stalled=stalled
-        )
+        ) + "\n\n" + runtime_contract
         repair_raw, _ = G._v2_structured_call(
             repair_prompt, R.REPAIR_SCHEMA, "repair_output", calls
         )
