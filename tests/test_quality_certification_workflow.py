@@ -59,7 +59,19 @@ def test_evidence_bound_generator_and_bridge_are_load_bearing():
           "legacy viewer-facing QA and scene provenance are retained with MP4")
 
 
-def test_independent_holistic_qa_is_load_bearing_and_actionable():
+def test_audio_mastering_gate_is_local_and_load_bearing():
+    text = WF.read_text(encoding="utf-8")
+    audio_pos = text.index("python quality_audio_qa.py")
+    render_pos = text.index("python quality_science_render.py")
+    holistic_pos = text.index("python quality_postrender_review.py")
+    check(render_pos < audio_pos < holistic_pos, "final encoded audio is measured before holistic visual review")
+    block = text.split("Local final-audio mastering QA", 1)[1].split("Independent holistic QA", 1)[0]
+    check("secrets." not in block, "audio mastering QA uses no provider secret")
+    check("continue-on-error" not in block, "bad final audio remains a red certification condition")
+    check("audio_qa_report.json" in text, "measured audio evidence is retained in private package")
+
+
+def test_independent_holistic_qa_is_scene_aware_load_bearing_and_actionable():
     text = WF.read_text(encoding="utf-8")
     review = "python quality_postrender_review.py"
     check(review in text, "assembled MP4 receives independent modular holistic QA")
@@ -67,21 +79,21 @@ def test_independent_holistic_qa_is_load_bearing_and_actionable():
           "independent holistic verdict is retained")
     check("--repair-plan out/targeted_repair_plan.json" in text,
           "failed dimensions produce bounded repair targets")
-    render_pos = text.index("python quality_science_render.py")
-    qa_pos = text.index(review)
-    check(render_pos < qa_pos, "holistic QA judges the assembled output, not pre-render plans")
-    # The QA step has no continue-on-error: a mechanical fail remains a red
-    # certification, while later always() steps preserve evidence for diagnosis.
+    check("--scene-timeline out/scene_timeline.json" in text,
+          "repair planner receives exact rendered scene boundaries")
     qa_block = text.split("Independent holistic QA + bounded repair targets", 1)[1].split("Collect viewer-facing evidence", 1)[0]
     check("continue-on-error" not in qa_block, "holistic QA failure remains load-bearing")
 
 
-def test_failed_certification_still_preserves_viewer_evidence():
+def test_failed_certification_still_preserves_all_viewer_evidence():
     text = WF.read_text(encoding="utf-8")
     collect_block = text.split("Collect viewer-facing evidence even on QA failure", 1)[1]
-    check("if: ${{ always() }}" in collect_block, "artifact collection runs after red QA/render state")
-    check("holistic_qa_report.json" in collect_block and "targeted_repair_plan.json" in collect_block,
-          "failed-review evidence and repair plan are copied into certification package")
+    check("if: ${{ always() }}" in collect_block, "artifact collection runs after red render/audio/QA state")
+    required = (
+        "audio_qa_report.json", "holistic_qa_report.json", "targeted_repair_plan.json",
+        "scene_timeline.json", "quality_asset_provenance.json",
+    )
+    check(all(x in collect_block for x in required), "failed certification preserves audio, visual, timeline, provenance, and repair evidence")
     upload_block = text.split("Upload private certification package", 1)[1]
     check("if: ${{ always() }}" in upload_block, "private artifact upload survives failed QA")
 
@@ -100,7 +112,8 @@ if __name__ == "__main__":
     test_no_publish_or_write_capability_is_present()
     test_generated_visual_and_paid_voice_side_doors_are_closed()
     test_evidence_bound_generator_and_bridge_are_load_bearing()
-    test_independent_holistic_qa_is_load_bearing_and_actionable()
-    test_failed_certification_still_preserves_viewer_evidence()
+    test_audio_mastering_gate_is_local_and_load_bearing()
+    test_independent_holistic_qa_is_scene_aware_load_bearing_and_actionable()
+    test_failed_certification_still_preserves_all_viewer_evidence()
     test_real_render_dependencies_are_proved_before_execution()
     print("quality certification workflow tests: PASS")
