@@ -22,7 +22,7 @@ UA = "Content-Render/1.0 (+https://github.com/werriesjacob1-cmyk/Content-Render)
 
 _SVS_TRIGGER_RE = re.compile(
     r"\b("
-    r"space|planet|moon|sun|solar|star|galaxy|nebula|black hole|supernova|"
+    r"space|planet|mercury|venus|mars|jupiter|saturn|uranus|neptune|moon|sun|solar|star|galaxy|nebula|black hole|supernova|"
     r"asteroid|comet|meteor|orbit|satellite|eclipse|aurora|magnetosphere|"
     r"atmosphere|climate|weather|storm|hurricane|tornado|lightning|cloud|"
     r"ocean|sea surface|current|temperature|carbon dioxide|co2|methane|"
