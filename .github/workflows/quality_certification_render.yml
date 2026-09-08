@@ -113,18 +113,21 @@ jobs:
           FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
           MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
           # The connector cannot POST workflow_dispatch. For the temporary
-          # path-trigger bridge, use the explicit treatment-fit flagship topic
-          # recorded in the marker instead of re-running auto selection. Venus
-          # deterministically maps to TIMELINE_TRANSFORMATION and its curated
-          # fact/whatif/wow supply multiple citable beats even if grounding is 429.
+          # path-trigger bridge, use the explicit treatment-fit flagship topic.
           TOPIC_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.topic_id || 'venus_day' }}
         shell: bash
         run: |
           set -euo pipefail
+          # Evidence seed is private-certification-only. It replaces only the
+          # initial creative writer call; the canonical independent semantic,
+          # traceability, validate(), quality, evidence-bridge and session gates
+          # still decide whether a manifest exists. If it fails, the bounded
+          # provider candidates remain available as fallback.
           python quality_certification_retry.py \
             --topic "$TOPIC_ID" \
             --out artifacts/quality_certification \
             --max-writer-attempts 3 \
+            --prefer-evidence-seed \
             --allow-provider-calls
 
       - name: Render through authentic-first + deterministic-science certification bridge
