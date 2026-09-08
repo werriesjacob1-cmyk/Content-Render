@@ -43,7 +43,7 @@ def test_generated_visual_and_paid_voice_side_doors_are_closed():
     check('AI_IMAGE: "0"' in text, "legacy Pollinations/Imagen image fallback disabled")
     check('FAL_KEY: ""' in text and 'FAL_API_KEY: ""' in text, "legacy direct FAL generation disabled")
     check('ELEVENLABS_API_KEY: ""' in text, "certification cannot silently spend ElevenLabs")
-    render_step = text.split("Render through quality-first certification bridge", 1)[1]
+    render_step = text.split("Render through authentic-first + deterministic-science certification bridge", 1)[1]
     check("secrets.FAL" not in render_step and "secrets.ELEVEN" not in render_step,
           "render step is not secretly provisioned with disabled paid-generation/voice credentials")
 
@@ -52,12 +52,23 @@ def test_evidence_bound_generator_and_bridge_are_load_bearing():
     text = WF.read_text(encoding="utf-8")
     check("quality_certification_generate.py" in text and "--allow-provider-calls" in text,
           "workflow uses guarded V2.1 certification bundle generator")
-    check("quality_render_bridge.py artifacts/quality_certification/manifest.json" in text,
-          "exact sealed manifest is handed to quality-first renderer")
+    check("quality_science_render.py artifacts/quality_certification/manifest.json" in text,
+          "exact sealed manifest is handed to authentic-first deterministic-science renderer")
+    check("quality_render_bridge.py artifacts/quality_certification/manifest.json" not in text,
+          "workflow cannot bypass the deterministic-science wrapper by invoking the older bridge directly")
     check("writer_evidence.json" not in text or "artifacts/quality_certification" in text,
           "evidence bundle remains inside uploaded certification package")
     check("quality_asset_provenance.json" in text and "qa_report.json" in text,
           "viewer-facing QA and scene provenance are retained with MP4")
+
+
+def test_real_render_dependencies_are_proved_before_execution():
+    text = WF.read_text(encoding="utf-8")
+    render_pos = text.index("python quality_science_render.py")
+    ffmpeg_pos = text.index("ffmpeg -version")
+    deps_pos = text.index("pip install -r requirements.txt")
+    check(ffmpeg_pos < render_pos and deps_pos < render_pos,
+          "ffmpeg and Python render dependencies are proven before flagship rendering")
 
 
 if __name__ == "__main__":
@@ -65,4 +76,5 @@ if __name__ == "__main__":
     test_no_publish_or_write_capability_is_present()
     test_generated_visual_and_paid_voice_side_doors_are_closed()
     test_evidence_bound_generator_and_bridge_are_load_bearing()
+    test_real_render_dependencies_are_proved_before_execution()
     print("quality certification workflow tests: PASS")
