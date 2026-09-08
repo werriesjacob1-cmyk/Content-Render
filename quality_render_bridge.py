@@ -6,19 +6,21 @@ It lets the current quality stack affect a real certification MP4 while keeping
 all of the renderer's proven TTS, caption, pacing, footage-judge, audio-mix,
 cover, and final-QA behavior intact.
 
-Current load-bearing behavior:
+Load-bearing behavior:
 1. Require the sealed Writer V2.1 evidence bundle beside the manifest and prove
    every manifest source_claim_id belongs to that exact inventory.
 2. Build the Visual Director plan for the exact accepted manifest.
 3. Under an explicit FREE-network opt-in, resolve authentic scientific assets
-   (currently NASA SVS / PubChem / RCSB via ``quality_runtime``).
-4. Authentic NASA *video* winners are adapted into the legacy moving-video
-   candidate contract. They are injected AHEAD of generic stock for the matching
-   scene but still have to survive the existing footage relevance/darkness/
-   technical checks in ``main.py``.
-5. PubChem/RCSB/deterministic/generated lanes remain visible in the provenance
-   record instead of being faked into a video-shaped asset they are not.
-6. A provenance JSON is written beside the render even when final QA aborts.
+   (NASA SVS / PubChem / RCSB via ``quality_runtime``).
+4. Authentic NASA *video* winners are injected AHEAD of generic stock for their
+   scene but still have to survive the existing relevance/darkness/technical
+   selection in ``main.py``.
+5. Exact PubChem molecular depictions are rendered directly through the existing
+   scene compositor BEFORE generic stock, preserving narration, motion, grade,
+   captions, audio mix, and final-video QA. Generated stills cannot enter here.
+6. RCSB coordinate records and deterministic/generated lanes remain visible in
+   provenance until a truthful renderer for those exact asset types is wired.
+7. Provenance JSON is written beside the render even when final QA aborts.
 
 Nothing here publishes, edits ``render.yml``, or changes production defaults.
 Run explicitly as ``python quality_render_bridge.py <cert-dir>/manifest.json``.
@@ -35,6 +37,7 @@ import sys
 from typing import Any, Mapping
 
 import main as legacy
+import quality_exact_still as QES
 import quality_runtime as QR
 import quality_stack as Q
 import visual_director as VD
@@ -58,6 +61,7 @@ class SceneAssetDecision:
     winner_source_url: str = ""
     winner_provenance: str = ""
     legacy_video_injected: bool = False
+    exact_still_routed: bool = False
     errors: tuple[str, ...] = ()
     provider_calls_made: int = 0
 
@@ -111,13 +115,7 @@ def _require_certification_evidence(manifest_path: str | Path, manifest: Mapping
 
 
 def _nasa_media_url(candidate: VD.AssetCandidate | None) -> str:
-    """Return the direct NASA media URL only for an authentic NASA video.
-
-    ``AssetCandidate`` deliberately stores provider-neutral provenance. The
-    NASA adapter records the exact direct media URL as ``media=...``; extracting
-    only that explicit field prevents a page/citation URL from being mistaken
-    for a playable clip.
-    """
+    """Return the direct NASA media URL only for an authentic NASA video."""
     if candidate is None:
         return ""
     if candidate.visual_class != VD.VisualClass.AUTHENTIC_SCIENCE_VIDEO:
@@ -137,9 +135,9 @@ def to_legacy_video_candidate(
 ) -> dict[str, Any] | None:
     """Adapt one authenticated NASA video into ``main._gather_candidates`` shape.
 
-    The old renderer is still the final selection authority for this bridge:
-    this merely ensures the reality-first candidate is CONSIDERED before stock.
-    It does not hard-code a judge score or bypass the existing relevance gate.
+    The legacy renderer remains the final moving-footage selection authority:
+    this only ensures reality-first NASA media is CONSIDERED before stock. No
+    score is hard-coded and no existing relevance gate is bypassed.
     """
     media_url = _nasa_media_url(candidate)
     if not media_url or candidate is None:
@@ -181,11 +179,14 @@ def resolve_manifest_assets(
     *,
     allow_free_network: bool,
 ) -> tuple[dict[str, dict[str, Any]], list[SceneAssetDecision]]:
-    """Resolve every scene once before rendering; return injectable video rows.
+    """Resolve every scene once; return strict per-scene renderer injections.
 
-    In plan-only mode this performs ZERO provider calls and returns no injected
-    assets. With free network enabled, only tools allowed by the strict
-    no-paid/no-generated policy can execute.
+    Injection shapes are process-local and never serialized as trust evidence:
+      {"kind": "video_candidate", "row": legacy_candidate}
+      {"kind": "exact_still", "still": ExactStillInjection, "used": bool}
+
+    Plan-only mode performs ZERO provider calls and returns no injection. Free
+    network mode can only execute tools permitted by a no-paid/no-generated policy.
     """
     plan = VD.build_visual_plan(manifest)
     errors = plan.validate()
@@ -205,9 +206,20 @@ def resolve_manifest_assets(
                 used_ids=tuple(str(x) for x in getattr(legacy, "_used_video_ids", set())),
             )
             winner = resolution.winner
-            row = to_legacy_video_candidate(winner, spec)
-            if row is not None:
-                injections[spec.scene_id] = row
+            video_row = to_legacy_video_candidate(winner, spec)
+            exact_still = QES.from_candidate(winner, spec)
+            if video_row is not None:
+                injections[spec.scene_id] = {
+                    "kind": "video_candidate",
+                    "row": video_row,
+                    "used": False,
+                }
+            elif exact_still is not None:
+                injections[spec.scene_id] = {
+                    "kind": "exact_still",
+                    "still": exact_still,
+                    "used": False,
+                }
             decisions.append(SceneAssetDecision(
                 scene_id=spec.scene_id,
                 scientific_subject=spec.scientific_subject,
@@ -219,7 +231,8 @@ def resolve_manifest_assets(
                 winner_source_name=(winner.rights.source_name if winner else ""),
                 winner_source_url=(winner.rights.source_url if winner else ""),
                 winner_provenance=(winner.provenance_notes if winner else ""),
-                legacy_video_injected=row is not None,
+                legacy_video_injected=video_row is not None,
+                exact_still_routed=exact_still is not None,
                 errors=resolution.errors,
                 provider_calls_made=resolution.provider_calls_made,
             ))
@@ -253,10 +266,15 @@ def _prepend_unique(primary: dict[str, Any] | None, rows: list[dict[str, Any]]) 
 
 
 def install_bridge(injections: Mapping[str, dict[str, Any]], manifest: Mapping[str, Any]):
-    """Patch only the two narrow legacy seams needed for per-scene injection.
+    """Patch only the narrow per-scene seams needed for quality-first injection.
 
-    Returns a callable restoring the original functions. This is intentionally
-    reversible and process-local; importing this module never mutates ``main``.
+    Exact stills are rendered before legacy stock search. NASA video remains a
+    candidate at the head of the existing moving-footage pool. Any exact-still
+    compositor failure falls back to the untouched legacy scene builder so the
+    certification render does not die over an optional adapter failure.
+
+    Returns a callable restoring the original functions. Importing this module
+    never mutates ``main.py``.
     """
     original_build_scene = legacy.build_scene
     original_gather = legacy._gather_candidates
@@ -268,7 +286,20 @@ def install_bridge(injections: Mapping[str, dict[str, Any]], manifest: Mapping[s
     context = {"scene_id": ""}
 
     def bridged_build_scene(scene, idx, seg_mp3, seg_dur):
-        context["scene_id"] = raw_ids.get(id(scene), _scene_key(scene, idx))
+        sid = raw_ids.get(id(scene), _scene_key(scene, idx))
+        injection = injections.get(sid)
+        if injection and injection.get("kind") == "exact_still":
+            try:
+                out = QES.render_with_legacy_compositor(
+                    legacy, scene, idx, seg_mp3, seg_dur, injection["still"]
+                )
+                injection["used"] = True
+                return out
+            except Exception as exc:  # noqa: BLE001 -- preserve proven legacy fallback
+                injection["error"] = f"{type(exc).__name__}: {exc}"
+                print(f"  [quality-still] exact still compositor failed ({exc}) — falling back to legacy scene")
+
+        context["scene_id"] = sid
         try:
             return original_build_scene(scene, idx, seg_mp3, seg_dur)
         finally:
@@ -276,7 +307,14 @@ def install_bridge(injections: Mapping[str, dict[str, Any]], manifest: Mapping[s
 
     def bridged_gather(query):
         rows = list(original_gather(query) or [])
-        primary = injections.get(context["scene_id"])
+        injection = injections.get(context["scene_id"])
+        primary = (
+            injection.get("row")
+            if injection and injection.get("kind") == "video_candidate"
+            else None
+        )
+        if primary is not None:
+            injection["used"] = True  # considered by the legacy selector; final winner remains its decision
         return _prepend_unique(primary, rows)
 
     legacy.build_scene = bridged_build_scene
@@ -293,10 +331,19 @@ def _write_provenance(
     decisions: list[SceneAssetDecision],
     allow_free_network: bool,
     evidence_status: Mapping[str, Any],
+    injections: Mapping[str, dict[str, Any]],
 ) -> None:
     os.makedirs(legacy.OUT, exist_ok=True)
+    exact_used = sum(
+        1 for x in injections.values()
+        if x.get("kind") == "exact_still" and x.get("used") is True
+    )
+    video_considered = sum(
+        1 for x in injections.values()
+        if x.get("kind") == "video_candidate" and x.get("used") is True
+    )
     payload = {
-        "schema": "quality-render-bridge-v2",
+        "schema": "quality-render-bridge-v3",
         "evidence_verified_before_render": True,
         "evidence_status": dict(evidence_status),
         "allow_free_network": allow_free_network,
@@ -305,7 +352,11 @@ def _write_provenance(
         "publishing_enabled": False,
         "scene_decisions": [asdict(d) for d in decisions],
         "total_quality_provider_calls": sum(d.provider_calls_made for d in decisions),
-        "nasa_video_injections": sum(1 for d in decisions if d.legacy_video_injected),
+        "nasa_video_candidates_considered": video_considered,
+        "pubchem_exact_stills_rendered": exact_used,
+        "injection_errors": {
+            sid: x.get("error") for sid, x in injections.items() if x.get("error")
+        },
     }
     with open(os.path.join(legacy.OUT, "quality_asset_provenance.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -325,16 +376,18 @@ def main() -> None:
         manifest,
         allow_free_network=allow_free_network,
     )
-    print(f"[quality-bridge] prepared {len(injections)} authentic NASA video injection(s) "
-          f"across {len(decisions)} scene(s)")
+    n_video = sum(1 for x in injections.values() if x.get("kind") == "video_candidate")
+    n_still = sum(1 for x in injections.values() if x.get("kind") == "exact_still")
+    print(
+        f"[quality-bridge] prepared {n_video} authentic NASA video candidate(s) + "
+        f"{n_still} exact PubChem still(s) across {len(decisions)} scene(s)"
+    )
     restore = install_bridge(injections, manifest)
-    # main.main() reads argv itself. Keep the same manifest path and preserve its
-    # existing fail-closed final QA behavior; even SystemExit writes provenance.
     try:
         legacy.main()
     finally:
         restore()
-        _write_provenance(decisions, allow_free_network, evidence_status)
+        _write_provenance(decisions, allow_free_network, evidence_status, injections)
 
 
 if __name__ == "__main__":
