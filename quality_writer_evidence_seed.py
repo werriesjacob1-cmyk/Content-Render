@@ -96,9 +96,6 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
     central = _claim_by_ref(inventory, "topic_bank.fact")
     wow = _claim_by_ref(inventory, "topic_bank.wow")
 
-    # Bind every spoken factual step to the exact curated eclipse evidence.
-    # If those source claims change, this emergency seed disappears rather than
-    # carrying stale handcrafted wording into certification.
     if not _contains_all(central, ("sun", "400", "moon", "farther", "same size", "eclipse")):
         return None
     if not _contains_all(wow, ("moon", "3.8", "farther", "year", "eclipse", "vanish")):
@@ -107,16 +104,15 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
     c = str(central["claim_id"])
     w = str(wow["claim_id"])
 
-    # Scale-reveal-shaped story using only the two curated source claims.
-    # The first three beats progressively explain the apparent-size coincidence;
-    # the final two convert it from a static fact into a temporary phenomenon.
+    # Lead with the visual paradox rather than a detached statistic. Every line
+    # remains a direct paraphrase of the two curated claims above.
     return {
-        "title": "The Cosmic Coincidence Behind Total Eclipses",
-        "hook": "The Sun is about 400 times wider than the Moon.",
+        "title": "Why the Moon Fits the Sun So Perfectly",
+        "hook": "The Moon covers a Sun roughly 400 times wider than itself.",
         "hook_source_claim_ids": [c],
         "beats": [
             {
-                "voiceover": "So why can the Moon cover it almost perfectly?",
+                "voiceover": "So how can their disks look almost exactly the same size?",
                 "visual_intent": "total solar eclipse moon covering sun",
                 "source_claim_ids": [c],
             },
@@ -146,7 +142,7 @@ def _eclipse_seed(inventory: Mapping[str, Any]) -> dict[str, Any] | None:
                 "source_claim_ids": [w],
             },
         ],
-        "payoff": "One day, Earth will lose total eclipses from its sky.",
+        "payoff": "Total eclipses are temporary. One day, Earth will lose them.",
         "payoff_source_claim_ids": [w],
     }
 
