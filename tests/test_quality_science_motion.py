@@ -40,18 +40,19 @@ def _manifest(treatment="ONE_OBJECT_JOURNEY"):
 
 
 def _eclipse_manifest():
+    # Mirrors the evidence-only fallback candidate's accepted-input shape.
     lines = [
-        ("The Sun is about 400 times wider than the Moon.", ["base_001"]),
-        ("So why can the Moon cover it almost perfectly?", ["base_001"]),
-        ("Because the Sun is also about 400 times farther away.", ["base_001"]),
+        ("The Moon can cover the Sun almost perfectly during a total eclipse.", ["base_001"]),
+        ("Start with scale: the Sun is about 400 times wider than the Moon.", ["base_001"]),
+        ("Now jump to distance: the Sun is also about 400 times farther away.", ["base_001"]),
         ("Those two ratios make their disks look nearly the same size.", ["base_001"]),
-        ("That coincidence is what makes total solar eclipses possible.", ["base_001"]),
+        ("That apparent-size match is what makes total solar eclipses possible.", ["base_001"]),
         ("But the Moon drifts about 3.8 centimeters farther away every year.", ["base_002"]),
-        ("In a few hundred million years, that perfect overlap will disappear.", ["base_002"]),
-        ("One day, Earth will lose total eclipses from its sky.", ["base_002"]),
+        ("In a few hundred million years, total eclipses will vanish from our sky.", ["base_002"]),
+        ("The perfect total eclipse is a temporary feature of Earth.", ["base_001", "base_002"]),
     ]
     return {
-        "title": "The Cosmic Coincidence Behind Total Eclipses",
+        "title": "Why the Moon Fits the Sun So Perfectly",
         "treatment": "SCALE_REVEAL",
         "scenes": [
             {"id": i, "voiceover": line, "source_claim_ids": refs,
@@ -98,12 +99,14 @@ def test_scale_reveal_uses_only_dimensionless_accepted_ratios():
     p = plans["3"]
     check(p.spec.kind == SM.MotionKind.SCALE_COMPARE,
           "SCALE_REVEAL uses the deterministic scale-comparison renderer")
-    check(p.source_scene_ids == ("1", "3"),
-          "comparison uses only the two accepted 400-times lines")
+    check(p.source_scene_ids == ("2", "3"),
+          "comparison uses only the two accepted 400-times scale beats")
     check([item.value for item in p.spec.scale_items] == [400.0, 400.0],
           "equal 400x width/distance ratios render as equal scale values")
     check([item.display_value for item in p.spec.scale_items] == ["400 TIMES", "400 TIMES"],
           "display values are copied from accepted narration rather than reformulated")
+    check([item.label for item in p.spec.scale_items] == ["WIDER THAN THE MOON", "FARTHER AWAY"],
+          "bar labels stay concise while remaining literal substrings of accepted narration")
     check(p.source_claim_ids == ("base_001",),
           "scale comparison provenance is bound to the exact sealed central claim")
     graph = SM.compile_filtergraph(p.spec)
