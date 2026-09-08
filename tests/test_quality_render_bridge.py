@@ -11,6 +11,8 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import quality_render_bridge as B
+import quality_runtime as QR
+import scientific_media as SM
 import visual_director as VD
 
 
@@ -178,6 +180,30 @@ def test_plan_only_manifest_resolution_makes_zero_calls():
           "plan-only resolution records zero provider calls")
 
 
+def test_precise_planet_queries_reach_nasa_and_are_not_duplicated():
+    # Precise Writer visual intents should not need a generic word like
+    # "planet" merely to qualify for NASA SVS. These are exactly the kinds of
+    # Venus scenes the flagship writer produces.
+    check(SM.svs_relevant("venus retrograde rotation"),
+          "precise Venus rotation query is eligible for NASA SVS")
+    check(SM.svs_relevant("venus sunrise horizon"),
+          "precise Venus horizon query is eligible for NASA SVS")
+
+    spec = VD.SceneSpec(
+        scene_id="v1",
+        narration="Venus spins in retrograde.",
+        scientific_subject="venus retrograde rotation",
+        must_show=("venus retrograde rotation",),
+        mechanism="venus retrograde rotation",
+        domain="space",
+        authenticity_importance=10,
+        forbidden_generic_substitutions=("generic galaxy wallpaper",),
+    )
+    query = QR._query(spec)
+    check(query == "venus retrograde rotation",
+          "scientific query de-duplicates identical Visual Director subject fields")
+
+
 def test_injection_precedes_stock_without_bypassing_pool():
     nasa = {"id": "svs:123", "url": "https://example/nasa.mp4", "desc": "NASA hurricane"}
     stock = [
@@ -267,6 +293,7 @@ if __name__ == "__main__":
     test_nasa_adapter_is_strict_and_provenance_preserving()
     test_free_network_policy_cannot_spend_or_generate()
     test_plan_only_manifest_resolution_makes_zero_calls()
+    test_precise_planet_queries_reach_nasa_and_are_not_duplicated()
     test_injection_precedes_stock_without_bypassing_pool()
     test_sealed_writer_evidence_is_required_before_render()
     test_mutated_claim_or_sealed_reference_drift_fails_closed()
