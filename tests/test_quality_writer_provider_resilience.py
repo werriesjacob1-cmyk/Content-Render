@@ -38,6 +38,56 @@ def test_20b_is_flagship_fallback_not_primary_peer():
           "existing weak-provider classification is preserved")
 
 
+def test_groq_capacity_check_reserves_completion_tokens():
+    fits, est = R.groq_request_fits("small prompt")
+    check(fits and est >= 1, "small structured request remains Groq-eligible")
+    huge = "x" * (R.GROQ_TPM_LIMIT * 4)
+    fits, est = R.groq_request_fits(huge)
+    check(not fits and est >= R.GROQ_TPM_LIMIT,
+          "request at the whole TPM envelope is rejected because completion still needs room")
+
+
+def test_oversize_request_skips_strict_and_loose_groq_but_restores_key():
+    old_key = R.G.GROQ_KEY
+    old_call = R.G._call_openai_compat_structured
+    old_fallback = R.G.call_groq
+    old_working = R.G._WORKING_MODEL
+    strict_calls = []
+    fallback_key_seen = []
+    R.G.GROQ_KEY = "test"
+
+    def forbidden_structured(*args, **kwargs):
+        strict_calls.append(True)
+        raise AssertionError("oversize request must not reach strict Groq")
+
+    def fake_fallback(prompt):
+        fallback_key_seen.append(R.G.GROQ_KEY)
+        R.G._WORKING_MODEL = ("gemini", "test-gemini")
+        return '{"ok":true}'
+
+    R.G._call_openai_compat_structured = forbidden_structured
+    R.G.call_groq = fake_fallback
+    try:
+        debug = []
+        huge = "x" * (R.GROQ_TPM_LIMIT * 4)
+        raw, structured = R.resilient_structured_call(huge, {"type": "object"}, "test", debug)
+        restored_inside = R.G.GROQ_KEY
+    finally:
+        R.G.GROQ_KEY = old_key
+        R.G._call_openai_compat_structured = old_call
+        R.G.call_groq = old_fallback
+        R.G._WORKING_MODEL = old_working
+
+    check(raw == '{"ok":true}' and structured is False,
+          "oversize request falls through to cross-provider chain")
+    check(not strict_calls, "oversize request makes zero strict Groq calls")
+    check(fallback_key_seen == [""], "loose fallback sees Groq disabled for the oversize request")
+    check(restored_inside == "test", "Groq key is restored immediately after fallback")
+    skips = [d for d in debug if d.get("skipped")]
+    check(len(skips) == 1 and skips[0].get("provider") == "groq",
+          "debug evidence records one explicit Groq capacity skip")
+
+
 def test_short_120b_throttle_waits_and_retries_same_strict_model():
     old_key = R.G.GROQ_KEY
     old_models = list(R.G.MODEL_CHAIN)
@@ -124,6 +174,8 @@ def test_context_restores_generate_globals():
 
 if __name__ == "__main__":
     test_20b_is_flagship_fallback_not_primary_peer()
+    test_groq_capacity_check_reserves_completion_tokens()
+    test_oversize_request_skips_strict_and_loose_groq_but_restores_key()
     test_short_120b_throttle_waits_and_retries_same_strict_model()
     test_hard_120b_failure_tries_20b_strict_before_loose_chain()
     test_context_restores_generate_globals()
