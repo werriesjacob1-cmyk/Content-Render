@@ -2,8 +2,11 @@
 """Zero-network regressions for quality_render_bridge.py."""
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -49,6 +52,76 @@ def _nasa_candidate():
             "media=https://svs.gsfc.nasa.gov/vis/a000000/a000123/movie.mp4; satellite hurricane"
         ),
     )
+
+
+def _sealed_manifest():
+    return {
+        "title": "Storm",
+        "hook": "A hurricane eye can look eerily calm from orbit.",
+        "hook_source_claim_ids": ["base_001"],
+        "payoff": "That calm center is wrapped by the storm's strongest winds.",
+        "payoff_source_claim_ids": ["base_002"],
+        "_semantic_verified": True,
+        "scenes": [
+            {
+                "id": 1,
+                "voiceover": "A hurricane eye can look eerily calm from orbit.",
+                "search_query": "hurricane eye satellite",
+                "source_claim_ids": ["base_001"],
+                "_v2_role": "hook",
+            },
+            {
+                "id": 2,
+                "voiceover": "That calm center is wrapped by the storm's strongest winds.",
+                "search_query": "hurricane eyewall satellite",
+                "source_claim_ids": ["base_002"],
+                "_v2_role": "payoff",
+            },
+        ],
+    }
+
+
+def _writer_evidence(manifest=None):
+    manifest = manifest or _sealed_manifest()
+    return {
+        "topic_id": "hurricane_eye",
+        "claim_inventory": {
+            "grounded": False,
+            "claims": [
+                {
+                    "claim_id": "base_001",
+                    "claim_text": "The eye of a strong hurricane can contain relatively calm conditions.",
+                    "source_kind": "base_fact",
+                    "source_ref": "topic_bank.fact",
+                    "confidence": "verified_base_fact",
+                    "allowed_numbers": [],
+                    "allowed_entities": [],
+                },
+                {
+                    "claim_id": "base_002",
+                    "claim_text": "The eyewall around the eye contains the hurricane's strongest winds.",
+                    "source_kind": "base_fact",
+                    "source_ref": "topic_bank.wow",
+                    "confidence": "verified_base_fact",
+                    "allowed_numbers": [],
+                    "allowed_entities": [],
+                },
+            ],
+        },
+        "manifest_referenced_claim_ids": ["base_001", "base_002"],
+    }
+
+
+def _write_sealed_bundle(root: Path, manifest=None):
+    manifest = manifest or _sealed_manifest()
+    (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    (root / "writer_evidence.json").write_text(json.dumps(_writer_evidence(manifest)), encoding="utf-8")
+    (root / "quality_session_plan.json").write_text(json.dumps({
+        "topic_id": "hurricane_eye",
+        "upstream_traceability_passed": True,
+        "blockers": [],
+    }), encoding="utf-8")
+    return root / "manifest.json", manifest
 
 
 def test_nasa_adapter_is_strict_and_provenance_preserving():
@@ -117,9 +190,85 @@ def test_injection_precedes_stock_without_bypassing_pool():
     check(any(r["id"] == "pex:1" for r in rows), "legacy stock remains available as fallback")
 
 
+def test_sealed_writer_evidence_is_required_before_render():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        mpath, manifest = _write_sealed_bundle(root)
+        status = B._require_certification_evidence(mpath, manifest)
+        check(status["topic_id"] == "hurricane_eye", "sealed Writer evidence passes intact")
+        check(status["referenced_claim_count"] == 2, "exact referenced claim set is counted")
+
+        (root / "writer_evidence.json").unlink()
+        try:
+            B._require_certification_evidence(mpath, manifest)
+        except RuntimeError as exc:
+            check("evidence missing" in str(exc), "missing writer evidence stops before render")
+        else:
+            raise AssertionError("missing writer evidence must fail closed")
+
+
+def test_mutated_claim_or_sealed_reference_drift_fails_closed():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        mpath, manifest = _write_sealed_bundle(root)
+
+        mutated = json.loads(json.dumps(manifest))
+        mutated["scenes"][0]["source_claim_ids"] = ["invented_999"]
+        try:
+            B._require_certification_evidence(mpath, mutated)
+        except RuntimeError as exc:
+            check("unknown Writer claim ID invented_999" in str(exc),
+                  "unknown scene claim cannot reach visual retrieval")
+        else:
+            raise AssertionError("unknown claim ID must fail closed")
+
+        evidence = _writer_evidence(manifest)
+        evidence["manifest_referenced_claim_ids"] = ["base_001"]
+        (root / "writer_evidence.json").write_text(json.dumps(evidence), encoding="utf-8")
+        try:
+            B._require_certification_evidence(mpath, manifest)
+        except RuntimeError as exc:
+            check("referenced-claim set differs" in str(exc),
+                  "sealed reference-set drift cannot reach render")
+        else:
+            raise AssertionError("sealed reference drift must fail closed")
+
+
+def test_quality_session_blocker_or_topic_drift_fails_closed():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        mpath, manifest = _write_sealed_bundle(root)
+        (root / "quality_session_plan.json").write_text(json.dumps({
+            "topic_id": "hurricane_eye",
+            "upstream_traceability_passed": True,
+            "blockers": ["scene 1 traceability failed"],
+        }), encoding="utf-8")
+        try:
+            B._require_certification_evidence(mpath, manifest)
+        except RuntimeError as exc:
+            check("contains blockers" in str(exc), "quality-session blocker stops before render")
+        else:
+            raise AssertionError("quality-session blockers must fail closed")
+
+        (root / "quality_session_plan.json").write_text(json.dumps({
+            "topic_id": "different_topic",
+            "upstream_traceability_passed": True,
+            "blockers": [],
+        }), encoding="utf-8")
+        try:
+            B._require_certification_evidence(mpath, manifest)
+        except RuntimeError as exc:
+            check("topic_id differs" in str(exc), "cross-topic packet swap stops before render")
+        else:
+            raise AssertionError("cross-topic packet swap must fail closed")
+
+
 if __name__ == "__main__":
     test_nasa_adapter_is_strict_and_provenance_preserving()
     test_free_network_policy_cannot_spend_or_generate()
     test_plan_only_manifest_resolution_makes_zero_calls()
     test_injection_precedes_stock_without_bypassing_pool()
+    test_sealed_writer_evidence_is_required_before_render()
+    test_mutated_claim_or_sealed_reference_drift_fails_closed()
+    test_quality_session_blocker_or_topic_drift_fails_closed()
     print("quality_render_bridge tests: PASS")
