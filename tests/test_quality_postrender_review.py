@@ -2,8 +2,11 @@
 """Zero-provider regressions for quality_postrender_review.py."""
 from __future__ import annotations
 
+import json
 import os
 import sys
+import tempfile
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,6 +28,16 @@ def _packet():
         frame_paths=tuple(f"f{i}.jpg" for i in range(9)),
         sheet_paths=("s1.jpg", "s2.jpg", "s3.jpg"),
     )
+
+
+def _timeline():
+    return [
+        {"scene_id": str(i + 1), "scene_index": i + 1,
+         "role": "hook" if i == 0 else ("payoff" if i == 7 else "beat"),
+         "start_s": i * 5.0, "end_s": (i + 1) * 5.0,
+         "search_query": f"subject {i+1}", "source_claim_ids": [f"c{i+1}"]}
+        for i in range(8)
+    ]
 
 
 def _verdict():
@@ -52,27 +65,43 @@ def _verdict():
     )
 
 
-def test_major_violations_become_bounded_minimal_repairs():
-    plan = R.build_repair_targets(_verdict(), _packet())
+def test_major_violations_become_bounded_scene_aware_repairs():
+    plan = R.build_repair_targets(_verdict(), _packet(), _timeline())
     check(plan["mechanical_pass"] is False, "repair plan inherits failed mechanical gate")
+    check(plan["scene_timeline_available"] is True, "repair planner consumes measured scene boundaries")
     check(len(plan["targets"]) == 2, "only major/critical violations become repair targets")
     middle, payoff = plan["targets"]
     check(middle["evidence_group"] == 2 and 15.0 <= middle["start_s"] < middle["end_s"] <= 25.0,
           "middle-third defect maps to bounded middle repair window")
+    check(middle["affected_scene_ids"] == ["4", "5"],
+          "middle defect maps to exact overlapping rendered scenes instead of whole video")
     check("re-resolve" in middle["recommended_action"], "visual mismatch receives visual-only re-resolution action")
-    check(payoff["evidence_group"] == 3 and "payoff visual" in payoff["recommended_action"],
-          "payoff defect receives literal payoff-proof action")
+    check(payoff["evidence_group"] == 3 and "8" in payoff["affected_scene_ids"],
+          "late payoff defect includes exact rendered payoff scene")
+    check("payoff visual" in payoff["recommended_action"], "payoff defect receives literal payoff-proof action")
     check(all(t["automatic_repair_authorized"] is False for t in plan["targets"]),
           "repair planning never silently authorizes edits")
 
 
 def test_repair_contract_preserves_good_work():
-    plan = R.build_repair_targets(_verdict(), _packet())
+    plan = R.build_repair_targets(_verdict(), _packet(), _timeline())
     for target in plan["targets"]:
         preserve = " ".join(target["preserve"])
         check("accepted Writer V2.1 narration" in preserve and "sealed source claim IDs" in preserve,
               "targeted repair explicitly preserves Writer/evidence contract")
-    check("smallest failing window" in plan["policy"], "repair policy prefers bounded fixes over full regeneration")
+    check("smallest failing scene/window" in plan["policy"], "repair policy prefers bounded fixes over full regeneration")
+
+
+def test_scene_timeline_loader_fails_soft_but_preserves_valid_rows():
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "timeline.json"
+        p.write_text(json.dumps({"scenes": [
+            {"scene_id": "1", "scene_index": 1, "start_s": 0, "end_s": 4.2, "role": "hook"},
+            {"scene_id": "bad", "start_s": 8, "end_s": 7},
+        ]}), encoding="utf-8")
+        rows = R.load_scene_timeline(str(p))
+    check(len(rows) == 1 and rows[0]["scene_id"] == "1", "timeline loader keeps valid measured scene and drops invalid row")
+    check(R.load_scene_timeline("/definitely/missing.json") == [], "missing timeline fails soft to time-window-only repair planning")
 
 
 def test_context_uses_exact_spoken_manifest_and_scene_intents():
@@ -95,7 +124,8 @@ def test_context_uses_exact_spoken_manifest_and_scene_intents():
 
 
 if __name__ == "__main__":
-    test_major_violations_become_bounded_minimal_repairs()
+    test_major_violations_become_bounded_scene_aware_repairs()
     test_repair_contract_preserves_good_work()
+    test_scene_timeline_loader_fails_soft_but_preserves_valid_rows()
     test_context_uses_exact_spoken_manifest_and_scene_intents()
     print("quality_postrender_review tests: PASS")
