@@ -7,26 +7,29 @@ all of the renderer's proven TTS, caption, pacing, footage-judge, audio-mix,
 cover, and final-QA behavior intact.
 
 Current load-bearing behavior:
-1. Build the Visual Director plan for the exact manifest.
-2. Under an explicit FREE-network opt-in, resolve authentic scientific assets
+1. Require the sealed Writer V2.1 evidence bundle beside the manifest and prove
+   every manifest source_claim_id belongs to that exact inventory.
+2. Build the Visual Director plan for the exact accepted manifest.
+3. Under an explicit FREE-network opt-in, resolve authentic scientific assets
    (currently NASA SVS / PubChem / RCSB via ``quality_runtime``).
-3. Only authentic NASA *video* winners are adapted into the legacy moving-video
-   candidate contract in this first bridge. They are injected AHEAD of generic
-   stock for the matching scene but still have to survive the existing footage
-   relevance/darkness/technical checks in ``main.py``.
-4. PubChem/RCSB/deterministic/generated lanes remain visible in the provenance
+4. Authentic NASA *video* winners are adapted into the legacy moving-video
+   candidate contract. They are injected AHEAD of generic stock for the matching
+   scene but still have to survive the existing footage relevance/darkness/
+   technical checks in ``main.py``.
+5. PubChem/RCSB/deterministic/generated lanes remain visible in the provenance
    record instead of being faked into a video-shaped asset they are not.
-5. A provenance JSON is written beside the render even when final QA aborts.
+6. A provenance JSON is written beside the render even when final QA aborts.
 
 Nothing here publishes, edits ``render.yml``, or changes production defaults.
-Run explicitly as ``python quality_render_bridge.py manifest.json``. Network is
-OFF unless QUALITY_RENDER_FREE_NETWORK=I_ACCEPT_FREE_NETWORK is set.
+Run explicitly as ``python quality_render_bridge.py <cert-dir>/manifest.json``.
+Network is OFF unless QUALITY_RENDER_FREE_NETWORK=I_ACCEPT_FREE_NETWORK is set.
 """
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import json
 import os
+from pathlib import Path
 import re
 import sys
 from typing import Any, Mapping
@@ -35,6 +38,7 @@ import main as legacy
 import quality_runtime as QR
 import quality_stack as Q
 import visual_director as VD
+import writer_story_bridge as WSB
 
 
 FREE_NETWORK_ACK = "I_ACCEPT_FREE_NETWORK"
@@ -60,6 +64,50 @@ class SceneAssetDecision:
 
 def _scene_key(raw: Mapping[str, Any], fallback: int) -> str:
     return str(raw.get("id") or raw.get("scene_id") or fallback)
+
+
+def _require_certification_evidence(manifest_path: str | Path, manifest: Mapping[str, Any]) -> dict[str, Any]:
+    """Fail before footage if the sealed Writer evidence handoff is absent/drifted."""
+    mpath = Path(manifest_path)
+    evidence_path = mpath.parent / "writer_evidence.json"
+    session_path = mpath.parent / "quality_session_plan.json"
+    if not evidence_path.is_file():
+        raise RuntimeError(f"sealed Writer evidence missing beside manifest: {evidence_path}")
+    if not session_path.is_file():
+        raise RuntimeError(f"strict quality-session plan missing beside manifest: {session_path}")
+
+    with evidence_path.open(encoding="utf-8") as f:
+        evidence = json.load(f)
+    inventory = evidence.get("claim_inventory")
+    topic_id = str(evidence.get("topic_id") or "").strip()
+    if not topic_id or not isinstance(inventory, Mapping):
+        raise RuntimeError("writer_evidence.json missing topic_id/claim_inventory")
+    packet = WSB.from_writer_inventory(topic_id, inventory)
+    ok, problems = WSB.verify_manifest_refs(manifest, packet)
+    if not ok:
+        raise RuntimeError("certification manifest/evidence mismatch: " + "; ".join(problems))
+
+    with session_path.open(encoding="utf-8") as f:
+        session = json.load(f)
+    if session.get("upstream_traceability_passed") is not True:
+        raise RuntimeError("quality_session_plan does not carry upstream Writer V2.1 traceability pass")
+    blockers = session.get("blockers") or []
+    if blockers:
+        raise RuntimeError("quality_session_plan contains blockers: " + "; ".join(str(x) for x in blockers))
+    if str(session.get("topic_id") or "") != topic_id:
+        raise RuntimeError("quality_session_plan topic_id differs from writer_evidence topic_id")
+
+    manifest_refs = set(WSB.manifest_claim_ids(manifest))
+    sealed_refs = set(str(x) for x in (evidence.get("manifest_referenced_claim_ids") or []))
+    if manifest_refs != sealed_refs:
+        raise RuntimeError("manifest referenced-claim set differs from sealed writer_evidence claim set")
+
+    return {
+        "topic_id": topic_id,
+        "claim_count": len(packet.claims),
+        "referenced_claim_count": len(manifest_refs),
+        "grounding_mode": packet.grounding_mode,
+    }
 
 
 def _nasa_media_url(candidate: VD.AssetCandidate | None) -> str:
@@ -241,10 +289,16 @@ def install_bridge(injections: Mapping[str, dict[str, Any]], manifest: Mapping[s
     return restore
 
 
-def _write_provenance(decisions: list[SceneAssetDecision], allow_free_network: bool) -> None:
+def _write_provenance(
+    decisions: list[SceneAssetDecision],
+    allow_free_network: bool,
+    evidence_status: Mapping[str, Any],
+) -> None:
     os.makedirs(legacy.OUT, exist_ok=True)
     payload = {
-        "schema": "quality-render-bridge-v1",
+        "schema": "quality-render-bridge-v2",
+        "evidence_verified_before_render": True,
+        "evidence_status": dict(evidence_status),
         "allow_free_network": allow_free_network,
         "paid_quality_calls_allowed": False,
         "generated_visuals_allowed": False,
@@ -261,6 +315,8 @@ def main() -> None:
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
     with open(mpath, encoding="utf-8") as f:
         manifest = json.load(f)
+    evidence_status = _require_certification_evidence(mpath, manifest)
+    print(f"[quality-bridge] Writer evidence VERIFIED: {evidence_status}")
     allow_free_network = os.getenv("QUALITY_RENDER_FREE_NETWORK", "") == FREE_NETWORK_ACK
     if not allow_free_network:
         print("[quality-bridge] FREE network disabled; set QUALITY_RENDER_FREE_NETWORK="
@@ -278,7 +334,7 @@ def main() -> None:
         legacy.main()
     finally:
         restore()
-        _write_provenance(decisions, allow_free_network)
+        _write_provenance(decisions, allow_free_network, evidence_status)
 
 
 if __name__ == "__main__":
