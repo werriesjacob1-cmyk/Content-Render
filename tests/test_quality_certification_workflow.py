@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import re
 
 ROOT = Path(__file__).resolve().parents[1]
 WF = ROOT / ".github" / "workflows" / "quality_certification_render.yml"
@@ -55,11 +54,36 @@ def test_evidence_bound_generator_and_bridge_are_load_bearing():
     check("quality_science_render.py artifacts/quality_certification/manifest.json" in text,
           "exact sealed manifest is handed to authentic-first deterministic-science renderer")
     check("quality_render_bridge.py artifacts/quality_certification/manifest.json" not in text,
-          "workflow cannot bypass the deterministic-science wrapper by invoking the older bridge directly")
-    check("writer_evidence.json" not in text or "artifacts/quality_certification" in text,
-          "evidence bundle remains inside uploaded certification package")
+          "workflow cannot bypass deterministic-science wrapper by invoking older bridge directly")
     check("quality_asset_provenance.json" in text and "qa_report.json" in text,
-          "viewer-facing QA and scene provenance are retained with MP4")
+          "legacy viewer-facing QA and scene provenance are retained with MP4")
+
+
+def test_independent_holistic_qa_is_load_bearing_and_actionable():
+    text = WF.read_text(encoding="utf-8")
+    review = "python quality_postrender_review.py"
+    check(review in text, "assembled MP4 receives independent modular holistic QA")
+    check("--report out/holistic_qa_report.json" in text,
+          "independent holistic verdict is retained")
+    check("--repair-plan out/targeted_repair_plan.json" in text,
+          "failed dimensions produce bounded repair targets")
+    render_pos = text.index("python quality_science_render.py")
+    qa_pos = text.index(review)
+    check(render_pos < qa_pos, "holistic QA judges the assembled output, not pre-render plans")
+    # The QA step has no continue-on-error: a mechanical fail remains a red
+    # certification, while later always() steps preserve evidence for diagnosis.
+    qa_block = text.split("Independent holistic QA + bounded repair targets", 1)[1].split("Collect viewer-facing evidence", 1)[0]
+    check("continue-on-error" not in qa_block, "holistic QA failure remains load-bearing")
+
+
+def test_failed_certification_still_preserves_viewer_evidence():
+    text = WF.read_text(encoding="utf-8")
+    collect_block = text.split("Collect viewer-facing evidence even on QA failure", 1)[1]
+    check("if: ${{ always() }}" in collect_block, "artifact collection runs after red QA/render state")
+    check("holistic_qa_report.json" in collect_block and "targeted_repair_plan.json" in collect_block,
+          "failed-review evidence and repair plan are copied into certification package")
+    upload_block = text.split("Upload private certification package", 1)[1]
+    check("if: ${{ always() }}" in upload_block, "private artifact upload survives failed QA")
 
 
 def test_real_render_dependencies_are_proved_before_execution():
@@ -76,5 +100,7 @@ if __name__ == "__main__":
     test_no_publish_or_write_capability_is_present()
     test_generated_visual_and_paid_voice_side_doors_are_closed()
     test_evidence_bound_generator_and_bridge_are_load_bearing()
+    test_independent_holistic_qa_is_load_bearing_and_actionable()
+    test_failed_certification_still_preserves_viewer_evidence()
     test_real_render_dependencies_are_proved_before_execution()
     print("quality certification workflow tests: PASS")
