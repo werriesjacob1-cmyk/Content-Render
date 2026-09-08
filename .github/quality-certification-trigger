@@ -1,7 +1,7 @@
-flagship-certification-requested=2026-09-08T12:40:00-05:00
+flagship-certification-requested=2026-09-08T13:33:00-05:00
 topic=venus_day
 treatment=TIMELINE_TRANSFORMATION
 free_science_network=yes
-writer_policy=resilient-strict-120b-then-bounded-retry
-attempt=3
+writer_policy=evidence-seed-first-then-resilient-provider-fallback
+attempt=4
 purpose=private-artifact-only
