@@ -53,7 +53,7 @@ jobs:
             review_readiness.py science_motion.py scientific_media.py sound_brain.py \
             still_model_bakeoff.py story_packet.py writer_story_bridge.py video_model_bakeoff.py \
             video_repair_lab.py vision_gateway.py visual_director.py visual_torture_corpus.py \
-            voice_bakeoff.py; do
+            voice_bakeoff.py .github/workflows/quality_certification_render.yml; do
             test -f "$f"
           done
           test ! -f writer_v21_adapter.py
@@ -104,6 +104,7 @@ jobs:
           run_check "writer-story evidence bridge" env -u GROQ_API_KEY python tests/test_writer_story_bridge.py
           run_check "quality session" env -u GROQ_API_KEY python tests/test_quality_session.py
           run_check "quality certification generator" env -u GROQ_API_KEY python tests/test_quality_certification_generate.py
+          run_check "quality certification workflow" env -u GROQ_API_KEY python tests/test_quality_certification_workflow.py
           run_check "quality render bridge" env -u GROQ_API_KEY python tests/test_quality_render_bridge.py
           run_check "image-to-video controller" env -u GROQ_API_KEY python tests/test_image_to_video_bakeoff.py
           run_check "generated-media controller" env -u GROQ_API_KEY python tests/test_generated_media_controller.py
