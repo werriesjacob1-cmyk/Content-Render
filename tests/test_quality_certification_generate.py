@@ -39,7 +39,7 @@ def test_two_part_live_guard_refuses_before_work():
             os.environ.pop("QUALITY_CERTIFICATION_LIVE", None)
 
 
-def test_auto_topic_selection_is_fresh_and_visual_first():
+def test_auto_topic_selection_is_fresh_and_quality_stack_first():
     original_bank = C._eligible_bank
     original_history = C._load_history
     original_scout = C.W.visual_scout_score
@@ -58,9 +58,39 @@ def test_auto_topic_selection_is_fresh_and_visual_first():
         C._eligible_bank = original_bank
         C._load_history = original_history
         C.W.visual_scout_score = original_scout
-    check(fact["id"] == "fresh_best", "auto mode avoids used topic and picks strongest fresh visual story")
-    check(evidence["mode"] == "auto_visual_first_fresh" and evidence["shortlist"],
-          "auto choice emits auditable shortlist evidence")
+    check(fact["id"] == "fresh_best", "auto mode avoids used topic and picks strongest fresh production story")
+    check(evidence["mode"] == "auto_quality_stack_first_fresh" and evidence["shortlist"],
+          "auto choice emits auditable quality-stack shortlist evidence")
+    top = evidence["shortlist"][0]
+    check("quality_stack_score" in top and "planned_treatment" in top and "authentic_science_query_hits" in top,
+          "selection evidence explains production-lane advantages, not only one opaque score")
+
+
+def test_authentic_science_can_break_a_close_visual_tie_but_not_rescue_weak_story():
+    original_scout = C.W.visual_scout_score
+    original_svs = C.SCI.svs_relevant
+    original_pubchem = C.SCI.pubchem_relevant
+    original_treatment = C.W.select_treatment
+    C.W.visual_scout_score = lambda fact, banned_re=None: {"score": fact["scout"], "verdict": "test"}
+    C.SCI.svs_relevant = lambda q: "nasa" in q
+    C.SCI.pubchem_relevant = lambda q: "molecule" in q
+    C.W.select_treatment = lambda *a, **k: "MYTH_AUTOPSY"
+    try:
+        generic = {"id": "generic", "scout": 8.0, "queries": ["animal running", "animal close"], "key_terms": ["animal"]}
+        authentic = {"id": "authentic", "scout": 7.9, "queries": ["nasa hurricane", "nasa storm"], "key_terms": ["hurricane"]}
+        weak = {"id": "weak", "scout": 3.0, "queries": ["nasa earth", "nasa climate"], "key_terms": ["earth"]}
+        g = C._quality_lane_profile(generic, [])
+        a = C._quality_lane_profile(authentic, [])
+        w = C._quality_lane_profile(weak, [])
+    finally:
+        C.W.visual_scout_score = original_scout
+        C.SCI.svs_relevant = original_svs
+        C.SCI.pubchem_relevant = original_pubchem
+        C.W.select_treatment = original_treatment
+    check(a["quality_stack_score"] > g["quality_stack_score"],
+          "authentic NASA lane correctly breaks a close visual-tellability tie")
+    check(w["quality_stack_score"] < g["quality_stack_score"],
+          "authentic-source bonus cannot rescue a fundamentally weak story")
 
 
 def test_bundle_pins_one_research_result_through_writer_and_preflight():
@@ -88,9 +118,6 @@ def test_bundle_pins_one_research_result_through_writer_and_preflight():
     C.G.research_dossier = fake_research
 
     def fake_generate(_fact, **kwargs):
-        # build_bundle temporarily pins G.research_dossier to the exact first
-        # result before calling the orchestrator. Prove the writer sees that
-        # pinned value without incrementing fake_research a second time.
         calls["writer_internal_research"] = C.G.research_dossier(_fact)
         scenes = [
             {"id": 1, "voiceover": "A glacier can move downhill under its own weight.",
@@ -138,6 +165,7 @@ def test_bundle_pins_one_research_result_through_writer_and_preflight():
 
 if __name__ == "__main__":
     test_two_part_live_guard_refuses_before_work()
-    test_auto_topic_selection_is_fresh_and_visual_first()
+    test_auto_topic_selection_is_fresh_and_quality_stack_first()
+    test_authentic_science_can_break_a_close_visual_tie_but_not_rescue_weak_story()
     test_bundle_pins_one_research_result_through_writer_and_preflight()
     print("quality_certification_generate tests: PASS")
