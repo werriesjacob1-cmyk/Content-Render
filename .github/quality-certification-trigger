@@ -1,4 +1,6 @@
-flagship-certification-requested=2026-09-08T12:20:00-05:00
+flagship-certification-requested=2026-09-08T12:31:00-05:00
 topic=auto
 free_science_network=yes
+writer_policy=resilient-strict-120b-then-bounded-retry
+attempt=2
 purpose=private-artifact-only
