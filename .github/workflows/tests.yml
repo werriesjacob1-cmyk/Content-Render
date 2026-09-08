@@ -30,6 +30,8 @@ jobs:
           test -f writer_v21_visual_preflight.py
           test -f tests/test_writer_v21_visual_feasibility.py
           test -f tests/test_writer_v21_runtime_contract.py
+          test -f tests/test_writer_replay.py
+          test -f writer_replay.py
           test -f wr21_takeover_bakeoff.py
           test -f wr21_run.py
           test -f writer_v21_quality_bakeoff.py
@@ -88,6 +90,7 @@ jobs:
           run_check "spoken manifest" python tests/test_writer_v21_manifest.py
           run_check "repair regression" python tests/test_writer_v21_repair_regression.py
           run_check "runtime narration contract" python tests/test_writer_v21_runtime_contract.py
+          run_check "writer rejection replay" python tests/test_writer_replay.py
           run_check "blind pairwise" python tests/test_writer_v21_pairwise.py
           run_check "known-bad torture corpus" python tests/test_writer_v21_torture_corpus.py
           run_check "story shape + first 8s" python tests/test_writer_v21_story_shape.py
@@ -124,7 +127,7 @@ jobs:
           run_check "live runner + quality-stack syntax preflight" python -m py_compile \
             wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py \
             writer_v21_quality_bakeoff.py writer_v21_factual_audit.py \
-            writer_v21_provider_guardrail.py writer_v21_orchestrator.py \
+            writer_v21_provider_guardrail.py writer_v21_orchestrator.py writer_replay.py \
             wr21_quality_bakeoff.py wr21_quality_preregister.py wr21_quality_generate.py publish_publer.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
