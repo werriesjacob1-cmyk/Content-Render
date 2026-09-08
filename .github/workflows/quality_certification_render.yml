@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       topic_id:
-        description: "Eligible topic_bank id, or auto for deterministic visual-first fresh selection"
+        description: "Eligible topic_bank id, or auto for deterministic quality-stack-first fresh selection"
         required: true
         default: "auto"
         type: string
@@ -119,12 +119,9 @@ jobs:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # Generated visuals are deliberately closed until an exact promoted
-          # model + independent vision path is activated through the new stack.
           AI_IMAGE: "0"
           FAL_KEY: ""
           FAL_API_KEY: ""
-          # Use proven free/offline narration until Voice Lab has a promoted winner.
           ELEVENLABS_API_KEY: ""
           SFX_CUTS: "0"
           MUSIC_DUCK: "1"
@@ -133,7 +130,18 @@ jobs:
           set -euo pipefail
           python quality_science_render.py artifacts/quality_certification/manifest.json
 
+      - name: Local final-audio mastering QA
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_audio_qa.py \
+            --video out/final.mp4 \
+            --manifest artifacts/quality_certification/manifest.json \
+            --report out/audio_qa_report.json
+
       - name: Independent holistic QA + bounded repair targets
+        if: ${{ always() }}
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -159,7 +167,7 @@ jobs:
               -of default=noprint_wrappers=1 out/final.mp4 || true
             cp out/final.mp4 artifacts/quality_certification/render/final.mp4
           fi
-          for f in cover.jpg qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json post.json; do
+          for f in cover.jpg qa_report.json audio_qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json post.json; do
             test -f "out/$f" && cp "out/$f" "artifacts/quality_certification/render/$f" || true
           done
 
