@@ -239,8 +239,10 @@ def proof(out_root: str) -> dict[str, Any]:
             result = dict(_mix_final(cap_path, dest, dur))
             # Surfaced so callers can record duration/caption evidence without
             # reaching back into this function's locals.
+            # str, not Path: this dict is written straight into the JSON proof
+            # report, and Path is not JSON serializable.
             result["duration_s"] = dur
-            result["ass_path"] = ass_path
+            result["ass_path"] = str(ass_path)
             return result
 
         final = out / "final.mp4"
