@@ -118,6 +118,7 @@ jobs:
           run_check "visual torture routing" env -u GROQ_API_KEY python tests/test_visual_torture_corpus.py
           run_check "writer length contract" env -u GROQ_API_KEY python tests/test_writer_length_contract.py
           run_check "writer rejection-corpus replay" env -u GROQ_API_KEY python tests/test_writer_replay.py
+          run_check "downstream factory seam" env -u GROQ_API_KEY python tests/test_downstream_factory_smoke.py
           run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
           run_check "quality-stack preflight" env -u GROQ_API_KEY python quality_stack_cli.py --preflight
 
