@@ -33,7 +33,7 @@ from narration import spoken_text
 # that cost this project five flagship runs, in a different shape.
 # The delivery contract, not the QA module. The renderer must not depend on the
 # thing that judges it; both import the same neutral source instead.
-from delivery_contract import delivery_audio_encode_args, delivery_loudnorm_filter
+from delivery_contract import delivery_audio_encode_args, delivery_master_filter
 PROFILE, PAGE = profiles.get_profile()
 ELEVEN_VOICE = PROFILE["eleven_voice"]
 MUSIC = os.path.join(ROOT, PROFILE.get("music", "music.mp3"))
@@ -3744,7 +3744,7 @@ def main():
     # hard-coded literal while only the rate/bitrate were shared, which is how a
     # later "shared" true-peak target ended up inert: it was defined in one
     # module while all three finishing paths kept their own copy of the string.
-    _LOUDNORM = delivery_loudnorm_filter()
+    _LOUDNORM = delivery_master_filter()
     if len(labels) > 1:
         filt.append(f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:"
                     f"dropout_transition=0:normalize=0,{_LOUDNORM}[a]")

@@ -103,7 +103,7 @@ def test_the_floor_still_catches_the_opposite_failure():
 # louder branch builds its filter graph in a list, so the run() call itself never
 # contains the string "loudnorm" and a proximity check would silently pass.
 MASTERING_REGIONS = (
-    ("main.py", "_LOUDNORM = delivery_loudnorm_filter()",
+    ("main.py", "_LOUDNORM = delivery_master_filter()",
      'with open(os.path.join(OUT, "post.json")'),
     ("quality_downstream_factory_proof.py", "def _mix_final(", "\ndef _repair_verdict("),
 )

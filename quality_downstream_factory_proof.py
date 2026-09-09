@@ -120,7 +120,10 @@ def _make_captioned(body: Path, ass: Path, dest: Path, duration: float) -> None:
         "ffmpeg", "-y", "-i", str(body),
         "-vf", f"ass='{ass}':fontsdir='{legacy.FONTS_DIR}',fade=t=out:st={fade_start:.3f}:d={fade_dur:.3f}",
         "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28",
-        "-c:a", "aac", "-b:a", "96k", str(dest),
+        # Delivery args even on the caption intermediate: both proofs master
+        # FROM this file, so a 96 kbit/s intermediate made them master a harsher
+        # signal than production, whose intermediate uses the ffmpeg default.
+        *DC.delivery_audio_encode_args(), str(dest),
     ])
 
 
@@ -135,14 +138,14 @@ def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
             f"[1:a]{legacy._vibe_music_filter()}[m_raw];"
             "[m_raw][0:a]sidechaincompress=threshold=0.05:ratio=6:attack=25:release=400:makeup=1[m];"
             "[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
-            + DC.delivery_loudnorm_filter() + "[a]",
+            + DC.delivery_master_filter() + "[a]",
             "-map", "0:v", "-map", "[a]", "-c:v", "copy",
             *DC.delivery_audio_encode_args(), "-shortest", str(dest),
         ])
         return {"music_bed": str(bed), "sidechain_duck": True}
     run([
         "ffmpeg", "-y", "-i", str(captioned), "-c:v", "copy",
-        "-af", DC.delivery_loudnorm_filter(),
+        "-af", DC.delivery_master_filter(),
         *DC.delivery_audio_encode_args(), str(dest),
     ])
     return {"music_bed": "", "sidechain_duck": False}

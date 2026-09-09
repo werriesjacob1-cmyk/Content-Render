@@ -39,6 +39,7 @@ jobs:
             quality_learning_ledger.py quality_learning_capture.py quality_story_selector.py \
             quality_visual_bible.py quality_asset_lineage.py quality_repair_controller.py \
             quality_production_generate.py quality_queue_contract.py quality_downstream_factory_proof.py \
+            delivery_contract.py quality_production_realism_proof.py quality_edge_voice_probe.py \
             tests/test_quality_learning_ledger.py tests/test_quality_learning_capture.py \
             tests/test_quality_story_selector.py tests/test_quality_visual_bible.py \
             tests/test_quality_asset_lineage.py tests/test_quality_repair_controller.py \
@@ -154,6 +155,7 @@ jobs:
             image_to_video_bakeoff.py molecular_media.py quality_runtime.py quality_session.py \
             quality_stack.py quality_stack_cli.py quality_render_bridge.py quality_science_motion.py \
             quality_science_render.py quality_postrender_review.py quality_audio_qa.py \
+            delivery_contract.py quality_production_realism_proof.py quality_edge_voice_probe.py \
             quality_certification_generate.py quality_certification_retry.py \
             quality_writer_provider_resilience.py quality_writer_evidence_seed.py \
             research_grounding.py review_readiness.py science_motion.py scientific_media.py \

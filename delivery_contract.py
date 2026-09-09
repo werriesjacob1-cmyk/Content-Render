@@ -65,19 +65,51 @@ DELIVERY_LRA_LU = 11
 QA_TRUE_PEAK_CEILING_DB = -0.5
 
 
-def delivery_loudnorm_filter() -> str:
-    """The ffmpeg ``loudnorm`` filter every final master must be built from.
+# loudnorm's OWN true-peak argument, kept deliberately loose. Asking loudnorm to
+# both reach -14 LUFS and hold a tight true peak makes its internal limiter fight
+# its loudness target, and the loudness loses: on real Piper narration a
+# TP=-2.5 single pass landed -16.42 LUFS, outside the gate's -16.0 floor. The
+# peak ceiling is enforced by a dedicated limiter below instead, which measured
+# strictly better on BOTH axes than folding the job into loudnorm:
+#
+#   peaky speech+bed   loudnorm TP=-2.5          -> I=-14.90  decoded TP=-2.13
+#                      loudnorm TP=-1.5 + limiter-> I=-14.65  decoded TP=-2.11
+#   quiet speech+bed   loudnorm TP=-2.5          -> I=-15.10  decoded TP=-2.11
+#                      loudnorm TP=-1.5 + limiter-> I=-14.90  decoded TP=-2.28
+#
+# More loudness at the same peak safety, because each stage does one job.
+LOUDNORM_INTERNAL_TP_DB = -1.5
 
-    Callers append their own graph around this; nobody restates the numbers.
+
+def _limit_amplitude() -> float:
+    """DELIVERY_TRUE_PEAK_TARGET_DB as the linear amplitude alimiter wants."""
+    return 10.0 ** (DELIVERY_TRUE_PEAK_TARGET_DB / 20.0)
+
+
+def delivery_master_filter() -> str:
+    """The complete final-master audio chain: loudness, then peak ceiling.
+
+    Two stages with one job each. ``loudnorm`` sets integrated loudness;
+    ``alimiter`` enforces the pre-encode peak target that reserves codec
+    headroom. Callers append their own graph around this and never restate the
+    numbers.
+
     Deliberately NOT used for measurement passes -- an analysis filter reads
-    ``input_*`` values that do not depend on these targets, and coupling the two
+    ``input_*`` values that do not depend on these targets, so coupling the two
     would mean changing the delivery target silently changed the measurement
-    command.
+    command while measuring exactly the same thing.
+
+    NOTE: two-pass loudnorm (``measured_*`` + ``linear=true``) was measured and
+    REJECTED. Linear mode applies a fixed gain and does not limit, so it made
+    the decoded peak WORSE -- +0.06 dBTP on peaky speech, failing the gate --
+    while buying ~0.2 dB of loudness accuracy. Peak safety is the hard
+    constraint; do not "improve" this by reintroducing it.
     """
     return (
         f"loudnorm=I={DELIVERY_INTEGRATED_LUFS}:"
-        f"TP={DELIVERY_TRUE_PEAK_TARGET_DB}:"
+        f"TP={LOUDNORM_INTERNAL_TP_DB}:"
         f"LRA={DELIVERY_LRA_LU}"
+        f",alimiter=limit={_limit_amplitude():.4f}:level=disabled"
     )
 
 

@@ -31,21 +31,16 @@ LUFS_MAX = -11.5
 MAX_LONG_SILENCE_RATIO = 0.20
 MIN_SAMPLE_RATE = 32000
 
-# The delivery contract is OWNED by delivery_contract.py and imported here.
-# This module is a consumer, not the source: the renderer must not have to
-# import a QA module to know how to master (backwards layering), and the two
-# must not be able to state different numbers. Re-exported so existing callers
-# -- main.py, the factory proof, the production-realism proof, the tests --
-# keep resolving these names through whichever module they already use.
+# The delivery contract is OWNED by delivery_contract.py. This module is a
+# CONSUMER: the renderer must not have to import a QA module to know how to
+# master (backwards layering), and the two must not be able to state different
+# numbers. Only the names this module or its callers actually use are imported
+# -- re-exporting the rest would be inert scaffolding, which is the exact
+# pattern this branch exists to remove.
 from delivery_contract import (  # noqa: E402  (contract import, kept beside the gates it feeds)
     DELIVERY_AUDIO_BITRATE,
-    DELIVERY_INTEGRATED_LUFS,
-    DELIVERY_LRA_LU,
     DELIVERY_SAMPLE_RATE,
-    DELIVERY_TRUE_PEAK_TARGET_DB,
     QA_TRUE_PEAK_CEILING_DB,
-    delivery_audio_encode_args,
-    delivery_loudnorm_filter,
 )
 
 # What the ENCODED artifact must measure. Deliberately not the same number as

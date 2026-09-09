@@ -32,6 +32,7 @@ import urllib.request
 from typing import Any
 
 import main as legacy
+import delivery_contract as DC
 import quality_audio_qa as AQA
 import quality_downstream_factory_proof as QDF
 import quality_evidence as QE
@@ -104,8 +105,7 @@ def _make_vertical_scene(path: Path, idx: int, audio_path: str, duration: float)
         "-vf", f"hue=h={hue},{draw},format=yuv420p",
         "-map", "0:v", "-map", "1:a",
         "-shortest", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28",
-        "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
-        "-ar", str(AQA.DELIVERY_SAMPLE_RATE),
+        *DC.delivery_audio_encode_args(),
         str(path),
     ])
 

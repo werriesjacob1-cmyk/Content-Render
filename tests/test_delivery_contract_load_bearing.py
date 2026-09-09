@@ -62,15 +62,14 @@ def _capture_factory_mix(tp_target):
 
 def test_changing_the_shared_target_changes_the_FACTORY_command():
     baseline = _capture_factory_mix(DC.DELIVERY_TRUE_PEAK_TARGET_DB)
-    check(f"TP={DC.DELIVERY_TRUE_PEAK_TARGET_DB}" in baseline,
-          f"the factory's real command carries the shared target "
-          f"(TP={DC.DELIVERY_TRUE_PEAK_TARGET_DB})")
+    check("limit=0.7499" in baseline,
+          "the factory's real command carries the shared peak target as a limiter")
     moved = _capture_factory_mix(-7.25)
-    check("TP=-7.25" in moved,
+    check("limit=0.4340" in moved,
           "moving the shared constant moves the factory's constructed filter -- "
           "the target is wired in, not merely declared beside it")
-    check("TP=-1.5" not in moved,
-          "and no hard-coded -1.5 survives in the factory mastering command")
+    check("alimiter" in moved,
+          "and the peak ceiling is enforced by a dedicated limiter stage")
     check("-ar 48000" in moved and "-b:a 128k" in moved,
           "the same command still carries the shared rate and bitrate")
 
@@ -83,7 +82,7 @@ def test_changing_the_shared_target_changes_the_RENDERER_filter():
     literal filter, and the function it calls responds to the constant.
     """
     src = (ROOT / "main.py").read_text(encoding="utf-8")
-    check("_LOUDNORM = delivery_loudnorm_filter()" in src,
+    check("_LOUDNORM = delivery_master_filter()" in src,
           "the renderer's mastering filter comes from the shared contract")
     check(not re.search(r'_LOUDNORM\s*=\s*["\']loudnorm', src),
           "the renderer holds no literal loudnorm string of its own")
@@ -91,11 +90,12 @@ def test_changing_the_shared_target_changes_the_RENDERER_filter():
     orig = DC.DELIVERY_TRUE_PEAK_TARGET_DB
     try:
         DC.DELIVERY_TRUE_PEAK_TARGET_DB = -9.5
-        check(DC.delivery_loudnorm_filter() == "loudnorm=I=-14:TP=-9.5:LRA=11",
-              "the function the renderer calls tracks the shared constant")
+        check("limit=0.3350" in DC.delivery_master_filter(),
+              "the function the renderer calls tracks the shared constant "
+              "(-9.5 dBFS -> limit=0.3350)")
     finally:
         DC.DELIVERY_TRUE_PEAK_TARGET_DB = orig
-    check(f"TP={orig}" in DC.delivery_loudnorm_filter(), "and is restored afterwards")
+    check("limit=0.7499" in DC.delivery_master_filter(), "and is restored afterwards")
 
 
 def test_no_active_finishing_path_still_hard_codes_a_delivery_target():
@@ -132,7 +132,7 @@ def test_the_measurement_pass_is_deliberately_not_the_delivery_filter():
     # comment explaining why deliberately names the function it must not call.
     code = "\n".join(re.sub(r"#.*$", "", ln) for ln in body.splitlines())
     check("print_format=json" in code, "the analysis pass is still an analysis pass")
-    check("delivery_loudnorm_filter()" not in code,
+    check("delivery_master_filter()" not in code,
           "measurement is NOT built from the delivery target -- they are different jobs")
     check("MEASUREMENT, not delivery" in body,
           "and the reason is stated where the next reader will see it")
