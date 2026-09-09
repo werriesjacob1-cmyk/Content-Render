@@ -26,8 +26,6 @@ on:
         options:
           - "YES"
           - "NO"
-  # One-shot bridge for environments that cannot POST workflow_dispatch.
-  # Only a main commit that touches this exact inert marker can trigger it.
   push:
     branches:
       - main
@@ -48,6 +46,7 @@ jobs:
     timeout-minutes: 45
     env:
       PAGE: science
+      CONTENT_RENDER_LEARNING_LEDGER: state/quality_learning.jsonl
     steps:
       - name: Checkout exact trusted main SHA
         uses: actions/checkout@v4
@@ -66,6 +65,28 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Restore durable quality-learning ledger
+        id: restore-learning
+        uses: actions/cache/restore@v4
+        with:
+          path: state/quality_learning.jsonl
+          key: quality-learning-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            quality-learning-
+
+      - name: Prepare learning state
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p state
+          touch "$CONTENT_RENDER_LEARNING_LEDGER"
+          python - <<'PY'
+          import quality_learning_ledger as L, os
+          p=os.environ['CONTENT_RENDER_LEARNING_LEDGER']
+          rows=L.read_records(p, strict=True)
+          print(f"restored_learning_records={len(rows)}")
+          PY
 
       - name: Ensure ffmpeg and fonts
         shell: bash
@@ -145,16 +166,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # The default flagship path proves the FACTORY: generic topic
-          # selection into the generic Writer V2.1 path. --prefer-evidence-seed
-          # is deliberately NOT passed here -- that seed is hand-authored for
-          # one specific topic, so preferring it would certify a handcrafted
-          # input rather than the system that has to write every future video.
-          # It remains available in quality_certification_retry.py for explicit
-          # manual/forensic reruns and regression reproduction.
-          # The canonical independent semantic, traceability, validate(),
-          # quality, evidence-bridge and session gates decide whether a
-          # manifest exists either way.
           python quality_certification_retry.py \
             --topic "$TOPIC_ID" \
             --out artifacts/quality_certification \
@@ -215,9 +226,39 @@ jobs:
               -of default=noprint_wrappers=1 out/final.mp4 || true
             cp out/final.mp4 artifacts/quality_certification/render/final.mp4
           fi
-          for f in cover.jpg qa_report.json audio_qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json post.json; do
+          for f in cover.jpg qa_report.json audio_qa_report.json holistic_qa_report.json targeted_repair_plan.json scene_timeline.json quality_asset_provenance.json visual_bible.json final_asset_lineage.json post.json; do
             test -f "out/$f" && cp "out/$f" "artifacts/quality_certification/render/$f" || true
           done
+
+      - name: Capture this attempt into durable learning
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_learning_capture.py \
+            --cert-dir artifacts/quality_certification \
+            --ledger "$CONTENT_RENDER_LEARNING_LEDGER" \
+            --run-identity "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p artifacts/quality_certification/learning
+          cp "$CONTENT_RENDER_LEARNING_LEDGER" artifacts/quality_certification/learning/quality_learning.jsonl
+          python - <<'PY' > artifacts/quality_certification/learning/compact_lessons.json
+          import json, os
+          import quality_learning_ledger as L
+          rows=L.read_records(os.environ['CONTENT_RENDER_LEARNING_LEDGER'], strict=True)
+          print(json.dumps({
+              'schema':'content-render-learning-snapshot-v1',
+              'record_count':len(rows),
+              'recent_treatments':L.recent_treatments(rows, n=10),
+              'failed_pairs':{f'{a}::{b}':n for (a,b),n in L.failed_pair_counts(rows).items()},
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Save durable quality-learning ledger
+        if: ${{ always() }}
+        uses: actions/cache/save@v4
+        with:
+          path: state/quality_learning.jsonl
+          key: quality-learning-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload private certification package
         if: ${{ always() }}
@@ -234,4 +275,4 @@ jobs:
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain | grep -E '^.. (docs/|releases/)' || true)"
-          echo "PRIVATE CERTIFICATION COMPLETE — artifact only; no Release/Publer/publish step exists"
+          echo "PRIVATE CERTIFICATION COMPLETE — artifact/cache only; no Release/Publer/publish step exists"
