@@ -16,6 +16,51 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-09-08/09 — THE WRITER ROOT CAUSE (read this before touching the Writer)
+Flagship certification attempts #1-#5 all failed at the Writer stage. **The cause was
+not model weakness and not the quality gates: the Writer V2.1 prompt never stated a
+word budget at all.** `LENGTH_HINT`/`WORDS_PER_SCENE` only ever reached the LEGACY
+`build_prompt()` (generate.py); `writer_v2.build_writer_prompt_v2()` — the prompt
+certification actually uses — stated no total-word budget and no per-scene cap, while
+`validate()` rejected the output against both.
+
+Replaying all 4 preserved rejection artifacts (**13 candidates / 36 rounds**, now
+committed as fixtures): **18 of 36 rounds (50%) died on pure length arithmetic** —
+12 total-word (109-141 words vs a 108 hard cap) + 5 per-scene (28-31 vs a 25 cap) +
+1 hook length. The other 16 were craft defects (repetition, fake interrogatives,
+formal connectors, restated facts).
+
+**The fix is to STATE the budget, not widen it.** `WORD_LO/HI`, `WORD_HARD_LO/HI`,
+`SCENE_WORD_CAP` are unchanged. `generate.writer_length_contract()` emits the budget
+from the same constants `validate()` enforces (writer_v2 cannot import generate — the
+dependency runs the other way — so it is INJECTED by the orchestrator). A test asserts
+what the prompt SAYS equals what validate() ENFORCES; that drift is where this whole
+class of bug came from.
+
+**Durable lessons for future sessions:**
+- **`writer_replay.py` + `tests/fixtures/writer_corpus/`**: replay the real rejection
+  corpus offline, at $0. USE THIS before spending a paid run on any Writer/prompt idea.
+  Fixtures are real historical output — never edit them to make a test pass.
+- **Repair-budget starvation was MEASURED AND DISPROVEN.** Only 1 of 18 length-blocked
+  rounds had Tier-1 clean; a terminal mechanical salvage would rescue 0 of 13 attempts.
+  Do NOT build separate craft/mechanical repair budgets — the corpus says it does
+  nothing. Pinned by a test so it is not re-litigated.
+- **Provider reality (2026-09-08)**: Gemini is the ONLY working writer. OpenRouter 402,
+  **Cerebras now 402 too** (it is no longer a free backstop — this doc used to say it
+  was), Mistral 429, Groq 413 (its 8000 TPM ceiling is below our request size).
+- **Groq eligibility must count the reserved output budget** (`max_tokens`), not just
+  the prompt: the writer prompt is only ~2.3k tokens but Groq reported "Requested
+  10126". Prompt bloat is NOT a real problem (static instructions ~1.6k, full prompt
+  ~2.3k) — do not go on a compaction hunt.
+- **The connector CAN POST `workflow_dispatch`** now (used successfully for flagship
+  run #5). The marker-file push bridge is no longer the only option.
+- Downstream render/QA seam is now proven offline (`tests/test_downstream_factory_smoke.py`)
+  and found NO defects; ffmpeg is unavailable in the agent environment, so encoding and
+  audio QA remain unproven until a real render.
+
+**OPEN**: the prompt now states the budget; whether Gemini OBEYS it can only be settled
+by one paid run. That is the single question the next flagship run should answer.
+
 ## Session 2026-09-03 — ElevenLabs subscription canceled
 User canceled their ElevenLabs subscription (informed directly, not diagnosed from a
 render log). **No code fix required.** `main.py`'s `tts_full()` already has a graceful

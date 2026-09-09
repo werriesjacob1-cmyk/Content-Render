@@ -86,18 +86,35 @@ def generate_candidate_v21(
     dossier = G.research_dossier(fact) if fact else []
     grounded = bool(dossier)
     claim_inventory = W.build_claim_inventory(fact, dossier_facts=dossier, grounded=grounded)
+    # The writer is told the SAME word budget validate() enforces. Without this
+    # the prompt stated no total-word or per-scene budget at all, and 17 of 36
+    # replayed flagship rounds died on limits the model was never given.
+    treatment_beats = len((W.TREATMENTS.get(treatment) or {}).get("beats") or [])
+    length_contract = G.writer_length_contract(spoken_lines=treatment_beats + 2)
     prompt = W.build_writer_prompt_v2(
         treatment,
         claim_inventory,
         avoid_topics=avoid_topics,
         visual_evidence=(fact or {}).get("queries"),
+        length_contract=length_contract,
     )
+    # The budget must ride on EVERY generating call, not just the first. A
+    # repair round rewrites narration, so a repair prompt that omits the budget
+    # simply re-creates the over-length draft the round was meant to fix -- and
+    # the corpus shows exactly that: rounds 1 and 2 kept failing word count
+    # AFTER a repair. Appended LAST so it wins over any conflicting wording.
+    repair_contract_block = W.render_length_contract(length_contract)
     calls: list[dict[str, Any]] = []
     debug: dict[str, Any] = {
         "orchestrator": "writer_v21_semantic_failclosed_v1",
         "treatment": treatment,
         "prompt_chars": len(prompt),
         "prompt_tokens_est": G.estimate_tokens(prompt),
+        "runtime_length_mode": length_contract["mode"],
+        "runtime_word_target": [length_contract["word_lo"], length_contract["word_hi"]],
+        "runtime_word_hard": [length_contract["word_hard_lo"], length_contract["word_hard_hi"]],
+        "runtime_scene_word_cap": length_contract["scene_word_cap"],
+        "length_contract_on_repair_calls": True,
         "grounded": grounded,
         "provenance_note": claim_inventory.get("provenance_note"),
         "claim_count": len(claim_inventory.get("claims") or []),
@@ -282,7 +299,7 @@ def generate_candidate_v21(
 
         repair_prompt = R.build_repair_prompt(
             writer_out, claim_inventory, treatment, plan, stalled=stalled
-        )
+        ) + repair_contract_block
         repair_raw, _ = G._v2_structured_call(
             repair_prompt, R.REPAIR_SCHEMA, "repair_output", calls
         )

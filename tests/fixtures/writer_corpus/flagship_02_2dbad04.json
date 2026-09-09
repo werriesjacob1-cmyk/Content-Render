@@ -1,0 +1,2538 @@
+{
+  "source_run_id": 34257803289,
+  "source_head_sha": "2dbad043ee733a81838bfa97f42a76ae5fff5357",
+  "flagship_attempt": 2,
+  "topic_hint": "greenland_shark",
+  "evidence_seed_enabled": false,
+  "accepted": false,
+  "attempt_count": 3,
+  "attempts": [
+    {
+      "accepted": false,
+      "attempt": 1,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.42314635,
+            "completion_tokens": 1155,
+            "completion_tokens_details": {
+              "reasoning_tokens": 709
+            },
+            "prompt_time": 0.086025831,
+            "prompt_tokens": 1781,
+            "queue_time": 0.145888968,
+            "total_time": 2.509172181,
+            "total_tokens": 2936
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.494835014,
+            "completion_tokens": 1184,
+            "completion_tokens_details": {
+              "reasoning_tokens": 712
+            },
+            "prompt_time": 0.101675482,
+            "prompt_tokens": 1980,
+            "queue_time": 0.248189167,
+            "total_time": 2.596510496,
+            "total_tokens": 3164
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.092477114,
+            "completion_tokens": 1021,
+            "completion_tokens_details": {
+              "reasoning_tokens": 712
+            },
+            "prompt_time": 0.072351735,
+            "prompt_tokens": 895,
+            "queue_time": 0.170382803,
+            "total_time": 1.164828849,
+            "total_tokens": 1916
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.720615514,
+            "completion_tokens": 1307,
+            "completion_tokens_details": {
+              "reasoning_tokens": 791
+            },
+            "prompt_time": 0.112982536,
+            "prompt_tokens": 2070,
+            "queue_time": 0.144997217,
+            "total_time": 2.83359805,
+            "total_tokens": 3377
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.8723827,
+            "completion_tokens": 798,
+            "completion_tokens_details": {
+              "reasoning_tokens": 503
+            },
+            "prompt_time": 0.053473254,
+            "prompt_tokens": 907,
+            "queue_time": 0.003191725,
+            "total_time": 0.925855954,
+            "total_tokens": 1705
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.395541251,
+            "completion_tokens": 1252,
+            "completion_tokens_details": {
+              "reasoning_tokens": 912
+            },
+            "prompt_time": 0.148972391,
+            "prompt_tokens": 2027,
+            "queue_time": 0.048808181,
+            "total_time": 1.544513642,
+            "total_tokens": 3279
+          }
+        }
+      ],
+      "error": null,
+      "repair_rounds": 2,
+      "rounds": [
+        {
+          "beats": [
+            "Your dinner could share a timeline with a nation",
+            "You think the ocean is just a cold, empty expanse?",
+            "But beneath that silence lies a Greenland shark moving slower than centuries.",
+            "The Greenland shark grows roughly a centimeter each year, taking about 150 years to become an adult.",
+            "Its metabolism lets it survive for around 400 years, making it the longest-lived vertebrate on Earth.",
+            "Because it reproduces so slowly, any drop in its numbers takes centuries to recover.",
+            "So the fate of this ancient predator quietly determines how long our oceans retain living history.",
+            "When a creature outlives countries, its survival mirrors the endurance of our own world."
+          ],
+          "critic_avg": 4.555555555555555,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "your dinner could share a timeline with a nation",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "the ocean is a cold, empty expanse",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "shark moving slower than centuries",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "its metabolism lets it survive for around 400 years",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "any drop in its numbers takes centuries to recover",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "CONNECTIVE_OR_EDITORIAL"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The opening line is confusing and relies on unsupported metaphorical language, failing to clearly convey the longevity comparison that should hook the audience.",
+            "must_preserve": [
+              "the idea that the creature outlives nations"
+            ],
+            "repair_type": "HOOK",
+            "scores": {
+              "claim_traceability": 3,
+              "clarity": 5,
+              "cliche_ai_smell": 6,
+              "escalation": 4,
+              "hook_strength": 3,
+              "payoff": 5,
+              "spoken_naturalness": 4,
+              "structural_distinctiveness": 5,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              0
+            ]
+          },
+          "hook": "Your dinner could share a timeline with a nation",
+          "mechanical_hard_count": 2,
+          "mechanical_violation_count": 38,
+          "payoff": "When a creature outlives countries, its survival mirrors the endurance of our own world.",
+          "repair_plan": {
+            "diagnosis": "beat 0: semantic_unsupported_addition 'your dinner could share a timeline with a nation'; beat 1: semantic_unsupported_addition 'the ocean is a cold, empty expanse'; beat 2: semantic_unsupported_addition 'shark moving slower than centuries'; beat 3: unsupported_entity 'The Greenland'; beat 4: semantic_unsupported_addition 'its metabolism lets it survive for around 400 years'; beat 4: unsupported_entity 'Earth'; beat 5: semantic_unsupported_addition 'any drop in its numbers takes centuries to rec",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "tier": 1
+          },
+          "round": 0,
+          "score": {
+            "clarity": 9.0,
+            "coherence": 9.0,
+            "escalation": 5.0,
+            "hook": 3.0,
+            "overall": 5.57,
+            "payoff": 3.0,
+            "rewatch": 6.0,
+            "surprise": 4.0
+          },
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 5,
+          "stalled_going_in": false,
+          "validate_err": null,
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'dinner' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "dinner"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'share' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "share"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'timeline' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "timeline"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'with' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "with"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "cold"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "empty"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "expanse"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "ocean"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "think"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'beneath' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "beneath"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'centuries' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "centuries"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lies' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lies"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'silence' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "silence"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'slower' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "slower"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "entity 'The Greenland' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "The Greenland"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'Earth' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Earth"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'earth' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "earth"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'metabolism' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "metabolism"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'survive' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "survive"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'centuries' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "centuries"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'numbers' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "numbers"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'recover' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "recover"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'reproduces' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reproduces"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'ancient' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ancient"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'determines' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "determines"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'fate' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "fate"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'history' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "history"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'oceans' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "oceans"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'predator' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "predator"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "A Greenland shark alive today may have been born before the United States existed.",
+            "The Arctic ocean houses Greenland sharks that may have been born before the United States existed.",
+            "These sharks grow only about a centimeter a year and do not reach adulthood until around 150 years old.",
+            "The Greenland shark grows roughly a centimeter each year and takes about 150 years to become an adult.",
+            "Its metabolism lets it survive for around 400 years, making it the longest-lived vertebrate with a backbone.",
+            "Its slow growth and late maturity mean population changes can take a long time.",
+            "So the fate of this ancient predator quietly determines how long our oceans retain living history.",
+            "When a creature outlives countries, its survival mirrors the endurance of our own world."
+          ],
+          "critic_avg": 6.555555555555555,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "uses 'today' and 'been' not present in evidence",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "states 'The Arctic ocean houses' sharks, which is not in evidence",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "attributes longevity to metabolism and survival wording not in evidence",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "claims population changes take a long time, not supported by evidence",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "asserts predator fate determines ocean's living history, not in evidence",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The middle beats repeat the same growth‑and‑lifespan fact without increasing tension; the script stalls and fails to build a stronger narrative arc.",
+            "must_preserve": [
+              "sharks grow about 1 cm per year",
+              "lifespan around 400 years"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 5,
+              "clarity": 8,
+              "cliche_ai_smell": 5,
+              "escalation": 6,
+              "hook_strength": 7,
+              "payoff": 7,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 6,
+              "visual_tellability": 8
+            },
+            "target_beats": [
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "hook": "A Greenland shark alive today may have been born before the United States existed.",
+          "mechanical_hard_count": 2,
+          "mechanical_violation_count": 31,
+          "payoff": "When a creature outlives countries, its survival mirrors the endurance of our own world.",
+          "repair_plan": {
+            "diagnosis": "beat 0: semantic_unsupported_addition \"uses 'today' and 'been' not present in evidence\"; beat 1: semantic_unsupported_addition \"states 'The Arctic ocean houses' sharks, which is not in evidence\"; beat 1: unsupported_entity 'The Arctic'; beat 3: unsupported_entity 'The Greenland'; beat 4: semantic_unsupported_addition 'attributes longevity to metabolism and survival wording not in evidence'; beat 5: semantic_unsupported_addition 'claims population changes take a long time, not supported by eviden",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              3,
+              4,
+              5,
+              6
+            ],
+            "tier": 1
+          },
+          "round": 1,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 5,
+          "stalled_going_in": false,
+          "validate_err": "script word count 128 out of range (target 78-98, hard 68-108, mode short)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'been' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "been"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'today' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "today"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'The Arctic' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "The Arctic"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'been' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "been"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'houses' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "houses"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'ocean' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ocean"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'adulthood' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "adulthood"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "entity 'The Greenland' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "The Greenland"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'metabolism' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "metabolism"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'survive' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "survive"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'with' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "with"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'growth' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "growth"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'maturity' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "maturity"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'population' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "population"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'slow' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "slow"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'take' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "take"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'time' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "time"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'ancient' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ancient"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'determines' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "determines"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'fate' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "fate"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'history' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "history"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'oceans' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "oceans"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'predator' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "predator"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'retain' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "retain"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'countries' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "countries"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'creature' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "creature"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'endurance' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "endurance"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'mirrors' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "mirrors"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'outlives' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outlives"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'survival' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "survival"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "A Greenland shark swimming in the Arctic right now may have been born before the United States existed.",
+            "A Greenland shark swimming in the Arctic right now may have been born before the United States existed.",
+            "These sharks grow only about a centimeter a year and do not reach adulthood until around 150 years old.",
+            "They grow only about a centimeter a year and do not become adults until they are around 150 years old.",
+            "They can live around 400 years, making them the longest-lived animals with a backbone.",
+            "Their slow growth and late maturity are notable characteristics.",
+            "These long-lived sharks serve as living records of ocean history.",
+            "When a creature outlives countries, its survival mirrors the endurance of our own world."
+          ],
+          "critic_avg": 5.888888888888889,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "slow growth and late maturity are notable characteristics",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "living records of ocean history",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "its survival mirrors the endurance of our own world",
+                "verdict": "UNSUPPORTED_ADDITION"
+              }
+            ],
+            "diagnosis": "Repetitive beats fail to build stakes; each beat repeats earlier information without adding new detail or increasing interest.",
+            "must_preserve": [
+              "A Greenland shark swimming in the Arctic right now may have been born before the United States existed",
+              "They can live around 400 years, making them the longest‑lived animals with a backbone"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 6,
+              "clarity": 8,
+              "cliche_ai_smell": 3,
+              "escalation": 6,
+              "hook_strength": 7,
+              "payoff": 5,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 7
+            },
+            "target_beats": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "hook": "A Greenland shark swimming in the Arctic right now may have been born before the United States existed.",
+          "mechanical_hard_count": 0,
+          "mechanical_violation_count": 19,
+          "payoff": "When a creature outlives countries, its survival mirrors the endurance of our own world.",
+          "repair_plan": {
+            "diagnosis": "beat 5: semantic_unsupported_addition 'slow growth and late maturity are notable characteristics'; beat 6: semantic_unsupported_addition 'living records of ocean history'; beat 7: semantic_unsupported_addition 'its survival mirrors the endurance of our own world'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              5,
+              6,
+              7
+            ],
+            "tier": 1
+          },
+          "round": 2,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 3,
+          "stalled_going_in": false,
+          "validate_err": "hook length 18 words out of range",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'been' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "been"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'been' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "been"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'adulthood' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "adulthood"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'with' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "with"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'characteristics' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "characteristics"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'growth' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "growth"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'maturity' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "maturity"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'notable' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "notable"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'slow' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "slow"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'history' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "history"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'ocean' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ocean"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'records' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "records"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'countries' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "countries"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'creature' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "creature"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'endurance' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "endurance"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'mirrors' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "mirrors"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'outlives' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outlives"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'survival' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "survival"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'world' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "world"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- slow growth and late maturity are notable characteristics",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "slow growth and late maturity are notable characteristics"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- living records of ocean history",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "living records of ocean history"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- its survival mirrors the endurance of our own world",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "its survival mirrors the endurance of our own world"
+            }
+          ]
+        }
+      ],
+      "semantic_retries_used": 0,
+      "total_calls": 6,
+      "treatment": "INSIDE_THE_SYSTEM",
+      "validate_err": "hook length 18 words out of range"
+    },
+    {
+      "accepted": false,
+      "attempt": 2,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.020897946,
+            "completion_tokens": 935,
+            "completion_tokens_details": {
+              "reasoning_tokens": 603
+            },
+            "prompt_time": 0.140201573,
+            "prompt_tokens": 1781,
+            "queue_time": 0.031385637,
+            "total_time": 1.161099519,
+            "total_tokens": 2716
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": false,
+          "usage": null
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.082003103,
+            "completion_tokens": 949,
+            "completion_tokens_details": {
+              "reasoning_tokens": 496
+            },
+            "prompt_time": 0.047591814,
+            "prompt_tokens": 940,
+            "queue_time": 0.841386367,
+            "total_time": 1.129594917,
+            "total_tokens": 1889
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.24456688,
+            "completion_tokens": 1061,
+            "completion_tokens_details": {
+              "reasoning_tokens": 555
+            },
+            "prompt_time": 0.141401778,
+            "prompt_tokens": 2287,
+            "queue_time": 0.067266196,
+            "total_time": 2.385968658,
+            "total_tokens": 3348
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.584482402,
+            "completion_tokens": 426,
+            "completion_tokens_details": {
+              "reasoning_tokens": 221
+            },
+            "prompt_time": 0.056133467,
+            "prompt_tokens": 898,
+            "queue_time": 0.141114134,
+            "total_time": 0.640615869,
+            "total_tokens": 1324
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.987220729,
+            "completion_tokens": 883,
+            "completion_tokens_details": {
+              "reasoning_tokens": 562
+            },
+            "prompt_time": 0.150324341,
+            "prompt_tokens": 2249,
+            "queue_time": 0.004102787,
+            "total_time": 1.13754507,
+            "total_tokens": 3132
+          }
+        }
+      ],
+      "error": null,
+      "repair_rounds": 2,
+      "rounds": [
+        {
+          "beats": [
+            "What if the creature you see now has outlived the nation you were born in?",
+            "A Greenland shark, the longest‑lived vertebrate, glides silently through the Arctic waters.",
+            "The water thickens around it, the pressure rising as it moves deeper.",
+            "It grows only about a centimeter a year, remaining juvenile until around 150 years old.",
+            "That slow growth keeps its skin fragile, so the shark must constantly renew its outer layer to resist the cold.",
+            "When a century passes, the scales become porous, making it vulnerable to parasites.",
+            "So while the ocean moves on, this ancient shark, living around 400 years, reminds us that life can outlast our nations.",
+            "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history."
+          ],
+          "critic_avg": null,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "glides silently through the Arctic waters",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "water thickens around it and pressure rises as it moves deeper",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "craft_scores": {
+              "claim_traceability": 3,
+              "clarity": 6,
+              "cliche_ai_smell": 4,
+              "escalation": 5,
+              "hook_strength": 7,
+              "payoff": 7,
+              "spoken_naturalness": 6,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 7
+            }
+          },
+          "hook": "What if the creature you see now has outlived the nation you were born in?",
+          "mechanical_hard_count": 0,
+          "mechanical_violation_count": 40,
+          "payoff": "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history.",
+          "repair_plan": {
+            "diagnosis": "hook 'What if the creature you see now has outlived the nation you were born in?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene",
+            "must_preserve": [],
+            "repair_type": "STRUCTURAL",
+            "target_beats": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "tier": 2
+          },
+          "round": 0,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [
+            "missing semantic verdict(s) for beat_index 4,5,6,7"
+          ],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_gate_failure": "missing semantic verdict(s) for beat_index 4,5,6,7",
+          "semantic_verified": false,
+          "semantic_violation_count": 0,
+          "stalled_going_in": false,
+          "validate_err": "hook 'What if the creature you see now has outlived the nation you were born in?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'born' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "born"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'creature' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "creature"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'nation' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "nation"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'outlived' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outlived"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'were' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "were"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'glides' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "glides"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'silently' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "silently"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'waters' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "waters"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "deeper"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "pressure"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "rising"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "thickens"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "water"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'juvenile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "juvenile"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "cold"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "fragile"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "growth"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "layer"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "outer"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "renew"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "resist"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "shark"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "skin"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "slow"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "become"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "century"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "parasites"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "passes"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "porous"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "The Greenland shark, living up to 400 years, has outlived the nation you were born in.",
+            "A Greenland shark, the longest‑lived vertebrate, glides silently through the Arctic waters.",
+            "The water thickens around it, the pressure rising as it moves deeper.",
+            "It grows only about a centimeter a year, remaining juvenile until around 150 years old.",
+            "That slow growth keeps its skin fragile, so the shark must constantly renew its outer layer to resist the cold.",
+            "When a century passes, the scales become porous, making it vulnerable to parasites.",
+            "So while the ocean moves on, this ancient shark, living around 400 years, reminds us that life can outlast our nations.",
+            "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history."
+          ],
+          "critic_avg": 5.777777777777778,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "shark glides silently through Arctic waters",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "water thickens, pressure rises as it moves deeper",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "slow growth keeps skin fragile, must constantly renew outer layer",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "scales become porous, making it vulnerable to parasites",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The script adds several unfounded descriptive claims that are not supported by the cited evidence, causing factual drift and a weak escalation curve.",
+            "must_preserve": [
+              "Greenland shark can live up to 400 years",
+              "grows about a centimeter per year",
+              "remains juvenile until around 150 years old"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 8,
+              "cliche_ai_smell": 5,
+              "escalation": 4,
+              "hook_strength": 7,
+              "payoff": 7,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              1,
+              2,
+              4,
+              5
+            ]
+          },
+          "hook": "The Greenland shark, living up to 400 years, has outlived the nation you were born in.",
+          "mechanical_hard_count": 1,
+          "mechanical_violation_count": 37,
+          "payoff": "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history.",
+          "repair_plan": {
+            "diagnosis": "beat 0: unsupported_entity 'The Greenland'; beat 1: semantic_unsupported_addition 'shark glides silently through Arctic waters'; beat 2: semantic_unsupported_addition 'water thickens, pressure rises as it moves deeper'; beat 4: semantic_unsupported_addition 'slow growth keeps skin fragile, must constantly renew outer layer'; beat 5: semantic_unsupported_addition 'scales become porous, making it vulnerable to parasites'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              2,
+              4,
+              5
+            ],
+            "tier": 1
+          },
+          "round": 1,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 4,
+          "stalled_going_in": false,
+          "validate_err": "script word count 126 out of range (target 78-98, hard 68-108, mode short)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "entity 'The Greenland' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "The Greenland"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'outlived' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outlived"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'were' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "were"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'glides' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "glides"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'silently' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "silently"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'waters' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "waters"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'deeper' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "deeper"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'pressure' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "pressure"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'rising' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "rising"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'thickens' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "thickens"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'water' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "water"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'juvenile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "juvenile"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'cold' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "cold"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'fragile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "fragile"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'growth' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "growth"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'layer' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "layer"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'outer' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outer"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'renew' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "renew"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'resist' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "resist"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'skin' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "skin"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'slow' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "slow"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'become' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "become"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'century' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "century"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'parasites' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "parasites"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'passes' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "passes"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'porous' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "porous"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'scales' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "scales"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'vulnerable' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "vulnerable"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'ancient' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ancient"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "The Greenland shark, living up to 400 years, has outlived the nation you were born in.",
+            "A Greenland shark, the longest‑lived vertebrate, moves through the Arctic waters.",
+            "It moves through the Arctic waters.",
+            "It grows only about a centimeter a year, remaining juvenile until around 150 years old.",
+            "It grows only about a centimeter a year, remaining juvenile until around 150 years old.",
+            "It can live around 400 years.",
+            "So while the ocean moves on, this ancient shark, living around 400 years, reminds us that life can outlast our nations.",
+            "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history."
+          ],
+          "critic_avg": 5.555555555555555,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "ocean moves on",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "ocean may be fleeting",
+                "verdict": "UNSUPPORTED_ADDITION"
+              }
+            ],
+            "diagnosis": "The script repeats key facts unnecessarily and introduces unsupported claims about the ocean, reducing clarity and credibility.",
+            "must_preserve": [
+              "The Greenland shark, living up to 400 years",
+              "It grows only about a centimeter a year",
+              "It can live around 400 years",
+              "It outlives nations"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 5,
+              "clarity": 7,
+              "cliche_ai_smell": 5,
+              "escalation": 5,
+              "hook_strength": 6,
+              "payoff": 6,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 5
+            },
+            "target_beats": [
+              2,
+              4,
+              6,
+              7
+            ]
+          },
+          "hook": "The Greenland shark, living up to 400 years, has outlived the nation you were born in.",
+          "mechanical_hard_count": 1,
+          "mechanical_violation_count": 17,
+          "payoff": "The ocean may be fleeting, but the Greenland shark shows that some lives endure beyond human history.",
+          "repair_plan": {
+            "diagnosis": "beat 0: unsupported_entity 'The Greenland'; beat 6: semantic_unsupported_addition 'ocean moves on'; beat 7: semantic_unsupported_addition 'ocean may be fleeting'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              6,
+              7
+            ],
+            "tier": 1
+          },
+          "round": 2,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 2,
+          "stalled_going_in": false,
+          "validate_err": "scenes 4 and 5 too similar (repetition)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "entity 'The Greenland' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "The Greenland"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'outlived' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outlived"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'were' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "were"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'waters' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "waters"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'waters' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "waters"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'juvenile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "juvenile"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'juvenile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "juvenile"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'ancient' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ancient"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'life' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "life"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'ocean' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ocean"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'endure' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "endure"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'fleeting' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "fleeting"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'history' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "history"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004",
+                "base_005"
+              ],
+              "detail": "term 'ocean' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "ocean"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- ocean moves on",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "ocean moves on"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- ocean may be fleeting",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "ocean may be fleeting"
+            }
+          ]
+        }
+      ],
+      "semantic_retries_used": 0,
+      "total_calls": 6,
+      "treatment": "INSIDE_THE_SYSTEM",
+      "validate_err": "scenes 4 and 5 too similar (repetition)"
+    },
+    {
+      "accepted": false,
+      "attempt": 3,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "error": "HTTP Error 402: Payment Required",
+          "model": null,
+          "provider": null,
+          "structured": false,
+          "usage": null
+        }
+      ],
+      "error": "initial draft call failed on every provider",
+      "repair_rounds": null,
+      "rounds": [],
+      "semantic_retries_used": 0,
+      "total_calls": 1,
+      "treatment": "INSIDE_THE_SYSTEM",
+      "validate_err": null
+    }
+  ]
+}
