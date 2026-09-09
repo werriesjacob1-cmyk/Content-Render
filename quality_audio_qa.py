@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Local final-audio mastering QA for private Content Render certification.
 
-The finished MP4 already passes through narration-first mixing and loudnorm in
-``main.py``. This module independently measures the *actual encoded artifact* so
-an ffmpeg/mux/filter regression cannot silently ship quiet, clipped, missing, or
-mostly-dead audio.
+The finished MP4 already passes through narration-first mixing and the shared
+measured master (``delivery_master``) in ``main.py``. This module independently
+measures the *actual encoded artifact* so an ffmpeg/mux/filter regression cannot
+silently ship quiet, clipped, missing, or mostly-dead audio.
 
 No network or model call is made. The gate measures:
 - audio stream presence / codec / sample rate / channels;

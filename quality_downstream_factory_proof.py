@@ -11,7 +11,7 @@ Content Render downstream primitives that do not require network/provider calls:
 - ``main.build_ass`` karaoke-caption generation;
 - real ASS caption burn;
 - ``main._ensure_music_bed`` (committed bed / procedural fallback);
-- narration/music sidechain mix + loudnorm;
+- narration/music sidechain mix + the shared measured master;
 - actual ``out/final.mp4``;
 - ``quality_audio_qa`` against that encoded MP4;
 - measured scene timeline via ``quality_science_render``;
