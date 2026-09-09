@@ -3898,15 +3898,36 @@ def _v2_structured_call(prompt, schema, schema_name, debug_calls):
               f"~{est_tokens} est. tokens vs groq's {_provider_token_ceiling('groq')}-token "
               f"request ceiling -- STRUCTURAL (HTTP 413), not a throttle, so no amount of "
               f"backoff would make it succeed; going straight to the call_groq chain")
-    if GROQ_KEY and groq_fits:
+    # Health, not just capacity. This path calls Groq DIRECTLY rather than
+    # through call_groq/_walk, so without its own check it is a third door into
+    # a model already known to be cooling -- and it is the door the production
+    # orchestrator uses for every draft, critic and repair round.
+    groq_cooling, groq_cool_s = (should_skip_provider("groq", MODEL_CHAIN[0])
+                                 if (GROQ_KEY and groq_fits and MODEL_CHAIN) else (False, 0.0))
+    if groq_cooling:
+        print(f"  [writer-v2] skipping groq structured output for {schema_name}: "
+              f"{MODEL_CHAIN[0]} is rate-limited, {groq_cool_s:.1f}s of cooldown left -- "
+              f"going straight to the call_groq chain")
+    if GROQ_KEY and groq_fits and not groq_cooling:
         model0 = MODEL_CHAIN[0]
         try:
             raw, usage = _call_openai_compat_structured(
                 "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, model0, prompt,
                 schema, schema_name=schema_name)
+            note_provider_healthy("groq", model0)
             debug_calls.append({"provider": "groq", "model": model0, "usage": usage, "structured": True})
             return raw, True
         except Exception as e:  # noqa: BLE001
+            # A 429 here is the same authoritative evidence as one raised inside
+            # _walk, so it starts the same cooldown -- otherwise the immediate
+            # call_groq fallback below walks straight back into this model.
+            if isinstance(e, urllib.error.HTTPError) and e.code == 429:
+                try:
+                    detail = e.read().decode("utf-8", "replace")[:300]
+                except Exception:  # noqa: BLE001
+                    detail = ""
+                note_provider_rate_limited("groq", model0,
+                                           retry_after_s=_parse_retry_secs(detail))
             print(f"  [writer-v2] structured output unavailable/failed for {schema_name} ({e}); "
                   f"falling back to call_groq chain")
     try:

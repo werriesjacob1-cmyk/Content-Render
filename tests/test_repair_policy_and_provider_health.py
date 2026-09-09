@@ -247,6 +247,30 @@ def test_health_evidence_is_kept_out_of_debug_calls():
           "it records to the separate provider-health channel instead")
 
 
+def test_all_three_groq_entry_points_consult_health():
+    """There are THREE independent doors into Groq, not two.
+
+    _walk (the fallback chain), the certification strict loop, and
+    _v2_structured_call -- which calls Groq directly and is the door the
+    production orchestrator uses for every draft, critic and repair round. A
+    cooldown honoured by only some of them is not a cooldown.
+    """
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    gen = open(os.path.join(root, "generate.py"), encoding="utf-8").read()
+    cert = open(os.path.join(root, "quality_writer_provider_resilience.py"),
+                encoding="utf-8").read()
+
+    walk = gen.split("def _walk(", 1)[1].split("return None, None, None", 1)[0]
+    structured = gen.split("def _v2_structured_call(", 1)[1].split("\ndef ", 1)[0]
+    for name, src in (("_walk", walk), ("_v2_structured_call", structured),
+                      ("certification strict loop", cert)):
+        check("should_skip_provider(" in src, f"{name} checks provider health")
+        check("note_provider_rate_limited(" in src,
+              f"{name} records its own 429s into the shared session state")
+    check("note_provider_healthy(" in structured,
+          "_v2_structured_call clears the cooldown when Groq answers successfully")
+
+
 def test_the_chain_consults_health_before_spending_a_request():
     src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                             "generate.py"), encoding="utf-8").read()
@@ -276,5 +300,6 @@ if __name__ == "__main__":
     test_9_a_provider_recovers_and_is_never_permanently_disabled()
     test_10_every_skip_and_recovery_is_recorded()
     test_health_evidence_is_kept_out_of_debug_calls()
+    test_all_three_groq_entry_points_consult_health()
     test_the_chain_consults_health_before_spending_a_request()
     print("repair policy + provider health tests: PASS")
