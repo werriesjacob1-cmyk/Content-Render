@@ -39,16 +39,31 @@ MIN_SAMPLE_RATE = 32000
 # undetected until a CI artifact was probed, so it is a measured gate now.
 DELIVERY_SAMPLE_RATE = 48000
 MAX_SAMPLE_RATE = DELIVERY_SAMPLE_RATE
-# Pinning 48 kHz alone made true peak jump from -1.50 to +0.07 dB -- i.e. the
-# mastering gate's own ceiling was breached. Measured, not reasoned: at 48 kHz
-# the AAC encoder was bitrate-starved at 96 kbit/s and its coding error overshot
-# the limited signal by ~1.6 dB, which the 96 kHz encode had masked by spending
-# those bits on an inaudible band instead. At 128 kbit/s the overshoot vanishes
-# (-1.49 dB, the loudnorm target) for about 1% more file. So the rate and the
-# bitrate are ONE decision and are stated together.
+# 128 kbit/s remains the measured minimum delivery rate that avoided the severe
+# coding overshoot seen when 48 kHz was first paired with 96 kbit/s. A later
+# production-realism run with real Piper speech + music proved bitrate alone is
+# NOT a complete peak guarantee: despite loudnorm targeting -1.5 dBTP, the
+# decoded AAC artifact measured +0.26 dBTP. The final artifact is what matters,
+# not the pre-encode PCM promise.
 DELIVERY_AUDIO_BITRATE = "128k"
+# Reserve explicit AAC codec headroom. The QA ceiling is -0.5 dBTP; targeting
+# -2.5 dBTP before the lossy encode leaves 2.0 dB for codec/intersample overshoot
+# while keeping the integrated loudness target at -14 LUFS. This value is shared
+# by main.py and every factory proof so the mastering target cannot drift away
+# from the artifact gate again.
+DELIVERY_TRUE_PEAK_TARGET_DB = -2.5
+DELIVERY_INTEGRATED_LUFS = -14
+DELIVERY_LRA_LU = 11
 MIN_WPM = 105.0
 MAX_WPM = 205.0
+
+
+def delivery_loudnorm_filter() -> str:
+    """Single source of truth for the renderer's final loudness filter."""
+    return (
+        f"loudnorm=I={DELIVERY_INTEGRATED_LUFS}:"
+        f"TP={DELIVERY_TRUE_PEAK_TARGET_DB}:LRA={DELIVERY_LRA_LU}"
+    )
 
 
 class AudioQAError(RuntimeError):
@@ -85,10 +100,12 @@ def probe_media(path: str) -> dict[str, Any]:
 def analyze_loudness(path: str) -> dict[str, float]:
     proc = _run([
         "ffmpeg", "-hide_banner", "-nostats", "-i", path,
-        "-vn", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-vn", "-af", delivery_loudnorm_filter() + ":print_format=json",
         "-f", "null", "-",
     ], timeout=90)
     # FFmpeg writes loudnorm JSON to stderr. Take the last object containing input_i.
+    # `input_*` is the artifact measurement; the target parameters above affect
+    # only the analysis filter's hypothetical output, not these input values.
     matches = re.findall(r"\{[^{}]*\"input_i\"[^{}]*\}", proc.stderr, re.S)
     if not matches:
         raise AudioQAError("loudnorm analysis returned no measurement JSON")
@@ -218,29 +235,29 @@ def review(video_path: str, manifest_path: str) -> dict[str, Any]:
     words = len(re.findall(r"\b\w+[\w'-]*\b", spoken_text(manifest)))
     media = probe_media(video_path)
     if not isinstance(media.get("audio"), Mapping):
-        # Still emit a useful report without trying audio filters on no-audio media.
-        return evaluate_metrics(media, {}, {"long_silence_ratio": 1.0, "long_silence_seconds": media.get("duration_s")}, words)
+        result = evaluate_metrics(
+            media,
+            {"integrated_lufs": math.nan, "true_peak_db": math.nan, "lra_lu": math.nan},
+            {"long_silence_seconds": media.get("duration_s", 0.0), "long_silence_ratio": 1.0},
+            words,
+        )
+        result["human_listen_required"] = True
+        return result
     loudness = analyze_loudness(video_path)
     silence = analyze_silence(video_path, float(media["duration_s"]))
-    report = evaluate_metrics(media, loudness, silence, words)
-    report["silence_intervals"] = silence.get("intervals") or []
-    return report
+    return evaluate_metrics(media, loudness, silence, words)
 
 
-def parse_args(argv=None):
-    p = argparse.ArgumentParser()
-    p.add_argument("--video", required=True)
-    p.add_argument("--manifest", required=True)
-    p.add_argument("--report", default="out/audio_qa_report.json")
-    return p.parse_args(argv)
-
-
-def main(argv=None) -> int:
-    args = parse_args(argv)
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="Local final-audio mastering QA")
+    ap.add_argument("--video", required=True)
+    ap.add_argument("--manifest", required=True)
+    ap.add_argument("--report", required=True)
+    args = ap.parse_args(argv)
     try:
-        report = review(args.video, args.manifest)
-    except Exception as exc:
-        report = {
+        result = review(args.video, args.manifest)
+    except Exception as exc:  # noqa: BLE001
+        result = {
             "schema": "quality-audio-qa-v1",
             "mechanical_pass": False,
             "mechanical_reasons": [f"{type(exc).__name__}: {exc}"],
@@ -248,10 +265,10 @@ def main(argv=None) -> int:
             "human_listen_required": True,
         }
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.report).write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(json.dumps(report, indent=2, sort_keys=True))
-    return 0 if report.get("mechanical_pass") is True else 1
+    Path(args.report).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0 if result.get("mechanical_pass") else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
