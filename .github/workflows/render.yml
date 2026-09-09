@@ -220,6 +220,11 @@ jobs:
             out/landscape.mp4
             out/final.mp4
             out/cover.jpg
+          # Seven encodes of the same video per successful render. With no
+          # retention set this inherited the 90-day default, which is the
+          # largest consumer of a 0.5 GB/month Actions storage allowance.
+          # A week is long enough to download and review a render.
+          retention-days: 7
             out/post.json
             out/platforms.json
             out/platform_text.json

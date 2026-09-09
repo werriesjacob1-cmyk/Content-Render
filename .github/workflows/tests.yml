@@ -219,6 +219,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: downstream-factory-proof-${{ github.sha }}
-          path: artifacts/downstream_factory_proof
+          # Evidence only. The sibling work/ directory holds scratch
+          # intermediates (per-scene mp4s, body/captioned cuts, wav slices,
+          # music loop pieces) that are regenerated on every run and are worth
+          # nothing after it -- uploading them multiplied this artifact's size
+          # for no reviewable benefit, on a 0.5 GB/month Actions storage plan.
+          path: |
+            artifacts/downstream_factory_proof/out
+            artifacts/downstream_factory_proof/proof_report.json
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
