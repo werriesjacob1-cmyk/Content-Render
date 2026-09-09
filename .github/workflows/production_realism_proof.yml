@@ -18,7 +18,7 @@ permissions:
 jobs:
   production-realism-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,6 +75,23 @@ jobs:
           test -s voices/voice.onnx
           test -s voices/voice.onnx.json
 
+      - name: Prefetch production Whisper alignment model
+        env:
+          WHISPER_MODEL: base
+        run: |
+          set -euo pipefail
+          # Production main.whisper_align() defaults to faster-whisper `base`.
+          # Fetch/model-conversion is setup, not rendering. The actual proof below
+          # runs with HF_HUB_OFFLINE=1 plus socket blocking so a hidden dependency
+          # on live model retrieval fails closed instead of being miscounted as an
+          # offline render.
+          python - <<'PY'
+          import os
+          from faster_whisper import WhisperModel
+          WhisperModel(os.environ.get('WHISPER_MODEL', 'base'), device='cpu', compute_type='int8')
+          print('whisper_model_prefetched=' + os.environ.get('WHISPER_MODEL', 'base'))
+          PY
+
       - name: Run zero-provider contract tests
         env:
           GROQ_API_KEY: ""
@@ -93,7 +110,7 @@ jobs:
           python tests/test_quality_production_realism_proof.py
           python -m py_compile quality_production_realism_proof.py
 
-      - name: Render real 1080p Piper proof
+      - name: Render real 1080p Piper + Whisper proof
         env:
           GROQ_API_KEY: ""
           GEMINI_API_KEY: ""
@@ -112,6 +129,9 @@ jobs:
           MUSIC_DUCK: "1"
           VOICE_ENGINE: "piper"
           PIPER_MODEL: ${{ github.workspace }}/voices/voice.onnx
+          WHISPER_MODEL: base
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           python quality_production_realism_proof.py --out artifacts/production_realism_proof
@@ -122,7 +142,14 @@ jobs:
           python - <<'PY'
           import json
           p=json.load(open('artifacts/production_realism_proof/proof_report.json'))
+          assert p['schema'] == 'content-render-production-realism-proof-v2'
+          assert p['tts_router_used'] == 'main.tts_full'
           assert p['piper_used'] is True
+          assert p['piper_call_results'] == [True]
+          assert p['whisper_alignment_used'] is True
+          assert p['whisper_model'] == 'base'
+          assert p['alignment']['aligned_word_count'] == p['alignment']['expected_script_words']
+          assert p['caption_timing_source'] == 'faster_whisper_content_aligned_piper_audio'
           assert p['production_canvas'] == [1080, 1920]
           assert p['final']['width'] == 1080 and p['final']['height'] == 1920
           assert p['final']['audio_codec'] == 'aac'
