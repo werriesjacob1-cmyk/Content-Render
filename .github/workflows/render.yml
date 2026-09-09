@@ -9,55 +9,38 @@ on:
         description: "video length: auto (A/B alternate) | long (~40-46s) | short (~28-32s)"
         default: "auto"
       openrouter_model:
-        description: "OPTIONAL one-off OpenRouter writer model override for THIS manual run only
-          (e.g. deepseek/deepseek-chat) -- leave blank to use the repo Variable / default
-          (anthropic/claude-sonnet-5). Does NOT touch the daily cron's model; for A/B testing a
-          different writer without changing the permanent default."
+        description: "OPTIONAL one-off OpenRouter writer model override for THIS manual run only"
         default: ""
       certification_only:
-        description: "Run the REAL pipeline (script, TTS, footage, render, repackage, final-QA,
-          cover) but SKIP all publish steps, so the finished video only reaches this run's private
-          Actions artifact for human review. This is an additional per-run safety gate; the global
-          AUTO_PUBLISH_ENABLED repo variable must independently be exact 'true' before any publish
-          step can run."
+        description: "Run the real pipeline but skip all publish steps; output stays a private Actions artifact"
         type: boolean
         default: false
   schedule:
-    # 2 renders/day. Rendering and publishing are deliberately independent:
-    # scheduled renders may produce private Actions artifacts while the global
-    # AUTO_PUBLISH_ENABLED switch remains unset/off. No social/public publishing
-    # is permitted merely because a scheduled render succeeds.
-    - cron: "0 9 * * *"     # 4:00 AM CT — feeds the midday CT posting wave
-    - cron: "0 19 * * *"    # 2:00 PM CT — feeds the evening CT posting wave
+    - cron: "0 9 * * *"
+    - cron: "0 19 * * *"
 
 permissions:
-  contents: write   # the workflow commits manifest.json and used_footage_*.json
-                     # back to the repo; without this the GITHUB_TOKEN defaults
-                     # to read-only and every `git push` below silently no-ops.
-                     # (GitHub Models' `models: read` permission was removed
-                     # 2026-09-03 -- that API was retired 2026-07-30 and every
-                     # call had been silently 401ing since.)
+  contents: write
 
 concurrency:
-  # Now that render.yml self-triggers on a schedule, it can overlap with a
-  # manual workflow_dispatch or an n8n repository_dispatch. Both push
-  # manifest.json / used_footage_*.json mid-run; two runs racing on those
-  # pushes is how you get a rejected push (or, worse, one run's dedup
-  # history silently clobbering the other's). Queue instead of running in
-  # parallel -- cancel-in-progress stays false so a scheduled run is never
-  # killed mid-render just because someone kicked off a manual one.
   group: render-video
   cancel-in-progress: false
 
 jobs:
   render:
+    # During Writer V2.1 promotion, legacy scheduled generation/render spend is
+    # opt-in. Manual workflow_dispatch and repository_dispatch remain explicit
+    # operator actions and still work. Publishing has its own independent kill
+    # switch below.
+    if: ${{ github.event_name != 'schedule' || vars.LEGACY_SCHEDULED_GENERATION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
-    # the footage judge/rescue adds up to ~3 Groq calls + 3 searches per scene;
-    # 15 min was calibrated for the old first-result pipeline and left no room
-    # for the ~3.5 min repackage step after a judged render
     timeout-minutes: 30
     env:
-      PAGE: science          # change to history_pov / dark_mystery / ai_life to run another page
+      PAGE: science
+      CONTENT_RENDER_QUEUE_WRITER_VERSION: legacy_v1
+      CONTENT_RENDER_QUEUE_CERT_VERSION: legacy_generation
+      CONTENT_RENDER_REQUIRED_WRITER_VERSION: legacy_v1
+      CONTENT_RENDER_REQUIRED_CERT_VERSION: legacy_generation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,40 +50,44 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Ensure ffmpeg
-        run: ffmpeg -version >/dev/null 2>&1 || sudo apt-get update && sudo apt-get install -y ffmpeg
-
-      - name: Ensure fonts
-        # main.py hardcodes /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
-        # for drawtext, and the karaoke captions resolve "DejaVu Sans"/"DejaVu
-        # Serif" via fontconfig — neither is guaranteed present on the runner
-        # image, and a missing font file makes ffmpeg's drawtext fail outright.
+      - name: Ensure ffmpeg and fonts once
+        shell: bash
         run: |
-          fc-list | grep -qi dejavu || (sudo apt-get update && sudo apt-get install -y fonts-dejavu-core)
-          fc-cache -f >/dev/null 2>&1 || true
-          test -f /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
+          set -euo pipefail
+          need_apt=0
+          command -v ffmpeg >/dev/null 2>&1 || need_apt=1
+          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
+          case "$font_family" in
+            *DejaVu*) ;;
+            *) need_apt=1 ;;
+          esac
+          if [ "$need_apt" -eq 1 ]; then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+              ffmpeg fonts-dejavu-core
+          fi
+          ffmpeg -version >/dev/null 2>&1
+          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
+          case "$font_family" in
+            *DejaVu*) ;;
+            *) echo "DejaVu font unavailable after prerequisite setup" >&2; exit 1 ;;
+          esac
 
       - name: Install deps
         run: pip install -r requirements.txt
 
       - name: Cache Piper voice
-        # Restores the ~115 MB neural voice from cache so it isn't re-downloaded
-        # every run; saves it (post-job) the first time.
         uses: actions/cache@v4
         with:
           path: voices
           key: piper-voice-en_US-ryan-high-v1
 
       - name: Fetch Piper voice (local neural TTS)
-        # Downloads the voice model main.py's _piper_tts() looks for at
-        # voices/voice.onnx, only if the cache didn't already provide it.
-        # Best-effort: if the download fails the render simply falls back to
-        # edge-tts, so this never blocks a run.
         run: |
           mkdir -p voices
           BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
           if [ ! -s voices/voice.onnx ]; then
-            curl -sSL -o voices/voice.onnx      "$BASE/en_US-ryan-high.onnx"      || echo "voice .onnx download failed"
+            curl -sSL -o voices/voice.onnx "$BASE/en_US-ryan-high.onnx" || echo "voice .onnx download failed"
             curl -sSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json" || echo "voice .json download failed"
           fi
           ls -la voices/ || true
@@ -109,79 +96,46 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # 2026-09-03: ON. Was "0" (OpenRouter-first) from 2026-08-03 while
-          # OpenRouter carried Claude Sonnet 5 / GPT-5 as the strongest writer
-          # available. OpenRouter is now fully out of credit -- every model 402s
-          # ("requires more credits") on every call, and the user has declined to
-          # refund it for now -- so leading the chain with it bought nothing but
-          # one guaranteed-failed HTTP call per generation before falling through.
-          # Gemini (grounded, still has the vision footage judge) is the true
-          # primary again until OpenRouter is refunded; flip back to "0" then.
           GEMINI_GENERATION: "1"
-          # Gemini's free tier has a far larger daily quota than Groq's; when set,
-          # generate.py prefers it so renders stop aborting at this step. Optional
-          # — falls back to Groq if the secret is absent. Free key: aistudio.google.com
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # Cerebras = 3rd free provider (backup when Gemini is rate-limited AND
-          # Groq's daily budget is spent). Optional; free key: cloud.cerebras.ai
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-          # OpenRouter = 4th free provider; its free tier includes llama-3.3-70b
-          # (stronger than Cerebras' free model) on a separate daily bucket.
-          # Optional; free key (no card): openrouter.ai/keys
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          # OpenRouter WRITER MODEL, now the PRIMARY writer (see GEMINI_GENERATION
-          # above). 2026-08-01 overnight found gpt-4o cleared only 2/9 renders
-          # (~22%), failing on a spread of different quality axes each time -- not
-          # a strong enough writer to lean on. 2026-08-03: the user said stop
-          # optimizing for cost, use whatever model gets consistently good videos;
-          # default is now Claude Sonnet 5 first, GPT-5 second, the old 70b llama
-          # last (comma-separated = tried in order within this one provider).
-          # Env-overridable via a repo Variable (Settings -> Variables ->
-          # OPENROUTER_MODEL) with no code change. A manual workflow_dispatch run
-          # can override just itself via the openrouter_model input above, without
-          # touching the permanent default the daily cron uses.
           OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
-          # 5th-7th free providers, each a SEPARATE daily bucket that generate.py
-          # tries after OpenRouter and before Cerebras (all run llama-3.3-70b /
-          # mistral-small on their free tiers). Optional — absent keys are simply
-          # skipped in the provider chain.
-          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
           FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
-          MISTRAL_API_KEY:   ${{ secrets.MISTRAL_API_KEY }}
-          # Optional model-ID overrides (repo Variables, not secrets). Set e.g.
-          # FIREWORKS_MODEL to a model the account actually has if the default 404s.
-          TOGETHER_MODEL:    ${{ vars.TOGETHER_MODEL }}
-          FIREWORKS_MODEL:   ${{ vars.FIREWORKS_MODEL }}
-          MISTRAL_MODEL:     ${{ vars.MISTRAL_MODEL }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          TOGETHER_MODEL: ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
+        shell: bash
         run: |
-          # SCRIPT BUFFER: first try to render a PRE-GENERATED manifest from the
-          # queue (queue_<page>/, filled by buffer.yml when the free LLM buckets
-          # are fresh). A dequeue costs ZERO LLM calls, so the channel keeps
-          # banking videos on days the buckets are already spent. `--dequeue`
-          # exits 3 when the buffer is empty — the normal case today — and we
-          # fall straight through to LIVE generation, byte-for-byte the previous
-          # behaviour.
-          #
-          # CRITICAL: never fall back to a hardcoded example on failure. Doing
-          # that (the old `|| cp manifest_example.json`) published the IDENTICAL
-          # "murmuration" example video on every generation failure — 4+ times —
-          # which is the exact opposite of a consistently-good profile. A failed
-          # generation (usually transient Groq rate-limit/quota) must instead
-          # retry once, then ABORT the whole run: no render, no release, no
-          # duplicate. The daily cron simply tries again next time.
-          # A/B video length: a manual dispatch can force long/short via the
-          # length_mode input; cron/repository_dispatch send no input so this is
-          # empty → generate.py defaults to "auto" (alternate per render). SHORT
-          # currently scores weaker payoffs, so verification renders force "long".
+          set -euo pipefail
           export LENGTH_MODE="${{ github.event.inputs.length_mode || 'auto' }}"
           echo "[length] LENGTH_MODE=$LENGTH_MODE"
-          if python generate.py --dequeue manifest.json; then
-            echo "rendering a pre-generated manifest from the buffer (no LLM used)"
+
+          # Pre-cutover inventory on this branch is known to be legacy-generated.
+          # Stamp it once so every dequeue from now on has explicit factory
+          # identity. The stamper refuses to relabel an already-versioned item.
+          python quality_queue_contract.py --stamp \
+            --queue-dir "queue_${PAGE}" \
+            --writer-version "$CONTENT_RENDER_QUEUE_WRITER_VERSION" \
+            --cert-version "$CONTENT_RENDER_QUEUE_CERT_VERSION"
+
+          if python quality_queue_contract.py \
+              --queue-dir "queue_${PAGE}" \
+              --dequeue manifest.json \
+              --required-writer "$CONTENT_RENDER_REQUIRED_WRITER_VERSION" \
+              --required-cert "$CONTENT_RENDER_REQUIRED_CERT_VERSION"; then
+            echo "rendering compatible pre-generated manifest from buffer (zero LLM calls)"
           else
-            echo "buffer empty — generating live"
-            python generate.py manifest.json \
-              || { echo "generate failed (likely a transient Groq rate-limit); waiting 90s and retrying once"; sleep 90; python generate.py manifest.json; } \
-              || { echo "::error::script generation failed twice — aborting this run so no duplicate/example video is ever published"; exit 1; }
+            rc=$?
+            if [ "$rc" -ne 3 ]; then
+              echo "::error::queue compatibility check failed"; exit "$rc"
+            fi
+            echo "compatible buffer empty — generating live"
+            python quality_production_generate.py manifest.json \
+              || { echo "generate failed; waiting 90s and retrying once"; sleep 90; python quality_production_generate.py manifest.json; } \
+              || { echo "::error::script generation failed twice — aborting so no weak/example video is rendered"; exit 1; }
           fi
           echo "--- generated manifest ---"
           head -c 400 manifest.json; echo
@@ -199,55 +153,26 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
-          # Stage the always-present state files FIRST, on their own line. A
-          # single `git add memory_*.json manifest.json ... queue_*` aborts
-          # ATOMICALLY (stages nothing) when any one pathspec matches no files —
-          # and on the live-gen path (empty buffer, the normal case) `queue_*`
-          # matches nothing, so the manifest + memory + dossier never committed.
-          # That silently froze memory_science.json's used-fact/domain history
-          # (topic diversity) and left a STALE manifest on the branch.
           git add -A memory_*.json manifest.json dossier_cache_*.json 2>/dev/null || true
-          # -A on the queue path stages the DELETION of a just-dequeued manifest
-          # too; separate line so an empty queue_* glob can't abort the add above.
           git add -A queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
-          # Rebase-retry so a moved origin doesn't silently drop the memory/manifest
-          # commit (topic-diversity history must persist). Mirrors buffer.yml.
           for a in 1 2 3; do
             git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
           done
 
       - name: Render
         env:
-          PEXELS_API_KEY:      ${{ secrets.PEXELS_API_KEY }}
-          ELEVENLABS_API_KEY:  ${{ secrets.ELEVENLABS_API_KEY }}
-          GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
-          # footage-relevance judge prefers Gemini too (free-tier quota) so batch
-          # rendering keeps picking relevant clips instead of shipping the top
-          # Pexels result when Groq is rate-limited.
-          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
-          CEREBRAS_API_KEY:    ${{ secrets.CEREBRAS_API_KEY }}
-          OPENROUTER_API_KEY:  ${{ secrets.OPENROUTER_API_KEY }}
-          # burned onto the auto-generated cover thumbnail (out/cover.jpg); if the
-          # repo Variable isn't set the handle line is simply omitted.
-          CHANNEL_HANDLE:      ${{ vars.CHANNEL_HANDLE }}
-          # paste a royalty-free music track URL here (repo Variable) to use as the
-          # music bed for every render — overrides the bundled loop, no file commit
-          # needed. Leave unset to use the committed per-profile track.
-          MUSIC_URL:           ${{ vars.MUSIC_URL }}
-          # AI-VIDEO GAP-FILL (fal.ai): when a scene's stock footage is off-topic or
-          # missing, generate an ON-TOPIC AI video clip instead. Fires ONLY on weak
-          # scenes and is capped at FAL_MAX_CLIPS/video, so cost is a few cents on the
-          # occasional abstract topic and $0 on topics with good stock. No secret set
-          # => the feature is a no-op (free-tier behaviour unchanged).
-          FAL_KEY:             ${{ secrets.FAL_KEY }}
-          # optional overrides (no code edit): swap the t2v model or the per-video cap.
-          FAL_VIDEO_MODEL:     ${{ vars.FAL_VIDEO_MODEL }}
-          FAL_MAX_CLIPS:       ${{ vars.FAL_MAX_CLIPS }}
-          # Pollinations.ai (Flux) — FREE AI-illustration gap-fill, tried BEFORE the
-          # paid Gemini/Imagen call below (see _pollinations_image in main.py). $0:
-          # a free account at enter.pollinations.ai, no billing ever. Absent secret
-          # = feature is a no-op, falls straight through to Imagen unchanged.
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
+          MUSIC_URL: ${{ vars.MUSIC_URL }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          FAL_VIDEO_MODEL: ${{ vars.FAL_VIDEO_MODEL }}
+          FAL_MAX_CLIPS: ${{ vars.FAL_MAX_CLIPS }}
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
         run: python main.py manifest.json
 
@@ -256,10 +181,6 @@ jobs:
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
-          # main.py now also writes the final-QA verdict (footage_matches_narration,
-          # narration_flow, etc.) back into memory_<page>.json's history entry for
-          # this video (_persist_qa_to_memory) -- stage it here too, not just the
-          # footage dedup file, or that signal never reaches the branch.
           git add used_footage_*.json memory_*.json 2>/dev/null || true
           git commit -m "auto: update footage dedup + QA history ($PAGE)" 2>/dev/null || echo "nothing to commit"
           for a in 1 2 3; do
@@ -280,15 +201,10 @@ jobs:
           ls -la out/proof_frame.png
 
       - name: Repackage for all platforms
-        # BIO_LINK / CHANNEL_HANDLE / LIST_NAME drive funnel.py's bio CTA,
-        # pinned comment, and newsletter blurb. Set them once as repo VARIABLES
-        # (Settings -> Secrets and variables -> Actions -> Variables) after you
-        # create your bio-link + newsletter; until then funnel.py uses readable
-        # placeholders so the metadata is still valid. See MONETIZATION.md.
         env:
-          BIO_LINK:       ${{ vars.BIO_LINK }}
+          BIO_LINK: ${{ vars.BIO_LINK }}
           CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
-          LIST_NAME:      ${{ vars.LIST_NAME }}
+          LIST_NAME: ${{ vars.LIST_NAME }}
         run: python repackage.py out/final.mp4
 
       - name: Upload all platform cuts
@@ -317,15 +233,10 @@ jobs:
           if [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
             echo "PUBLISHING ENABLED — AUTO_PUBLISH_ENABLED is exactly 'true'; publish steps may run only if all other guards pass"
           else
-            echo "PUBLISHING DISABLED — master kill switch active (AUTO_PUBLISH_ENABLED is not exactly 'true'); no Release and no Publer push can run"
+            echo "PUBLISHING DISABLED — master kill switch active; no Release and no Publer push can run"
           fi
 
       - name: Publish video as a GitHub Release (Buffer/Zapier pickup)
-        # PUBLIC Release creation is itself a publishing boundary because an
-        # external Zapier/Buffer trigger can fan it out to social accounts.
-        # Credentials or a successful scheduled render are never sufficient:
-        # AUTO_PUBLISH_ENABLED must be exact "true", and manual certification
-        # runs remain blocked independently.
         if: ${{ vars.AUTO_PUBLISH_ENABLED == 'true' && github.event.inputs.certification_only != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -351,15 +262,13 @@ jobs:
             || echo "release publish skipped"
 
       - name: Push to Publer (direct API, optional)
-        # Defense in depth: workflow condition AND publish_publer.py both require
-        # AUTO_PUBLISH_ENABLED=true. Publer credentials alone can never activate it.
         if: ${{ success() && vars.AUTO_PUBLISH_ENABLED == 'true' && github.event.inputs.certification_only != 'true' }}
         env:
           AUTO_PUBLISH_ENABLED: ${{ vars.AUTO_PUBLISH_ENABLED }}
-          PUBLER_API_KEY:      ${{ secrets.PUBLER_API_KEY }}
+          PUBLER_API_KEY: ${{ secrets.PUBLER_API_KEY }}
           PUBLER_WORKSPACE_ID: ${{ secrets.PUBLER_WORKSPACE_ID }}
-          PUBLER_ACCOUNT_IDS:  ${{ vars.PUBLER_ACCOUNT_IDS }}
-          PUBLER_STATE:        ${{ vars.PUBLER_STATE }}
+          PUBLER_ACCOUNT_IDS: ${{ vars.PUBLER_ACCOUNT_IDS }}
+          PUBLER_STATE: ${{ vars.PUBLER_STATE }}
         run: python publish_publer.py out/final.mp4 out/release_body.md || true
 
       - name: Notify n8n (optional)
