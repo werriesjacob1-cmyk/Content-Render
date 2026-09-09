@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""Zero-provider production-realism proof for the downstream Content Render path.
+
+This complements ``quality_downstream_factory_proof.py``.  The factory proof
+already proves assembly, captions, music/mastering, lineage, bounded repair and
+re-QA with small synthetic clips and synthetic tones.  This harness closes the
+remaining local-media realism gaps without spending provider quota:
+
+* scene media is rendered at the production canvas (1080x1920);
+* narration travels through the production ``tts_full`` router and is actually
+  synthesized by the local Piper neural-TTS fallback; and
+* Piper's narration is forced-aligned by the production faster-whisper path so
+  scene cuts and captions use recovered spoken-word timing rather than the
+  proportional no-timing fallback.
+
+The harness deliberately starts after Writer certification with a sealed fixture
+manifest.  Piper and Whisper model assets may be fetched by CI before this
+program starts.  Once ``proof`` begins, outbound sockets/urllib are blocked and
+counted; any attempted network call fails the proof.  Provider keys are not
+needed and should be blank in CI.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import shutil
+import socket
+import subprocess
+import urllib.request
+from typing import Any
+
+import main as legacy
+import quality_audio_qa as AQA
+import quality_downstream_factory_proof as QDF
+import quality_evidence as QE
+
+
+PROOF_SCHEMA = "content-render-production-realism-proof-v2"
+
+
+def _run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
+    proc = subprocess.run(cmd, text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"command failed ({proc.returncode}): {' '.join(str(x) for x in cmd)}\n"
+            + proc.stderr[-2200:]
+        )
+    return proc
+
+
+def _manifest() -> dict[str, Any]:
+    # Deliberately plain fixture narration.  It is long enough to exercise real
+    # speech pacing/caption alignment while asserting no production science claim.
+    lines = [
+        "A real production test should sound like narration, not a calibration tone.",
+        "This second scene follows the same subject while the local neural voice keeps speaking naturally.",
+        "The picture now changes at full vertical resolution while captions follow the measured narration timing.",
+        "The final scene closes the proof with mastered speech, music, and a complete vertical video.",
+    ]
+    scenes = []
+    for i, line in enumerate(lines, 1):
+        scenes.append({
+            "id": i,
+            "_v2_role": "hook" if i == 1 else ("payoff" if i == len(lines) else "beat"),
+            "voiceover": line,
+            "search_query": f"production realism fixture scene {i}",
+            "source_claim_ids": [f"fixture-{i}"],
+            "motion": "zoom_in",
+            "duration": 4.0,
+            "on_screen_text": "",
+        })
+    return {
+        "title": "Production Realism Proof",
+        "hook": lines[0],
+        "payoff": lines[-1],
+        "hook_source_claim_ids": ["fixture-1"],
+        "payoff_source_claim_ids": [f"fixture-{len(lines)}"],
+        "scenes": scenes,
+        "script": " ".join(lines),
+        "captions": ["Production realism proof"],
+        "hashtags": ["#science"],
+        "keyword": "production realism proof",
+        "vibe": "awe",
+        "treatment": "HIDDEN_MECHANISM",
+        "_semantic_verified": True,
+        "_v2_spoken_scene_count": len(lines),
+    }
+
+
+def _make_vertical_scene(path: Path, idx: int, audio_path: str, duration: float) -> None:
+    """Create a moving 1080x1920 scene muxed with the real Piper segment."""
+    hue = (idx * 57) % 360
+    draw = (
+        f"drawbox=x=70+mod(t*135\\,650):y={180 + idx * 130}:"
+        "w=240:h=240:color=white@0.50:t=fill"
+    )
+    _run([
+        "ffmpeg", "-y",
+        "-f", "lavfi", "-i",
+        f"testsrc2=size={legacy.W}x{legacy.H}:rate=30:duration={duration:.3f}",
+        "-i", str(audio_path),
+        "-vf", f"hue=h={hue},{draw},format=yuv420p",
+        "-map", "0:v", "-map", "1:a",
+        "-shortest", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28",
+        "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
+        "-ar", str(AQA.DELIVERY_SAMPLE_RATE),
+        str(path),
+    ])
+
+
+def _probe(path: Path) -> dict[str, Any]:
+    raw = _run([
+        "ffprobe", "-v", "error", "-show_entries",
+        "stream=index,codec_type,codec_name,width,height,sample_rate,bit_rate:format=duration,size",
+        "-of", "json", str(path),
+    ]).stdout
+    return json.loads(raw)
+
+
+def _assert_final_media(probe: dict[str, Any]) -> dict[str, Any]:
+    streams = probe.get("streams") or []
+    videos = [s for s in streams if s.get("codec_type") == "video"]
+    audios = [s for s in streams if s.get("codec_type") == "audio"]
+    if len(videos) != 1 or len(audios) != 1:
+        raise RuntimeError(f"expected exactly one video + one audio stream, got {streams}")
+    v, a = videos[0], audios[0]
+    if int(v.get("width") or 0) != legacy.W or int(v.get("height") or 0) != legacy.H:
+        raise RuntimeError(f"wrong production canvas: {v.get('width')}x{v.get('height')}")
+    if a.get("codec_name") != "aac":
+        raise RuntimeError(f"wrong delivery audio codec: {a.get('codec_name')}")
+    if int(a.get("sample_rate") or 0) != AQA.DELIVERY_SAMPLE_RATE:
+        raise RuntimeError(f"wrong delivery sample rate: {a.get('sample_rate')}")
+    return {
+        "width": int(v["width"]),
+        "height": int(v["height"]),
+        "video_codec": v.get("codec_name"),
+        "audio_codec": a.get("codec_name"),
+        "audio_sample_rate": int(a["sample_rate"]),
+        "audio_bitrate": int(a.get("bit_rate") or 0),
+        "duration_s": float((probe.get("format") or {}).get("duration") or 0.0),
+        "size_bytes": int((probe.get("format") or {}).get("size") or 0),
+    }
+
+
+def _assert_word_timings(timings: list[tuple[str, float, float]], script: str, duration: float) -> dict[str, Any]:
+    expected = script.split()
+    if len(timings) != len(expected):
+        raise RuntimeError(f"forced alignment returned {len(timings)} timings for {len(expected)} script words")
+    prev_start = -1.0
+    for i, item in enumerate(timings):
+        if not isinstance(item, (tuple, list)) or len(item) != 3:
+            raise RuntimeError(f"malformed aligned word at index {i}: {item!r}")
+        word, start, end = item
+        start, end = float(start), float(end)
+        if start < 0 or end < start or start < prev_start:
+            raise RuntimeError(f"non-monotonic aligned timing at word {i}: {item!r}")
+        if end > duration + 0.75:
+            raise RuntimeError(f"aligned timing extends beyond narration at word {i}: {item!r}")
+        if not str(word).strip():
+            raise RuntimeError(f"empty aligned word at index {i}")
+        prev_start = start
+    return {
+        "expected_script_words": len(expected),
+        "aligned_word_count": len(timings),
+        "first_word_start_s": round(float(timings[0][1]), 3) if timings else None,
+        "last_word_end_s": round(float(timings[-1][2]), 3) if timings else None,
+    }
+
+
+def proof(out_root: str) -> dict[str, Any]:
+    if (legacy.W, legacy.H) != (1080, 1920):
+        raise RuntimeError(f"production canvas drifted: {(legacy.W, legacy.H)}")
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe") or not shutil.which("piper"):
+        raise RuntimeError("ffmpeg, ffprobe and piper are required")
+    if not Path(legacy.PIPER_MODEL).is_file():
+        raise RuntimeError(f"Piper model missing: {legacy.PIPER_MODEL}")
+
+    root = Path(out_root).resolve()
+    if root.exists():
+        shutil.rmtree(root)
+    work, out = root / "work", root / "out"
+    work.mkdir(parents=True)
+    out.mkdir(parents=True)
+
+    manifest = _manifest()
+    manifest_path = root / "manifest.json"
+    QE.write_json(manifest_path, manifest)
+
+    # No HTTP/provider activity is permitted once the production-like proof
+    # starts. Dependency/model retrieval belongs to CI setup, not rendering.
+    net_calls: list[str] = []
+    real_urlopen = urllib.request.urlopen
+    real_connect = socket.socket.connect
+    real_create_connection = socket.create_connection
+
+    def blocked_urlopen(*a, **k):
+        net_calls.append(f"urlopen({str(a[0])[:100] if a else ''})")
+        raise AssertionError("production-realism proof attempted HTTP")
+
+    def blocked_connect(self, address, *a, **k):
+        net_calls.append(f"socket.connect({address})")
+        raise AssertionError("production-realism proof attempted network connection")
+
+    def blocked_create_connection(address, *a, **k):
+        net_calls.append(f"create_connection({address})")
+        raise AssertionError("production-realism proof attempted network connection")
+
+    urllib.request.urlopen = blocked_urlopen
+    socket.socket.connect = blocked_connect
+    socket.create_connection = blocked_create_connection
+
+    old_work, old_out = legacy.WORK, legacy.OUT
+    real_piper_tts = legacy._piper_tts
+    piper_results: list[bool] = []
+
+    def tracked_piper_tts(text: str, out_mp3: str) -> bool:
+        ok = bool(real_piper_tts(text, out_mp3))
+        piper_results.append(ok)
+        return ok
+
+    legacy.WORK, legacy.OUT = str(work), str(out)
+    legacy._piper_tts = tracked_piper_tts
+    try:
+        legacy.WORD_TIMINGS[:] = []
+        narration = work / "piper_narration.mp3"
+
+        # Exercise the same voice router production calls. VOICE_ENGINE=piper in
+        # CI makes Piper first; the tracked wrapper proves the successful branch
+        # really was Piper rather than a silent edge-tts fallback.
+        if not legacy.tts_full(
+            manifest["script"],
+            str(narration),
+            legacy.PROFILE.get("edge_voice", "en-GB-RyanNeural"),
+            legacy.EDGE_RATE,
+        ):
+            raise RuntimeError("production tts_full router did not produce narration")
+        if piper_results != [True]:
+            raise RuntimeError(f"tts_full did not complete through Piper exactly once: {piper_results}")
+
+        narration_duration = float(legacy.ffprobe_dur(str(narration)))
+        if narration_duration <= 1.0 or narration.stat().st_size < 1000:
+            raise RuntimeError("Piper narration output is empty/trivial")
+
+        # This is the production caption-sync path for Piper: tts_full clears
+        # native timings, then faster-whisper recovers timing from the *actual*
+        # synthesized audio. CI prefetches the model and sets HF_HUB_OFFLINE=1;
+        # socket blocking below makes any hidden model/network dependency fail.
+        if legacy.WORD_TIMINGS:
+            raise RuntimeError("Piper unexpectedly supplied native word timings before Whisper")
+        aligned = legacy.whisper_align(str(narration), manifest["script"])
+        alignment = _assert_word_timings(aligned, manifest["script"], narration_duration)
+        legacy.WORD_TIMINGS[:] = aligned
+
+        # split_audio now takes its exact-timing branch, cutting each scene at
+        # the aligned end of its spoken words rather than proportional duration.
+        segments = legacy.split_audio(str(narration), manifest["scenes"], str(work))
+        if len(segments) != len(manifest["scenes"]):
+            raise RuntimeError("Piper narration did not split into every scene")
+
+        scene_files: list[str] = []
+        actual_durs: list[float] = []
+        for idx, (scene, seg) in enumerate(zip(manifest["scenes"], segments), 1):
+            audio_path, requested_dur = seg
+            actual_audio_dur = float(legacy.ffprobe_dur(audio_path))
+            if actual_audio_dur <= 0.1:
+                raise RuntimeError(f"scene {idx} Piper segment has no audio")
+            p = work / f"scene_{idx}_1080x1920.mp4"
+            _make_vertical_scene(p, idx, audio_path, max(actual_audio_dur, float(requested_dur)))
+            measured = float(legacy.ffprobe_dur(str(p)))
+            if measured <= 0.1:
+                raise RuntimeError(f"scene {idx} vertical render is empty")
+            scene_files.append(str(p))
+            actual_durs.append(measured)
+
+        body = work / "body.mp4"
+        legacy.build_body_concat(scene_files, str(body))
+        body_duration = float(legacy.ffprobe_dur(str(body)))
+        ass = work / "captions.ass"
+        legacy.build_ass(manifest["scenes"], segments, actual_durs, str(ass), headline="")
+        ass_text = ass.read_text(encoding="utf-8", errors="replace")
+        if ass_text.count("Dialogue:") < len(manifest["scenes"]):
+            raise RuntimeError("ASS captions do not cover every narrated scene")
+
+        captioned = work / "captioned.mp4"
+        QDF._make_captioned(body, ass, captioned, body_duration)
+        final = out / "final.mp4"
+        finishing = QDF._mix_final(captioned, final, body_duration)
+        if not final.is_file() or final.stat().st_size < 10000:
+            raise RuntimeError("production-realism final.mp4 was not produced")
+
+        probe = _probe(final)
+        media = _assert_final_media(probe)
+        audio_qa = AQA.review(str(final), str(manifest_path))
+        QE.write_json(out / "audio_qa_report.json", audio_qa)
+        if audio_qa.get("mechanical_pass") is not True:
+            raise RuntimeError(
+                "production-realism final audio failed QA: "
+                + "; ".join(audio_qa.get("mechanical_reasons") or [])
+            )
+
+        # Generate one viewer-facing frame so the artifact proves the 1080x1920
+        # file can actually be decoded/rasterized, not merely probed as metadata.
+        proof_frame = out / "proof_frame.jpg"
+        _run([
+            "ffmpeg", "-y", "-ss", f"{max(0.1, media['duration_s'] * 0.45):.3f}",
+            "-i", str(final), "-frames:v", "1", "-q:v", "2", str(proof_frame),
+        ])
+        if not proof_frame.is_file() or proof_frame.stat().st_size < 1000:
+            raise RuntimeError("viewer-facing proof frame was not produced")
+
+        report = {
+            "schema": PROOF_SCHEMA,
+            "production_canvas": [legacy.W, legacy.H],
+            "tts_router_used": "main.tts_full",
+            "piper_used": True,
+            "piper_call_results": piper_results,
+            "piper_model": Path(legacy.PIPER_MODEL).name,
+            "piper_length_scale": str(legacy.PIPER_LENGTH_SCALE),
+            "piper_sentence_silence": str(legacy.PIPER_SENTENCE_SILENCE),
+            "narration_duration_s": narration_duration,
+            "whisper_alignment_used": True,
+            "whisper_model": os.environ.get("WHISPER_MODEL", "base"),
+            "alignment": alignment,
+            "caption_timing_source": "faster_whisper_content_aligned_piper_audio",
+            "caption_dialogue_lines": ass_text.count("Dialogue:"),
+            "scene_count": len(scene_files),
+            "scene_durations_s": [round(x, 3) for x in actual_durs],
+            "finishing": finishing,
+            "final": media,
+            "audio_mechanical_pass": True,
+            "audio_qa": audio_qa,
+            "provider_calls_made": 0,
+            "network_calls_made": len(net_calls),
+            "network_call_detail": net_calls,
+            "proof_frame": str(proof_frame),
+        }
+        if net_calls:
+            raise RuntimeError(f"network activity occurred during proof: {net_calls}")
+        QE.write_json(root / "proof_report.json", report)
+        return report
+    finally:
+        legacy.WORK, legacy.OUT = old_work, old_out
+        legacy._piper_tts = real_piper_tts
+        legacy.WORD_TIMINGS[:] = []
+        urllib.request.urlopen = real_urlopen
+        socket.socket.connect = real_connect
+        socket.create_connection = real_create_connection
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", default="artifacts/production_realism_proof")
+    args = ap.parse_args()
+    print(json.dumps(proof(args.out), indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
