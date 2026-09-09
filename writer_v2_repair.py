@@ -846,7 +846,77 @@ def _classify_validate_error(err, num_beats):
     return ("STRUCTURAL", list(range(0, num_beats + 2)))
 
 
-def classify_repair(hard_violations, semantic_violations, validate_err, critic_verdict, num_beats):
+def derive_must_also_satisfy(validate_err, narration_contract, writer_out=None):
+    """The deterministic requirements a rewritten beat must ALSO meet, phrased
+    for the repair prompt. Pure.
+
+    This is the flagship-#6 fix. `classify_repair` picks ONE primary target by
+    tier -- correctly, since an unsupported claim must outrank a long hook. But
+    it then discarded `validate_err` entirely whenever tier 1 fired, and tier 1
+    fired in 8 of run #6's 9 rounds. The result: a repair could clear a
+    provenance defect and hand back narration still failing a cheap mechanical
+    check nobody had mentioned to it, round after round.
+
+    The primary target is unchanged. These are constraints carried ALONGSIDE it,
+    so one bounded repair can satisfy both instead of trading one for the other.
+    Nothing here relaxes a gate: every line states a requirement validate()
+    already enforces.
+    """
+    c = narration_contract or {}
+    lines = []
+    err_l = str(validate_err or "").lower()
+
+    # The constraint that is CURRENTLY failing goes first and is named as such --
+    # a repair that is about to rewrite narration should know what already broke.
+    if validate_err:
+        lines.append(f"CURRENTLY FAILING (must be fixed or not reintroduced): {validate_err}")
+
+    if c.get("hook_word_lo") and c.get("hook_word_hi"):
+        lines.append(
+            f"The hook must be {c['hook_word_lo']}-{c['hook_word_hi']} words. Count them. "
+            "This applies even when you are rewriting the hook for a different reason.")
+    if c.get("scene_word_cap"):
+        lines.append(f"No single spoken line may exceed {c['scene_word_cap']} words.")
+    if c.get("word_hard_lo") and c.get("word_hard_hi"):
+        lines.append(
+            f"Total spoken words across hook + every beat + payoff must stay within "
+            f"{c['word_hard_lo']}-{c['word_hard_hi']}. Your rewrite changes this total.")
+    if c.get("forbidden_connectors"):
+        lines.append(
+            "These formal connectors are rejected outright -- never use them in spoken lines: "
+            + ", ".join(c["forbidden_connectors"]) + ".")
+
+    terms = c.get("mandatory_key_terms") or []
+    if terms:
+        need = c.get("mandatory_key_terms_min") or 0
+        said = ""
+        if writer_out is not None:
+            try:
+                import generate as _G
+                text = " ".join(t for t in _beats_text_by_index(
+                    writer_out, len(writer_out.get("beats") or [])).values() if t)
+                status = _G.key_terms_named(text, {"key_terms": terms})
+                if status["missing"]:
+                    said = (f" Currently said: {status['named'] or 'none'}. "
+                            f"Still missing: {status['missing']}.")
+            except Exception:
+                said = ""
+        lines.append(
+            f"The script must explicitly SAY at least {need} of these exact terms: {terms}."
+            + said +
+            " Work them in naturally as part of a sentence that earns them -- do not bolt a"
+            " term on as a label or list them. Explaining around a term does not count as"
+            " saying it.")
+
+    if "never mentions it" in err_l:
+        lines.append(
+            "When a spoken line names a specific landmark, object or entity, that scene's "
+            "visual_intent must name it too, so the footage can actually show it.")
+    return lines
+
+
+def classify_repair(hard_violations, semantic_violations, validate_err, critic_verdict, num_beats,
+                    narration_contract=None, writer_out=None):
     """Pure decision function -- no network call. Three-tier priority
     (2026-09-04 V2.1 redesign, replacing the old "mechanical always wins"
     rule that treated noisy word-level violations as equal to a real
@@ -873,13 +943,35 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
 
     Falls back to NONE (nothing to do) when nothing in any tier is
     actionable, never guesses."""
+    # Carried alongside EVERY tier, including tier 1. The primary target is
+    # still chosen by strict priority -- an unsupported claim must outrank a
+    # long hook -- but the deterministic constraints ride with it instead of
+    # being discarded whenever tier 1 fires (flagship #6: 8 of 9 rounds).
+    must_also = derive_must_also_satisfy(validate_err, narration_contract, writer_out)
+
+    # A provenance rewrite can silently delete the mandatory term the script
+    # DOES say -- run #6 candidate 1 was one term short and had "Greenland
+    # shark" in a beat the repair was about to rewrite. Preserving what is
+    # already named stops a repair making the key-term gate worse.
+    preserve = []
+    terms = (narration_contract or {}).get("mandatory_key_terms") or []
+    if terms and writer_out is not None:
+        try:
+            import generate as _G
+            text = " ".join(t for t in _beats_text_by_index(
+                writer_out, len(writer_out.get("beats") or [])).values() if t)
+            preserve = list(_G.key_terms_named(text, {"key_terms": terms})["named"])
+        except Exception:
+            preserve = []
+
     all_tier1 = list(hard_violations or []) + list(semantic_violations or [])
     if all_tier1:
         target_beats = sorted({v.beat_index for v in all_tier1 if 0 <= v.beat_index <= num_beats + 1})
         diagnosis = "; ".join(sorted({f"beat {v.beat_index}: {v.kind} {v.value!r}" for v in all_tier1}))[:500]
         return {
             "repair_type": "PROVENANCE", "target_beats": target_beats or list(range(0, num_beats + 2)),
-            "diagnosis": diagnosis or "unsupported factual content found", "must_preserve": [], "tier": 1,
+            "diagnosis": diagnosis or "unsupported factual content found",
+            "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 1,
         }
 
     if validate_err:
@@ -887,9 +979,10 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         if mapped:
             repair_type, target_beats = mapped
             return {"repair_type": repair_type, "target_beats": target_beats,
-                    "diagnosis": validate_err, "must_preserve": [], "tier": 2}
+                    "diagnosis": validate_err, "must_preserve": preserve,
+                    "must_also_satisfy": must_also, "tier": 2}
         return {"repair_type": "NONE", "target_beats": [], "diagnosis": validate_err,
-                "must_preserve": [], "tier": 2}
+                "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 2}
 
     critic_verdict = critic_verdict or {}
     repair_type = critic_verdict.get("repair_type") or "NONE"
@@ -908,7 +1001,9 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         "repair_type": repair_type,
         "target_beats": target_beats,
         "diagnosis": (critic_verdict.get("diagnosis") or "")[:500],
-        "must_preserve": list(critic_verdict.get("must_preserve") or []),
+        "must_preserve": list(critic_verdict.get("must_preserve") or []) + [
+            p for p in preserve if p not in (critic_verdict.get("must_preserve") or [])],
+        "must_also_satisfy": must_also,
         "tier": 3,
     }
 
@@ -969,6 +1064,20 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
         preserve_block = "\n\nMUST PRESERVE EXACTLY (do not rephrase or drop these): " + "; ".join(
             str(p) for p in plan["must_preserve"])
 
+    # The deterministic contract the rewritten narration will be judged against.
+    # Without this a repair can fix exactly what it was asked to fix and still
+    # be thrown out by a mechanical check it was never shown -- which is how
+    # flagship #6 spent its entire budget (see derive_must_also_satisfy).
+    also_block = ""
+    if plan.get("must_also_satisfy"):
+        also_block = (
+            "\n\nYOUR REWRITE IS ALSO MECHANICALLY CHECKED. Fixing the diagnosis above is not "
+            "enough on its own -- the rewritten script is thrown out if it breaks any of these, "
+            "even if the diagnosis is perfectly resolved:\n"
+            + "\n".join(f"- {line}" for line in plan["must_also_satisfy"])
+            + "\nThese are not style preferences. They are the checks that decide whether this "
+              "script survives.")
+
     repair_type = plan.get("repair_type", "STRUCTURAL")
     if repair_type == "PROVENANCE":
         instruction = (
@@ -1016,6 +1125,7 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
         f"Every returned beat needs voiceover + visual_intent (use \"\" for visual_intent on beat_index "
         f"0 or {num_beats + 1}) + source_claim_ids (the claim IDs that support the rewritten text)."
         + preserve_block
+        + also_block
         + "\n\nReturn ONLY valid JSON in EXACTLY this shape -- a single object with one key \"repairs\" "
           "holding an array (never a bare array on its own, never anything else at the top level):\n"
           '{"repairs": [{"beat_index": ' + str(target_beats[0] if target_beats else 0) + ', '

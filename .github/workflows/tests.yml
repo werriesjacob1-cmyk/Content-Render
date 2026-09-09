@@ -39,11 +39,14 @@ jobs:
             quality_learning_ledger.py quality_learning_capture.py quality_story_selector.py \
             quality_visual_bible.py quality_asset_lineage.py quality_repair_controller.py \
             quality_production_generate.py quality_queue_contract.py quality_downstream_factory_proof.py \
+            delivery_contract.py delivery_master.py quality_production_realism_proof.py quality_edge_voice_probe.py \
             tests/test_quality_learning_ledger.py tests/test_quality_learning_capture.py \
             tests/test_quality_story_selector.py tests/test_quality_visual_bible.py \
             tests/test_quality_asset_lineage.py tests/test_quality_repair_controller.py \
             tests/test_quality_queue_contract.py tests/test_quality_production_generate.py \
             tests/test_production_transition_contracts.py \
+            tests/test_delivery_audio_contract.py tests/test_delivery_contract_load_bearing.py \
+            tests/test_delivery_mastering_adversarial.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
@@ -134,6 +137,10 @@ jobs:
           run_check "provider capability gate" python tests/test_provider_capability_gate.py
           run_check "evidence json boundary" env -u GROQ_API_KEY python tests/test_quality_evidence.py
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py
+          run_check "delivery contract load-bearing" env -u GROQ_API_KEY python tests/test_delivery_contract_load_bearing.py
+          run_check "delivery mastering adversarial" env -u GROQ_API_KEY python tests/test_delivery_mastering_adversarial.py
+          run_check "production realism proof contract" env -u GROQ_API_KEY python tests/test_quality_production_realism_proof.py
+          run_check "repair policy + provider health" env -u GROQ_API_KEY python tests/test_repair_policy_and_provider_health.py
           run_check "lineage survives repair" env -u GROQ_API_KEY python tests/test_asset_lineage_after_repair.py
           run_check "visual intent load-bearing" env -u GROQ_API_KEY python tests/test_visual_intent_load_bearing.py
           run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
@@ -151,6 +158,7 @@ jobs:
             image_to_video_bakeoff.py molecular_media.py quality_runtime.py quality_session.py \
             quality_stack.py quality_stack_cli.py quality_render_bridge.py quality_science_motion.py \
             quality_science_render.py quality_postrender_review.py quality_audio_qa.py \
+            delivery_contract.py delivery_master.py quality_production_realism_proof.py quality_edge_voice_probe.py \
             quality_certification_generate.py quality_certification_retry.py \
             quality_writer_provider_resilience.py quality_writer_evidence_seed.py \
             research_grounding.py review_readiness.py science_motion.py scientific_media.py \

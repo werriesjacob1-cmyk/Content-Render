@@ -8,7 +8,7 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
+import os, sys, json, re, time, math, urllib.request, urllib.error, random, datetime, collections, hashlib
 
 import writer_v2
 import writer_v2_repair as wr2_repair
@@ -497,6 +497,46 @@ def writer_length_contract(spoken_lines=8):
     }
 
 
+def narration_deterministic_contract(fact=None, spoken_lines=8):
+    """Every DETERMINISTIC constraint validate() will judge rewritten narration
+    against, built from the same constants/regex validate() itself uses.
+
+    Why this exists (flagship #6, run 34305189931). The length contract shipped
+    in PR #76 worked: total-word and per-scene failures went from 17/36 rounds
+    across runs #2-#5 to 0/9. But the failure mode MOVED to the deterministic
+    constraints nothing ever states to a repair -- hook length (3 rounds),
+    mandatory key terms (3), forbidden formal connectors (2).
+
+    A bounded repair rewrites narration. If it is told only what is factually
+    unsupported, it can hand back prose that is perfectly grounded and still
+    dead on arrival under a cheap mechanical check it was never shown. Candidate
+    1 of run #6 carried the SAME "only 1/3 mandatory key terms" rejection
+    through rounds 0, 1 and 2 without that string ever reaching the repair.
+
+    Returns raw values, not a sentence, so a test can assert that what a prompt
+    STATES equals what validate() ENFORCES.
+    """
+    terms = [str(t) for t in ((fact or {}).get("key_terms") or []) if str(t).strip()]
+    contract = dict(writer_length_contract(spoken_lines=spoken_lines))
+    contract.update({
+        "hook_word_lo": HOOK_WORD_LO,
+        "hook_word_hi": HOOK_WORD_HI,
+        "forbidden_connectors": list(FORBIDDEN_CONNECTORS),
+        "mandatory_key_terms": terms,
+        "mandatory_key_terms_min": min(KEY_TERMS_MIN_NAMED, len(terms)) if terms else 0,
+    })
+    return contract
+
+
+def key_terms_named(text, fact=None):
+    """Which of a fact's mandatory key terms `text` actually says, using the
+    SAME matcher validate() uses. Pure; lets a repair be told exactly which
+    terms are still missing rather than being handed the whole list."""
+    terms = [str(t) for t in ((fact or {}).get("key_terms") or []) if str(t).strip()]
+    named = [t for t in terms if _key_term_present(t, text or "")]
+    return {"named": named, "missing": [t for t in terms if t not in named], "all": terms}
+
+
 def draft_is_weak(overall, quality):
     """True when a draft lacks usable quality evidence OR scores below the bar.
 
@@ -881,9 +921,20 @@ FORMAL_INVERSION_RE = re.compile(
 #    scripted dramatic beat, not natural speech, when a TTS voice speaks it alone.
 LONE_YES_NO_RE = re.compile(r"^(no|nope|yes|yep|wrong|correct)[.!]?$", re.I)
 # 3) academic connector words — none of these are how anyone talks out loud.
+# The words and the regex are ONE source. A repair prompt that lists different
+# connectors than validate() rejects is the same prompt/validator drift that
+# cost flagship runs #2-#5 their word budget, in a different shape.
+FORBIDDEN_CONNECTORS = ("however", "nevertheless", "furthermore", "consequently",
+                        "notably", "essentially", "arguably", "thus", "hence",
+                        "moreover", "whereas")
 FORMAL_CONNECTOR_RE = re.compile(
-    r"\b(however|nevertheless|furthermore|consequently|notably|essentially|"
-    r"arguably|thus|hence|moreover|whereas)\b", re.I)
+    r"\b(" + "|".join(FORBIDDEN_CONNECTORS) + r")\b", re.I)
+
+# Hook length, as validate() enforces it. Named so the repair contract can state
+# the same numbers instead of restating them as literals somewhere else.
+HOOK_WORD_LO, HOOK_WORD_HI = 4, 16
+# validate() requires at least this many of a fact's key_terms to be said aloud.
+KEY_TERMS_MIN_NAMED = 2
 
 # Named-but-unexplained jargon that has shipped in real videos despite the prompt's
 # own PLAIN-SPOKEN-ENGLISH rule already banning it — self-scored 'clarity' keeps
@@ -1876,6 +1927,129 @@ def _call_gemini(model, prompt, ground=False):
 _CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
 _CIRCUIT_OPEN = False     # once open, calls fail fast instead of hammering dead quota
 
+# ---------------------------------------------------------------------------
+# Session-local provider health (S9).
+#
+# The existing capability gate answers "can this request structurally FIT this
+# provider?". That is a different question from "is this provider healthy
+# enough to try AGAIN right now?", and nothing answered the second one: the
+# only provider state was _WORKING_MODEL, a positive stickiness with no
+# negative counterpart, and _CIRCUIT_OPEN, which is chain-wide and all-or-
+# nothing. So in flagship #6 Groq 429'd, the chain paid a wait, and later calls
+# walked straight back into the same rate-limited model.
+#
+# Deliberately bounded and reversible:
+#   - session-local only; nothing is persisted across runs
+#   - cooldown comes from the provider's OWN stated retry delay where it gives
+#     one, so we are not inventing a penalty
+#   - a provider is NEVER permanently disabled; the cooldown expires and it is
+#     tried again on its own merits
+#   - every skip is recorded with the reason and the seconds remaining
+# ---------------------------------------------------------------------------
+PROVIDER_COOLDOWN_MAX_S = float(os.getenv("PROVIDER_COOLDOWN_MAX_S", "90"))
+PROVIDER_COOLDOWN_DEFAULT_S = float(os.getenv("PROVIDER_COOLDOWN_DEFAULT_S", "20"))
+_PROVIDER_COOLDOWN_UNTIL: dict[tuple, float] = {}
+_PROVIDER_RATE_LIMIT_STREAK: dict[tuple, int] = {}
+_PROVIDER_HEALTH_EVENTS: list = []
+
+
+def _provider_health_reset():
+    """Test seam, and the entry point a new certification session would call."""
+    _PROVIDER_COOLDOWN_UNTIL.clear()
+    _PROVIDER_RATE_LIMIT_STREAK.clear()
+    del _PROVIDER_HEALTH_EVENTS[:]
+
+
+def provider_health_events():
+    """Every skip/cooldown/recovery recorded this session.
+
+    Kept OUT of debug_calls deliberately: that list is consumed as the record of
+    calls actually made -- wr21_quality_generate reads its FIRST entry as the
+    draft model and quality_learning_ledger reads the LAST entry with a truthy
+    provider as the provider used. A skip entry carrying "provider": "groq"
+    would be silently misreported as the model that wrote the script.
+    """
+    return list(_PROVIDER_HEALTH_EVENTS)
+
+
+def provider_cooldown_remaining(prov, model, now=None):
+    """Seconds left on this (provider, model)'s cooldown; 0.0 when healthy."""
+    now = time.time() if now is None else now
+    until = _PROVIDER_COOLDOWN_UNTIL.get((prov, model), 0.0)
+    return max(0.0, until - now)
+
+
+def note_provider_rate_limited(prov, model, retry_after_s=None, now=None):
+    """Record authoritative rate-limit evidence and start a bounded cooldown.
+
+    `retry_after_s` is the provider's own stated delay when it gave one. Absent
+    that, a modest default is used rather than guessing long. Either way the
+    wait is clamped, so a provider claiming a 30-minute penalty cannot silently
+    remove itself from the chain for the rest of the session.
+    """
+    now = time.time() if now is None else now
+    key = (prov, model)
+    streak = _PROVIDER_RATE_LIMIT_STREAK.get(key, 0) + 1
+    _PROVIDER_RATE_LIMIT_STREAK[key] = streak
+    try:
+        wait = float(retry_after_s) if retry_after_s is not None else PROVIDER_COOLDOWN_DEFAULT_S
+    except (TypeError, ValueError):
+        wait = PROVIDER_COOLDOWN_DEFAULT_S
+    # NaN must be caught explicitly: every comparison against it is False, so
+    # `wait <= 0` passes it through, `min(nan, MAX)` returns nan, the stored
+    # deadline becomes nan, and `max(0.0, nan - now)` evaluates to 0.0 -- the
+    # model reads as HEALTHY. The failure is silent and fails OPEN: the evidence
+    # would record a cooldown that was never actually in force.
+    if not math.isfinite(wait) or wait <= 0:
+        wait = PROVIDER_COOLDOWN_DEFAULT_S
+    wait = min(wait, PROVIDER_COOLDOWN_MAX_S)
+    _PROVIDER_COOLDOWN_UNTIL[key] = now + wait
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "rate_limited", "provider": prov, "model": model,
+        "cooldown_s": round(wait, 2), "streak": streak,
+        "retry_after_reported": retry_after_s is not None,
+    })
+    return wait
+
+
+def note_provider_healthy(prov, model):
+    """A success clears the cooldown AND the streak -- recovery is automatic.
+
+    Both entries are removed unconditionally, and only THEN is the decision made
+    about emitting evidence. Writing this as
+    ``if cooldown.pop(...) or streak.pop(...)`` short-circuits: a cooldown
+    timestamp is always truthy, so the streak pop never ran. The function
+    emitted a "recovered" event claiming both states were cleared while the
+    streak silently survived, and the NEXT rate limit for that model then
+    resumed from the stale count instead of starting at 1 -- corrupting the
+    streak in the evidence a reviewer reads.
+    """
+    key = (prov, model)
+    had_cooldown = _PROVIDER_COOLDOWN_UNTIL.pop(key, None) is not None
+    had_streak = _PROVIDER_RATE_LIMIT_STREAK.pop(key, None) is not None
+    if had_cooldown or had_streak:
+        _PROVIDER_HEALTH_EVENTS.append({
+            "event": "recovered", "provider": prov, "model": model})
+
+
+def should_skip_provider(prov, model, now=None):
+    """(skip, remaining_seconds). Records the skip so it is never invisible."""
+    remaining = provider_cooldown_remaining(prov, model, now=now)
+    if remaining <= 0:
+        # Drop an expired deadline rather than leaving it to be popped later.
+        # A stale past timestamp is still truthy, so it would make a much-later
+        # success emit "recovered" for a cooldown that had already lapsed on its
+        # own. The STREAK is deliberately left alone: repeated rate limits with
+        # no intervening success genuinely are a streak.
+        _PROVIDER_COOLDOWN_UNTIL.pop((prov, model), None)
+        return False, 0.0
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "skipped_cooling", "provider": prov, "model": model,
+        "remaining_s": round(remaining, 2),
+        "streak": _PROVIDER_RATE_LIMIT_STREAK.get((prov, model), 0),
+    })
+    return True, remaining
+
 
 def _is_weak_model(prov, model):
     """The last-resort backstops whose drafts routinely trip the quality floor:
@@ -1998,6 +2172,15 @@ def call_groq(prompt):
         wait hints to `waits` (a list captured via closure) when collect_waits."""
         nonlocal last_err
         for prov, model in sub_chain:
+            # Health check BEFORE the request. A model that authoritatively
+            # rate-limited us seconds ago is not worth a round trip plus another
+            # wait; skipping it falls straight through to the next-strongest
+            # provider instead. Never permanent -- the cooldown expires.
+            skip, remaining = should_skip_provider(prov, model)
+            if skip:
+                print(f"  [model] {prov}:{model} skipped — rate-limited, "
+                      f"{remaining:.1f}s of cooldown left")
+                continue
             try:
                 if prov == "gemini":
                     out = _call_gemini(model, prompt)
@@ -2048,9 +2231,14 @@ def call_groq(prompt):
                     print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
                           + (f" :: {detail}" if detail else ""))
                     last_err = e
-                    if collect_waits and e.code == 429:
+                    if e.code == 429:
+                        # Authoritative rate-limit evidence from the provider
+                        # itself. Recorded regardless of collect_waits, so a
+                        # Phase-2 (weak-chain) 429 also starts a cooldown
+                        # instead of being retried blind by the next call.
                         w = _parse_retry_secs(detail)
-                        if w is not None:
+                        note_provider_rate_limited(prov, model, retry_after_s=w)
+                        if collect_waits and w is not None:
                             waits.append(w)
                     continue
                 raise   # 5xx etc — let the outer retry loop handle it
@@ -2068,6 +2256,7 @@ def call_groq(prompt):
             print(f"  [model] using {prov}:{model}")
         _WORKING_MODEL = (prov, model)
         _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
+        note_provider_healthy(prov, model)  # and clears any stale cooldown
         return out
 
     # Phase 1: strong writers, waiting out per-minute 429s before giving up.
@@ -2385,7 +2574,7 @@ def validate(m, job_name, fact=None):
     # clean top-level text
     m["title"] = _clean(m["title"])[:90]
     m["hook"] = _clean(m["hook"])
-    if not (4 <= len(m["hook"].split()) <= 16):
+    if not (HOOK_WORD_LO <= len(m["hook"].split()) <= HOOK_WORD_HI):
         return f"hook length {len(m['hook'].split())} words out of range"
     # Concrete-hook guard: catches the exact abstraction failure the Sun video
     # shipped with ("You're seeing the Sun as it was, not as it is" -- reads
@@ -2689,7 +2878,7 @@ def validate(m, job_name, fact=None):
     if key_terms:
         full_text = m["script"] + " " + " ".join(s["voiceover"] for s in m["scenes"])
         named = [kt for kt in key_terms if _key_term_present(kt, full_text)]
-        if len(named) < 2:
+        if len(named) < KEY_TERMS_MIN_NAMED:
             return (f"only {len(named)}/{len(key_terms)} mandatory key terms named "
                      f"({named or 'none'}) — the script must explicitly say at least 2 of "
                      f"{key_terms}; a script that says 'a naturally occurring isotope' instead "
@@ -3732,15 +3921,36 @@ def _v2_structured_call(prompt, schema, schema_name, debug_calls):
               f"~{est_tokens} est. tokens vs groq's {_provider_token_ceiling('groq')}-token "
               f"request ceiling -- STRUCTURAL (HTTP 413), not a throttle, so no amount of "
               f"backoff would make it succeed; going straight to the call_groq chain")
-    if GROQ_KEY and groq_fits:
+    # Health, not just capacity. This path calls Groq DIRECTLY rather than
+    # through call_groq/_walk, so without its own check it is a third door into
+    # a model already known to be cooling -- and it is the door the production
+    # orchestrator uses for every draft, critic and repair round.
+    groq_cooling, groq_cool_s = (should_skip_provider("groq", MODEL_CHAIN[0])
+                                 if (GROQ_KEY and groq_fits and MODEL_CHAIN) else (False, 0.0))
+    if groq_cooling:
+        print(f"  [writer-v2] skipping groq structured output for {schema_name}: "
+              f"{MODEL_CHAIN[0]} is rate-limited, {groq_cool_s:.1f}s of cooldown left -- "
+              f"going straight to the call_groq chain")
+    if GROQ_KEY and groq_fits and not groq_cooling:
         model0 = MODEL_CHAIN[0]
         try:
             raw, usage = _call_openai_compat_structured(
                 "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, model0, prompt,
                 schema, schema_name=schema_name)
+            note_provider_healthy("groq", model0)
             debug_calls.append({"provider": "groq", "model": model0, "usage": usage, "structured": True})
             return raw, True
         except Exception as e:  # noqa: BLE001
+            # A 429 here is the same authoritative evidence as one raised inside
+            # _walk, so it starts the same cooldown -- otherwise the immediate
+            # call_groq fallback below walks straight back into this model.
+            if isinstance(e, urllib.error.HTTPError) and e.code == 429:
+                try:
+                    detail = e.read().decode("utf-8", "replace")[:300]
+                except Exception:  # noqa: BLE001
+                    detail = ""
+                note_provider_rate_limited("groq", model0,
+                                           retry_after_s=_parse_retry_secs(detail))
             print(f"  [writer-v2] structured output unavailable/failed for {schema_name} ({e}); "
                   f"falling back to call_groq chain")
     try:

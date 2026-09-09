@@ -11,7 +11,7 @@ Content Render downstream primitives that do not require network/provider calls:
 - ``main.build_ass`` karaoke-caption generation;
 - real ASS caption burn;
 - ``main._ensure_music_bed`` (committed bed / procedural fallback);
-- narration/music sidechain mix + loudnorm;
+- narration/music sidechain mix + the shared measured master;
 - actual ``out/final.mp4``;
 - ``quality_audio_qa`` against that encoded MP4;
 - measured scene timeline via ``quality_science_render``;
@@ -39,6 +39,8 @@ from typing import Any
 import final_video_qa as FQ
 import main as legacy
 import quality_asset_lineage as QAL
+import delivery_contract as DC
+import delivery_master as DM
 import quality_audio_qa as AQA
 import quality_postrender_review as PQR
 import quality_repair_controller as RC
@@ -119,34 +121,54 @@ def _make_captioned(body: Path, ass: Path, dest: Path, duration: float) -> None:
         "ffmpeg", "-y", "-i", str(body),
         "-vf", f"ass='{ass}':fontsdir='{legacy.FONTS_DIR}',fade=t=out:st={fade_start:.3f}:d={fade_dur:.3f}",
         "-c:v", "libx264", "-preset", "ultrafast", "-crf", "28",
-        "-c:a", "aac", "-b:a", "96k", str(dest),
+        # Delivery args even on the caption intermediate: both proofs master
+        # FROM this file, so a 96 kbit/s intermediate made them master a harsher
+        # signal than production, whose intermediate uses the ffmpeg default.
+        *DC.delivery_audio_encode_args(), str(dest),
     ])
 
 
 def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
+    """Mix -> SHARED measured master -> mux. Identical sequence to production.
+
+    The mix and the master are separate steps on purpose. Mastering has to
+    MEASURE its own intermediate result to be accurate (loudnorm's single-pass
+    error on realistic material is ~2.4 dB), and a measurement cannot happen
+    inside one filter graph. Splitting also means the delivered audio here and
+    in main.py comes from the same function rather than two filter strings that
+    merely look alike.
+    """
     legacy._apply_vibe("awe")
+    work = Path(dest).parent / "master_work"
+    work.mkdir(parents=True, exist_ok=True)
+    tag = Path(dest).stem
+    mixed = work / f"mixed_{tag}.wav"
+
     bed = legacy._ensure_music_bed(duration)
     if bed and Path(bed).is_file():
-        # Mirror production's voice-keyed duck + loudnorm path.
+        # Mirror production's voice-keyed duck. Audio only: no mastering here.
         run([
             "ffmpeg", "-y", "-i", str(captioned), "-stream_loop", "-1", "-i", str(bed),
             "-filter_complex",
             f"[1:a]{legacy._vibe_music_filter()}[m_raw];"
             "[m_raw][0:a]sidechaincompress=threshold=0.05:ratio=6:attack=25:release=400:makeup=1[m];"
-            "[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
-            "loudnorm=I=-14:TP=-1.5:LRA=11[a]",
-            "-map", "0:v", "-map", "[a]", "-c:v", "copy",
-            "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
-            "-ar", str(AQA.DELIVERY_SAMPLE_RATE), "-shortest", str(dest),
+            "[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]",
+            "-map", "[a]", "-ar", str(DC.DELIVERY_SAMPLE_RATE), "-shortest", str(mixed),
         ])
-        return {"music_bed": str(bed), "sidechain_duck": True}
+        music_info = {"music_bed": str(bed), "sidechain_duck": True}
+    else:
+        run(["ffmpeg", "-y", "-i", str(captioned), "-vn",
+             "-ar", str(DC.DELIVERY_SAMPLE_RATE), str(mixed)])
+        music_info = {"music_bed": "", "sidechain_duck": False}
+
+    mastered = work / f"mastered_{tag}.wav"
+    master = DM.master_audio(mixed, mastered, work)
     run([
-        "ffmpeg", "-y", "-i", str(captioned), "-c:v", "copy",
-        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
-        "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
-        "-ar", str(AQA.DELIVERY_SAMPLE_RATE), str(dest),
+        "ffmpeg", "-y", "-i", str(captioned), "-i", str(mastered),
+        "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+        *DC.delivery_audio_encode_args(), "-shortest", str(dest),
     ])
-    return {"music_bed": "", "sidechain_duck": False}
+    return {**music_info, "master": master}
 
 
 def _repair_verdict() -> FQ.FinalQAVerdict:
@@ -246,16 +268,20 @@ def proof(out_root: str) -> dict[str, Any]:
         lineage = QAL.write_lineage(lineage_entries, out / "final_asset_lineage.json")
 
         def _finish_assembly(files, dest) -> dict[str, Any]:
-            """Concat -> captions -> music bed -> loudnorm, for ANY scene set.
+            """Concat -> captions -> music bed -> shared master, for ANY scene set.
 
             Both the first assembly and every repaired re-assembly must go
             through this identical finishing path. They used to diverge: the
             repair re-assembled with a bare build_body_concat -- no captions,
-            no music bed, no loudnorm -- and was then judged by the SAME audio
+            no music bed, no mastering -- and was then judged by the SAME audio
             QA gate that requires normalized -14 LUFS. That asymmetry is why
             the repaired artifact could never pass re-QA, and in production it
             would mean a targeted repair either always fails the gate or ships
             an unmastered, caption-less video.
+
+            Parity is structural rather than promised: there is one call site
+            for _mix_final, so a repaired artifact cannot be mastered by a
+            different sequence than the original without deleting this function.
             """
             files = [str(f) for f in files]
             dest = Path(dest)

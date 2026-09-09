@@ -140,18 +140,39 @@ def replay_attempt(attempt, max_repair_rounds=2):
     return out
 
 
-def load_corpus(corpus_dir=CORPUS_DIR):
+def load_corpus(corpus_dir=CORPUS_DIR, only=None):
+    """`only` = an iterable of fixture filenames to restrict the load to.
+
+    The corpus grows every flagship, but a measurement is only ever about the
+    runs it was taken over. Restricting by filename lets a historical result
+    stay pinned to the exact fixtures that produced it instead of drifting --
+    or being renumbered -- each time a new run is added.
+    """
+    keep = set(only) if only is not None else None
     fixtures = []
     for path in sorted(glob.glob(os.path.join(corpus_dir, "flagship_*.json"))):
+        name = os.path.basename(path)
+        if keep is not None and name not in keep:
+            continue
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)
-        data["_file"] = os.path.basename(path)
+        data["_file"] = name
         fixtures.append(data)
     return fixtures
 
 
-def replay_corpus(corpus_dir=CORPUS_DIR):
-    fixtures = load_corpus(corpus_dir)
+# The fixtures the 2026-09-08 Writer diagnosis was measured over. Pinned by
+# name so adding run 06 (or 07...) cannot silently restate that result.
+HISTORICAL_BASELINE_FIXTURES = (
+    "flagship_02_2dbad04.json",
+    "flagship_03_4b7584c.json",
+    "flagship_04_39275e3.json",
+    "flagship_05_240bdc1.json",
+)
+
+
+def replay_corpus(corpus_dir=CORPUS_DIR, only=None):
+    fixtures = load_corpus(corpus_dir, only=only)
     families, rows = {}, []
     totals = {
         "fixtures": len(fixtures), "attempts": 0, "rounds": 0,

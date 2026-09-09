@@ -85,10 +85,15 @@ def test_corpus_is_present_and_replays():
 
 
 def test_measured_baseline_is_pinned():
-    """These numbers are the evidence behind the whole Writer diagnosis."""
-    t = R.replay_corpus()["totals"]
+    """These numbers are the evidence behind the whole Writer diagnosis.
+
+    Pinned to the FIXTURES it was measured over (runs 02-05), not to whatever
+    the corpus happens to hold. A later flagship adds rounds; it does not get to
+    quietly restate a result taken before it existed.
+    """
+    t = R.replay_corpus(only=R.HISTORICAL_BASELINE_FIXTURES)["totals"]
     check(t["attempts"] == 13 and t["rounds"] == 36,
-          f"corpus size pinned at 13 attempts / 36 rounds (got {t['attempts']}/{t['rounds']})")
+          f"runs 02-05 pinned at 13 attempts / 36 rounds (got {t['attempts']}/{t['rounds']})")
     check(t["mechanical_rounds"] == 18,
           f"18 of 36 rounds died on pure length arithmetic (got {t['mechanical_rounds']})")
     check(t["craft_rounds"] == 16,
@@ -103,10 +108,59 @@ def test_measured_baseline_is_pinned():
           f"(got {t['salvageable_attempts']}) -- repair-budget starvation is NOT the binding constraint")
 
 
+FLAGSHIP_06 = ("flagship_06_fed4b0f.json",)
+
+
+def _families(only):
+    fams = {}
+    for fx in R.load_corpus(only=only):
+        for attempt in fx.get("attempts") or []:
+            for row in R.replay_attempt(attempt)["rounds"]:
+                if row["family"]:
+                    fams[row["family"]] = fams.get(row["family"], 0) + 1
+    return fams
+
+
+def test_the_stated_length_contract_eliminated_length_failures():
+    """Run 06 is the first flagship AFTER the length contract shipped (PR #76).
+
+    Runs 02-05 lost 17 of 36 rounds to total-word + per-scene arithmetic. Run 06
+    lost ZERO of 9. n=9 is not a statistical claim and this test does not make
+    one -- it pins the measurement so a regression that reintroduces length
+    failures is visible immediately rather than being rediscovered by a paid run.
+    """
+    old = _families(R.HISTORICAL_BASELINE_FIXTURES)
+    new = _families(FLAGSHIP_06)
+    old_len = old.get("total_word_count", 0) + old.get("scene_word_cap", 0)
+    new_len = new.get("total_word_count", 0) + new.get("scene_word_cap", 0)
+    check(old_len == 17, f"runs 02-05 lost 17 rounds to length arithmetic (got {old_len})")
+    check(new_len == 0,
+          f"run 06, the first with a STATED budget, lost 0 rounds to length (got {new_len})")
+
+
+def test_run_06_failures_are_the_constraints_the_repair_is_never_told():
+    """Why the fix is repair-prompt content, not a wider budget or more rounds.
+
+    Every run-06 blocker is a deterministic constraint that validate() enforces
+    and the repair prompt never states: hook length, mandatory key terms,
+    forbidden formal connectors.
+    """
+    fams = _families(FLAGSHIP_06)
+    check(fams.get("hook_length") == 3, f"3 hook-length rounds (got {fams.get('hook_length')})")
+    check(fams.get("key_terms_missing") == 3,
+          f"3 mandatory-key-term rounds (got {fams.get('key_terms_missing')})")
+    check(fams.get("formal_connector") == 2,
+          f"2 formal-connector rounds (got {fams.get('formal_connector')})")
+    check(sum(fams.values()) == 9 - fams.get(None, 0),
+          "every run-06 round is accounted for by a named family")
+
+
 if __name__ == "__main__":
     test_classifier_buckets_the_real_historical_rejections()
     test_classifier_is_total_and_never_raises()
     test_tier1_clean_requires_all_three_signals()
     test_corpus_is_present_and_replays()
     test_measured_baseline_is_pinned()
+    test_the_stated_length_contract_eliminated_length_failures()
+    test_run_06_failures_are_the_constraints_the_repair_is_never_told()
     print("writer replay tests: PASS")
