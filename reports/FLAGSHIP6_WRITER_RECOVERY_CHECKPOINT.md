@@ -112,7 +112,8 @@ the log only gives in aggregate — stated as an estimate, not a measurement.
 - **C — anti-drift contract**: DONE. `narration_deterministic_contract()` from
   validate()'s own constants; HOOK_WORD_LO/HI, KEY_TERMS_MIN_NAMED and
   FORBIDDEN_CONNECTORS extracted so prompt and validator cannot diverge.
-- **D — provider session health**: DONE. Per-(provider,model) cooldown from the
+- **D — provider session health**: DONE (health/capability only — see the S9
+  accounting correction below). Per-(provider,model) cooldown from the
   provider's own retry delay, clamped, checked in `_walk` and in the
   certification strict loop, cleared on success, evidence in a separate channel.
 - **E — champion/challenger**: structural evidence covered by the F suite
@@ -149,3 +150,51 @@ would have written. That is the one question the next private flagship answers.
 Await Jacob's authorization. Recommendation: READY FOR ONE MORE PRIVATE
 FLAGSHIP once PR #78 is merged and actual-main CI is green. Do not run it from
 this branch.
+
+---
+
+## Corrective pass — provider-health state bugs (S9)
+
+SUPERCHAD's audit of PR #78 found a real defect; two more of the same class
+turned up on re-inspection. All three are state that *claimed* one thing while
+*being* another.
+
+1. **`note_provider_healthy` short-circuited.** Written as
+   `if cooldown.pop(k) or streak.pop(k):` — a cooldown deadline is always
+   truthy, so the streak pop **never ran**. A "recovered" event was emitted
+   asserting both states cleared while the streak silently survived, and the
+   next rate limit for that model resumed from the stale count instead of 1.
+   Both pops are now unconditional and the emit decision is made afterwards.
+
+2. **A NaN `retry_after_s` failed OPEN.** Every comparison against NaN is
+   False, so `wait <= 0` passed it through, `min(nan, MAX)` stayed nan, the
+   stored deadline became nan, and `max(0.0, nan - now)` evaluated to `0.0` —
+   the model read as **healthy** while the evidence recorded a cooldown that
+   was never in force. Now guarded with `math.isfinite`. (`inf` was already
+   safe: it clamps.)
+
+3. **Expired deadlines lingered.** `should_skip_provider` returned early
+   without dropping a lapsed entry, so a much-later success would pop that
+   stale timestamp and emit "recovered" for a cooldown that had already expired
+   on its own. Expired entries are now dropped; the **streak is deliberately
+   left alone**, because repeated rate limits with no intervening success
+   genuinely are a streak.
+
+Regression: `test_recovery_clears_BOTH_maps_not_just_the_first_truthy_one`
+walks the real lifecycle and asserts on `_PROVIDER_COOLDOWN_UNTIL` and
+`_PROVIDER_RATE_LIMIT_STREAK` directly — public behaviour alone would have
+missed defect 1 — plus streak-only recovery and the NaN/inf/negative/garbage
+retry-after matrix.
+
+## Backlog accounting (corrected)
+
+- **S9 — PARTIAL.** Capability routing and session health routing are closed
+  and covered. **Cost-aware routing is NOT implemented** for LLM providers: the
+  chain orders by quality tier (`_is_weak_model`) and key presence only, and
+  `PROVIDER_REQUEST_TOKEN_CEILINGS` is a size ceiling, not a price. The only
+  cost logic in the repo is in the media lanes (`video_repair_lab.py`,
+  `image_to_video_bakeoff.py`), which is a different subsystem. My earlier
+  "S9 COMPLETE" was wrong and is retracted.
+- **S10 — PARTIAL.** Structural champion/challenger evidence only; no
+  counterfactual acceptance is claimed, because offline replay cannot know what
+  a model would have generated.

@@ -18,6 +18,7 @@ Zero network, zero providers.
 """
 from __future__ import annotations
 
+import math
 import os
 import sys
 
@@ -247,6 +248,84 @@ def test_health_evidence_is_kept_out_of_debug_calls():
           "it records to the separate provider-health channel instead")
 
 
+def test_recovery_clears_BOTH_maps_not_just_the_first_truthy_one():
+    """The real state lifecycle, asserted on the maps themselves.
+
+    The bug: `if cooldown.pop(k) or streak.pop(k):` short-circuits. A cooldown
+    deadline is always truthy, so the streak pop never executed. The function
+    emitted "recovered" -- claiming both states cleared -- while the streak
+    survived, and the NEXT rate limit resumed from the stale count.
+
+    Asserting only the public behaviour would have missed it, so this reaches
+    into both maps directly.
+    """
+    G._provider_health_reset()
+    key = ("groq", "m1")
+
+    G.note_provider_rate_limited(*key, retry_after_s=30.0, now=5000.0)
+    check(key in G._PROVIDER_COOLDOWN_UNTIL, "rate limit populates the cooldown map")
+    check(G._PROVIDER_RATE_LIMIT_STREAK.get(key) == 1,
+          "and the streak map, starting at 1")
+
+    G.note_provider_rate_limited(*key, retry_after_s=30.0, now=5001.0)
+    check(G._PROVIDER_RATE_LIMIT_STREAK.get(key) == 2,
+          "a second rate limit escalates the streak to 2")
+
+    G.note_provider_healthy(*key)
+    check(key not in G._PROVIDER_COOLDOWN_UNTIL,
+          "a success removes the key from _PROVIDER_COOLDOWN_UNTIL")
+    check(key not in G._PROVIDER_RATE_LIMIT_STREAK,
+          "a success ALSO removes it from _PROVIDER_RATE_LIMIT_STREAK -- the pop "
+          "is unconditional, not short-circuited behind the cooldown pop")
+
+    G.note_provider_rate_limited(*key, retry_after_s=30.0, now=5100.0)
+    check(G._PROVIDER_RATE_LIMIT_STREAK.get(key) == 1,
+          "the next rate limit starts the streak at 1 again, not at the stale 3")
+    events = [e["event"] for e in G.provider_health_events()]
+    check(events == ["rate_limited", "rate_limited", "recovered", "rate_limited"],
+          f"the lifecycle is recorded exactly once per transition (got {events})")
+
+
+def test_recovery_is_reported_when_only_a_streak_survives():
+    """The other half of the short-circuit: streak present, cooldown already gone."""
+    G._provider_health_reset()
+    key = ("groq", "m1")
+    G.note_provider_rate_limited(*key, retry_after_s=5.0, now=6000.0)
+    G.should_skip_provider(*key, now=6099.0)          # expired -> deadline dropped
+    check(key not in G._PROVIDER_COOLDOWN_UNTIL,
+          "an expired cooldown is dropped rather than left to be popped later")
+    check(key in G._PROVIDER_RATE_LIMIT_STREAK,
+          "but the streak survives natural expiry -- repeated limits without a "
+          "success genuinely are a streak")
+    G.note_provider_healthy(*key)
+    check(key not in G._PROVIDER_RATE_LIMIT_STREAK, "a success clears that streak")
+    check([e["event"] for e in G.provider_health_events()][-1] == "recovered",
+          "and recovery is still reported when the streak was the only live state")
+
+
+def test_a_nan_retry_after_cannot_silently_disable_the_cooldown():
+    """NaN fails every comparison, so it slipped through as a live deadline.
+
+    `wait <= 0` is False for NaN, `min(nan, MAX)` is nan, the stored deadline
+    becomes nan, and `max(0.0, nan - now)` is 0.0 -- the model reads healthy
+    while the evidence claims a cooldown. A fail-OPEN with a paper trail saying
+    otherwise.
+    """
+    G._provider_health_reset()
+    wait = G.note_provider_rate_limited("groq", "m1", retry_after_s=float("nan"), now=7000.0)
+    check(math.isfinite(wait), f"a NaN retry-after yields a finite cooldown (got {wait})")
+    check(wait == G.PROVIDER_COOLDOWN_DEFAULT_S,
+          "it falls back to the default rather than inventing a number")
+    skip, remaining = G.should_skip_provider("groq", "m1", now=7001.0)
+    check(skip and remaining > 0,
+          "and the model is ACTUALLY cooling, matching what the evidence says")
+    for bad in (float("inf"), float("-inf"), -5.0, 0.0, "nonsense", None, object()):
+        G._provider_health_reset()
+        w = G.note_provider_rate_limited("groq", "m1", retry_after_s=bad, now=8000.0)
+        check(math.isfinite(w) and 0 < w <= G.PROVIDER_COOLDOWN_MAX_S,
+              f"retry-after {bad!r} yields a sane bounded cooldown ({w})")
+
+
 def test_all_three_groq_entry_points_consult_health():
     """There are THREE independent doors into Groq, not two.
 
@@ -300,6 +379,9 @@ if __name__ == "__main__":
     test_9_a_provider_recovers_and_is_never_permanently_disabled()
     test_10_every_skip_and_recovery_is_recorded()
     test_health_evidence_is_kept_out_of_debug_calls()
+    test_recovery_clears_BOTH_maps_not_just_the_first_truthy_one()
+    test_recovery_is_reported_when_only_a_streak_survives()
+    test_a_nan_retry_after_cannot_silently_disable_the_cooldown()
     test_all_three_groq_entry_points_consult_health()
     test_the_chain_consults_health_before_spending_a_request()
     print("repair policy + provider health tests: PASS")

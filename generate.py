@@ -8,7 +8,7 @@ Writes manifest.json for the render engine and appends to memory.json (regressio
 Env: GROQ_API_KEY
 """
 
-import os, sys, json, re, time, urllib.request, urllib.error, random, datetime, collections, hashlib
+import os, sys, json, re, time, math, urllib.request, urllib.error, random, datetime, collections, hashlib
 
 import writer_v2
 import writer_v2_repair as wr2_repair
@@ -1995,7 +1995,12 @@ def note_provider_rate_limited(prov, model, retry_after_s=None, now=None):
         wait = float(retry_after_s) if retry_after_s is not None else PROVIDER_COOLDOWN_DEFAULT_S
     except (TypeError, ValueError):
         wait = PROVIDER_COOLDOWN_DEFAULT_S
-    if wait <= 0:
+    # NaN must be caught explicitly: every comparison against it is False, so
+    # `wait <= 0` passes it through, `min(nan, MAX)` returns nan, the stored
+    # deadline becomes nan, and `max(0.0, nan - now)` evaluates to 0.0 -- the
+    # model reads as HEALTHY. The failure is silent and fails OPEN: the evidence
+    # would record a cooldown that was never actually in force.
+    if not math.isfinite(wait) or wait <= 0:
         wait = PROVIDER_COOLDOWN_DEFAULT_S
     wait = min(wait, PROVIDER_COOLDOWN_MAX_S)
     _PROVIDER_COOLDOWN_UNTIL[key] = now + wait
@@ -2008,9 +2013,21 @@ def note_provider_rate_limited(prov, model, retry_after_s=None, now=None):
 
 
 def note_provider_healthy(prov, model):
-    """A success clears the cooldown and the streak -- recovery is automatic."""
+    """A success clears the cooldown AND the streak -- recovery is automatic.
+
+    Both entries are removed unconditionally, and only THEN is the decision made
+    about emitting evidence. Writing this as
+    ``if cooldown.pop(...) or streak.pop(...)`` short-circuits: a cooldown
+    timestamp is always truthy, so the streak pop never ran. The function
+    emitted a "recovered" event claiming both states were cleared while the
+    streak silently survived, and the NEXT rate limit for that model then
+    resumed from the stale count instead of starting at 1 -- corrupting the
+    streak in the evidence a reviewer reads.
+    """
     key = (prov, model)
-    if _PROVIDER_COOLDOWN_UNTIL.pop(key, None) or _PROVIDER_RATE_LIMIT_STREAK.pop(key, None):
+    had_cooldown = _PROVIDER_COOLDOWN_UNTIL.pop(key, None) is not None
+    had_streak = _PROVIDER_RATE_LIMIT_STREAK.pop(key, None) is not None
+    if had_cooldown or had_streak:
         _PROVIDER_HEALTH_EVENTS.append({
             "event": "recovered", "provider": prov, "model": model})
 
@@ -2019,6 +2036,12 @@ def should_skip_provider(prov, model, now=None):
     """(skip, remaining_seconds). Records the skip so it is never invisible."""
     remaining = provider_cooldown_remaining(prov, model, now=now)
     if remaining <= 0:
+        # Drop an expired deadline rather than leaving it to be popped later.
+        # A stale past timestamp is still truthy, so it would make a much-later
+        # success emit "recovered" for a cooldown that had already lapsed on its
+        # own. The STREAK is deliberately left alone: repeated rate limits with
+        # no intervening success genuinely are a streak.
+        _PROVIDER_COOLDOWN_UNTIL.pop((prov, model), None)
         return False, 0.0
     _PROVIDER_HEALTH_EVENTS.append({
         "event": "skipped_cooling", "provider": prov, "model": model,
