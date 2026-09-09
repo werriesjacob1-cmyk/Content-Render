@@ -34,6 +34,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("GROQ_API_KEY", "x")
 
+import delivery_contract as DC
 import quality_audio_qa as AQA
 
 ROOT = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -102,7 +103,8 @@ def test_the_floor_still_catches_the_opposite_failure():
 # louder branch builds its filter graph in a list, so the run() call itself never
 # contains the string "loudnorm" and a proximity check would silently pass.
 MASTERING_REGIONS = (
-    ("main.py", '_LOUDNORM = "loudnorm', 'with open(os.path.join(OUT, "post.json")'),
+    ("main.py", "_LOUDNORM = delivery_loudnorm_filter()",
+     'with open(os.path.join(OUT, "post.json")'),
     ("quality_downstream_factory_proof.py", "def _mix_final(", "\ndef _repair_verdict("),
 )
 
@@ -122,16 +124,12 @@ def test_every_mastering_encode_pins_the_rate():
         check(len(calls) >= 2,
               f"{mod}: both mastering branches are present ({len(calls)} found)")
         for cmd in calls:
-            check('"-ar"' in cmd,
-                  f"{mod}: every mastering encode pins -ar (else it lands on 96 kHz)")
-            check("DELIVERY_SAMPLE_RATE" in cmd,
-                  f"{mod}: that -ar comes from the shared constant, not a literal")
+            check("delivery_audio_encode_args()" in cmd,
+                  f"{mod}: the codec/bitrate/rate args are spliced from the shared "
+                  "contract helper, not retyped (retyping is how -ar was lost before)")
             # The rate and the bitrate are one decision: pinning 48 kHz while
             # leaving 96 kbit/s measured +0.07 dBTP, breaching the gate's own
             # ceiling. Anything that re-pins the rate must carry the bitrate too.
-            check("DELIVERY_AUDIO_BITRATE" in cmd,
-                  f"{mod}: the mastering bitrate is the shared constant, so the "
-                  "rate cannot be changed without the bitrate that makes it safe")
             check('"96k"' not in cmd,
                   f"{mod}: the starved 96 kbit/s mastering bitrate is gone")
             checked += 1
@@ -145,18 +143,30 @@ def test_the_bitrate_is_high_enough_for_the_delivery_rate():
     This is the number that keeps the true-peak target honest, so it is asserted
     rather than left to whoever next edits an ffmpeg line.
     """
-    kbps = int(re.sub(r"[^0-9]", "", AQA.DELIVERY_AUDIO_BITRATE))
+    kbps = int(re.sub(r"[^0-9]", "", DC.DELIVERY_AUDIO_BITRATE))
     check(kbps >= 128,
           f"the mastering bitrate ({kbps} kbit/s) is at least the 128 measured as "
           "sufficient for a limited signal at 48 kHz")
 
 
-def test_the_renderer_reads_the_constants_from_the_gate():
+def test_the_renderer_reads_the_contract_from_a_neutral_module():
+    """Production must not import the module that judges it.
+
+    main.py used to do `from quality_audio_qa import ...`, which made the
+    renderer depend on QA -- and quality_audio_qa itself imports `narration`, a
+    production module, so it was never a leaf. delivery_contract imports nothing.
+    """
     src = (ROOT / "main.py").read_text(encoding="utf-8")
-    check("from quality_audio_qa import DELIVERY_AUDIO_BITRATE, DELIVERY_SAMPLE_RATE" in src,
-          "main.py imports both delivery constants from the module that enforces them")
+    check("from delivery_contract import" in src,
+          "main.py takes the delivery contract from the neutral module")
+    check("from quality_audio_qa import" not in src,
+          "and no longer imports the QA module it is judged by")
     check(not re.search(r'"-ar",\s*"48000"', src),
           "main.py does not restate 48000 as a literal beside the import")
+    contract_src = (ROOT / "delivery_contract.py").read_text(encoding="utf-8")
+    for banned in ("import main", "import quality_", "import generate", "import narration"):
+        check(banned not in contract_src,
+              f"delivery_contract stays a leaf -- no {banned!r} (that would re-create the cycle)")
 
 
 if __name__ == "__main__":
@@ -166,5 +176,5 @@ if __name__ == "__main__":
     test_the_floor_still_catches_the_opposite_failure()
     test_every_mastering_encode_pins_the_rate()
     test_the_bitrate_is_high_enough_for_the_delivery_rate()
-    test_the_renderer_reads_the_constants_from_the_gate()
+    test_the_renderer_reads_the_contract_from_a_neutral_module()
     print("delivery audio contract tests: PASS")

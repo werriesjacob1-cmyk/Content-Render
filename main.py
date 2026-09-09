@@ -31,7 +31,9 @@ from narration import spoken_text
 # The renderer and the audio gate must agree on the delivery sample rate from
 # ONE constant. Stating it in two places is precisely the prompt/validator drift
 # that cost this project five flagship runs, in a different shape.
-from quality_audio_qa import DELIVERY_AUDIO_BITRATE, DELIVERY_SAMPLE_RATE
+# The delivery contract, not the QA module. The renderer must not depend on the
+# thing that judges it; both import the same neutral source instead.
+from delivery_contract import delivery_audio_encode_args, delivery_loudnorm_filter
 PROFILE, PAGE = profiles.get_profile()
 ELEVEN_VOICE = PROFILE["eleven_voice"]
 MUSIC = os.path.join(ROOT, PROFILE.get("music", "music.mp3"))
@@ -3737,27 +3739,24 @@ def main():
     # platform (raising noise) while others get turned down — inconsistent and
     # unprofessional. loudnorm makes every video hit the same loudness the feed
     # expects, with headroom so it never clips.
-    _LOUDNORM = "loudnorm=I=-14:TP=-1.5:LRA=11"
-    # loudnorm's single-pass dynamic mode resamples INTERNALLY to 192 kHz and
-    # never restores the input rate. With no -ar the AAC encoder then falls back
-    # to the nearest rate it supports -- 96 kHz -- so every render shipped 96 kHz
-    # audio built from a 24 kHz TTS source, spending a fixed bitrate on an
-    # inaudible band. Pinning the delivery rate puts those bits back into the
-    # voice, but ONLY together with the bitrate: see quality_audio_qa, where both
-    # constants live, for the measurement behind that pairing.
+    # Loudness target, sample rate and bitrate ALL come from delivery_contract --
+    # nothing about the final master is restated here. The filter used to be a
+    # hard-coded literal while only the rate/bitrate were shared, which is how a
+    # later "shared" true-peak target ended up inert: it was defined in one
+    # module while all three finishing paths kept their own copy of the string.
+    _LOUDNORM = delivery_loudnorm_filter()
     if len(labels) > 1:
         filt.append(f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:"
                     f"dropout_transition=0:normalize=0,{_LOUDNORM}[a]")
         run(["ffmpeg", "-y", *ff_inputs, "-filter_complex", ";".join(filt),
              "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
-             "-c:a", "aac", "-b:a", DELIVERY_AUDIO_BITRATE,
-             "-ar", str(DELIVERY_SAMPLE_RATE), "-shortest", final])
+             *delivery_audio_encode_args(), "-shortest", final])
     else:
         run(["ffmpeg", "-y", "-i", captioned, "-map_metadata", "-1",
              "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
-             "-af", _LOUDNORM, "-c:a", "aac", "-b:a", DELIVERY_AUDIO_BITRATE,
-             "-ar", str(DELIVERY_SAMPLE_RATE), "-pix_fmt", "yuv420p", final])
+             "-af", _LOUDNORM, *delivery_audio_encode_args(),
+             "-pix_fmt", "yuv420p", final])
 
     with open(os.path.join(OUT, "post.json"), "w") as f:
         # video_id (if present) is the key generate.py's performance-memory

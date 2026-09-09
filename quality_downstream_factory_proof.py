@@ -39,6 +39,7 @@ from typing import Any
 import final_video_qa as FQ
 import main as legacy
 import quality_asset_lineage as QAL
+import delivery_contract as DC
 import quality_audio_qa as AQA
 import quality_postrender_review as PQR
 import quality_repair_controller as RC
@@ -134,17 +135,15 @@ def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
             f"[1:a]{legacy._vibe_music_filter()}[m_raw];"
             "[m_raw][0:a]sidechaincompress=threshold=0.05:ratio=6:attack=25:release=400:makeup=1[m];"
             "[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
-            "loudnorm=I=-14:TP=-1.5:LRA=11[a]",
+            + DC.delivery_loudnorm_filter() + "[a]",
             "-map", "0:v", "-map", "[a]", "-c:v", "copy",
-            "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
-            "-ar", str(AQA.DELIVERY_SAMPLE_RATE), "-shortest", str(dest),
+            *DC.delivery_audio_encode_args(), "-shortest", str(dest),
         ])
         return {"music_bed": str(bed), "sidechain_duck": True}
     run([
         "ffmpeg", "-y", "-i", str(captioned), "-c:v", "copy",
-        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
-        "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
-        "-ar", str(AQA.DELIVERY_SAMPLE_RATE), str(dest),
+        "-af", DC.delivery_loudnorm_filter(),
+        *DC.delivery_audio_encode_args(), str(dest),
     ])
     return {"music_bed": "", "sidechain_duck": False}
 

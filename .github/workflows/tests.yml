@@ -134,6 +134,8 @@ jobs:
           run_check "provider capability gate" python tests/test_provider_capability_gate.py
           run_check "evidence json boundary" env -u GROQ_API_KEY python tests/test_quality_evidence.py
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py
+          run_check "delivery contract load-bearing" env -u GROQ_API_KEY python tests/test_delivery_contract_load_bearing.py
+          run_check "production realism proof contract" env -u GROQ_API_KEY python tests/test_quality_production_realism_proof.py
           run_check "repair policy + provider health" env -u GROQ_API_KEY python tests/test_repair_policy_and_provider_health.py
           run_check "lineage survives repair" env -u GROQ_API_KEY python tests/test_asset_lineage_after_repair.py
           run_check "visual intent load-bearing" env -u GROQ_API_KEY python tests/test_visual_intent_load_bearing.py

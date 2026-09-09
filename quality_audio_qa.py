@@ -28,25 +28,30 @@ from narration import spoken_text
 
 LUFS_MIN = -16.0
 LUFS_MAX = -11.5
-TRUE_PEAK_MAX_DB = -0.5
 MAX_LONG_SILENCE_RATIO = 0.20
 MIN_SAMPLE_RATE = 32000
-# The rate the renderer must encode at, and the ceiling this gate enforces.
-# main.py imports DELIVERY_SAMPLE_RATE so the encode and the check cannot drift.
-# The ceiling is not cosmetic: ffmpeg's loudnorm resamples internally to 192 kHz
-# and does not restore the input rate, so an encode with no explicit -ar lands on
-# 96 kHz -- half a fixed bitrate spent on an inaudible band. That shipped
-# undetected until a CI artifact was probed, so it is a measured gate now.
-DELIVERY_SAMPLE_RATE = 48000
+
+# The delivery contract is OWNED by delivery_contract.py and imported here.
+# This module is a consumer, not the source: the renderer must not have to
+# import a QA module to know how to master (backwards layering), and the two
+# must not be able to state different numbers. Re-exported so existing callers
+# -- main.py, the factory proof, the production-realism proof, the tests --
+# keep resolving these names through whichever module they already use.
+from delivery_contract import (  # noqa: E402  (contract import, kept beside the gates it feeds)
+    DELIVERY_AUDIO_BITRATE,
+    DELIVERY_INTEGRATED_LUFS,
+    DELIVERY_LRA_LU,
+    DELIVERY_SAMPLE_RATE,
+    DELIVERY_TRUE_PEAK_TARGET_DB,
+    QA_TRUE_PEAK_CEILING_DB,
+    delivery_audio_encode_args,
+    delivery_loudnorm_filter,
+)
+
+# What the ENCODED artifact must measure. Deliberately not the same number as
+# DELIVERY_TRUE_PEAK_TARGET_DB: the gap between them is the AAC codec headroom.
+TRUE_PEAK_MAX_DB = QA_TRUE_PEAK_CEILING_DB
 MAX_SAMPLE_RATE = DELIVERY_SAMPLE_RATE
-# Pinning 48 kHz alone made true peak jump from -1.50 to +0.07 dB -- i.e. the
-# mastering gate's own ceiling was breached. Measured, not reasoned: at 48 kHz
-# the AAC encoder was bitrate-starved at 96 kbit/s and its coding error overshot
-# the limited signal by ~1.6 dB, which the 96 kHz encode had masked by spending
-# those bits on an inaudible band instead. At 128 kbit/s the overshoot vanishes
-# (-1.49 dB, the loudnorm target) for about 1% more file. So the rate and the
-# bitrate are ONE decision and are stated together.
-DELIVERY_AUDIO_BITRATE = "128k"
 MIN_WPM = 105.0
 MAX_WPM = 205.0
 
@@ -85,6 +90,12 @@ def probe_media(path: str) -> dict[str, Any]:
 def analyze_loudness(path: str) -> dict[str, float]:
     proc = _run([
         "ffmpeg", "-hide_banner", "-nostats", "-i", path,
+        # MEASUREMENT, not delivery. Deliberately NOT delivery_loudnorm_filter():
+        # this pass reads the `input_*` fields, which describe the signal as it
+        # arrived and do not depend on the target parameters at all. Wiring the
+        # delivery target in here would make changing the master silently change
+        # the measurement command while measuring exactly the same thing. Leave
+        # these numbers alone -- they are inert analysis arguments.
         "-vn", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
         "-f", "null", "-",
     ], timeout=90)
