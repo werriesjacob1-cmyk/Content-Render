@@ -25,9 +25,11 @@ Exact-head CI, both jobs SUCCESS on the same SHA:
 | `763f334` | SUCCESS | SUCCESS | 34301460557 |
 | `cb41c89` | SUCCESS | SUCCESS | 34302402466 |
 | `b651b59` | SUCCESS | SUCCESS | 34302889958 |
-| `1a56a72` (final head) | SUCCESS | SUCCESS | 34303309919 |
+| `1a56a72` | SUCCESS | SUCCESS | 34303309919 |
+| `e1874c5` (final head) | SUCCESS | SUCCESS | 34303539729 |
 
-The final head's artifact was probed too: both MP4s **48 kHz / ~128 kbit/s AAC**,
+`e1874c5` is a documentation/comment correction only, on top of `1a56a72`.
+`1a56a72`'s artifact was probed: both MP4s **48 kHz / ~128 kbit/s AAC**,
 audio QA −14.0 LUFS / −1.49 dBTP with no reasons, `repaired_asset_lineage.json`
 naming scenes 2→`scene_2.mp4` (was `s2.mp4`) and 3→`scene_3.mp4` (was `s3.mp4`)
 with 1 and 4 untouched, and `provider_calls_made` / `network_calls_made` both 0
