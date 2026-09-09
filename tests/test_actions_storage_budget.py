@@ -244,6 +244,46 @@ def test_every_heavy_proof_actually_splits():
               f"{name}: the two artifacts have distinct names ({names})")
 
 
+def test_mastering_scratch_never_lands_in_the_uploaded_directory():
+    """The measured master writes WAVs; they must not go where evidence goes.
+
+    Found by weighing the artifact after the split, not by reading the diff:
+    the factory "evidence" half came back at 11.5 MB where the realism half was
+    0.117 MB. `out/master_work/` held eight 1.54 MB stage WAVs -- 12.3 MB of
+    intermediates that nobody reads, since every measurement they carry is
+    already in the master report. It had been inflating every factory-proof
+    artifact since the mastering rewrite shipped.
+
+    Behaviour, not text: _mix_final is called with `run` and the master stubbed,
+    and the filesystem is then checked for anything left beside `dest`.
+    """
+    import tempfile
+    import quality_downstream_factory_proof as QDF
+    import delivery_master as DM
+
+    saved = (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
+             DM._run, DM._measure)
+    QDF.run = lambda cmd: None
+    QDF.legacy._ensure_music_bed = lambda duration: ""
+    QDF.legacy._apply_vibe = lambda vibe: None
+    DM._run = lambda cmd: None
+    DM._measure = lambda path: (-20.0, -2.5)
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out, work = root / "out", root / "work"
+            out.mkdir(); work.mkdir()
+            QDF._mix_final(out / "captioned.mp4", out / "final.mp4", 16.0, work_dir=work)
+            strays = sorted(q.name for q in out.iterdir() if q.is_dir())
+            check(not strays,
+                  f"no scratch directory is created inside the uploaded out/ ({strays})")
+            check(any(work.iterdir()),
+                  "and the scratch went to the work directory it was handed")
+    finally:
+        (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
+         DM._run, DM._measure) = saved
+
+
 if __name__ == "__main__":
     test_the_parser_actually_found_the_uploads()
     test_every_upload_declares_a_retention()
@@ -251,4 +291,5 @@ if __name__ == "__main__":
     test_the_evidence_artifact_carries_no_video()
     test_the_audit_trail_outlives_the_video()
     test_every_heavy_proof_actually_splits()
+    test_mastering_scratch_never_lands_in_the_uploaded_directory()
     print("actions storage budget tests: PASS")
