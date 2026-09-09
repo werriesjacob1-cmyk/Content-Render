@@ -12,6 +12,33 @@ Status legend:
 - `[ ]` not yet complete
 - `[D]` deliberately deferred until prerequisite evidence exists
 
+## STANDING RULE P1 — Every substantial prompt must advance 1–5 master-backlog items
+
+This is a load-bearing operating rule for Content Render.
+
+Every substantial engineering, research, audit, experiment, or execution prompt sent to Claude, SUPERCHAD, Codex, or another implementation agent must preserve the immediate premise/objective of that prompt **and also deliberately target between one and five IDs from this canonical backlog**.
+
+The purpose is to make each work cycle produce compound progress instead of solving one isolated symptom at a time.
+
+### Prompt construction requirements
+
+1. **Name the backlog IDs explicitly near the top.** Example: `BACKLOG TARGETS: C8, S2, A8`.
+2. **One primary mission, up to four compatible secondary objectives.** The original premise of the prompt remains the primary objective unless Jacob explicitly changes it.
+3. **Do not stuff five unrelated items into a mission.** Target only items that share code, evidence, runtime boundaries, or can be advanced safely in the same workstream. One excellent closure is better than five shallow checkboxes.
+4. **Bias toward closure, not activity.** Each targeted item should have a concrete exit criterion: implemented + tested, empirically disproved, explicitly deferred with evidence, or blocked by a named irreversible boundary.
+5. **Exploit adjacency.** When the agent is already touching a component, it should inspect and, when safe, close related backlog items rather than creating another future mission for trivial adjacent work.
+6. **If the primary path becomes blocked, remain productive.** Without violating scope/safety, pivot to the highest-value nonblocked secondary target(s) already named in the prompt instead of idling.
+7. **Preserve quality and safety invariants.** Never weaken factual/semantic/quality gates, publishing containment, spend controls, or merge authorization merely to close more TODOs.
+8. **Use broad agent autonomy.** State objectives/invariants and let the capable agent choose implementation details, subagents, model tier, tests, and internal sequencing.
+9. **Return an item-by-item evidence packet.** For every targeted backlog ID, report one of: `COMPLETE`, `PARTIAL`, `DISPROVED/SUPERSEDED`, `BLOCKED`, with evidence/SHA/tests and the remaining gap.
+10. **Update this master TODO after the mission.** Tactical checklists never replace this file. Newly discovered systemic work is added here with a new ID or mapped to an existing one before the next major prompt.
+
+### Productivity target
+
+Default to **2–4 compatible backlog targets per substantial prompt**. Use one when the work is unusually high-risk/deep; use five only when the items are genuinely coupled. The measure of productivity is not number of files changed or TODO boxes touched—it is durable reduction in unresolved product risk and faster progress toward a genuinely post-worthy autonomous video factory.
+
+---
+
 ## Immediate execution gate
 
 - [~] PR #73 — Writer V2.1 runtime-contract recovery + rejection replay. Final reviewed head `0136d663d6aa7630c210adc8a844000bff15c1be`; exact-head CI green; waiting for Jacob merge authorization.
@@ -185,3 +212,5 @@ The existing performance learner is data-starved. Build current platform metrics
 ## Operating rule
 
 When a tactical checklist is shown, it is a **subset** of this master backlog, never a replacement. Completed tactical work must update this file's status; unfinished C/S/A items remain tracked until explicitly completed, disproven, superseded with a documented mapping, or intentionally abandoned by Jacob.
+
+Every substantial Content Render prompt must also obey **STANDING RULE P1** above: preserve the prompt's immediate premise while deliberately advancing **1–5 compatible canonical backlog IDs**, with explicit exit criteria and item-by-item evidence on return.
