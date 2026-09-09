@@ -213,16 +213,33 @@ def proof(out_root: str) -> dict[str, Any]:
             ))
         lineage = QAL.write_lineage(lineage_entries, out / "final_asset_lineage.json")
 
-        body = work / "body.mp4"
-        legacy.build_body_concat(scene_files, str(body))
-        actual_durs = [float(legacy.ffprobe_dur(p)) for p in scene_files]
-        ass = work / "captions.ass"
-        legacy.build_ass(manifest["scenes"], segments, actual_durs, str(ass), headline="")
-        captioned = work / "captioned.mp4"
-        body_duration = float(legacy.ffprobe_dur(str(body)))
-        _make_captioned(body, ass, captioned, body_duration)
+        def _finish_assembly(files, dest) -> dict[str, Any]:
+            """Concat -> captions -> music bed -> loudnorm, for ANY scene set.
+
+            Both the first assembly and every repaired re-assembly must go
+            through this identical finishing path. They used to diverge: the
+            repair re-assembled with a bare build_body_concat -- no captions,
+            no music bed, no loudnorm -- and was then judged by the SAME audio
+            QA gate that requires normalized -14 LUFS. That asymmetry is why
+            the repaired artifact could never pass re-QA, and in production it
+            would mean a targeted repair either always fails the gate or ships
+            an unmastered, caption-less video.
+            """
+            files = [str(f) for f in files]
+            dest = Path(dest)
+            tag = dest.stem
+            body_path = work / f"body_{tag}.mp4"
+            legacy.build_body_concat(files, str(body_path))
+            durs = [float(legacy.ffprobe_dur(p)) for p in files]
+            ass_path = work / f"captions_{tag}.ass"
+            legacy.build_ass(manifest["scenes"], segments, durs, str(ass_path), headline="")
+            cap_path = work / f"captioned_{tag}.mp4"
+            dur = float(legacy.ffprobe_dur(str(body_path)))
+            _make_captioned(body_path, ass_path, cap_path, dur)
+            return _mix_final(cap_path, dest, dur)
+
         final = out / "final.mp4"
-        mix = _mix_final(captioned, final, body_duration)
+        mix = _finish_assembly(scene_files, final)
         if not final.is_file() or final.stat().st_size < 10000:
             raise RuntimeError("real downstream final.mp4 was not produced")
 
@@ -259,7 +276,8 @@ def proof(out_root: str) -> dict[str, Any]:
             replacements=replacements,
             output_scene_dir=repaired_dir,
             output_video=repaired_video,
-            assemble=lambda files, dest: legacy.build_body_concat(list(files), dest),
+            # Same finishing path as the first assembly -- see _finish_assembly.
+            assemble=_finish_assembly,
             manifest_path=manifest_path,
         )
         RC.write_evidence(repair_evidence, out / "repair_execution.json")
