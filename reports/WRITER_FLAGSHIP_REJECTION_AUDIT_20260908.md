@@ -78,13 +78,13 @@ The legacy writer prompt had `LENGTH_HINT`; the promoted V2.1 path did not.
 
 Therefore nearly half the real repair rounds were being judged against length rules the producing model could not see.
 
-### 2. Hook instructions contradicted the validator
+### 2. Hook/question instructions were internally ambiguous against the validator
 
-The V2 base prompt said the hook **must be a real question ending `?`**.
+The V2 HOOK section correctly says **never open on a question mark** and to move a literal question to a later beat. But the same static prompt's CURIOSITY GAP rule says the required early `?` may appear in **"the hook OR one of the first 3 beats"**. Production `generate.validate()` is stricter: a question-mark hook is always rejected and the curiosity gap belongs in scene 2 or later.
 
-The production validator rejects a question as scene 1 and requires a **concrete, front-loaded shock statement**, moving any curiosity question to scene 2 or later.
+So this was not a simple "prompt requires a question hook" bug. It was an internal instruction ambiguity: one rule forbids a question hook while another explicitly lists the hook as an allowed location for the required question. Four real rounds chose the invalid interpretation and failed exactly at that boundary.
 
-Four real rounds failed this exact conflict.
+The recovery branch makes the final runtime contract unambiguous: scene 1 is a statement and any literal curiosity question belongs in scene 2 or later.
 
 ### 3. Initial-call-only fixes are insufficient
 
