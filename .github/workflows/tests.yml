@@ -259,11 +259,14 @@ jobs:
             artifacts/downstream_factory_proof/proof_report.json
           if-no-files-found: error
           # Shortest practical, measured rather than guessed. This artifact is
-          # ~10.6 MB (two real MP4s) and a NEW one is kept per commit, because
-          # the evidence standard here is exact-SHA -- a stable name would let a
-          # later push silently replace the artifact a claim was made against.
-          # So storage grows with pushes, not with time, and retention is the
-          # only lever that does not weaken the evidence. 3 days still covers an
-          # async review; the render artifacts it shares the budget with expire
-          # on the repository's own 7-day default.
+          # ~10.7 MB (two real MP4s) and a NEW one is kept per run: on a
+          # pull_request event github.sha is the ephemeral MERGE commit, not the
+          # head SHA, so the name does not identify the head a claim is made
+          # against -- resolve that through the run's head_sha. What the unique
+          # name does buy is that a later push cannot silently overwrite the
+          # artifact an earlier claim was made against. So storage grows with
+          # pushes, not with time, and retention is the only lever that does not
+          # weaken the evidence. 3 days still covers an async review; the render
+          # artifacts it shares the budget with expire on the repository's own
+          # 7-day default.
           retention-days: 3

@@ -25,6 +25,13 @@ Exact-head CI, both jobs SUCCESS on the same SHA:
 | `763f334` | SUCCESS | SUCCESS | 34301460557 |
 | `cb41c89` | SUCCESS | SUCCESS | 34302402466 |
 | `b651b59` | SUCCESS | SUCCESS | 34302889958 |
+| `1a56a72` (final head) | SUCCESS | SUCCESS | 34303309919 |
+
+The final head's artifact was probed too: both MP4s **48 kHz / ~128 kbit/s AAC**,
+audio QA −14.0 LUFS / −1.49 dBTP with no reasons, `repaired_asset_lineage.json`
+naming scenes 2→`scene_2.mp4` (was `s2.mp4`) and 3→`scene_3.mp4` (was `s3.mp4`)
+with 1 and 4 untouched, and `provider_calls_made` / `network_calls_made` both 0
+with an empty detail list.
 
 The artifact was **downloaded and probed**, not inferred from the exit code —
 and that is what found the defect in §B.
@@ -193,9 +200,12 @@ each render artifact ~80%.
 2. The only meaningful set is this PR's ~10 superseded factory-proof artifacts
    (~106 MB), of which only the newest has evidentiary value. Safe to delete;
    they also expire on their own.
-3. Factory-proof retention cut 7 → 3 days. Its name keeps the commit SHA
-   deliberately: the evidence standard is exact-SHA, and a stable name would let
-   a later push silently replace the artifact a claim was made against.
+3. Factory-proof retention cut 7 → 3 days (verified: the final artifact carries
+   `expires_at` exactly 3 days out). Its name stays unique per run so a later
+   push cannot silently overwrite the artifact an earlier claim was made
+   against — but note the name is `github.sha`, which on a `pull_request` event
+   is the ephemeral **merge** commit, not the head SHA. To tie an artifact to a
+   head SHA, read the run's `head_sha`, as the table in §A does.
 
 ---
 
