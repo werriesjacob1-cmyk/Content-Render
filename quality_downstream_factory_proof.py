@@ -135,13 +135,16 @@ def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
             "[m_raw][0:a]sidechaincompress=threshold=0.05:ratio=6:attack=25:release=400:makeup=1[m];"
             "[0:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
             "loudnorm=I=-14:TP=-1.5:LRA=11[a]",
-            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "96k",
-            "-shortest", str(dest),
+            "-map", "0:v", "-map", "[a]", "-c:v", "copy",
+            "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
+            "-ar", str(AQA.DELIVERY_SAMPLE_RATE), "-shortest", str(dest),
         ])
         return {"music_bed": str(bed), "sidechain_duck": True}
     run([
         "ffmpeg", "-y", "-i", str(captioned), "-c:v", "copy",
-        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "96k", str(dest),
+        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
+        "-c:a", "aac", "-b:a", AQA.DELIVERY_AUDIO_BITRATE,
+        "-ar", str(AQA.DELIVERY_SAMPLE_RATE), str(dest),
     ])
     return {"music_bed": "", "sidechain_duck": False}
 
