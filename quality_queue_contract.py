@@ -37,10 +37,34 @@ def contract(writer_version: str, cert_version: str, source: str = "buffer") -> 
     }
 
 
+# Markers only the canonical Writer V2.1 orchestrator puts on an ACCEPTED
+# manifest. Their presence means the artifact carries V2.1 acceptance evidence.
+V21_CERTIFICATION_MARKERS = ("_semantic_verified", "_v2_spoken_scene_count")
+
+
+def looks_v21_certified(payload: Mapping[str, Any]) -> bool:
+    """Pure. True when a manifest carries Writer V2.1 acceptance evidence."""
+    if not isinstance(payload, Mapping):
+        return False
+    return any(payload.get(m) for m in V21_CERTIFICATION_MARKERS)
+
+
 def stamp_manifest(payload: Mapping[str, Any], *, writer_version: str, cert_version: str, source: str = "buffer") -> dict[str, Any]:
     if not isinstance(payload, Mapping) or not isinstance(payload.get("scenes"), list):
         raise ValueError("not a render manifest")
     out = dict(payload)
+    # A manifest with no contract yet is assumed to be pre-cutover inventory, so
+    # the stamper labels it. That assumption is only safe while the artifact
+    # shows no sign of being V2.1-certified. render.yml stamps the queue
+    # immediately before REQUIRING the legacy label, so without this guard a
+    # V2.1 manifest dropped in unstamped would be auto-blessed as legacy and
+    # dequeued -- exactly the silent migration the contract exists to prevent.
+    if not out.get("_factory_contract") and looks_v21_certified(out) and "v2" not in writer_version.lower():
+        raise ValueError(
+            f"refusing to stamp a Writer V2.1-certified manifest as {writer_version!r}: "
+            "it carries V2.1 acceptance evidence and must be labelled by the lane that "
+            "produced it, never relabelled as legacy inventory"
+        )
     existing = out.get("_factory_contract")
     if existing:
         if not isinstance(existing, Mapping) or existing.get("schema") != SCHEMA:

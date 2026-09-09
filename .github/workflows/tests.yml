@@ -105,6 +105,7 @@ jobs:
           run_check "visual bible" env -u GROQ_API_KEY python tests/test_quality_visual_bible.py
           run_check "asset lineage" env -u GROQ_API_KEY python tests/test_quality_asset_lineage.py
           run_check "bounded repair controller" env -u GROQ_API_KEY python tests/test_quality_repair_controller.py
+          run_check "bounded repair adversarial" env -u GROQ_API_KEY python tests/test_repair_invariant_adversarial.py
           run_check "queue cutover contract" env -u GROQ_API_KEY python tests/test_quality_queue_contract.py
           run_check "unattended provider guard" env -u GROQ_API_KEY python tests/test_quality_production_generate.py
           run_check "production transition workflows" env -u GROQ_API_KEY python tests/test_production_transition_contracts.py

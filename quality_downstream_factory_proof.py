@@ -30,7 +30,9 @@ import json
 import os
 from pathlib import Path
 import shutil
+import socket
 import subprocess
+import urllib.request
 import sys
 from typing import Any
 
@@ -185,6 +187,32 @@ def proof(out_root: str) -> dict[str, Any]:
     QE.write_json(manifest_path, manifest)
     visual_bible = QVB.write_visual_bible(manifest, out / "visual_bible.json")
 
+    # MEASURE the zero-network claim instead of asserting it. These counters used
+    # to be hardcoded literals, so the proof's headline safety property was true
+    # only by inspection -- a future import could quietly add an HTTP call and
+    # every check would still report 0. Every outbound socket/urllib path used by
+    # this codebase is counted, and any call trips the counter AND fails the run.
+    net_calls: list[str] = []
+    _real_urlopen = urllib.request.urlopen
+    _real_socket_connect = socket.socket.connect
+    _real_create_connection = socket.create_connection
+
+    def _blocked_urlopen(*a, **k):
+        net_calls.append(f"urlopen({str(a[0])[:80]})")
+        raise AssertionError("factory proof attempted an HTTP call")
+
+    def _blocked_connect(self, address, *a, **k):
+        net_calls.append(f"socket.connect({address})")
+        raise AssertionError("factory proof attempted a network connection")
+
+    def _blocked_create_connection(address, *a, **k):
+        net_calls.append(f"create_connection({address})")
+        raise AssertionError("factory proof attempted a network connection")
+
+    urllib.request.urlopen = _blocked_urlopen
+    socket.socket.connect = _blocked_connect
+    socket.create_connection = _blocked_create_connection
+
     old_work, old_out = legacy.WORK, legacy.OUT
     legacy.WORK, legacy.OUT = str(work), str(out)
     try:
@@ -296,8 +324,10 @@ def proof(out_root: str) -> dict[str, Any]:
 
         result = {
             "schema": "content-render-downstream-factory-proof-v1",
-            "provider_calls_made": 0,
-            "network_calls_made": 0,
+            # measured, not asserted -- see the interception above
+            "provider_calls_made": len(net_calls),
+            "network_calls_made": len(net_calls),
+            "network_calls_detail": net_calls,
             "manifest_scene_count": len(manifest["scenes"]),
             "actual_final_mp4": str(final),
             "actual_final_bytes": final.stat().st_size,
@@ -321,6 +351,9 @@ def proof(out_root: str) -> dict[str, Any]:
         return result
     finally:
         legacy.WORK, legacy.OUT = old_work, old_out
+        urllib.request.urlopen = _real_urlopen
+        socket.socket.connect = _real_socket_connect
+        socket.create_connection = _real_create_connection
 
 
 def main(argv=None) -> int:

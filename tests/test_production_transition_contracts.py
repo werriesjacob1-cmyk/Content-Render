@@ -62,6 +62,59 @@ def test_publishing_kill_switch_boundaries_unchanged():
     check("certification_only != 'true'" in y, "manual certification remains independently non-publishing")
 
 
+def test_every_scheduled_provider_spending_lane_is_gated():
+    """expand_bank.yml was the one cron that could reach paid Gemini/OpenRouter
+    generation with nothing enabled -- and it auto-commits its result, so an
+    unattended run spent credit AND mutated the repo with no human switch."""
+    gate = "vars.LEGACY_SCHEDULED_GENERATION_ENABLED == 'true'"
+    for wf in ("render.yml", "buffer.yml", "expand_bank.yml"):
+        y = text(f".github/workflows/{wf}")
+        if "schedule:" not in y:
+            continue
+        check(gate in y, f"{wf} gates its scheduled provider spend behind the transition switch")
+        check("github.event_name != 'schedule'" in y,
+              f"{wf} still allows explicit manual dispatch")
+
+
+def test_stamping_cannot_relabel_a_v21_manifest_as_legacy():
+    """render.yml stamps the queue immediately before REQUIRING the legacy
+    label, so an unstamped V2.1 manifest would otherwise be auto-blessed as
+    legacy and dequeued -- the exact silent migration the contract prevents."""
+    import quality_queue_contract as Q
+    legacy_like = {"scenes": [{"id": 1}]}
+    stamped = Q.stamp_manifest(legacy_like, writer_version="legacy_v1", cert_version="legacy_generation")
+    check(stamped["_factory_contract"]["writer_version"] == "legacy_v1",
+          "genuine pre-cutover inventory can still be labelled once")
+
+    v21 = {"scenes": [{"id": 1}], "_semantic_verified": True, "_v2_spoken_scene_count": 8}
+    check(Q.looks_v21_certified(v21), "V2.1 acceptance markers are recognised")
+    check(not Q.looks_v21_certified(legacy_like), "legacy inventory is not mistaken for V2.1")
+    try:
+        Q.stamp_manifest(v21, writer_version="legacy_v1", cert_version="legacy_generation")
+        raise AssertionError("a V2.1-certified manifest must not be stamped legacy")
+    except ValueError as exc:
+        check("refusing to stamp" in str(exc),
+              "stamping a V2.1-certified manifest as legacy fails closed")
+
+
+def test_factory_proof_measures_its_zero_network_claim():
+    """The counters used to be hardcoded 0, so the proof's headline safety
+    property held only by inspection: a new import could add an HTTP call and
+    every check would still report zero."""
+    src = text("quality_downstream_factory_proof.py")
+    check('"network_calls_made": len(net_calls)' in src,
+          "network_calls_made is a measured count, not a literal")
+    check("urllib.request.urlopen = _blocked_urlopen" in src and
+          "socket.socket.connect = _blocked_connect" in src,
+          "the proof actively intercepts outbound HTTP and socket paths")
+    check("socket.create_connection = _blocked_create_connection" in src,
+          "create_connection is intercepted too, not just urlopen")
+    check("network_calls_detail" in src,
+          "any attempted call is named in the evidence, not just counted")
+    check("_real_urlopen" in src and "socket.create_connection = _real_create_connection" in src,
+          "the interception is always restored, including on failure")
+
+
 if __name__ == "__main__":
     for fn in [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]:
         fn()
