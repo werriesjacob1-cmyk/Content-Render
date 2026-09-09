@@ -45,35 +45,53 @@ and making `--report` required.
 
 ---
 
-## Audio contract architecture (final)
+## Audio delivery architecture (final)
 
-`delivery_contract.py` (leaf) owns: `DELIVERY_SAMPLE_RATE` 48000,
-`DELIVERY_AUDIO_BITRATE` "128k", `DELIVERY_INTEGRATED_LUFS` -14,
-`DELIVERY_TRUE_PEAK_TARGET_DB` **-2.5**, `QA_TRUE_PEAK_CEILING_DB` **-0.5**,
-`delivery_loudnorm_filter()`, `delivery_audio_encode_args()`.
+Two modules, split on a real boundary rather than for tidiness:
 
-Consumers import, never restate: `main.py` (both mastering branches),
-`quality_downstream_factory_proof._mix_final` (both branches),
-`quality_audio_qa` (re-exports for existing callers), and the realism proof via
-`QDF._mix_final`.
+- **`delivery_contract.py`** — a leaf that imports nothing from the codebase.
+  Owns `DELIVERY_SAMPLE_RATE` 48000, `DELIVERY_AUDIO_BITRATE` **"192k"**,
+  `DELIVERY_INTEGRATED_LUFS` -14, `DELIVERY_TRUE_PEAK_TARGET_DB` **-2.5**,
+  `LIMITER_OVERSAMPLE_RATE` **192000**, `QA_TRUE_PEAK_CEILING_DB` **-0.5**, and
+  the filter builders.
+- **`delivery_master.py`** — the ONE mastering sequence. Mastering has to
+  *measure* its own intermediate result and act on it, which is execution, not
+  configuration; forcing that into the contract would break the leaf role that
+  exists to stop the import cycle. It imports the contract and nothing else —
+  deliberately **not** `quality_audio_qa`, so production never depends on the
+  module that judges it, and it carries its own small probe.
 
-**The QA ceiling is unchanged at -0.5 dBTP.** Headroom came from lowering the
-master target, never from relaxing the gate: 2.0 dB reserved, because real
-speech over a music bed overshot ~1.8 dB through AAC where synthetic tones
-overshot ~0.01 dB.
+Consumers call `master_audio`, never their own sequence: `main.py`,
+`quality_downstream_factory_proof._mix_final`, and the realism proof via
+`QDF._mix_final`. All three mix to audio, master, then mux. A test asserts they
+resolve the same function object; another stubs it out and proves neither path
+falls back to a filter string of its own.
+
+**No gate was ever relaxed.** The window is still [-16.0, -11.5] LUFS and
+-0.5 dBTP, and a test moves the master target to prove the gate's verdict does
+not follow it. Every dB of headroom was bought on the production side.
 
 `analyze_loudness` deliberately keeps its own literal args — it is a MEASUREMENT
 pass reading `input_*`, which do not depend on target parameters. A test guards
-that decision in both directions.
+that decision in both directions, and `delivery_master`'s own probe follows the
+same rule.
 
-## Proof the target is load-bearing (not grep)
+## Proof the contract is load-bearing (not grep)
 
 `tests/test_delivery_contract_load_bearing.py` calls the **real** `_mix_final`
-with `run()` intercepted and the music bed stubbed, captures the constructed
-ffmpeg command, moves the shared constant to -7.25 and asserts the captured
-command moves with it. Plus: no active finishing path hard-codes a delivery
-target; the renderer holds no literal filter; measurement stays decoupled;
-target-to-ceiling gap >= 1.5 dB.
+with both execution seams intercepted, captures all five constructed ffmpeg
+commands, moves the shared constant to -7.25 and asserts every command moves
+with it and none keeps the old value. Plus: no finishing path hard-codes a
+delivery target; the renderer holds no literal filter; measurement stays
+decoupled; the master measures at every stage including after the limiter.
+
+`tests/test_delivery_mastering_adversarial.py` covers ten named rot paths, each
+one MOVED and the constructed behaviour asserted to move with it (or, for the
+gates, pointedly not to): production/proof drift, a hard-coded loudness target,
+a hard-coded true-peak target, a weakened QA ceiling, analysis-pass coupling,
+two measurements reading the same file, a limiter vanishing from a gain stage or
+losing its true-peak oversampling, a repaired assembly finished differently,
+sample-rate drift, bitrate drift.
 
 ---
 
@@ -82,39 +100,48 @@ target-to-ceiling gap >= 1.5 dB.
 - **Phase 1 integration** — DONE (branch from #78 head + #77's 4 harness files).
 - **Phase 2 contract** — DONE (`delivery_contract.py`, all 4 delivery sites).
 - **Phase 3 load-bearing proof** — DONE.
-- **Phase 4 production-realism** — pending exact-head CI; Piper/Whisper are not
-  installed locally, so the proof runs in `production_realism_proof.yml`, which
-  auto-triggers on `pull_request` for the paths this branch changes.
+- **Phase 4 production-realism** — DONE on `e86f930`, artifact probed.
 - **Phase 5 Edge** — Edge/Whisper routing in `main.py` is byte-identical to main
   (this branch's only `main.py` changes are the contract import and the
   mastering block), so #77's Edge evidence stands; the workflow's own bounded
   free probe still runs as part of its job.
 - **Phase 6 Writer/provider regression** — carried from #78, re-verified locally.
-- **Phase 7 adversarial review** — pending.
-- **Phase 8 CI** — pending.
+- **Phase 7 adversarial review** — DONE: ten named tests, plus true-peak
+  awareness and the master's own peak verification.
+- **Phase 8 CI** — `test` + `factory-proof` + `production-realism-proof` all
+  green on one exact SHA, with the artifact downloaded and independently probed.
 
 ## Local proof
-61 CI checks registered; all suites green; **1598 zero-provider checks**.
+62 CI checks registered; all suites green at zero provider cost.
 
 ## Exact next action
-Open the draft integration PR (supersedes #77 and #78 if evidence passes),
-obtain exact-head CI for `tests.yml` (test + factory-proof) AND
-`production_realism_proof.yml`, then DOWNLOAD and probe the realism artifact —
-resolution, codecs, 48 kHz, decoded true peak <= -0.5 dBTP, Whisper alignment
-count, caption evidence. Do not infer media success from a green tick.
+PR #79 is a **draft** and stays that way: merging is outside this mission's
+boundary. The decision now belongs to a human. If more confidence is wanted
+before merge, the cheapest useful thing is another `production-realism-proof`
+run on the certified SHA — it costs nothing (zero provider calls) and it is
+exactly what caught the true-peak defect.
 
 ## Backlog (do not overstate)
-C7 — complete on this branch pending release proof. C8 — production-realism
-extension is the open half. **S9 — PARTIAL**: capability + health closed,
+C7 — complete on this branch pending release proof. **C8 — CLOSED**: the
+downstream factory proof now runs at production realism, green on an exact SHA
+with a probed artifact. **S9 — PARTIAL**: capability + health closed,
 cost-aware LLM routing still OPEN and deliberately not attempted here.
+A6 parity holds structurally — `_mix_final` has exactly one call site, inside
+the `_finish_assembly` the repair controller is handed, and the controller
+contains no ffmpeg of its own, so a repaired artifact cannot be mastered
+differently from the original.
 
 ---
 
-# BLOCKER — production-realism loudness
+# BLOCKER — production-realism audio delivery — **CLOSED**
 
-**Status: fix implemented and measured offline; awaiting exact-head CI proof.**
+**Closed on `e86f930`**: `test`, `factory-proof` and `production-realism-proof`
+all green on that exact SHA, and the artifact was downloaded and independently
+probed (not inferred from the tick).
+
 The diagnosis below is preserved because the fix it led to was NOT the one it
-proposed — see "What was actually built" at the end of this section.
+proposed, and because closing it exposed a SECOND defect the first green run had
+hidden — see "The second defect" below. Read both before touching delivery audio.
 
 Everything else in the realism proof works on the integrated head: Piper
 SUCCESS, Whisper **57/57** word timings, 1080x1920 scenes, per-scene audio
@@ -196,6 +223,72 @@ that only barely passes (`MIN_DELIVERY_MARGIN_DB = 0.5`), because an artifact
 that clears the floor by 0.05 dB is as fragile as the one that missed it by 0.26
 and shows the same green tick.
 
+## The second defect — found by re-running, not by the first green tick
+
+The loudness fix went green on `b7a02ad`: −14.57 LUFS, −1.74 dBTP, all three
+workflows passing. The next commit changed **two docstrings and nothing else**,
+and the realism proof FAILED: **true peak −0.0 dBTP** against the −0.5 ceiling.
+Same code, 1.7 dB apart, one run later. Certifying on that first green run —
+which was the plan — would have shipped a peak ceiling that held by luck.
+
+Two compounding causes, both measured on the real Piper-over-bed audio:
+
+1. **`alimiter` bounds the SAMPLE peak; the gate measures the TRUE peak.**
+   Between samples a limited signal reconstructs higher than any sample in it,
+   and the gap grows with density. At a −2.5 dB target it delivered −2.42 on the
+   real mix and **−1.60** when pushed 4 dB hotter: the limiter missing its own
+   target by 0.9 dB.
+2. **AAC coding error at 128 kbit/s** pushed the decoded peak back up +0.23 dB
+   typically and **+1.72 dB** on dense material — enough variance to consume the
+   whole 2.0 dB reserve by itself.
+
+0.9 + 1.72 against 2.0 dB of reserve is −0.0 dBTP. The arithmetic accounts for
+the failure exactly, and **neither term appeared in any report**: the master
+reported the loudness it achieved and never the peak.
+
+Fixes, each measured, none of them a relaxed gate:
+- limiting runs at **192 kHz** and returns to 48, landing the true peak within
+  0.01 dB of target on every mix tested;
+- **192 kbit/s** delivery, where coding error is +0.04…+0.50 dB instead of
+  +0.23…+1.72 (the same reasoning that replaced 96 with 128, applied to a
+  measurement that has since got more honest);
+- the master **reads back the peak it achieved**, trims if over target, and
+  RAISES rather than handing the encoder a signal that cannot hold the ceiling;
+- `mastered_true_peak_db` is in the master report, so the next failure of this
+  kind is visible in the artifact rather than only in the gate's verdict.
+
+A previously-passing assertion — "128 kbit/s is sufficient" — was measured on
+the factory fixture and disproven by real content. It was corrected, not left
+green. **Green and wrong is the failure mode this whole seam exists to kill.**
+
+## Closure evidence (`e86f930`, independently probed)
+
+| | before | after |
+|---|---|---|
+| integrated loudness | −16.26 LUFS FAIL | **−14.59 LUFS** |
+| true peak | −0.0 dBTP FAIL | **−2.40 dBTP** |
+| floor margin | −0.26 (outside) | **+1.41 dB** |
+| peak margin | −0.50 (outside) | **+1.90 dB** |
+
+Master report from the artifact: loudnorm landed −15.83 (1.83 dB short of its
+own target), +1.83 → limiter → −15.06 (limiter cost 0.77 dB), +1.06 residual →
+−14.59 mastered at **exactly −2.50 dBTP**, `peak_trim_db: 0.0` (oversampled
+limiting needed no correction), decoding to −14.59 / −2.40 — **0.10 dB** of AAC
+overshoot where 128 kbit/s had produced up to 1.72.
+
+Offline, through the real production chain across a 13 dB input range:
+
+| source | pre-encode TP | decoded LUFS | decoded TP | floor | peak |
+|---|---|---|---|---|---|
+| real | −2.50 | −14.19 | −2.39 | +1.81 | +1.89 |
+| hot (+4 dB) | −2.49 | −14.01 | −2.47 | +1.99 | +1.97 |
+| quiet (−9 dB) | −2.50 | −14.19 | −2.36 | +1.81 | +1.86 |
+
+Rest of the artifact: 1080×1920 h264, AAC 48 kHz / 210 kbit/s mono, 23.1 s,
+Piper narration, **57/57** Whisper word timings, 47 caption dialogue lines, real
+music bed with sidechain duck, `provider_calls_made: 0`, `network_calls_made: 0`,
+and a viewer-facing proof frame with the karaoke caption burned in at canvas.
+
 ## Adversarial coverage for this architecture
 
 `tests/test_delivery_mastering_adversarial.py` — ten named rot paths, each one
@@ -205,9 +298,10 @@ hard-coded true-peak target, a weakened QA ceiling, analysis-pass coupling, two
 measurements reading the same file, a limiter vanishing from a gain stage, a
 repaired assembly finished differently, sample-rate drift, bitrate drift.
 
-Still outstanding on this head: the real production-realism run in CI, and
-downloading + probing its artifact. **Do not infer media success from a green
-tick** — the 96 kHz defect passed CI for months and was found by probing.
+**Do not infer media success from a green tick, and do not infer it from ONE
+green tick either.** The 96 kHz defect passed CI for months and was found by
+probing; the true-peak defect passed one full CI cycle and was found only
+because a docstring commit forced a second run. Both lessons are the same size.
 
 ## Also proven on an earlier head (`cab66a8`)
 
