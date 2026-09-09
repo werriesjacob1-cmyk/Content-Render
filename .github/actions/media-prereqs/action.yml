@@ -1,0 +1,12 @@
+name: Ensure media prerequisites
+description: >-
+  Install and verify ffmpeg, ffprobe and DejaVu Sans from Ubuntu's own archives,
+  without letting an unrelated third-party apt source on the runner image break
+  a render. One implementation, shared by every workflow that renders media --
+  four near-identical copies of this logic is how the Chrome-repo outage took
+  down the factory proof and would have taken down the flagship.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: bash "${{ github.action_path }}/ensure_media_prereqs.sh"
