@@ -16,6 +16,87 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
+Downstream machinery is now proven on REAL ffmpeg output, and the proof
+immediately earned its keep by exposing a defect every render had shipped.
+
+- **Every render shipped 96 kHz AAC.** `loudnorm` resamples internally to
+  192 kHz and never restores the rate; with no `-ar` the encoder falls back to
+  the nearest rate it supports. The audio gate had been *recording*
+  `sample_rate: 96000` in its own report and passing it for months, because it
+  only had a FLOOR. **This was found by downloading the CI artifact and probing
+  it — not by reading a green tick.** Do that on every proof artifact.
+- Pinning 48 kHz alone made it WORSE (+0.07 dBTP, breaching the gate's own
+  −0.5 ceiling): at the correct rate 96 kbit/s was bitrate-starved and the
+  codec overshot the limiter by ~1.6 dB; the 96 kHz encode had masked that by
+  spending the bits where nobody can hear them. 128 kbit/s lands at −1.49 dB.
+  **Rate and bitrate are ONE decision** — `DELIVERY_SAMPLE_RATE` and
+  `DELIVERY_AUDIO_BITRATE` live in `quality_audio_qa` and `main.py` imports
+  both. Same anti-drift rule as the Writer length contract.
+- **Lineage did not survive repair.** `final_asset_lineage.json` is written
+  before the bounded repair and still named the ORIGINAL scene files after
+  those scenes were replaced, while claiming full attributability — provenance
+  that is confidently wrong. `quality_asset_lineage.repaired_lineage()` now
+  rebuilds it from the files the repair actually assembled.
+- **The visual bible IS load-bearing — but only in `quality_science_render`.**
+  Proven by counterfactual (narration byte-identical, one bible field changed →
+  a different asset WINS ranking). The factory proof only WRITES the bible; it
+  renders fixed scene files and has no asset selection to steer. Do not read
+  its `visual_bible_scene_count` as evidence the bible was obeyed.
+- **Actions storage: the repo already enforces 7-day artifact retention** —
+  measured from real `expires_at` values, every render artifact older than a
+  week is already expired. An earlier commit in this branch claimed a 90-day
+  default; that was wrong. The 90%-of-0.5 GB alert came from ~35 MB × 2
+  renders/day inside a 7-day window, which the TikTok-only upload cuts ~80%.
+  There is no historical hoard to delete.
+- `engineering/CONTENT_RENDER_MASTER_TODO.md` now exists (it did not before,
+  in either repo) with per-item status and the storage recommendation.
+
+## Session 2026-09-08/09 — THE WRITER ROOT CAUSE (read this before touching the Writer)
+Flagship certification attempts #1-#5 all failed at the Writer stage. **The cause was
+not model weakness and not the quality gates: the Writer V2.1 prompt never stated a
+word budget at all.** `LENGTH_HINT`/`WORDS_PER_SCENE` only ever reached the LEGACY
+`build_prompt()` (generate.py); `writer_v2.build_writer_prompt_v2()` — the prompt
+certification actually uses — stated no total-word budget and no per-scene cap, while
+`validate()` rejected the output against both.
+
+Replaying all 4 preserved rejection artifacts (**13 candidates / 36 rounds**, now
+committed as fixtures): **18 of 36 rounds (50%) died on pure length arithmetic** —
+12 total-word (109-141 words vs a 108 hard cap) + 5 per-scene (28-31 vs a 25 cap) +
+1 hook length. The other 16 were craft defects (repetition, fake interrogatives,
+formal connectors, restated facts).
+
+**The fix is to STATE the budget, not widen it.** `WORD_LO/HI`, `WORD_HARD_LO/HI`,
+`SCENE_WORD_CAP` are unchanged. `generate.writer_length_contract()` emits the budget
+from the same constants `validate()` enforces (writer_v2 cannot import generate — the
+dependency runs the other way — so it is INJECTED by the orchestrator). A test asserts
+what the prompt SAYS equals what validate() ENFORCES; that drift is where this whole
+class of bug came from.
+
+**Durable lessons for future sessions:**
+- **`writer_replay.py` + `tests/fixtures/writer_corpus/`**: replay the real rejection
+  corpus offline, at $0. USE THIS before spending a paid run on any Writer/prompt idea.
+  Fixtures are real historical output — never edit them to make a test pass.
+- **Repair-budget starvation was MEASURED AND DISPROVEN.** Only 1 of 18 length-blocked
+  rounds had Tier-1 clean; a terminal mechanical salvage would rescue 0 of 13 attempts.
+  Do NOT build separate craft/mechanical repair budgets — the corpus says it does
+  nothing. Pinned by a test so it is not re-litigated.
+- **Provider reality (2026-09-08)**: Gemini is the ONLY working writer. OpenRouter 402,
+  **Cerebras now 402 too** (it is no longer a free backstop — this doc used to say it
+  was), Mistral 429, Groq 413 (its 8000 TPM ceiling is below our request size).
+- **Groq eligibility must count the reserved output budget** (`max_tokens`), not just
+  the prompt: the writer prompt is only ~2.3k tokens but Groq reported "Requested
+  10126". Prompt bloat is NOT a real problem (static instructions ~1.6k, full prompt
+  ~2.3k) — do not go on a compaction hunt.
+- **The connector CAN POST `workflow_dispatch`** now (used successfully for flagship
+  run #5). The marker-file push bridge is no longer the only option.
+- Downstream render/QA seam is now proven offline (`tests/test_downstream_factory_smoke.py`)
+  and found NO defects; ffmpeg is unavailable in the agent environment, so encoding and
+  audio QA remain unproven until a real render.
+
+**OPEN**: the prompt now states the budget; whether Gemini OBEYS it can only be settled
+by one paid run. That is the single question the next flagship run should answer.
+
 ## Session 2026-09-03 — ElevenLabs subscription canceled
 User canceled their ElevenLabs subscription (informed directly, not diagnosed from a
 render log). **No code fix required.** `main.py`'s `tts_full()` already has a graceful

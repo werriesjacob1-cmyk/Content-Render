@@ -38,6 +38,73 @@ def test_20b_is_flagship_fallback_not_primary_peer():
           "existing weak-provider classification is preserved")
 
 
+def _fits(prompt):
+    """Eligibility as the shipped implementation computes it."""
+    import writer_v2 as W
+    est = W.estimate_tokens(prompt)
+    return R.G._provider_can_serve("groq", est), est
+
+
+def test_groq_capacity_check_reserves_full_structured_completion_budget():
+    # The reserve is a SHARED constant that also feeds the request payload, so
+    # the capacity check and the actual max_tokens can never drift apart.
+    check(R.G.STRUCTURED_MAX_OUTPUT_TOKENS == 3000,
+          "structured completion reserve is the same constant the payload sends")
+    check(R.G._provider_token_ceiling("groq") == 8000,
+          "groq's request ceiling is on record in the capability table")
+
+    # estimate_tokens is len//4. At 5,000 estimated prompt tokens, the request
+    # plus the 3,000-token structured completion ceiling exactly fills 8k and
+    # remains eligible. One additional estimated prompt token must fail closed.
+    fits, est = _fits("x" * (5000 * 4))
+    check(fits and est == 5000, "exact 8k request boundary remains Groq-eligible")
+
+    fits, est = _fits("x" * (5001 * 4))
+    check(not fits and est == 5001,
+          "one token beyond prompt+completion 8k boundary skips Groq")
+
+
+def test_oversize_request_skips_strict_and_loose_groq_but_restores_key():
+    old_key = R.G.GROQ_KEY
+    old_call = R.G._call_openai_compat_structured
+    old_fallback = R.G.call_groq
+    old_working = R.G._WORKING_MODEL
+    strict_calls = []
+    fallback_key_seen = []
+    R.G.GROQ_KEY = "test"
+
+    def forbidden_structured(*args, **kwargs):
+        strict_calls.append(True)
+        raise AssertionError("oversize request must not reach strict Groq")
+
+    def fake_fallback(prompt):
+        fallback_key_seen.append(R.G.GROQ_KEY)
+        R.G._WORKING_MODEL = ("gemini", "test-gemini")
+        return '{"ok":true}'
+
+    R.G._call_openai_compat_structured = forbidden_structured
+    R.G.call_groq = fake_fallback
+    try:
+        debug = []
+        huge = "x" * (R.G._provider_token_ceiling("groq") * 4)
+        raw, structured = R.resilient_structured_call(huge, {"type": "object"}, "test", debug)
+        restored_inside = R.G.GROQ_KEY
+    finally:
+        R.G.GROQ_KEY = old_key
+        R.G._call_openai_compat_structured = old_call
+        R.G.call_groq = old_fallback
+        R.G._WORKING_MODEL = old_working
+
+    check(raw == '{"ok":true}' and structured is False,
+          "oversize request falls through to cross-provider chain")
+    check(not strict_calls, "oversize request makes zero strict Groq calls")
+    check(fallback_key_seen == [""], "loose fallback sees Groq disabled for the oversize request")
+    check(restored_inside == "test", "Groq key is restored immediately after fallback")
+    skips = [d for d in debug if d.get("skipped")]
+    check(len(skips) == 1 and skips[0].get("provider") == "groq",
+          "debug evidence records one explicit Groq capacity skip")
+
+
 def test_short_120b_throttle_waits_and_retries_same_strict_model():
     old_key = R.G.GROQ_KEY
     old_models = list(R.G.MODEL_CHAIN)
@@ -124,6 +191,8 @@ def test_context_restores_generate_globals():
 
 if __name__ == "__main__":
     test_20b_is_flagship_fallback_not_primary_peer()
+    test_groq_capacity_check_reserves_full_structured_completion_budget()
+    test_oversize_request_skips_strict_and_loose_groq_but_restores_key()
     test_short_120b_throttle_waits_and_retries_same_strict_model()
     test_hard_120b_failure_tries_20b_strict_before_loose_chain()
     test_context_restores_generate_globals()

@@ -18,6 +18,7 @@ import time
 import urllib.error
 
 import generate as G
+import writer_v2 as W
 
 
 STRICT_429_MAX_WAIT_S = 15.0
@@ -51,7 +52,37 @@ def resilient_structured_call(prompt, schema, schema_name, debug_calls):
     If 120B is genuinely unavailable, 20B gets one strict-schema chance.  Only
     then do we invoke the normal cross-provider fallback chain.
     """
-    if G.GROQ_KEY:
+    # Capability gate FIRST. This certification path calls
+    # G._call_openai_compat_structured directly, so it does not inherit the gate
+    # in G._v2_structured_call -- and this is the path that produced flagship
+    # run #5's entire 413 storm: every strict attempt returned "Requested 10126,
+    # Limit 8000" and was then retried with throttle backoff, burning ~60s per
+    # run on a request Groq can never serve. A 413 is structural; no amount of
+    # waiting fixes it.
+    est_tokens = W.estimate_tokens(prompt)
+    groq_fits = G._provider_can_serve("groq", est_tokens)
+    if G.GROQ_KEY and not groq_fits:
+        # Record the skip as structured evidence, not just a log line: the
+        # certification bundle's debug is what a later reviewer actually reads.
+        debug_calls.append({
+            "provider": "groq",
+            "model": None,
+            "usage": None,
+            "structured": True,
+            "certification_resilience": True,
+            "skipped": True,
+            "skip_reason": "estimated request cannot fit groq's request ceiling",
+            "estimated_prompt_tokens": est_tokens,
+            "completion_reserve_tokens": G.STRUCTURED_MAX_OUTPUT_TOKENS,
+            "request_ceiling_tokens": G._provider_token_ceiling("groq"),
+        })
+        print(
+            f"  [writer-v2-cert] skipping strict groq schema writers: request is ~{est_tokens} est. "
+            f"prompt tokens + {G.STRUCTURED_MAX_OUTPUT_TOKENS} reserved output vs groq's "
+            f"{G._provider_token_ceiling('groq')}-token ceiling -- STRUCTURAL (HTTP 413), not a "
+            f"throttle, so retrying with backoff cannot help; going straight to the fallback chain"
+        )
+    if G.GROQ_KEY and groq_fits:
         for model in list(G.MODEL_CHAIN):
             attempts = 2 if "gpt-oss-120b" in model.lower() else 1
             for attempt in range(attempts):
@@ -100,8 +131,20 @@ def resilient_structured_call(prompt, schema, schema_name, debug_calls):
                     )
                     break
 
+    # The loose fallback chain would otherwise try Groq AGAIN with the same
+    # oversized request and eat a second doomed 413. When we have already proved
+    # it cannot fit, blank ONLY the Groq key for the duration of the fallback so
+    # the chain moves straight to the providers that can actually serve it.
+    # Always restored, including on exception.
+    _saved_groq_key = G.GROQ_KEY
+    _suppress_groq = bool(G.GROQ_KEY) and not groq_fits
+    if _suppress_groq:
+        G.GROQ_KEY = ""
     try:
-        raw = G.call_groq(prompt)
+        try:
+            raw = G.call_groq(prompt)
+        finally:
+            G.GROQ_KEY = _saved_groq_key
     except Exception as exc:  # noqa: BLE001
         debug_calls.append({
             "provider": None,

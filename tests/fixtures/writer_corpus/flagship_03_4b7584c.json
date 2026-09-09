@@ -1,0 +1,3729 @@
+{
+  "source_run_id": 34263047438,
+  "source_head_sha": "4b7584c0fe05f0604add1ac09b17e907b40e10b6",
+  "flagship_attempt": 3,
+  "topic_hint": "venus_day",
+  "evidence_seed_enabled": false,
+  "accepted": false,
+  "attempt_count": 3,
+  "attempts": [
+    {
+      "accepted": false,
+      "attempt": 1,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.762907168,
+            "completion_tokens": 833,
+            "completion_tokens_details": {
+              "reasoning_tokens": 372
+            },
+            "prompt_time": 0.069901948,
+            "prompt_tokens": 1756,
+            "queue_time": 0.143821008,
+            "total_time": 1.832809116,
+            "total_tokens": 2589
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.34714277,
+            "completion_tokens": 1116,
+            "completion_tokens_details": {
+              "reasoning_tokens": 676
+            },
+            "prompt_time": 0.097718221,
+            "prompt_tokens": 2013,
+            "queue_time": 0.088112481,
+            "total_time": 2.444860991,
+            "total_tokens": 3129
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.913628707,
+            "completion_tokens": 916,
+            "completion_tokens_details": {
+              "reasoning_tokens": 488
+            },
+            "prompt_time": 0.043545784,
+            "prompt_tokens": 882,
+            "queue_time": 0.247077719,
+            "total_time": 1.957174491,
+            "total_tokens": 1798
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.154941263,
+            "completion_tokens": 1040,
+            "completion_tokens_details": {
+              "reasoning_tokens": 580
+            },
+            "prompt_time": 0.091035337,
+            "prompt_tokens": 2021,
+            "queue_time": 0.090150428,
+            "total_time": 2.2459766,
+            "total_tokens": 3061
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.3900717949999999,
+            "completion_tokens": 658,
+            "completion_tokens_details": {
+              "reasoning_tokens": 355
+            },
+            "prompt_time": 0.047161528,
+            "prompt_tokens": 839,
+            "queue_time": 0.08723952,
+            "total_time": 1.437233323,
+            "total_tokens": 1497
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.948898243,
+            "completion_tokens": 904,
+            "completion_tokens_details": {
+              "reasoning_tokens": 616
+            },
+            "prompt_time": 0.498846677,
+            "prompt_tokens": 2065,
+            "queue_time": 0.139778657,
+            "total_time": 1.4477449199999999,
+            "total_tokens": 2969
+          }
+        }
+      ],
+      "error": null,
+      "repair_rounds": 2,
+      "rounds": [
+        {
+          "beats": [
+            "Your calendar would crumble on Venus's endless day.",
+            "On Earth a year lasts 365 days, but on Venus a year is only 225 days.",
+            "Meanwhile a single Venusian day stretches 243 Earth days, longer than that year.",
+            "So if you tried to live a Venus year, would you ever see a sunrise?",
+            "Because Venus spins retrograde, the Sun rises in the west, flipping our notion of day.",
+            "In practice you would never finish a single Venusian day before the planet completes its orbit.",
+            "It shows that timekeeping is planetary, reminding us that Earth’s rhythm is a local convenience.",
+            "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts."
+          ],
+          "critic_avg": 5.333333333333333,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "CONNECTIVE_OR_EDITORIAL"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "Earth year lasts 365 days",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "CONNECTIVE_OR_EDITORIAL"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "Earth’s rhythm is a local convenience",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The opening line is a vague metaphor that fails to grab attention and relies on unsupported language, weakening the hook.",
+            "must_preserve": [
+              "idea that a Venusian day is longer than its year"
+            ],
+            "repair_type": "HOOK",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 7,
+              "cliche_ai_smell": 4,
+              "escalation": 5,
+              "hook_strength": 5,
+              "payoff": 6,
+              "spoken_naturalness": 6,
+              "structural_distinctiveness": 5,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              0
+            ]
+          },
+          "hook": "Your calendar would crumble on Venus's endless day.",
+          "mechanical_hard_count": 7,
+          "mechanical_violation_count": 37,
+          "payoff": "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts.",
+          "repair_plan": {
+            "diagnosis": "beat 1: semantic_unsupported_addition 'Earth year lasts 365 days'; beat 1: unsupported_entity 'On Earth'; beat 1: unsupported_number '365'; beat 2: unsupported_entity 'Venusian'; beat 3: unsupported_unit 'year'; beat 4: unsupported_entity 'Because Venus'; beat 4: unsupported_unit 'day'; beat 5: unsupported_entity 'Venusian'; beat 6: semantic_unsupported_addition 'Earth’s rhythm is a local convenience'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "tier": 1
+          },
+          "round": 0,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 2,
+          "stalled_going_in": false,
+          "validate_err": "script word count 109 out of range (target 78-98, hard 68-108, mode short)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'calendar' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendar"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'crumble' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "crumble"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'endless' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "endless"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'venuss' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venuss"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "number '365' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "365"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'On Earth' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "On Earth"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "sentence-initial single-word entity 'Meanwhile' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Meanwhile"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'meanwhile' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "meanwhile"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'stretches' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "stretches"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "unit 'year' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "year"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'sunrise' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "sunrise"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'year' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "year"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "unit 'day' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "day"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "entity 'Because Venus' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Because Venus"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'flipping' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "flipping"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'notion' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "notion"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'before' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "before"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'completes' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "completes"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'planet' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planet"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'practice' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "practice"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'convenience' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "convenience"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "Your calendar would crumble on Venus's endless day.",
+            "A Venus year lasts about 225 Earth days.",
+            "One rotation of Venus takes about 243 Earth days, which is longer than its orbital period.",
+            "If you tried to live through a full Venus year, you’d wonder whether you’d ever see a sunrise.",
+            "Because Venus rotates in the opposite direction, the Sun rises in the west.",
+            "In practice, you would never finish a single Venusian day before the planet completes its orbit.",
+            "This shows that time works differently on other worlds, so our Earth‑based calendars are just a local shortcut.",
+            "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts."
+          ],
+          "critic_avg": 5.0,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "calendar would crumble on Venus's endless day",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "you’d ever see a sunrise",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The script’s middle beats fail to raise stakes; they repeat the same fact without adding tension or surprise.",
+            "must_preserve": [
+              "Venus’s rotation period (243 Earth days) exceeds its orbital period (225 Earth days)",
+              "Venus rotates retrograde, causing the Sun to rise in the west"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 7,
+              "cliche_ai_smell": 4,
+              "escalation": 4,
+              "hook_strength": 6,
+              "payoff": 5,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 3,
+              "visual_tellability": 5
+            },
+            "target_beats": [
+              3,
+              4,
+              5
+            ]
+          },
+          "hook": "Your calendar would crumble on Venus's endless day.",
+          "mechanical_hard_count": 3,
+          "mechanical_violation_count": 30,
+          "payoff": "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts.",
+          "repair_plan": {
+            "diagnosis": "beat 0: semantic_unsupported_addition \"calendar would crumble on Venus's endless day\"; beat 1: unsupported_entity 'A Venus'; beat 3: semantic_unsupported_addition 'you’d ever see a sunrise'; beat 4: unsupported_entity 'Because Venus'; beat 5: unsupported_entity 'Venusian'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              3,
+              4,
+              5
+            ],
+            "tier": 1
+          },
+          "round": 1,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 2,
+          "stalled_going_in": false,
+          "validate_err": "scenes 7 and 8 too similar (repetition)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'calendar' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendar"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'crumble' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "crumble"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'endless' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "endless"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'venuss' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venuss"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'A Venus' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "A Venus"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbital' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbital"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'period' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "period"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_003",
+                "base_004"
+              ],
+              "detail": "term 'full' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "full"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_003",
+                "base_004"
+              ],
+              "detail": "term 'sunrise' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "sunrise"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_003",
+                "base_004"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_003",
+                "base_004"
+              ],
+              "detail": "term 'youd' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "youd"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "entity 'Because Venus' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Because Venus"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'rotates' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "rotates"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'before' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "before"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'completes' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "completes"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'planet' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planet"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'practice' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "practice"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'based' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "based"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'calendars' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendars"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'shortcut' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shortcut"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'worlds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "worlds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'bound' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "bound"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'calendars' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendars"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'shortcuts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shortcuts"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "Our Earth calendars wouldn't match a day on Venus.",
+            "A year on Venus is about 225 Earth days.",
+            "One rotation of Venus takes about 243 Earth days, which is longer than its orbital period.",
+            "If you tried to live through a full Venus year, you wouldn't even finish a single Venusian day.",
+            "Venus spins in retrograde, so the Sun rises in the west.",
+            "A Venusian day of 243 Earth days outlasts its 225‑day year, so you would never finish one day before the planet completes an orbit.",
+            "This shows that time works differently on other worlds, so our Earth‑based calendars are just a local shortcut.",
+            "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts."
+          ],
+          "critic_avg": 5.666666666666667,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "Earth calendars wouldn't match a day on Venus",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "our Earth‑based calendars are just a local shortcut",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "our calendars are just Earth‑bound shortcuts",
+                "verdict": "UNSUPPORTED_ADDITION"
+              }
+            ],
+            "diagnosis": "The hook is unsupported and weak; it introduces a claim about Earth calendars that is not grounded in the cited evidence and fails to capture the audience’s attention.",
+            "must_preserve": [
+              "day on Venus"
+            ],
+            "repair_type": "HOOK",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 8,
+              "cliche_ai_smell": 4,
+              "escalation": 5,
+              "hook_strength": 6,
+              "payoff": 6,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 5,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              0
+            ]
+          },
+          "hook": "Our Earth calendars wouldn't match a day on Venus.",
+          "mechanical_hard_count": 3,
+          "mechanical_violation_count": 24,
+          "payoff": "Time works differently elsewhere, so our calendars are just Earth‑bound shortcuts.",
+          "repair_plan": {
+            "diagnosis": "beat 0: semantic_unsupported_addition \"Earth calendars wouldn't match a day on Venus\"; beat 0: unsupported_entity 'Our Earth'; beat 3: unsupported_entity 'Venusian'; beat 5: unsupported_entity 'A Venusian'; beat 6: semantic_unsupported_addition 'our Earth‑based calendars are just a local shortcut'; beat 7: semantic_unsupported_addition 'our calendars are just Earth‑bound shortcuts'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              3,
+              5,
+              6,
+              7
+            ],
+            "tier": 1
+          },
+          "round": 2,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 3,
+          "stalled_going_in": false,
+          "validate_err": "script word count 116 out of range (target 78-98, hard 68-108, mode short)",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_005"
+              ],
+              "detail": "entity 'Our Earth' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Our Earth"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_005"
+              ],
+              "detail": "term 'calendars' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendars"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_005"
+              ],
+              "detail": "term 'match' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "match"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_005"
+              ],
+              "detail": "term 'wouldnt' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "wouldnt"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbital' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbital"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'period' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "period"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'full' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "full"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "entity 'A Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "A Venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'before' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "before"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'completes' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "completes"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'planet' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planet"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'based' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "based"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'calendars' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendars"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'shortcut' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shortcut"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'worlds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "worlds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'bound' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "bound"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'calendars' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calendars"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'shortcuts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shortcuts"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- Earth calendars wouldn't match a day on Venus",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "Earth calendars wouldn't match a day on Venus"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- our Earth‑based calendars are just a local shortcut",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "our Earth‑based calendars are just a local shortcut"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- our calendars are just Earth‑bound shortcuts",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "our calendars are just Earth‑bound shortcuts"
+            }
+          ]
+        }
+      ],
+      "semantic_retries_used": 0,
+      "total_calls": 6,
+      "treatment": "TIMELINE_TRANSFORMATION",
+      "validate_err": "script word count 116 out of range (target 78-98, hard 68-108, mode short)"
+    },
+    {
+      "accepted": false,
+      "attempt": 2,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.098945778,
+            "completion_tokens": 889,
+            "completion_tokens_details": {
+              "reasoning_tokens": 551
+            },
+            "prompt_time": 0.103788594,
+            "prompt_tokens": 1756,
+            "queue_time": 0.241320658,
+            "total_time": 1.202734372,
+            "total_tokens": 2645
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.420670071,
+            "completion_tokens": 1142,
+            "completion_tokens_details": {
+              "reasoning_tokens": 619
+            },
+            "prompt_time": 0.474850197,
+            "prompt_tokens": 2007,
+            "queue_time": 0.215757286,
+            "total_time": 2.895520268,
+            "total_tokens": 3149
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.963929423,
+            "completion_tokens": 457,
+            "completion_tokens_details": {
+              "reasoning_tokens": 133
+            },
+            "prompt_time": 0.049344406,
+            "prompt_tokens": 897,
+            "queue_time": 0.177679111,
+            "total_time": 1.013273829,
+            "total_tokens": 1354
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": false,
+          "usage": null
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 0.457947547,
+            "completion_tokens": 444,
+            "completion_tokens_details": {
+              "reasoning_tokens": 280
+            },
+            "prompt_time": 0.049418318,
+            "prompt_tokens": 850,
+            "queue_time": 0.117628356,
+            "total_time": 0.507365865,
+            "total_tokens": 1294
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.963441971,
+            "completion_tokens": 938,
+            "completion_tokens_details": {
+              "reasoning_tokens": 526
+            },
+            "prompt_time": 0.085794709,
+            "prompt_tokens": 2030,
+            "queue_time": 0.103086294,
+            "total_time": 2.04923668,
+            "total_tokens": 2968
+          }
+        }
+      ],
+      "error": null,
+      "repair_rounds": 2,
+      "rounds": [
+        {
+          "beats": [
+            "What happens when a day outlasts a year?",
+            "On 2025-07-01, a telescope records Venus completing a rotation.",
+            "The planet flips, revealing its rotation is retrograde, opposite to the Sun's orbit.",
+            "Within thirty minutes the sun rises in the west and sets in the east, a reversed dance.",
+            "At 243 Earth days, Venus has already circled the Sun twice and is halfway through its second orbit.",
+            "So a single year on Venus is shorter than a single day.",
+            "Today, this reminds us that time is not a universal constant, but a local story.",
+            "Today, this reminds us that time is not a universal constant, but a local story."
+          ],
+          "critic_avg": 3.6666666666666665,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "claims Venus rotation was recorded by a telescope on 2025-07-01",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "describes the planet flipping and being opposite to the Sun's orbit",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "states the sun rises in the west within thirty minutes",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "says Venus has already circled the Sun twice and is halfway through its second orbit at 243 days",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The script stalls after the hook, repeating unsupported details and failing to build tension; beats 1‑5 need a clearer, fact‑accurate escalation.",
+            "must_preserve": [
+              "Venus rotates retrograde",
+              "A Venus day (243 Earth days) is longer than its year (225 Earth days)"
+            ],
+            "repair_type": "STRUCTURAL",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 6,
+              "cliche_ai_smell": 3,
+              "escalation": 3,
+              "hook_strength": 4,
+              "payoff": 3,
+              "spoken_naturalness": 5,
+              "structural_distinctiveness": 2,
+              "visual_tellability": 3
+            },
+            "target_beats": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "hook": "What happens when a day outlasts a year?",
+          "mechanical_hard_count": 6,
+          "mechanical_violation_count": 36,
+          "payoff": "Today, this reminds us that time is not a universal constant, but a local story.",
+          "repair_plan": {
+            "diagnosis": "beat 1: semantic_unsupported_addition 'claims Venus rotation was recorded by a telescope on 2025-07-01'; beat 1: unsupported_number '01'; beat 1: unsupported_number '07'; beat 1: unsupported_number '2025'; beat 2: semantic_unsupported_addition \"describes the planet flipping and being opposite to the Sun's orbit\"; beat 3: semantic_unsupported_addition 'states the sun rises in the west within thirty minutes'; beat 3: unsupported_unit 'minutes'; beat 4: semantic_unsupported_addition 'says Venus has",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "tier": 1
+          },
+          "round": 0,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 4,
+          "stalled_going_in": false,
+          "validate_err": "hook 'What happens when a day outlasts a year?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene",
+          "violations": [
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "number '01' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "01"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "number '07' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "07"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "number '2025' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "2025"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'completing' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "completing"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'records' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "records"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'telescope' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "telescope"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'flips' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "flips"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'revealing' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "revealing"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'rotation' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "rotation"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'suns' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "suns"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "unit 'minutes' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "minutes"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'dance' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "dance"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'minutes' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "minutes"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'reversed' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reversed"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'thirty' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "thirty"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "number 'twice' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "twice"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "unit 'second' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "second"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'already' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "already"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'circled' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "circled"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'halfway' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "halfway"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'twice' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "twice"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'shorter' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shorter"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "sentence-initial single-word entity 'Today' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Today"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'constant' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "constant"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'today' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "today"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "What happens when a day outlasts a year?",
+            "A day on Venus lasts longer than its year, with one rotation taking about 243 Earth days while its orbit around the Sun takes roughly 225 days.",
+            "Venus spins in retrograde, the opposite direction of almost every other planet.",
+            "Because of this retrograde spin, the Sun rises in the west and sets in the east on Venus.",
+            "Since a Venusian day is 243 Earth days and its year is only 225 Earth days, a single day outlasts an entire year on Venus.",
+            "So a single year on Venus is shorter than a single day.",
+            "Today, this reminds us that time is not a universal constant, but a local story.",
+            "Today, this reminds us that time is not a universal constant, but a local story."
+          ],
+          "critic_avg": null,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "claims time is not a universal constant, but a local story",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "claims time is not a universal constant, but a local story",
+                "verdict": "UNSUPPORTED_ADDITION"
+              }
+            ],
+            "craft_scores": {
+              "claim_traceability": 6,
+              "clarity": 8,
+              "cliche_ai_smell": 4,
+              "escalation": 4,
+              "hook_strength": 7,
+              "payoff": 3,
+              "spoken_naturalness": 6,
+              "structural_distinctiveness": 3,
+              "visual_tellability": 7
+            }
+          },
+          "hook": "What happens when a day outlasts a year?",
+          "mechanical_hard_count": 1,
+          "mechanical_violation_count": 19,
+          "payoff": "Today, this reminds us that time is not a universal constant, but a local story.",
+          "repair_plan": {
+            "diagnosis": "beat 4: unsupported_entity 'Venusian'; beat 6: semantic_unsupported_addition 'claims time is not a universal constant, but a local story'; beat 7: semantic_unsupported_addition 'claims time is not a universal constant, but a local story'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              4,
+              6,
+              7
+            ],
+            "tier": 1
+          },
+          "round": 1,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 2,
+          "stalled_going_in": false,
+          "validate_err": "hook 'What happens when a day outlasts a year?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene",
+          "violations": [
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'with' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "with"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'shorter' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shorter"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "sentence-initial single-word entity 'Today' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Today"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'constant' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "constant"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'today' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "today"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'universal' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "universal"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "sentence-initial single-word entity 'Today' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Today"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'constant' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "constant"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'today' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "today"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'universal' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "universal"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- claims time is not a universal constant, but a local story",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "claims time is not a universal constant, but a local story"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- claims time is not a universal constant, but a local story",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "claims time is not a universal constant, but a local story"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "What happens when a day outlasts a year?",
+            "A day on Venus lasts longer than its year, with one rotation taking about 243 Earth days while its orbit around the Sun takes roughly 225 days.",
+            "Venus spins in retrograde, the opposite direction of almost every other planet.",
+            "Because of this retrograde spin, the Sun rises in the west and sets in the east on Venus.",
+            "A Venusian day lasts 243 Earth days while its year is only 225 Earth days, so one day outlasts an entire year.",
+            "So a single year on Venus is shorter than a single day.",
+            "This reminds us that time works differently elsewhere.",
+            "This reminds us that time works differently elsewhere."
+          ],
+          "critic_avg": 4.666666666666667,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The payoff simply repeats the earlier line and adds no new resonant idea, making the ending feel flat.",
+            "must_preserve": [
+              "time works differently elsewhere"
+            ],
+            "repair_type": "PAYOFF",
+            "scores": {
+              "claim_traceability": 3,
+              "clarity": 7,
+              "cliche_ai_smell": 5,
+              "escalation": 4,
+              "hook_strength": 5,
+              "payoff": 3,
+              "spoken_naturalness": 6,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 5
+            },
+            "target_beats": [
+              7
+            ]
+          },
+          "hook": "What happens when a day outlasts a year?",
+          "mechanical_hard_count": 1,
+          "mechanical_violation_count": 11,
+          "payoff": "This reminds us that time works differently elsewhere.",
+          "repair_plan": {
+            "diagnosis": "beat 4: unsupported_entity 'A Venusian'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              4
+            ],
+            "tier": 1
+          },
+          "round": 2,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 0,
+          "stalled_going_in": false,
+          "validate_err": "hook 'What happens when a day outlasts a year?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene",
+          "violations": [
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'with' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "with"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_002"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "entity 'A Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "A Venusian"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 4,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'shorter' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "shorter"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            }
+          ]
+        }
+      ],
+      "semantic_retries_used": 0,
+      "total_calls": 6,
+      "treatment": "TIMELINE_TRANSFORMATION",
+      "validate_err": "hook 'What happens when a day outlasts a year?' is phrased as a QUESTION — the first line must be a concrete, front-loaded SHOCK STATEMENT, not a wind-up question (the curiosity gap belongs in scene 2 or later, never the very first line); rewrite the hook as a direct claim and move the question, if needed, to a later scene"
+    },
+    {
+      "accepted": false,
+      "attempt": 3,
+      "calls": [
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.4645545819999999,
+            "completion_tokens": 1153,
+            "completion_tokens_details": {
+              "reasoning_tokens": 768
+            },
+            "prompt_time": 0.085703616,
+            "prompt_tokens": 1756,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "queue_time": 0.031181664,
+            "total_time": 1.5502581979999999,
+            "total_tokens": 2909
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.161966241,
+            "completion_tokens": 1006,
+            "completion_tokens_details": {
+              "reasoning_tokens": 712
+            },
+            "prompt_time": 0.271676264,
+            "prompt_tokens": 2060,
+            "queue_time": 0.179215454,
+            "total_time": 1.433642505,
+            "total_tokens": 3066
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.243601536,
+            "completion_tokens": 591,
+            "completion_tokens_details": {
+              "reasoning_tokens": 351
+            },
+            "prompt_time": 0.086119126,
+            "prompt_tokens": 908,
+            "queue_time": 0.659415216,
+            "total_time": 1.329720662,
+            "total_tokens": 1499
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.252987946,
+            "completion_tokens": 1069,
+            "completion_tokens_details": {
+              "reasoning_tokens": 755
+            },
+            "prompt_time": 0.10348464,
+            "prompt_tokens": 2063,
+            "queue_time": 0.171919479,
+            "total_time": 1.356472586,
+            "total_tokens": 3132
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 1.8345238510000001,
+            "completion_tokens": 867,
+            "completion_tokens_details": {
+              "reasoning_tokens": 476
+            },
+            "prompt_time": 0.042120021,
+            "prompt_tokens": 898,
+            "queue_time": 0.17764535,
+            "total_time": 1.876643872,
+            "total_tokens": 1765
+          }
+        },
+        {
+          "certification_resilience": true,
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "structured": true,
+          "usage": {
+            "completion_time": 2.279705193,
+            "completion_tokens": 1072,
+            "completion_tokens_details": {
+              "reasoning_tokens": 621
+            },
+            "prompt_time": 0.110443883,
+            "prompt_tokens": 2047,
+            "queue_time": 0.247969156,
+            "total_time": 2.390149076,
+            "total_tokens": 3119
+          }
+        }
+      ],
+      "error": null,
+      "repair_rounds": 2,
+      "rounds": [
+        {
+          "beats": [
+            "Venus spins backward, making its days longer than its years.",
+            "On January 1, 2023, a researcher asked if a Venusian year would fit inside a day?",
+            "The calculation showed that a Venusian day lasts 243 Earth days while its year is only 225 days.",
+            "Thus the planet's rotation outpaces its orbit, turning a day into a longer span than a year.",
+            "If you tried to live out a single year on Venus, you would never finish a day.",
+            "You would spend a year on Venus but never see a full sunrise.",
+            "Today this shows how time itself can be reshaped by planetary motion.",
+            "The planet reminds us that our sense of time can bend when the rules of motion change."
+          ],
+          "critic_avg": 5.555555555555555,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "mentions a researcher and a specific date",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "never see a full sunrise",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              }
+            ],
+            "diagnosis": "The opening line is too generic and fails to immediately capture attention; it needs a sharper, more vivid hook.",
+            "must_preserve": [
+              "Venus spins backward",
+              "days longer than its years"
+            ],
+            "repair_type": "HOOK",
+            "scores": {
+              "claim_traceability": 4,
+              "clarity": 7,
+              "cliche_ai_smell": 4,
+              "escalation": 5,
+              "hook_strength": 6,
+              "payoff": 6,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 5,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              0
+            ]
+          },
+          "hook": "Venus spins backward, making its days longer than its years.",
+          "mechanical_hard_count": 9,
+          "mechanical_violation_count": 37,
+          "payoff": "The planet reminds us that our sense of time can bend when the rules of motion change.",
+          "repair_plan": {
+            "diagnosis": "beat 0: unsupported_unit 'years'; beat 1: semantic_unsupported_addition 'mentions a researcher and a specific date'; beat 1: unsupported_entity 'On January'; beat 1: unsupported_entity 'Venusian'; beat 1: unsupported_number '1'; beat 1: unsupported_number '2023'; beat 1: unsupported_unit 'day'; beat 2: unsupported_entity 'Venusian'; beat 5: semantic_unsupported_addition 'never see a full sunrise'; beat 5: uncited_factual_content 'Venus'; beat 5: uncited_factual_content 'year'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              2,
+              5
+            ],
+            "tier": 1
+          },
+          "round": 0,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 2,
+          "stalled_going_in": false,
+          "validate_err": "scene 4 voiceover uses the formal connector 'Thus' — nobody talks like this out loud; rewrite in plain conversational language",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "unit 'years' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "years"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "term 'backward' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "backward"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "number '1' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "1"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "number '2023' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_number",
+              "severity": "hard",
+              "value": "2023"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "unit 'day' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "day"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "entity 'On January' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "On January"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "term 'january' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "january"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "term 'researcher' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "researcher"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'calculation' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "calculation"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001",
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "sentence-initial single-word entity 'Thus' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Thus"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'outpaces' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outpaces"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'planets' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planets"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'span' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "span"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'thus' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "thus"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "line asserts specific factual content but cites no evidence claim",
+              "kind": "uncited_factual_content",
+              "severity": "hard",
+              "value": "year"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "line names a specific entity but cites no evidence claim",
+              "kind": "uncited_factual_content",
+              "severity": "hard",
+              "value": "Venus"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "full"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "sunrise"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "venus"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [],
+              "detail": "ordinary uncited vocabulary (soft signal only)",
+              "kind": "uncited_factual_content",
+              "severity": "soft",
+              "value": "year"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "sentence-initial single-word entity 'Today' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Today"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'motion' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "motion"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'planetary' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planetary"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reshaped' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reshaped"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "Venus spins in retrograde, causing its days to be longer than its years.",
+            "Scientists have wondered whether a Venusian year could fit inside a single day.",
+            "A day on Venus lasts about 243 Earth days, while its year is roughly 225 Earth days.",
+            "Thus the planet's rotation outpaces its orbit, turning a day into a longer span than a year.",
+            "If you tried to live out a single year on Venus, you would never finish a day.",
+            "You would experience a full Venusian year without ever completing a single day.",
+            "Today this shows how time itself can be reshaped by planetary motion.",
+            "The planet reminds us that our sense of time can bend when the rules of motion change."
+          ],
+          "critic_avg": 6.444444444444445,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "Scientists have wondered whether a Venusian year could fit inside a single day.",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "rotation outpaces its orbit",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "time itself can be reshaped by planetary motion",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "our sense of time can bend when the rules of motion change",
+                "verdict": "UNSUPPORTED_ADDITION"
+              }
+            ],
+            "diagnosis": "The hook fails to grab attention quickly and introduces unsupported terminology, weakening the opening impact.",
+            "must_preserve": [
+              "Venus spins retrograde",
+              "days longer than years"
+            ],
+            "repair_type": "HOOK",
+            "scores": {
+              "claim_traceability": 7,
+              "clarity": 8,
+              "cliche_ai_smell": 5,
+              "escalation": 6,
+              "hook_strength": 5,
+              "payoff": 7,
+              "spoken_naturalness": 8,
+              "structural_distinctiveness": 5,
+              "visual_tellability": 7
+            },
+            "target_beats": [
+              0
+            ]
+          },
+          "hook": "Venus spins in retrograde, causing its days to be longer than its years.",
+          "mechanical_hard_count": 3,
+          "mechanical_violation_count": 31,
+          "payoff": "The planet reminds us that our sense of time can bend when the rules of motion change.",
+          "repair_plan": {
+            "diagnosis": "beat 0: unsupported_unit 'years'; beat 1: semantic_unsupported_addition 'Scientists have wondered whether a Venusian year could fit inside a single day.'; beat 1: unsupported_entity 'Venusian'; beat 3: semantic_unsupported_addition 'rotation outpaces its orbit'; beat 5: unsupported_entity 'Venusian'; beat 6: semantic_unsupported_addition 'time itself can be reshaped by planetary motion'; beat 7: semantic_unsupported_addition 'our sense of time can bend when the rules of motion change'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              0,
+              1,
+              3,
+              5,
+              6,
+              7
+            ],
+            "tier": 1
+          },
+          "round": 1,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 4,
+          "stalled_going_in": false,
+          "validate_err": "scene 3 voiceover 'A day on Venus lasts about 243 Earth days, while its year is roughly 225 Earth days.' stacks a SECOND named place/thing into a while/although clause on top of the sentence's own subject — reads as jumbled, no natural flow, out loud (render-215: 'keep London mild while Calgary at the same latitude freezes'); split into two short sentences instead, one entity per sentence",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "unit 'years' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_unit",
+              "severity": "hard",
+              "value": "years"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "term 'causing' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "causing"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "sentence-initial single-word entity 'Scientists' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Scientists"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'scientists' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "scientists"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "sentence-initial single-word entity 'Thus' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Thus"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'outpaces' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "outpaces"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'planets' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planets"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'span' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "span"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'thus' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "thus"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'completing' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "completing"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'experience' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "experience"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'full' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "full"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "sentence-initial single-word entity 'Today' not in cited claim(s) (soft signal only)",
+              "kind": "unsupported_entity",
+              "severity": "soft",
+              "value": "Today"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'motion' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "motion"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'planetary' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planetary"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reshaped' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reshaped"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'today' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "today"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'bend' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "bend"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'motion' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "motion"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'planet' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planet"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'rules' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "rules"
+            }
+          ]
+        },
+        {
+          "beats": [
+            "Venus spins in retrograde, and its rotation period is longer than its orbital period.",
+            "We can wonder what it would be like to experience a Venusian year.",
+            "A day on Venus lasts about 243 Earth days, while its year is roughly 225 Earth days.",
+            "Because its rotation takes longer than its orbit, a Venusian day is longer than a Venusian year.",
+            "If you tried to live out a single year on Venus, you would never finish a day.",
+            "You would live through an entire Venusian year without finishing a single Venusian day.",
+            "This illustrates that time can work differently on other worlds.",
+            "The planet reminds us that our perception of time can change under different cosmic conditions."
+          ],
+          "critic_avg": 6.0,
+          "critic_error": null,
+          "critic_verdict": {
+            "claim_support": [
+              {
+                "beat_index": 0,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 1,
+                "unsupported_proposition": "experience a Venusian year",
+                "verdict": "UNSUPPORTED_ADDITION"
+              },
+              {
+                "beat_index": 2,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED"
+              },
+              {
+                "beat_index": 3,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 4,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 5,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 6,
+                "unsupported_proposition": "",
+                "verdict": "SUPPORTED_PARAPHRASE"
+              },
+              {
+                "beat_index": 7,
+                "unsupported_proposition": "",
+                "verdict": "CONNECTIVE_OR_EDITORIAL"
+              }
+            ],
+            "diagnosis": "The middle beats repeat the same numeric fact without building tension or new insight, causing a flat escalation curve.",
+            "must_preserve": [
+              "day length 243 Earth days",
+              "year length 225 Earth days",
+              "Venus spins in retrograde"
+            ],
+            "repair_type": "ESCALATION",
+            "scores": {
+              "claim_traceability": 8,
+              "clarity": 8,
+              "cliche_ai_smell": 4,
+              "escalation": 5,
+              "hook_strength": 6,
+              "payoff": 6,
+              "spoken_naturalness": 7,
+              "structural_distinctiveness": 4,
+              "visual_tellability": 6
+            },
+            "target_beats": [
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "hook": "Venus spins in retrograde, and its rotation period is longer than its orbital period.",
+          "mechanical_hard_count": 3,
+          "mechanical_violation_count": 22,
+          "payoff": "The planet reminds us that our perception of time can change under different cosmic conditions.",
+          "repair_plan": {
+            "diagnosis": "beat 1: semantic_unsupported_addition 'experience a Venusian year'; beat 1: unsupported_entity 'Venusian'; beat 3: unsupported_entity 'Venusian'; beat 5: unsupported_entity 'Venusian'",
+            "must_preserve": [],
+            "repair_type": "PROVENANCE",
+            "target_beats": [
+              1,
+              3,
+              5
+            ],
+            "tier": 1
+          },
+          "round": 2,
+          "score": null,
+          "score_clears_floor": false,
+          "semantic_coverage_errors": [],
+          "semantic_covered_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "semantic_critic_attempts": 1,
+          "semantic_verified": true,
+          "semantic_violation_count": 1,
+          "stalled_going_in": false,
+          "validate_err": "scene 3 voiceover 'A day on Venus lasts about 243 Earth days, while its year is roughly 225 Earth days.' stacks a SECOND named place/thing into a while/although clause on top of the sentence's own subject — reads as jumbled, no natural flow, out loud (render-215: 'keep London mild while Calgary at the same latitude freezes'); split into two short sentences instead, one entity per sentence",
+          "violations": [
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "term 'orbital' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbital"
+            },
+            {
+              "beat_index": 0,
+              "cited_claim_ids": [
+                "base_001",
+                "base_002"
+              ],
+              "detail": "term 'period' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "period"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "term 'experience' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "experience"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [
+                "base_003"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 2,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'lasts' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "lasts"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'because' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "because"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'orbit' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "orbit"
+            },
+            {
+              "beat_index": 3,
+              "cited_claim_ids": [
+                "base_001"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "entity 'Venusian' not found in the cited claim(s) or key_terms",
+              "kind": "unsupported_entity",
+              "severity": "hard",
+              "value": "Venusian"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'single' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "single"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'through' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "through"
+            },
+            {
+              "beat_index": 5,
+              "cited_claim_ids": [
+                "base_004"
+              ],
+              "detail": "term 'venusian' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "venusian"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'illustrates' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "illustrates"
+            },
+            {
+              "beat_index": 6,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'worlds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "worlds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'conditions' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "conditions"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'cosmic' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "cosmic"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'perception' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "perception"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'planet' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "planet"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'reminds' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "reminds"
+            },
+            {
+              "beat_index": 7,
+              "cited_claim_ids": [
+                "base_005"
+              ],
+              "detail": "term 'under' not found in the cited claim(s) or key_terms -- general vocabulary novelty, telemetry only",
+              "kind": "unsupported_term",
+              "severity": "soft",
+              "value": "under"
+            },
+            {
+              "beat_index": 1,
+              "cited_claim_ids": [],
+              "detail": "critic semantic check: UNSUPPORTED_ADDITION -- experience a Venusian year",
+              "kind": "semantic_unsupported_addition",
+              "severity": "hard",
+              "value": "experience a Venusian year"
+            }
+          ]
+        }
+      ],
+      "semantic_retries_used": 0,
+      "total_calls": 6,
+      "treatment": "TIMELINE_TRANSFORMATION",
+      "validate_err": "scene 3 voiceover 'A day on Venus lasts about 243 Earth days, while its year is roughly 225 Earth days.' stacks a SECOND named place/thing into a while/although clause on top of the sentence's own subject — reads as jumbled, no natural flow, out loud (render-215: 'keep London mild while Calgary at the same latitude freezes'); split into two short sentences instead, one entity per sentence"
+    }
+  ]
+}

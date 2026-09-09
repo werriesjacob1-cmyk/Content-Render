@@ -31,6 +31,22 @@ LUFS_MAX = -11.5
 TRUE_PEAK_MAX_DB = -0.5
 MAX_LONG_SILENCE_RATIO = 0.20
 MIN_SAMPLE_RATE = 32000
+# The rate the renderer must encode at, and the ceiling this gate enforces.
+# main.py imports DELIVERY_SAMPLE_RATE so the encode and the check cannot drift.
+# The ceiling is not cosmetic: ffmpeg's loudnorm resamples internally to 192 kHz
+# and does not restore the input rate, so an encode with no explicit -ar lands on
+# 96 kHz -- half a fixed bitrate spent on an inaudible band. That shipped
+# undetected until a CI artifact was probed, so it is a measured gate now.
+DELIVERY_SAMPLE_RATE = 48000
+MAX_SAMPLE_RATE = DELIVERY_SAMPLE_RATE
+# Pinning 48 kHz alone made true peak jump from -1.50 to +0.07 dB -- i.e. the
+# mastering gate's own ceiling was breached. Measured, not reasoned: at 48 kHz
+# the AAC encoder was bitrate-starved at 96 kbit/s and its coding error overshot
+# the limited signal by ~1.6 dB, which the 96 kHz encode had masked by spending
+# those bits on an inaudible band instead. At 128 kbit/s the overshoot vanishes
+# (-1.49 dB, the loudnorm target) for about 1% more file. So the rate and the
+# bitrate are ONE decision and are stated together.
+DELIVERY_AUDIO_BITRATE = "128k"
 MIN_WPM = 105.0
 MAX_WPM = 205.0
 
@@ -143,6 +159,11 @@ def evaluate_metrics(
             channels = 0
         if sample_rate < MIN_SAMPLE_RATE:
             reasons.append(f"audio sample rate {sample_rate} below {MIN_SAMPLE_RATE}")
+        elif sample_rate > MAX_SAMPLE_RATE:
+            reasons.append(
+                f"audio sample rate {sample_rate} above the {MAX_SAMPLE_RATE} delivery "
+                "ceiling (loudnorm's internal resample leaking into the encode)"
+            )
         if channels not in {1, 2}:
             reasons.append(f"unexpected final audio channel count {channels}")
 

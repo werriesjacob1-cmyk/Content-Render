@@ -25,7 +25,9 @@ import sys
 from typing import Any, Mapping
 
 import generate as G
+import quality_learning_ledger as QL
 import quality_session as QS
+import quality_story_selector as QSS
 import scientific_media as SCI
 import writer_story_bridge as WSB
 import writer_v2 as W
@@ -45,6 +47,18 @@ def _load_history() -> list[dict[str, Any]]:
         return []
 
 
+def _load_learning() -> tuple[list[QL.LearningRecord], dict[str, Any]]:
+    path = os.getenv("CONTENT_RENDER_LEARNING_LEDGER", "state/quality_learning.jsonl")
+    try:
+        rows = QL.read_records(path, strict=True)
+        return rows, {"path": path, "loaded": len(rows), "error": ""}
+    except Exception as exc:
+        # Learning is advisory, never factual authority. A corrupt ledger must
+        # not contaminate selection; ignore the entire view and make the loss
+        # explicit in selection evidence rather than partially salvaging it.
+        return [], {"path": path, "loaded": 0, "error": f"{type(exc).__name__}: {exc}"}
+
+
 def _eligible_bank() -> list[dict[str, Any]]:
     bank_all = G.load_bank()
     quarantined = G.load_topic_quarantine()
@@ -60,27 +74,51 @@ def _recent_treatments(history: list[dict[str, Any]], n: int = 6) -> list[str]:
     return vals
 
 
+def _combined_recent_treatments(
+    history: list[dict[str, Any]],
+    learning: list[QL.LearningRecord],
+    n: int = 6,
+) -> list[str]:
+    vals = _recent_treatments(history, n=n) + QL.recent_treatments(learning, n=n)
+    out: list[str] = []
+    for t in vals:
+        if t and t not in out:
+            out.append(t)
+    return out[-n:]
+
+
 def _quality_lane_profile(
     fact: Mapping[str, Any],
     recent_treatments: list[str],
+    failed_pairs: Mapping[tuple[str, str], int] | None = None,
 ) -> dict[str, Any]:
-    """Score what the *finished-video stack* can do with a topic, with zero calls.
-
-    This is deliberately richer than Writer V2's generic stock-oriented visual
-    scout. Authentic NASA/PubChem compatibility and an evidence-safe deterministic
-    motion treatment earn modest bonuses; the underlying visual-scout score still
-    dominates so a niche tool match cannot rescue a fundamentally untellable story.
-    """
+    """Score finished-video potential and Writer writability with zero calls."""
     scout = W.visual_scout_score(dict(fact), banned_re=G.UNSTOCKABLE_Q)
     scout_score = float(scout.get("score") or 0.0)
     queries = [str(q).strip() for q in (fact.get("queries") or []) if str(q).strip()]
     key_terms = [str(k).strip() for k in (fact.get("key_terms") or []) if str(k).strip()]
     nasa_hits = sum(1 for q in queries if SCI.svs_relevant(q))
     pubchem_hits = sum(1 for q in queries if SCI.pubchem_relevant(q))
+    # Treatment choice stays with the established selector. The topic-treatment
+    # writability model is computed alongside it as SHADOW EVIDENCE ONLY and is
+    # deliberately given ZERO weight below.
+    #
+    # Its whole empirical basis today is 13 rejected candidates across just TWO
+    # treatments (INSIDE_THE_SYSTEM, TIMELINE_TRANSFORMATION), and that corpus is
+    # dominated by a length bug that has since been fixed -- so the signal it
+    # carries is mostly an artifact of the defect, not of writability. Promoting
+    # it to authority now would let a 13-sample model steer real topic selection.
+    # Keep recording it; revisit promotion once post-fix runs supply data that
+    # is not confounded, and that spans more than two treatments.
     treatment = W.select_treatment(
         str(fact.get("id") or ""),
-        recent_treatments=recent_treatments,
+        recent_treatments,
     ) or ""
+    joint_score, _shadow_treatment, treatment_evidence = QSS.score_topic(
+        fact,
+        recent_treatments=recent_treatments,
+        failed_pair_counts=failed_pairs or {},
+    )
     motion = treatment in _MOTION_TREATMENTS
 
     # ~72% of the score remains the existing visual-tellability signal. Authentic
@@ -97,6 +135,11 @@ def _quality_lane_profile(
         "quality_stack_score": quality_score,
         "visual_scout": scout,
         "planned_treatment": treatment,
+        # Shadow evidence: recorded for a future promotion decision, weighted 0.
+        "topic_treatment_writability_score": joint_score,
+        "topic_treatment_evidence": treatment_evidence,
+        "topic_treatment_writability_is_authoritative": False,
+        "topic_treatment_shadow_treatment": _shadow_treatment,
         "nasa_query_hits": nasa_hits,
         "pubchem_query_hits": pubchem_hits,
         "authentic_science_query_hits": nasa_hits + pubchem_hits,
@@ -109,10 +152,12 @@ def _quality_lane_profile(
 def _visual_rank(
     fact: Mapping[str, Any],
     recent_treatments: list[str] | None = None,
-) -> tuple[float, float, int, int, str]:
-    profile = _quality_lane_profile(fact, recent_treatments or [])
+    failed_pairs: Mapping[tuple[str, str], int] | None = None,
+) -> tuple[float, float, float, int, int, str]:
+    profile = _quality_lane_profile(fact, recent_treatments or [], failed_pairs)
     return (
         float(profile["quality_stack_score"]),
+        float(profile["topic_treatment_writability_score"]),
         float((profile["visual_scout"] or {}).get("score") or 0.0),
         int(profile["authentic_science_query_hits"]),
         int(profile["query_count"]),
@@ -121,13 +166,15 @@ def _visual_rank(
 
 
 def select_topic(topic_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Pick explicit topic or deterministic fresh flagship with strongest render potential."""
+    """Pick explicit topic or deterministic fresh flagship with best joint fit."""
     bank = _eligible_bank()
     if not bank:
         raise RuntimeError("no eligible topic-bank facts")
     by_id = {str(f.get("id")): f for f in bank}
     history = _load_history()
-    recent = _recent_treatments(history)
+    learning, learning_status = _load_learning()
+    recent = _combined_recent_treatments(history, learning)
+    failed_pairs = QL.failed_pair_counts(learning)
 
     if topic_id and topic_id != "auto":
         if topic_id not in by_id:
@@ -136,33 +183,41 @@ def select_topic(topic_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
         return fact, {
             "mode": "explicit",
             "selected_topic_id": topic_id,
-            "quality_lane_profile": _quality_lane_profile(fact, recent),
+            "learning_ledger": learning_status,
+            "recent_treatments": recent,
+            "quality_lane_profile": _quality_lane_profile(fact, recent, failed_pairs),
         }
 
     used = {str(h.get("fact_id")) for h in history if h.get("fact_id")}
     fresh = [f for f in bank if str(f.get("id")) not in used] or bank
-    ranked = sorted(fresh, key=lambda f: _visual_rank(f, recent), reverse=True)
+    ranked = sorted(fresh, key=lambda f: _visual_rank(f, recent, failed_pairs), reverse=True)
     fact = dict(ranked[0])
     shortlist = []
     for row in ranked[:8]:
-        profile = _quality_lane_profile(row, recent)
+        profile = _quality_lane_profile(row, recent, failed_pairs)
         shortlist.append({
             "topic_id": row.get("id"),
             "domain": row.get("domain"),
             "quality_stack_score": profile["quality_stack_score"],
+            "topic_treatment_writability_score": profile["topic_treatment_writability_score"],
             "planned_treatment": profile["planned_treatment"],
             "authentic_science_query_hits": profile["authentic_science_query_hits"],
             "deterministic_motion_eligible": profile["deterministic_motion_eligible"],
+            "failed_pair_count": failed_pairs.get((str(row.get("id") or ""), profile["planned_treatment"]), 0),
             "visual_scout": profile["visual_scout"],
+            "topic_treatment_evidence": profile["topic_treatment_evidence"],
         })
+    selected_profile = _quality_lane_profile(fact, recent, failed_pairs)
     return fact, {
-        "mode": "auto_quality_stack_first_fresh",
+        "mode": "auto_topic_treatment_writability_v1",
         "selected_topic_id": fact.get("id"),
         "used_topic_count": len(used),
         "eligible_topic_count": len(bank),
         "fresh_topic_count": len(fresh),
         "recent_treatments": recent,
-        "selected_quality_lane_profile": _quality_lane_profile(fact, recent),
+        "learning_ledger": learning_status,
+        "failed_pair_count_total": sum(failed_pairs.values()),
+        "selected_quality_lane_profile": selected_profile,
         "shortlist": shortlist,
     }
 
@@ -176,30 +231,40 @@ def _write_json(path: Path, payload: Any) -> None:
 def build_bundle(topic_id: str, out_dir: str) -> dict[str, Any]:
     fact, selection = select_topic(topic_id)
     history = _load_history()
+    learning, _ = _load_learning()
+    recent = _combined_recent_treatments(history, learning)
+    profile = selection.get("selected_quality_lane_profile") or selection.get("quality_lane_profile") or {}
+    selected_treatment = str(profile.get("planned_treatment") or "").strip()
+    if selected_treatment not in W.TREATMENTS:
+        raise RuntimeError("topic-treatment selector did not produce a valid treatment")
 
-    # Research exactly ONCE. The canonical orchestrator normally calls
-    # research_dossier internally; pin it to this exact result for the duration
-    # of generation so the manifest and exported evidence inventory cannot drift
-    # because a second network attempt returned a different dossier.
     dossier = G.research_dossier(fact)
     grounded = bool(dossier)
     inventory = W.build_claim_inventory(fact, dossier_facts=dossier, grounded=grounded)
     original_research = G.research_dossier
+    original_select_treatment = W.select_treatment
     G.research_dossier = lambda _fact: list(dossier)
+    # The joint selector is deterministic and already sealed into selection
+    # evidence. Force that exact treatment for this candidate, then restore the
+    # process-global helper immediately afterward.
+    W.select_treatment = lambda *_args, **_kwargs: selected_treatment
     try:
         manifest, debug = O.generate_candidate_v21(
             fact,
             job_name="CURIOSITY_ITCH",
-            recent_treatments=_recent_treatments(history),
+            recent_treatments=recent,
             avoid_topics=", ".join(str(h.get("title") or h.get("fact_id") or "") for h in history[-5:]),
             cta_style="SAVE_WORTHY",
             use_structured=True,
         )
     finally:
+        W.select_treatment = original_select_treatment
         G.research_dossier = original_research
 
     if not manifest or not debug.get("accepted"):
         raise RuntimeError(f"Writer V2.1 did not produce an accepted candidate: {debug.get('error')!r}")
+    if debug.get("treatment") != selected_treatment:
+        raise RuntimeError("Writer treatment drifted from sealed topic-treatment selection")
     if manifest.get("_semantic_verified") is not True:
         raise RuntimeError("accepted Writer V2.1 manifest is missing semantic verification marker")
 

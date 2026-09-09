@@ -27,6 +27,13 @@ concurrency:
 
 jobs:
   expand:
+    # Same transition guard the other scheduled provider-spending lanes carry
+    # (render.yml, buffer.yml). This was the ONE cron that could still reach
+    # paid Gemini/OpenRouter generation with nothing enabled, and it also
+    # auto-commits its result -- so an unattended run spent credit and mutated
+    # the repo with no human switch anywhere in the path. Manual dispatch is an
+    # explicit operator action and stays available.
+    if: ${{ github.event_name != 'schedule' || vars.LEGACY_SCHEDULED_GENERATION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
