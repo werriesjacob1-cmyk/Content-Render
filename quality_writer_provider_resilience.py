@@ -84,6 +84,15 @@ def resilient_structured_call(prompt, schema, schema_name, debug_calls):
         )
     if G.GROQ_KEY and groq_fits:
         for model in list(G.MODEL_CHAIN):
+            # A model still cooling from an authoritative 429 is skipped here
+            # too. Without this the strict loop and the loose fallback chain are
+            # two independent doors into the same rate-limited model, which is
+            # exactly what flagship #6 walked through repeatedly.
+            cooling, remaining = G.should_skip_provider("groq", model)
+            if cooling:
+                print(f"  [writer-v2-cert] strict groq:{model} skipped — rate-limited, "
+                      f"{remaining:.1f}s of cooldown left")
+                continue
             attempts = 2 if "gpt-oss-120b" in model.lower() else 1
             for attempt in range(attempts):
                 try:
@@ -95,6 +104,12 @@ def resilient_structured_call(prompt, schema, schema_name, debug_calls):
                         schema,
                         schema_name=schema_name,
                     )
+                    # A success is authoritative evidence of health and clears
+                    # any cooldown this model's own earlier 429 set -- including
+                    # the one the bounded in-loop retry just waited out. Without
+                    # this a model that throttled once and then answered fine
+                    # would still be skipped by later calls in the session.
+                    G.note_provider_healthy("groq", model)
                     debug_calls.append({
                         "provider": "groq",
                         "model": model,
@@ -106,6 +121,11 @@ def resilient_structured_call(prompt, schema, schema_name, debug_calls):
                 except urllib.error.HTTPError as exc:
                     detail = _http_detail(exc)
                     wait_s = G._parse_retry_secs(detail) if exc.code == 429 else None
+                    if exc.code == 429:
+                        # Same authoritative evidence, same session-local
+                        # cooldown, so the loose fallback below and every later
+                        # call in this session see it too.
+                        G.note_provider_rate_limited("groq", model, retry_after_s=wait_s)
                     if (
                         attempt == 0
                         and attempts > 1

@@ -1927,6 +1927,106 @@ def _call_gemini(model, prompt, ground=False):
 _CONSEC_EXHAUSTIONS = 0   # times the WHOLE provider chain 429'd back-to-back
 _CIRCUIT_OPEN = False     # once open, calls fail fast instead of hammering dead quota
 
+# ---------------------------------------------------------------------------
+# Session-local provider health (S9).
+#
+# The existing capability gate answers "can this request structurally FIT this
+# provider?". That is a different question from "is this provider healthy
+# enough to try AGAIN right now?", and nothing answered the second one: the
+# only provider state was _WORKING_MODEL, a positive stickiness with no
+# negative counterpart, and _CIRCUIT_OPEN, which is chain-wide and all-or-
+# nothing. So in flagship #6 Groq 429'd, the chain paid a wait, and later calls
+# walked straight back into the same rate-limited model.
+#
+# Deliberately bounded and reversible:
+#   - session-local only; nothing is persisted across runs
+#   - cooldown comes from the provider's OWN stated retry delay where it gives
+#     one, so we are not inventing a penalty
+#   - a provider is NEVER permanently disabled; the cooldown expires and it is
+#     tried again on its own merits
+#   - every skip is recorded with the reason and the seconds remaining
+# ---------------------------------------------------------------------------
+PROVIDER_COOLDOWN_MAX_S = float(os.getenv("PROVIDER_COOLDOWN_MAX_S", "90"))
+PROVIDER_COOLDOWN_DEFAULT_S = float(os.getenv("PROVIDER_COOLDOWN_DEFAULT_S", "20"))
+_PROVIDER_COOLDOWN_UNTIL: dict[tuple, float] = {}
+_PROVIDER_RATE_LIMIT_STREAK: dict[tuple, int] = {}
+_PROVIDER_HEALTH_EVENTS: list = []
+
+
+def _provider_health_reset():
+    """Test seam, and the entry point a new certification session would call."""
+    _PROVIDER_COOLDOWN_UNTIL.clear()
+    _PROVIDER_RATE_LIMIT_STREAK.clear()
+    del _PROVIDER_HEALTH_EVENTS[:]
+
+
+def provider_health_events():
+    """Every skip/cooldown/recovery recorded this session.
+
+    Kept OUT of debug_calls deliberately: that list is consumed as the record of
+    calls actually made -- wr21_quality_generate reads its FIRST entry as the
+    draft model and quality_learning_ledger reads the LAST entry with a truthy
+    provider as the provider used. A skip entry carrying "provider": "groq"
+    would be silently misreported as the model that wrote the script.
+    """
+    return list(_PROVIDER_HEALTH_EVENTS)
+
+
+def provider_cooldown_remaining(prov, model, now=None):
+    """Seconds left on this (provider, model)'s cooldown; 0.0 when healthy."""
+    now = time.time() if now is None else now
+    until = _PROVIDER_COOLDOWN_UNTIL.get((prov, model), 0.0)
+    return max(0.0, until - now)
+
+
+def note_provider_rate_limited(prov, model, retry_after_s=None, now=None):
+    """Record authoritative rate-limit evidence and start a bounded cooldown.
+
+    `retry_after_s` is the provider's own stated delay when it gave one. Absent
+    that, a modest default is used rather than guessing long. Either way the
+    wait is clamped, so a provider claiming a 30-minute penalty cannot silently
+    remove itself from the chain for the rest of the session.
+    """
+    now = time.time() if now is None else now
+    key = (prov, model)
+    streak = _PROVIDER_RATE_LIMIT_STREAK.get(key, 0) + 1
+    _PROVIDER_RATE_LIMIT_STREAK[key] = streak
+    try:
+        wait = float(retry_after_s) if retry_after_s is not None else PROVIDER_COOLDOWN_DEFAULT_S
+    except (TypeError, ValueError):
+        wait = PROVIDER_COOLDOWN_DEFAULT_S
+    if wait <= 0:
+        wait = PROVIDER_COOLDOWN_DEFAULT_S
+    wait = min(wait, PROVIDER_COOLDOWN_MAX_S)
+    _PROVIDER_COOLDOWN_UNTIL[key] = now + wait
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "rate_limited", "provider": prov, "model": model,
+        "cooldown_s": round(wait, 2), "streak": streak,
+        "retry_after_reported": retry_after_s is not None,
+    })
+    return wait
+
+
+def note_provider_healthy(prov, model):
+    """A success clears the cooldown and the streak -- recovery is automatic."""
+    key = (prov, model)
+    if _PROVIDER_COOLDOWN_UNTIL.pop(key, None) or _PROVIDER_RATE_LIMIT_STREAK.pop(key, None):
+        _PROVIDER_HEALTH_EVENTS.append({
+            "event": "recovered", "provider": prov, "model": model})
+
+
+def should_skip_provider(prov, model, now=None):
+    """(skip, remaining_seconds). Records the skip so it is never invisible."""
+    remaining = provider_cooldown_remaining(prov, model, now=now)
+    if remaining <= 0:
+        return False, 0.0
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "skipped_cooling", "provider": prov, "model": model,
+        "remaining_s": round(remaining, 2),
+        "streak": _PROVIDER_RATE_LIMIT_STREAK.get((prov, model), 0),
+    })
+    return True, remaining
+
 
 def _is_weak_model(prov, model):
     """The last-resort backstops whose drafts routinely trip the quality floor:
@@ -2049,6 +2149,15 @@ def call_groq(prompt):
         wait hints to `waits` (a list captured via closure) when collect_waits."""
         nonlocal last_err
         for prov, model in sub_chain:
+            # Health check BEFORE the request. A model that authoritatively
+            # rate-limited us seconds ago is not worth a round trip plus another
+            # wait; skipping it falls straight through to the next-strongest
+            # provider instead. Never permanent -- the cooldown expires.
+            skip, remaining = should_skip_provider(prov, model)
+            if skip:
+                print(f"  [model] {prov}:{model} skipped — rate-limited, "
+                      f"{remaining:.1f}s of cooldown left")
+                continue
             try:
                 if prov == "gemini":
                     out = _call_gemini(model, prompt)
@@ -2099,9 +2208,14 @@ def call_groq(prompt):
                     print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
                           + (f" :: {detail}" if detail else ""))
                     last_err = e
-                    if collect_waits and e.code == 429:
+                    if e.code == 429:
+                        # Authoritative rate-limit evidence from the provider
+                        # itself. Recorded regardless of collect_waits, so a
+                        # Phase-2 (weak-chain) 429 also starts a cooldown
+                        # instead of being retried blind by the next call.
                         w = _parse_retry_secs(detail)
-                        if w is not None:
+                        note_provider_rate_limited(prov, model, retry_after_s=w)
+                        if collect_waits and w is not None:
                             waits.append(w)
                     continue
                 raise   # 5xx etc — let the outer retry loop handle it
@@ -2119,6 +2233,7 @@ def call_groq(prompt):
             print(f"  [model] using {prov}:{model}")
         _WORKING_MODEL = (prov, model)
         _CONSEC_EXHAUSTIONS = 0   # a success closes/keeps-closed the circuit
+        note_provider_healthy(prov, model)  # and clears any stale cooldown
         return out
 
     # Phase 1: strong writers, waiting out per-minute 429s before giving up.
