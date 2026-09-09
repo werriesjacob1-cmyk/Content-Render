@@ -104,6 +104,13 @@ def generate_candidate_v21(
     # the corpus shows exactly that: rounds 1 and 2 kept failing word count
     # AFTER a repair. Appended LAST so it wins over any conflicting wording.
     repair_contract_block = W.render_length_contract(length_contract)
+    # Superset of the length budget: every DETERMINISTIC constraint validate()
+    # will judge a rewritten beat against (hook range, per-scene cap, total
+    # words, forbidden connectors, mandatory key terms), derived from the same
+    # constants validate() uses. Flagship #6 showed the length half working and
+    # the rest still invisible to repairs.
+    narration_contract = G.narration_deterministic_contract(
+        fact, spoken_lines=treatment_beats + 2)
     calls: list[dict[str, Any]] = []
     debug: dict[str, Any] = {
         "orchestrator": "writer_v21_semantic_failclosed_v1",
@@ -247,6 +254,13 @@ def generate_candidate_v21(
             validate_err,
             effective_critic,
             num_beats,
+            # The deterministic contract rides with the plan at EVERY tier. The
+            # primary target is still chosen by strict priority; these are the
+            # checks the rewrite will additionally be judged against, which
+            # previously reached the repair only when tier 1 happened to be
+            # clean -- 1 of 9 rounds in flagship #6.
+            narration_contract=narration_contract,
+            writer_out=writer_out,
         )
         if not coverage_ok and not mech_hard and not validate_err:
             plan = {

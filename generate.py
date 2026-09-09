@@ -497,6 +497,46 @@ def writer_length_contract(spoken_lines=8):
     }
 
 
+def narration_deterministic_contract(fact=None, spoken_lines=8):
+    """Every DETERMINISTIC constraint validate() will judge rewritten narration
+    against, built from the same constants/regex validate() itself uses.
+
+    Why this exists (flagship #6, run 34305189931). The length contract shipped
+    in PR #76 worked: total-word and per-scene failures went from 17/36 rounds
+    across runs #2-#5 to 0/9. But the failure mode MOVED to the deterministic
+    constraints nothing ever states to a repair -- hook length (3 rounds),
+    mandatory key terms (3), forbidden formal connectors (2).
+
+    A bounded repair rewrites narration. If it is told only what is factually
+    unsupported, it can hand back prose that is perfectly grounded and still
+    dead on arrival under a cheap mechanical check it was never shown. Candidate
+    1 of run #6 carried the SAME "only 1/3 mandatory key terms" rejection
+    through rounds 0, 1 and 2 without that string ever reaching the repair.
+
+    Returns raw values, not a sentence, so a test can assert that what a prompt
+    STATES equals what validate() ENFORCES.
+    """
+    terms = [str(t) for t in ((fact or {}).get("key_terms") or []) if str(t).strip()]
+    contract = dict(writer_length_contract(spoken_lines=spoken_lines))
+    contract.update({
+        "hook_word_lo": HOOK_WORD_LO,
+        "hook_word_hi": HOOK_WORD_HI,
+        "forbidden_connectors": list(FORBIDDEN_CONNECTORS),
+        "mandatory_key_terms": terms,
+        "mandatory_key_terms_min": min(KEY_TERMS_MIN_NAMED, len(terms)) if terms else 0,
+    })
+    return contract
+
+
+def key_terms_named(text, fact=None):
+    """Which of a fact's mandatory key terms `text` actually says, using the
+    SAME matcher validate() uses. Pure; lets a repair be told exactly which
+    terms are still missing rather than being handed the whole list."""
+    terms = [str(t) for t in ((fact or {}).get("key_terms") or []) if str(t).strip()]
+    named = [t for t in terms if _key_term_present(t, text or "")]
+    return {"named": named, "missing": [t for t in terms if t not in named], "all": terms}
+
+
 def draft_is_weak(overall, quality):
     """True when a draft lacks usable quality evidence OR scores below the bar.
 
@@ -881,9 +921,20 @@ FORMAL_INVERSION_RE = re.compile(
 #    scripted dramatic beat, not natural speech, when a TTS voice speaks it alone.
 LONE_YES_NO_RE = re.compile(r"^(no|nope|yes|yep|wrong|correct)[.!]?$", re.I)
 # 3) academic connector words — none of these are how anyone talks out loud.
+# The words and the regex are ONE source. A repair prompt that lists different
+# connectors than validate() rejects is the same prompt/validator drift that
+# cost flagship runs #2-#5 their word budget, in a different shape.
+FORBIDDEN_CONNECTORS = ("however", "nevertheless", "furthermore", "consequently",
+                        "notably", "essentially", "arguably", "thus", "hence",
+                        "moreover", "whereas")
 FORMAL_CONNECTOR_RE = re.compile(
-    r"\b(however|nevertheless|furthermore|consequently|notably|essentially|"
-    r"arguably|thus|hence|moreover|whereas)\b", re.I)
+    r"\b(" + "|".join(FORBIDDEN_CONNECTORS) + r")\b", re.I)
+
+# Hook length, as validate() enforces it. Named so the repair contract can state
+# the same numbers instead of restating them as literals somewhere else.
+HOOK_WORD_LO, HOOK_WORD_HI = 4, 16
+# validate() requires at least this many of a fact's key_terms to be said aloud.
+KEY_TERMS_MIN_NAMED = 2
 
 # Named-but-unexplained jargon that has shipped in real videos despite the prompt's
 # own PLAIN-SPOKEN-ENGLISH rule already banning it — self-scored 'clarity' keeps
@@ -2385,7 +2436,7 @@ def validate(m, job_name, fact=None):
     # clean top-level text
     m["title"] = _clean(m["title"])[:90]
     m["hook"] = _clean(m["hook"])
-    if not (4 <= len(m["hook"].split()) <= 16):
+    if not (HOOK_WORD_LO <= len(m["hook"].split()) <= HOOK_WORD_HI):
         return f"hook length {len(m['hook'].split())} words out of range"
     # Concrete-hook guard: catches the exact abstraction failure the Sun video
     # shipped with ("You're seeing the Sun as it was, not as it is" -- reads
@@ -2689,7 +2740,7 @@ def validate(m, job_name, fact=None):
     if key_terms:
         full_text = m["script"] + " " + " ".join(s["voiceover"] for s in m["scenes"])
         named = [kt for kt in key_terms if _key_term_present(kt, full_text)]
-        if len(named) < 2:
+        if len(named) < KEY_TERMS_MIN_NAMED:
             return (f"only {len(named)}/{len(key_terms)} mandatory key terms named "
                      f"({named or 'none'}) — the script must explicitly say at least 2 of "
                      f"{key_terms}; a script that says 'a naturally occurring isotope' instead "
