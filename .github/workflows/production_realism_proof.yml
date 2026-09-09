@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - quality_production_realism_proof.py
+      - quality_edge_voice_probe.py
       - tests/test_quality_production_realism_proof.py
       - quality_downstream_factory_proof.py
       - main.py
@@ -81,10 +82,8 @@ jobs:
         run: |
           set -euo pipefail
           # Production main.whisper_align() defaults to faster-whisper `base`.
-          # Fetch/model-conversion is setup, not rendering. The actual proof below
-          # runs with HF_HUB_OFFLINE=1 plus socket blocking so a hidden dependency
-          # on live model retrieval fails closed instead of being miscounted as an
-          # offline render.
+          # Fetch/model-conversion is setup, not rendering. The actual proofs below
+          # use HF offline whenever Whisper may be needed.
           python - <<'PY'
           import os
           from faster_whisper import WhisperModel
@@ -108,7 +107,44 @@ jobs:
         run: |
           set -euo pipefail
           python tests/test_quality_production_realism_proof.py
-          python -m py_compile quality_production_realism_proof.py
+          python -m py_compile quality_production_realism_proof.py quality_edge_voice_probe.py
+
+      - name: Probe actual default Edge neural voice route
+        env:
+          GROQ_API_KEY: ""
+          GEMINI_API_KEY: ""
+          OPENROUTER_API_KEY: ""
+          CEREBRAS_API_KEY: ""
+          TOGETHER_API_KEY: ""
+          FIREWORKS_API_KEY: ""
+          MISTRAL_API_KEY: ""
+          PEXELS_API_KEY: ""
+          ELEVENLABS_API_KEY: ""
+          FAL_KEY: ""
+          FAL_API_KEY: ""
+          VOICE_ENGINE: "edge"
+          WHISPER_MODEL: base
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python quality_edge_voice_probe.py --out artifacts/production_realism_proof/edge_voice
+          test -s artifacts/production_realism_proof/edge_voice/edge_voice.mp3
+          test -s artifacts/production_realism_proof/edge_voice/edge_voice_report.json
+          python - <<'PY'
+          import json
+          p=json.load(open('artifacts/production_realism_proof/edge_voice/edge_voice_report.json'))
+          assert p['schema'] == 'content-render-edge-voice-probe-v1'
+          assert p['tts_router_used'] == 'main.tts_full'
+          assert p['requested_engine'] == 'edge'
+          assert p['piper_fallback_attempted'] is False
+          assert p['edge_python_api_calls'] >= 1
+          assert p['timing']['timing_count'] > 0
+          assert abs(p['timing']['timing_count'] - p['timing']['script_word_count']) <= max(3, int(0.2*p['timing']['script_word_count']))
+          assert p['provider_calls_made'] == 0
+          assert p['publishing_side_effects'] == 0
+          print(json.dumps(p, indent=2, sort_keys=True))
+          PY
 
       - name: Render real 1080p Piper + Whisper proof
         env:
@@ -134,14 +170,14 @@ jobs:
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          python quality_production_realism_proof.py --out artifacts/production_realism_proof
-          test -s artifacts/production_realism_proof/out/final.mp4
-          test -s artifacts/production_realism_proof/out/audio_qa_report.json
-          test -s artifacts/production_realism_proof/out/proof_frame.jpg
-          test -s artifacts/production_realism_proof/proof_report.json
+          python quality_production_realism_proof.py --out artifacts/production_realism_proof/piper_video
+          test -s artifacts/production_realism_proof/piper_video/out/final.mp4
+          test -s artifacts/production_realism_proof/piper_video/out/audio_qa_report.json
+          test -s artifacts/production_realism_proof/piper_video/out/proof_frame.jpg
+          test -s artifacts/production_realism_proof/piper_video/proof_report.json
           python - <<'PY'
           import json
-          p=json.load(open('artifacts/production_realism_proof/proof_report.json'))
+          p=json.load(open('artifacts/production_realism_proof/piper_video/proof_report.json'))
           assert p['schema'] == 'content-render-production-realism-proof-v2'
           assert p['tts_router_used'] == 'main.tts_full'
           assert p['piper_used'] is True
@@ -166,10 +202,12 @@ jobs:
         with:
           name: production-realism-proof-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
-            artifacts/production_realism_proof/out/final.mp4
-            artifacts/production_realism_proof/out/audio_qa_report.json
-            artifacts/production_realism_proof/out/proof_frame.jpg
-            artifacts/production_realism_proof/proof_report.json
-            artifacts/production_realism_proof/manifest.json
+            artifacts/production_realism_proof/edge_voice/edge_voice.mp3
+            artifacts/production_realism_proof/edge_voice/edge_voice_report.json
+            artifacts/production_realism_proof/piper_video/out/final.mp4
+            artifacts/production_realism_proof/piper_video/out/audio_qa_report.json
+            artifacts/production_realism_proof/piper_video/out/proof_frame.jpg
+            artifacts/production_realism_proof/piper_video/proof_report.json
+            artifacts/production_realism_proof/piper_video/manifest.json
           if-no-files-found: error
           retention-days: 3
