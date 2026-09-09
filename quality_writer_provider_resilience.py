@@ -21,12 +21,18 @@ import generate as G
 
 
 STRICT_429_MAX_WAIT_S = 15.0
-# Current Groq free-tier failures report an 8k TPM envelope. Leave a real
-# completion reserve instead of treating "prompt fits by one token" as usable.
+# Current Groq free-tier failures report an 8k TPM envelope. The strict
+# structured caller in generate.py requests max_tokens=3000, so capacity has
+# to reserve the same 3000-token completion budget. A 1024-token reserve looked
+# conservative but was not: it could still classify a ~5-7k prompt as runnable
+# even though the request object itself asks Groq for up to 3000 completion
+# tokens. Keep this value in lockstep with _call_openai_compat_structured's
+# max_tokens until that budget is promoted to a shared constant.
+#
 # This is certification-only routing: a request that cannot physically fit is
 # skipped rather than retried/backed off before Gemini/other providers get it.
 GROQ_TPM_LIMIT = 8000
-GROQ_COMPLETION_RESERVE = 1024
+GROQ_COMPLETION_RESERVE = 3000
 
 
 def certification_is_weak_model(provider: str, model: str, original=None) -> bool:
