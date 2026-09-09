@@ -36,6 +36,8 @@ ROOT = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # What the stubbed probe reports the intermediate signal measures. Any value
 # below the target works; -20 makes both corrective gains non-zero, so a stage
 # that silently stopped applying gain would show up as a missing volume= filter.
+# The stubbed true peak sits exactly ON target so the master's corrective peak
+# trim does not fire -- these tests are about the ordinary path.
 STUB_MEASURED_LUFS = -20.0
 
 
@@ -55,12 +57,12 @@ def _capture_factory_mix(tp_target):
     """
     captured = []
     orig = (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
-            DM._run, DM.measure_integrated_lufs, DC.DELIVERY_TRUE_PEAK_TARGET_DB)
+            DM._run, DM._measure, DC.DELIVERY_TRUE_PEAK_TARGET_DB)
     QDF.run = lambda cmd: captured.append(list(cmd))
     QDF.legacy._ensure_music_bed = lambda duration: ""
     QDF.legacy._apply_vibe = lambda vibe: None
     DM._run = lambda cmd: captured.append(list(cmd))
-    DM.measure_integrated_lufs = lambda path: STUB_MEASURED_LUFS
+    DM._measure = lambda path: (STUB_MEASURED_LUFS, DC.DELIVERY_TRUE_PEAK_TARGET_DB)
     DC.DELIVERY_TRUE_PEAK_TARGET_DB = tp_target
     try:
         # A real temp dir: _mix_final and master_audio both mkdir their scratch
@@ -69,7 +71,7 @@ def _capture_factory_mix(tp_target):
             QDF._mix_final(Path(td) / "in.mp4", Path(td) / "out.mp4", 16.0)
     finally:
         (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
-         DM._run, DM.measure_integrated_lufs, DC.DELIVERY_TRUE_PEAK_TARGET_DB) = orig
+         DM._run, DM._measure, DC.DELIVERY_TRUE_PEAK_TARGET_DB) = orig
     return [" ".join(c) for c in captured]
 
 
@@ -89,7 +91,7 @@ def test_changing_the_shared_target_changes_the_FACTORY_command():
           f"stage, including the final one ({len(limited)} found)")
     delivery = [c for c in moved if "-c:a aac" in c]
     check(len(delivery) == 1 and "-ar 48000" in delivery[0]
-          and "-b:a 128k" in delivery[0],
+          and f"-b:a {DC.DELIVERY_AUDIO_BITRATE}" in delivery[0],
           "the one delivery encode still carries the shared rate and bitrate")
 
 

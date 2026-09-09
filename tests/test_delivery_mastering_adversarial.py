@@ -62,17 +62,19 @@ def _capture(**contract_overrides):
     measured: list[str] = []
     saved_contract = {k: getattr(DC, k) for k in contract_overrides}
     saved = (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
-             DM._run, DM.measure_integrated_lufs)
+             DM._run, DM._measure)
 
     def _probe(path):
         measured.append(str(path))
-        return STUB_MEASURED_LUFS
+        # True peak exactly on target: the corrective peak trim must not fire,
+        # so these tests exercise the ordinary path rather than the recovery.
+        return STUB_MEASURED_LUFS, DC.DELIVERY_TRUE_PEAK_TARGET_DB
 
     QDF.run = lambda cmd: cmds.append(" ".join(str(x) for x in cmd))
     QDF.legacy._ensure_music_bed = lambda duration: ""
     QDF.legacy._apply_vibe = lambda vibe: None
     DM._run = lambda cmd: cmds.append(" ".join(str(x) for x in cmd))
-    DM.measure_integrated_lufs = _probe
+    DM._measure = _probe
     for key, value in contract_overrides.items():
         setattr(DC, key, value)
     try:
@@ -80,7 +82,7 @@ def _capture(**contract_overrides):
             QDF._mix_final(Path(td) / "in.mp4", Path(td) / "out.mp4", 16.0)
     finally:
         (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
-         DM._run, DM.measure_integrated_lufs) = saved
+         DM._run, DM._measure) = saved
         for key, value in saved_contract.items():
             setattr(DC, key, value)
     return cmds, measured
@@ -256,6 +258,31 @@ def test_7_the_limiter_cannot_disappear_from_a_gain_stage():
         check(chain.group(1).index("volume=") < chain.group(1).index("alimiter="),
               "with the limiter AFTER the gain, not before it")
 
+    # And the limiter must remain TRUE-peak, not sample-peak. This is not
+    # theoretical: a 48 kHz alimiter left the true peak 0.9 dB above its own
+    # target on dense material, the encode added more, and a production artifact
+    # decoded at -0.0 dBTP through a chain in which every stage "had" a ceiling.
+    limiter = DC.delivery_limiter_filter()
+    check(limiter.startswith(f"aresample={DC.LIMITER_OVERSAMPLE_RATE},"),
+          f"limiting happens above the delivery rate ({limiter})")
+    check(DC.LIMITER_OVERSAMPLE_RATE >= 4 * DC.DELIVERY_SAMPLE_RATE,
+          "at enough oversampling for sample peaks to approximate true peaks")
+    check(limiter.endswith(f",aresample={DC.DELIVERY_SAMPLE_RATE}"),
+          "and the signal comes back to the delivery rate afterwards")
+
+    # Oversampling narrows the gap; only measurement closes it. The master must
+    # read back the peak it achieved and refuse a signal that is still over.
+    body = (ROOT / "delivery_master.py").read_text(encoding="utf-8")
+    body = body.split("def master_audio(", 1)[1]
+    check("DELIVERY_TRUE_PEAK_TARGET_DB" in body,
+          "the master knows the peak target, not just the loudness target")
+    check("peak_trim" in body and "raise DeliveryMasterError" in body,
+          "an over-target peak is corrected and, if it survives that, FAILS "
+          "loudly rather than being handed to the encoder")
+    check('"mastered_true_peak_db"' in body,
+          "and the achieved peak is reported, so the next failure of this kind "
+          "is visible in the artifact instead of only in the gate's verdict")
+
 
 # 8 ----------------------------------------------------------------------------
 def test_8_a_repaired_assembly_cannot_be_finished_differently():
@@ -305,16 +332,23 @@ def test_10_the_bitrate_cannot_drift_below_what_the_peak_target_needs():
     """Rate and bitrate are ONE decision, pinned by measurement.
 
     At 48 kHz, 96 kbit/s was bitrate-starved: coding error overshot the limited
-    signal by ~1.6 dB and the artifact decoded at +0.07 dBTP, breaching the
-    gate's own ceiling. 128 kbit/s landed at -1.49 dB.
+    signal by ~1.6 dB and the artifact decoded at +0.07 dBTP. 128 looked
+    sufficient on the fixture and was NOT on real content -- measured decoded
+    overshoot above the limited signal, real narration over a bed:
+
+        128 kbit/s   +0.23 dB typical, +1.72 dB on dense material
+        192 kbit/s   +0.04 dB typical, +0.50 dB on dense material
+
+    At 128 that variance alone can consume the entire headroom reserve, which is
+    half of why a production artifact decoded at -0.0 dBTP.
     """
     moved, _ = _capture(DELIVERY_AUDIO_BITRATE="64k")
     check("-b:a 64k" in _delivery_cmd(moved),
           "the delivery encode carries the contract's bitrate, not a literal")
     kbps = int(re.sub(r"[^0-9]", "", DC.DELIVERY_AUDIO_BITRATE))
-    check(kbps >= 128,
-          f"and the restored value ({kbps} kbit/s) is at least the 128 measured "
-          "as sufficient to hold the limiter's peak through AAC")
+    check(kbps >= 192,
+          f"and the restored value ({kbps} kbit/s) is at least the 192 at which "
+          "coding error stops being able to eat the peak reserve")
     headroom = AQA.TRUE_PEAK_MAX_DB - DC.DELIVERY_TRUE_PEAK_TARGET_DB
     check(headroom >= 1.5,
           f"with {headroom:.2f} dB reserved for codec overshoot (real speech "

@@ -52,7 +52,22 @@ from __future__ import annotations
 
 # Container/stream delivery.
 DELIVERY_SAMPLE_RATE = 48000
-DELIVERY_AUDIO_BITRATE = "128k"
+# 192 kbit/s, not 128, and for the same reason 128 replaced 96: AAC coding error
+# pushes the decoded true peak back up, and the size of that overshoot is the
+# single most variable term in the whole chain. Measured on real Piper narration
+# over a music bed, decoded overshoot above the limited signal:
+#
+#     128 kbit/s   +0.23 dB typical, +1.72 dB on dense material
+#     192 kbit/s   +0.04 dB typical, +0.50 dB on dense material
+#
+# At 128 that variance alone can eat the entire headroom reserve; at 192 it
+# cannot. Audio is a rounding error in a 1080x1920 H.264 file, so buying the
+# headroom with bitrate is the cheapest correct fix available.
+DELIVERY_AUDIO_BITRATE = "192k"
+
+# Limiting is done here, above the delivery rate, so alimiter's sample peaks
+# approximate true peaks. See delivery_limiter_filter().
+LIMITER_OVERSAMPLE_RATE = 192000
 
 # Mastering targets applied before the AAC encode.
 DELIVERY_INTEGRATED_LUFS = -14
@@ -101,8 +116,26 @@ def delivery_loudness_filter() -> str:
 
 
 def delivery_limiter_filter() -> str:
-    """Stage 3/5: the ONLY thing responsible for the pre-encode peak ceiling."""
-    return f"alimiter=limit={_limit_amplitude():.4f}:level=disabled"
+    """Stage 3/5: the ONLY thing responsible for the pre-encode peak ceiling.
+
+    Limiting happens at ``LIMITER_OVERSAMPLE_RATE``, not at the delivery rate,
+    because ``alimiter`` bounds the SAMPLE peak and the gate measures the TRUE
+    peak. Between samples a limited signal reconstructs higher than any sample
+    in it, and the gap grows with density -- measured on real narration over a
+    bed, at a -2.5 dB target:
+
+        48 kHz  (sample-peak limiting)   -> true peak -2.42, and -1.60 when hot
+        192 kHz (this)                   -> true peak -2.50, and -2.46 when hot
+
+    So without oversampling the limiter silently missed its own target by up to
+    0.9 dB on dense material, which is most of why a production artifact decoded
+    at -0.0 dBTP while the identical code had decoded at -1.74 dBTP a run
+    earlier. Resampling back down can re-introduce a little of it, which is what
+    the master's measured verification is for.
+    """
+    return (f"aresample={LIMITER_OVERSAMPLE_RATE},"
+            f"alimiter=limit={_limit_amplitude():.4f}:level=disabled,"
+            f"aresample={DELIVERY_SAMPLE_RATE}")
 
 
 def delivery_master_filter() -> str:

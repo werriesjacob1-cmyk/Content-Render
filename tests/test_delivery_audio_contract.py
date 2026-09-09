@@ -198,7 +198,7 @@ def test_the_shared_master_measures_rather_than_asserts():
     """
     src = (ROOT / "delivery_master.py").read_text(encoding="utf-8")
     body = src.split("def master_audio(", 1)[1]
-    check(body.count("measure_integrated_lufs(") >= 3,
+    check(body.count("_measure(") >= 3,
           "the master measures at every stage, including after the limiter")
     check(body.count("delivery_limiter_filter()") >= 1 and body.count("limiter") >= 3,
           "the limiter -- the only owner of the peak ceiling -- is applied, not just named")
@@ -212,15 +212,20 @@ def test_the_shared_master_measures_rather_than_asserts():
 
 
 def test_the_bitrate_is_high_enough_for_the_delivery_rate():
-    """Pinned by measurement: 96 kbit/s at 48 kHz overshot the limiter by 1.6 dB.
+    """Pinned by measurement, and raised once the measurement got more honest.
 
-    This is the number that keeps the true-peak target honest, so it is asserted
-    rather than left to whoever next edits an ffmpeg line.
+    96 kbit/s at 48 kHz overshot the limiter by 1.6 dB. 128 then looked
+    sufficient on the factory fixture and was not on real narration over a music
+    bed, where decoded overshoot ranged +0.23 to +1.72 dB -- enough variance to
+    consume the whole peak reserve by itself. At 192 the same measurement ranges
+    +0.04 to +0.50 dB. This is the number that keeps the true-peak target
+    honest, so it is asserted rather than left to whoever next edits an ffmpeg
+    line.
     """
     kbps = int(re.sub(r"[^0-9]", "", DC.DELIVERY_AUDIO_BITRATE))
-    check(kbps >= 128,
-          f"the mastering bitrate ({kbps} kbit/s) is at least the 128 measured as "
-          "sufficient for a limited signal at 48 kHz")
+    check(kbps >= 192,
+          f"the mastering bitrate ({kbps} kbit/s) is at least the 192 at which "
+          "AAC coding error stops varying by more than a fraction of a dB")
 
 
 def test_the_renderer_reads_the_contract_from_a_neutral_module():
