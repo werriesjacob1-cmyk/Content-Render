@@ -110,9 +110,11 @@ cost-aware LLM routing still OPEN and deliberately not attempted here.
 
 ---
 
-# OPEN BLOCKER — production-realism loudness (as of `cab66a8`)
+# BLOCKER — production-realism loudness
 
-**Status: NOT merge-ready. One measured, well-diagnosed problem remains.**
+**Status: fix implemented and measured offline; awaiting exact-head CI proof.**
+The diagnosis below is preserved because the fix it led to was NOT the one it
+proposed — see "What was actually built" at the end of this section.
 
 Everything else in the realism proof works on the integrated head: Piper
 SUCCESS, Whisper **57/57** word timings, 1080x1920 scenes, per-scene audio
@@ -138,24 +140,76 @@ remaining gap is integrated loudness undershooting the -14 target.
 - Two-pass loudnorm with `linear=true` was measured and **rejected on its own**:
   linear mode does not limit, so it pushed the decoded peak to +0.06 dBTP.
 
-## Exact next action (the synthesis, untried)
+## The leading hypothesis was tested and REJECTED
 
-Two-pass loudnorm **for loudness only**, with the `alimiter` still enforcing the
-peak ceiling. The earlier objection to two-pass was that linear mode does not
-limit — that objection is neutralised now that a dedicated limiter owns the
-peak. Expected: accurate -14 LUFS *and* a guaranteed ceiling, each stage doing
-one job.
+The proposed fix above was two-pass loudnorm for loudness only, with the
+`alimiter` owning the peak. It was built and measured against a mix whose LRA
+(7.2) matches real narration, and it does not clear the gate. Decoded AAC:
 
-Implementation shape: `_mix_final` (and `main.py`'s mastering block, which must
-stay identical or the contract diverges again) build the mixed audio, measure it
-with the existing analysis pass, then apply
-`loudnorm=...:measured_I=..:measured_TP=..:measured_LRA=..:measured_thresh=..:offset=..:linear=true,alimiter=...`.
-That is a real restructure of both finishing paths, not a constant change.
+| candidate | decoded LUFS | decoded TP | verdict |
+|---|---|---|---|
+| 1-pass loudnorm + limiter (the shipped blocker) | -16.97 | -1.37 | FAIL |
+| **2-pass `measured_*` + limiter (`linear=true`)** | **-16.18** | -2.12 | **FAIL** |
+| 2-pass `measured_*` + limiter (`linear=false`) | -16.18 | -2.12 | FAIL |
+| single corrective gain + limiter | -15.62 | -1.97 | pass, +0.38 dB |
+| **loop-closed gain after limiting** | **-14.87** | **-1.80** | **PASS, +1.13 dB** |
 
-**Do NOT** resolve this by widening `LUFS_MIN`, lowering the QA ceiling, or
-relaxing any gate. The gate is correct; the mastering is what is inaccurate.
+Two-pass improves loudnorm's OWN accuracy by ~0.8 dB, but the miss on realistic
+material is ~2.4 dB and the limiter then costs another 0.4-1.6 dB depending on
+how peaky the content is. It was never going to be enough, and its 0.18 dB
+shortfall would have looked like bad luck rather than a wrong model.
 
-## Also proven on this head (`cab66a8`)
+Stage-boundary measurement is what settled it: the loss is inside `loudnorm`
+(2.4 dB), not the limiter (0.36 dB) or the AAC encode (0.16 dB).
+
+## What was actually built
+
+`delivery_master.master_audio()` — a measured loop, not a filter string:
+
+1. `loudnorm` for loudness range control and a first approximation;
+2. measure what the signal ACTUALLY is;
+3. corrective gain + `alimiter` (bounded at 12 dB);
+4. measure AGAIN, because the limiter itself costs loudness;
+5. residual gain + `alimiter` (bounded at 6 dB), closing the loop against the
+   LIMITED signal.
+
+Step 4-5 is the difference between +0.38 dB and +1.13 dB of floor margin. Across
+three mixes: dynamic -14.87, loud -14.34, quiet -14.24 — content-independent,
+which a single correction is not.
+
+Sequencing lives in `delivery_master.py`, not `delivery_contract.py`: mastering
+has to MEASURE and act, which is execution, and forcing it into the contract
+would break the leaf role that exists to stop the import cycle. It imports the
+contract and nothing else — deliberately not `quality_audio_qa`, so it carries
+its own small probe rather than depending on the module that judges it.
+
+**One implementation, three consumers.** `main.py`, the factory proof and the
+realism proof (via `QDF._mix_final`) all mix to audio, call `master_audio`, then
+mux. A test asserts they resolve the same function object; another stubs it out
+and proves neither path falls back to a filter string of its own.
+
+**No gate was touched.** `LUFS_MIN = -16.0`, `LUFS_MAX = -11.5` and
+`TRUE_PEAK_MAX_DB = -0.5` are unchanged, and a test moves the master target and
+asserts the gate's verdict does NOT follow it. The realism proof now goes
+further than the gate: it reports the margin to every edge and FAILS a result
+that only barely passes (`MIN_DELIVERY_MARGIN_DB = 0.5`), because an artifact
+that clears the floor by 0.05 dB is as fragile as the one that missed it by 0.26
+and shows the same green tick.
+
+## Adversarial coverage for this architecture
+
+`tests/test_delivery_mastering_adversarial.py` — ten named rot paths, each one
+MOVED and the constructed behaviour asserted to move with it (or, for the gates,
+pointedly not to): production/proof drift, a hard-coded loudness target, a
+hard-coded true-peak target, a weakened QA ceiling, analysis-pass coupling, two
+measurements reading the same file, a limiter vanishing from a gain stage, a
+repaired assembly finished differently, sample-rate drift, bitrate drift.
+
+Still outstanding on this head: the real production-realism run in CI, and
+downloading + probing its artifact. **Do not infer media success from a green
+tick** — the 96 kHz defect passed CI for months and was found by probing.
+
+## Also proven on an earlier head (`cab66a8`)
 
 Edge voice probe PASSED: `en-GB-RyanNeural`, `edge_boundary_counts_returned: [0]`,
 `timing_source: faster_whisper_fallback`, 40/40 words, `provider_calls_made: 0`,

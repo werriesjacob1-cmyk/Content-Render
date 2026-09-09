@@ -22,14 +22,21 @@ import os
 from pathlib import Path
 import re
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("GROQ_API_KEY", "x")
 
 import delivery_contract as DC
+import delivery_master as DM
 import quality_downstream_factory_proof as QDF
 
 ROOT = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# What the stubbed probe reports the intermediate signal measures. Any value
+# below the target works; -20 makes both corrective gains non-zero, so a stage
+# that silently stopped applying gain would show up as a missing volume= filter.
+STUB_MEASURED_LUFS = -20.0
 
 
 def check(cond, label):
@@ -39,63 +46,104 @@ def check(cond, label):
 
 
 def _capture_factory_mix(tp_target):
-    """Call the factory's REAL _mix_final and capture the command it builds.
+    """Call the factory's REAL _mix_final and capture every command it builds.
 
-    No ffmpeg runs: `run` is intercepted. The music bed is stubbed empty so the
-    deterministic no-bed branch is taken.
+    No ffmpeg runs. Both execution seams are intercepted -- the factory's own
+    `run` and the shared master's `_run` -- and the loudness probe is stubbed,
+    because the master is a MEASURED loop and would otherwise need real audio.
+    The music bed is stubbed empty so the deterministic no-bed branch is taken.
     """
     captured = []
-    orig_run, orig_bed, orig_vibe = QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe
-    orig_tp = DC.DELIVERY_TRUE_PEAK_TARGET_DB
+    orig = (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
+            DM._run, DM.measure_integrated_lufs, DC.DELIVERY_TRUE_PEAK_TARGET_DB)
     QDF.run = lambda cmd: captured.append(list(cmd))
     QDF.legacy._ensure_music_bed = lambda duration: ""
     QDF.legacy._apply_vibe = lambda vibe: None
+    DM._run = lambda cmd: captured.append(list(cmd))
+    DM.measure_integrated_lufs = lambda path: STUB_MEASURED_LUFS
     DC.DELIVERY_TRUE_PEAK_TARGET_DB = tp_target
     try:
-        QDF._mix_final(Path("in.mp4"), Path("out.mp4"), 16.0)
+        # A real temp dir: _mix_final and master_audio both mkdir their scratch
+        # space, and a proof that leaves master_work/ in the repo is its own bug.
+        with tempfile.TemporaryDirectory() as td:
+            QDF._mix_final(Path(td) / "in.mp4", Path(td) / "out.mp4", 16.0)
     finally:
-        QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe = orig_run, orig_bed, orig_vibe
-        DC.DELIVERY_TRUE_PEAK_TARGET_DB = orig_tp
-    check(len(captured) == 1, f"exactly one mastering command was built (got {len(captured)})")
-    return " ".join(captured[0])
+        (QDF.run, QDF.legacy._ensure_music_bed, QDF.legacy._apply_vibe,
+         DM._run, DM.measure_integrated_lufs, DC.DELIVERY_TRUE_PEAK_TARGET_DB) = orig
+    return [" ".join(c) for c in captured]
 
 
 def test_changing_the_shared_target_changes_the_FACTORY_command():
     baseline = _capture_factory_mix(DC.DELIVERY_TRUE_PEAK_TARGET_DB)
-    check("limit=0.7499" in baseline,
-          "the factory's real command carries the shared peak target as a limiter")
+    check(any("limit=0.7499" in c for c in baseline),
+          "the factory's real pipeline carries the shared peak target as a limiter")
     moved = _capture_factory_mix(-7.25)
-    check("limit=0.4340" in moved,
-          "moving the shared constant moves the factory's constructed filter -- "
-          "the target is wired in, not merely declared beside it")
-    check("alimiter" in moved,
-          "and the peak ceiling is enforced by a dedicated limiter stage")
-    check("-ar 48000" in moved and "-b:a 128k" in moved,
-          "the same command still carries the shared rate and bitrate")
+    check(any("limit=0.4340" in c for c in moved),
+          "moving the shared constant moves the constructed filter -- the target "
+          "is wired in, not merely declared beside it")
+    check(not any("limit=0.7499" in c for c in moved),
+          "and NO command keeps the old value, so nothing holds a private copy")
+    limited = [c for c in moved if "alimiter" in c]
+    check(len(limited) == 2,
+          f"the peak ceiling is enforced by a dedicated limiter on every gain "
+          f"stage, including the final one ({len(limited)} found)")
+    delivery = [c for c in moved if "-c:a aac" in c]
+    check(len(delivery) == 1 and "-ar 48000" in delivery[0]
+          and "-b:a 128k" in delivery[0],
+          "the one delivery encode still carries the shared rate and bitrate")
 
 
-def test_changing_the_shared_target_changes_the_RENDERER_filter():
-    """main.py's mastering filter is built by the same function.
+def test_the_factory_mix_is_a_measured_loop_not_a_single_graph():
+    """The sequence, not just the constants, is what fixed the loudness blocker.
+
+    A single filter graph cannot correct loudnorm's error because correcting it
+    requires measuring its output. On realistic narration that error was ~2.4 dB
+    and the artifact decoded at -16.26 LUFS, outside the gate's -16.0 floor.
+    """
+    cmds = _capture_factory_mix(DC.DELIVERY_TRUE_PEAK_TARGET_DB)
+    check(len(cmds) == 5,
+          f"mix, three master stages and mux are five distinct commands (got {len(cmds)})")
+    check("loudnorm" not in cmds[0] and "alimiter" not in cmds[0],
+          "the mix stage does no mastering -- its output is what gets measured")
+    check("loudnorm=I=-14" in cmds[1],
+          "stage 1 is loudness/LRA control at the shared integrated target")
+    gains = [c for c in cmds if "volume=" in c]
+    check(len(gains) == 2,
+          f"two corrective gains are applied: one against loudnorm's output and "
+          f"one against the LIMITED signal (got {len(gains)})")
+    check("volume=6.00dB" in gains[0] and "volume=6.00dB" in gains[1],
+          "each gain is computed from the measurement, not hard-coded "
+          f"(probe stubbed at {STUB_MEASURED_LUFS} vs a -14 target)")
+
+
+def test_the_renderer_uses_the_same_shared_master():
+    """main.py's finishing path calls the same function, not a lookalike.
 
     main._render's mastering block cannot be invoked without a full render, so
-    the binding is proven at the boundary it actually uses: the renderer holds no
-    literal filter, and the function it calls responds to the constant.
+    the binding is proven at the boundary it actually uses: the renderer imports
+    and calls the shared master, holds no filter string of its own, and the
+    function it calls is the same object the factory pipeline above exercised.
     """
     src = (ROOT / "main.py").read_text(encoding="utf-8")
-    check("_LOUDNORM = delivery_master_filter()" in src,
-          "the renderer's mastering filter comes from the shared contract")
-    check(not re.search(r'_LOUDNORM\s*=\s*["\']loudnorm', src),
+    check("from delivery_master import master_audio" in src,
+          "the renderer takes the mastering sequence from the shared module")
+    check("master_audio(_mix_wav, _mastered, WORK)" in src,
+          "and calls it on the mix it just built, rather than mastering in-graph")
+    check(not re.search(r'["\']loudnorm=', src),
           "the renderer holds no literal loudnorm string of its own")
+    check(QDF.DM.master_audio is DM.master_audio,
+          "the factory proof resolves the same master_audio object the renderer "
+          "imports -- one implementation, not two that look alike")
 
     orig = DC.DELIVERY_TRUE_PEAK_TARGET_DB
     try:
         DC.DELIVERY_TRUE_PEAK_TARGET_DB = -9.5
-        check("limit=0.3350" in DC.delivery_master_filter(),
-              "the function the renderer calls tracks the shared constant "
+        check("limit=0.3350" in DC.delivery_limiter_filter(),
+              "the limiter that master_audio applies tracks the shared constant "
               "(-9.5 dBFS -> limit=0.3350)")
     finally:
         DC.DELIVERY_TRUE_PEAK_TARGET_DB = orig
-    check("limit=0.7499" in DC.delivery_master_filter(), "and is restored afterwards")
+    check("limit=0.7499" in DC.delivery_limiter_filter(), "and is restored afterwards")
 
 
 def test_no_active_finishing_path_still_hard_codes_a_delivery_target():
@@ -157,7 +205,8 @@ def test_headroom_is_reserved_between_the_target_and_the_gate():
 
 if __name__ == "__main__":
     test_changing_the_shared_target_changes_the_FACTORY_command()
-    test_changing_the_shared_target_changes_the_RENDERER_filter()
+    test_the_factory_mix_is_a_measured_loop_not_a_single_graph()
+    test_the_renderer_uses_the_same_shared_master()
     test_no_active_finishing_path_still_hard_codes_a_delivery_target()
     test_the_measurement_pass_is_deliberately_not_the_delivery_filter()
     test_headroom_is_reserved_between_the_target_and_the_gate()

@@ -86,31 +86,34 @@ def _limit_amplitude() -> float:
     return 10.0 ** (DELIVERY_TRUE_PEAK_TARGET_DB / 20.0)
 
 
-def delivery_master_filter() -> str:
-    """The complete final-master audio chain: loudness, then peak ceiling.
+def delivery_loudness_filter() -> str:
+    """Stage 1: loudness range control and a first approximation.
 
-    Two stages with one job each. ``loudnorm`` sets integrated loudness;
-    ``alimiter`` enforces the pre-encode peak target that reserves codec
-    headroom. Callers append their own graph around this and never restate the
-    numbers.
-
-    Deliberately NOT used for measurement passes -- an analysis filter reads
-    ``input_*`` values that do not depend on these targets, so coupling the two
-    would mean changing the delivery target silently changed the measurement
-    command while measuring exactly the same thing.
-
-    NOTE: two-pass loudnorm (``measured_*`` + ``linear=true``) was measured and
-    REJECTED. Linear mode applies a fixed gain and does not limit, so it made
-    the decoded peak WORSE -- +0.06 dBTP on peaky speech, failing the gate --
-    while buying ~0.2 dB of loudness accuracy. Peak safety is the hard
-    constraint; do not "improve" this by reintroducing it.
+    Its true-peak argument is deliberately loose -- the limiter owns the peak.
+    Asking loudnorm to hold a tight peak AND hit the loudness target makes its
+    internal limiter fight the target, and the loudness loses.
     """
     return (
         f"loudnorm=I={DELIVERY_INTEGRATED_LUFS}:"
         f"TP={LOUDNORM_INTERNAL_TP_DB}:"
         f"LRA={DELIVERY_LRA_LU}"
-        f",alimiter=limit={_limit_amplitude():.4f}:level=disabled"
     )
+
+
+def delivery_limiter_filter() -> str:
+    """Stage 3/5: the ONLY thing responsible for the pre-encode peak ceiling."""
+    return f"alimiter=limit={_limit_amplitude():.4f}:level=disabled"
+
+
+def delivery_master_filter() -> str:
+    """Loudness + limiter as one string.
+
+    Kept for callers that master in a single filter graph. It is NOT the
+    delivery master on its own: ``delivery_master.master_audio`` closes a
+    measured loop around these stages, because loudnorm's single-pass error on
+    realistic material (~2.4 dB) is far larger than any filter string can fix.
+    """
+    return f"{delivery_loudness_filter()},{delivery_limiter_filter()}"
 
 
 def delivery_audio_encode_args() -> list[str]:

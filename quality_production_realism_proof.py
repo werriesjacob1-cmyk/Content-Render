@@ -40,6 +40,33 @@ import quality_evidence as QE
 
 PROOF_SCHEMA = "content-render-production-realism-proof-v2"
 
+# How far inside every audio gate edge a real artifact must land. The gates
+# themselves are NOT relaxed by this -- it is strictly stricter than passing.
+# The measured architecture delivers ~1.1 dB of loudness margin and ~1.3 dB of
+# peak margin on realistic narration; 0.5 dB is set below that so ordinary
+# content variation does not trip the proof, while a regression back toward the
+# barely-passing behaviour (the old path missed the floor by 0.26 dB) does.
+MIN_DELIVERY_MARGIN_DB = 0.5
+
+
+def _delivery_margins(audio_qa: dict[str, Any]) -> dict[str, Any]:
+    """Distance from each audio gate edge, measured on the DECODED artifact.
+
+    A green tick says only which side of a line the artifact landed on. These
+    numbers say how far from the line, which is the difference between a result
+    that is right and one that happened not to be wrong this time.
+    """
+    lufs = float(audio_qa["integrated_lufs"])
+    peak = float(audio_qa["true_peak_db"])
+    margins = {
+        "loudness_above_floor_db": round(lufs - AQA.LUFS_MIN, 2),
+        "loudness_below_ceiling_db": round(AQA.LUFS_MAX - lufs, 2),
+        "peak_below_ceiling_db": round(AQA.TRUE_PEAK_MAX_DB - peak, 2),
+    }
+    edge, worst = min(margins.items(), key=lambda kv: kv[1])
+    return {**margins, "worst_margin_db": worst, "worst_margin_edge": edge,
+            "required_margin_db": MIN_DELIVERY_MARGIN_DB}
+
 
 def _run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
     proc = subprocess.run(cmd, text=True, capture_output=True)
@@ -299,6 +326,17 @@ def proof(out_root: str) -> dict[str, Any]:
                 "production-realism final audio failed QA: "
                 + "; ".join(audio_qa.get("mechanical_reasons") or [])
             )
+        # Passing is not the same as passing WELL. The previous architecture
+        # missed the -16.0 LUFS floor by 0.26 dB; an artifact that clears it by
+        # 0.05 dB would be just as fragile while showing a green tick. So the
+        # margin to every gate edge is measured and reported, and a result that
+        # only barely passes fails this proof even though the gate accepted it.
+        delivered = _delivery_margins(audio_qa)
+        if delivered["worst_margin_db"] < MIN_DELIVERY_MARGIN_DB:
+            raise RuntimeError(
+                f"production-realism audio passed QA but only by "
+                f"{delivered['worst_margin_db']} dB ({delivered['worst_margin_edge']}); "
+                f"at least {MIN_DELIVERY_MARGIN_DB} dB of margin is required")
 
         # Generate one viewer-facing frame so the artifact proves the 1080x1920
         # file can actually be decoded/rasterized, not merely probed as metadata.
@@ -330,6 +368,7 @@ def proof(out_root: str) -> dict[str, Any]:
             "finishing": finishing,
             "final": media,
             "audio_mechanical_pass": True,
+            "audio_delivery_margins_db": delivered,
             "audio_qa": audio_qa,
             "provider_calls_made": 0,
             "network_calls_made": len(net_calls),

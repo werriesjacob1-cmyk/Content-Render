@@ -33,7 +33,12 @@ from narration import spoken_text
 # that cost this project five flagship runs, in a different shape.
 # The delivery contract, not the QA module. The renderer must not depend on the
 # thing that judges it; both import the same neutral source instead.
-from delivery_contract import delivery_audio_encode_args, delivery_master_filter
+from delivery_contract import delivery_audio_encode_args
+# The mastering SEQUENCE is shared too, not just its constants. A filter string
+# cannot close a loop around its own result, and loudnorm's single-pass error on
+# realistic narration (~2.4 dB) is far larger than any string can fix -- so the
+# renderer, the factory proof and the realism proof all call this one function.
+from delivery_master import master_audio
 PROFILE, PAGE = profiles.get_profile()
 ELEVEN_VOICE = PROFILE["eleven_voice"]
 MUSIC = os.path.join(ROOT, PROFILE.get("music", "music.mp3"))
@@ -3733,30 +3738,45 @@ def main():
         ff_inputs += ["-i", whoosh_track]
         filt.append(f"[{idx}:a]volume=1.0[wf]")
         labels.append("[wf]"); idx += 1
-    # Final loudness normalization to the social-media standard (~-14 LUFS
-    # integrated, -1.5 dBTP true peak). Without it, output loudness drifts with
-    # the voice/music levels, so some videos land quiet and get turned UP by the
-    # platform (raising noise) while others get turned down — inconsistent and
-    # unprofessional. loudnorm makes every video hit the same loudness the feed
-    # expects, with headroom so it never clips.
-    # Loudness target, sample rate and bitrate ALL come from delivery_contract --
-    # nothing about the final master is restated here. The filter used to be a
-    # hard-coded literal while only the rate/bitrate were shared, which is how a
-    # later "shared" true-peak target ended up inert: it was defined in one
-    # module while all three finishing paths kept their own copy of the string.
-    _LOUDNORM = delivery_master_filter()
+    # Final loudness normalization to the social-media standard (-14 LUFS
+    # integrated, a true peak with headroom to survive AAC). Without it, output
+    # loudness drifts with the voice/music levels, so some videos land quiet and
+    # get turned UP by the platform (raising noise) while others get turned down
+    # — inconsistent and unprofessional.
+    #
+    # MIX -> MASTER -> MUX, in three commands, deliberately.
+    #
+    # Mastering used to ride inside this filter graph, which made it structurally
+    # impossible to do correctly: correcting loudnorm's error requires MEASURING
+    # its output, and a measurement cannot happen inside the graph that produces
+    # it. On realistic narration (LRA ~7.2) single-pass loudnorm undershot by
+    # ~2.4 dB and the artifact decoded at -16.26 LUFS, outside the gate's -16.0
+    # floor. So the mix is rendered to audio first, `delivery_master.master_audio`
+    # closes a measured loop around it, and only then is the video muxed.
+    #
+    # Every number here — loudness target, peak target, sample rate, bitrate —
+    # comes from `delivery_contract`, and the SEQUENCE comes from
+    # `delivery_master`. Nothing about the final master is restated in this file.
+    # It used to be a hard-coded filter literal while only rate/bitrate were
+    # shared, which is exactly how a later "shared" true-peak target ended up
+    # inert: declared in one module while every finishing path kept its own copy.
+    _mix_wav = os.path.join(WORK, "final_mix.wav")
     if len(labels) > 1:
         filt.append(f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:"
-                    f"dropout_transition=0:normalize=0,{_LOUDNORM}[a]")
+                    f"dropout_transition=0:normalize=0[a]")
         run(["ffmpeg", "-y", *ff_inputs, "-filter_complex", ";".join(filt),
-             "-map", "0:v", "-map", "[a]", "-map_metadata", "-1",
-             "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
-             *delivery_audio_encode_args(), "-shortest", final])
+             "-map", "[a]", "-shortest", _mix_wav])
     else:
-        run(["ffmpeg", "-y", "-i", captioned, "-map_metadata", "-1",
-             "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
-             "-af", _LOUDNORM, *delivery_audio_encode_args(),
-             "-pix_fmt", "yuv420p", final])
+        run(["ffmpeg", "-y", "-i", captioned, "-vn", _mix_wav])
+    _mastered = os.path.join(WORK, "final_master.wav")
+    _master = master_audio(_mix_wav, _mastered, WORK)
+    print(f"[audio] mastered {_master['stage1_loudnorm_lufs']} -> "
+          f"{_master['mastered_lufs']} LUFS (target {_master['target_lufs']}, "
+          f"error {_master['target_error_db']} dB)")
+    run(["ffmpeg", "-y", "-i", captioned, "-i", _mastered,
+         "-map", "0:v", "-map", "1:a", "-map_metadata", "-1",
+         "-c:v", "libx264", "-crf", crf, *VBV, "-preset", "medium",
+         *delivery_audio_encode_args(), "-pix_fmt", "yuv420p", "-shortest", final])
 
     with open(os.path.join(OUT, "post.json"), "w") as f:
         # video_id (if present) is the key generate.py's performance-memory

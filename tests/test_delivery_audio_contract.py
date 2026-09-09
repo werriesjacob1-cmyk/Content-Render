@@ -97,13 +97,13 @@ def test_the_floor_still_catches_the_opposite_failure():
           "and is reported as below the floor, not confused with the new ceiling")
 
 
-# The mastering regions: the code that applies loudnorm and writes the artifact
+# The mastering regions: the code that finishes the audio and writes the artifact
 # the audio gate then measures. Locating them by their enclosing region (rather
-# than by text near the word "loudnorm") is what makes this test bite: main.py's
-# louder branch builds its filter graph in a list, so the run() call itself never
-# contains the string "loudnorm" and a proximity check would silently pass.
+# than by text near the word "loudnorm") is what makes this test bite: the mixing
+# graph is built up in a list, so a run() call never contains the string
+# "loudnorm" and a proximity check would silently pass.
 MASTERING_REGIONS = (
-    ("main.py", "_LOUDNORM = delivery_master_filter()",
+    ("main.py", '_mix_wav = os.path.join(WORK, "final_mix.wav")',
      'with open(os.path.join(OUT, "post.json")'),
     ("quality_downstream_factory_proof.py", "def _mix_final(", "\ndef _repair_verdict("),
 )
@@ -114,6 +114,14 @@ def _encode_calls(region: str):
 
 
 def test_every_mastering_encode_pins_the_rate():
+    """Exactly one command per path writes delivery audio, and it uses the helper.
+
+    The check is on the DELIVERY encode specifically. Both paths also run
+    intermediate audio passes (the mix, and the master's own stages), and those
+    write WAV -- asserting the contract args on them would be meaningless. What
+    matters is that nothing else in the region encodes delivery audio behind the
+    helper's back, which is exactly how -ar went missing the first time.
+    """
     checked = 0
     for mod, start, end in MASTERING_REGIONS:
         src = (ROOT / mod).read_text(encoding="utf-8")
@@ -122,19 +130,85 @@ def test_every_mastering_encode_pins_the_rate():
         region = src.split(start, 1)[1].split(end, 1)[0]
         calls = _encode_calls(region)
         check(len(calls) >= 2,
-              f"{mod}: both mastering branches are present ({len(calls)} found)")
+              f"{mod}: the mix and the mux are separate commands ({len(calls)} found)")
+        delivery = [c for c in calls if "delivery_audio_encode_args()" in c]
+        check(len(delivery) == 1,
+              f"{mod}: exactly one command encodes delivery audio "
+              f"({len(delivery)} found), so there is one place to get it wrong")
         for cmd in calls:
-            check("delivery_audio_encode_args()" in cmd,
-                  f"{mod}: the codec/bitrate/rate args are spliced from the shared "
-                  "contract helper, not retyped (retyping is how -ar was lost before)")
-            # The rate and the bitrate are one decision: pinning 48 kHz while
-            # leaving 96 kbit/s measured +0.07 dBTP, breaching the gate's own
-            # ceiling. Anything that re-pins the rate must carry the bitrate too.
-            check('"96k"' not in cmd,
-                  f"{mod}: the starved 96 kbit/s mastering bitrate is gone")
+            if cmd in delivery:
+                # The rate and the bitrate are one decision: pinning 48 kHz while
+                # leaving 96 kbit/s measured +0.07 dBTP, breaching the gate's own
+                # ceiling. Anything that re-pins the rate must carry the bitrate too.
+                check('"96k"' not in cmd,
+                      f"{mod}: the starved 96 kbit/s mastering bitrate is gone")
+            else:
+                check('"-c:a"' not in cmd and '"-b:a"' not in cmd,
+                      f"{mod}: an intermediate pass does not hand-roll a second "
+                      "audio encode alongside the shared one")
             checked += 1
-    check(checked >= 4,
-          f"all {checked} mastering encode paths are constrained, not just the first")
+    check(checked >= 5,
+          f"all {checked} commands in both finishing paths are constrained")
+
+
+def _code_only(region: str) -> str:
+    """The region with comments and triple-quoted prose stripped.
+
+    Both regions EXPLAIN loudnorm at length -- that is the point of the comments.
+    The assertion below is about whether a mastering filter string reaches
+    ffmpeg, so the prose has to go first. An earlier test in this file matched
+    its own explanatory comment and therefore asserted nothing at all.
+
+    A '#' inside a string literal is preceded by a quote, not whitespace, so it
+    survives; that is deliberate, since such a string could be a filter arg.
+    """
+    no_docs = re.sub(r'"""(?:.|\n)*?"""', "", region)
+    return "\n".join(re.sub(r"(^|\s)#.*$", "", ln) for ln in no_docs.splitlines())
+
+
+def test_both_finishing_paths_call_the_one_mastering_implementation():
+    """A shared CONSTANT was not enough last time; the sequence is shared too.
+
+    delivery_contract's true-peak target was declared shared while every path
+    kept its own hard-coded filter string, so the constant was inert. The fix is
+    that neither path can express a master at all: they call master_audio().
+    """
+    for mod, start, end in MASTERING_REGIONS:
+        src = (ROOT / mod).read_text(encoding="utf-8")
+        region = _code_only(src.split(start, 1)[1].split(end, 1)[0])
+        check("master_audio(" in region,
+              f"{mod}: finishing delegates to the shared measured master")
+        # "loudnorm=" / "alimiter=" -- with the '=' -- is how an ffmpeg filter is
+        # actually written, and distinguishes a filter from the master report's
+        # own `stage1_loudnorm_lufs` field, which this path legitimately prints.
+        check("loudnorm=" not in region and "alimiter=" not in region,
+              f"{mod}: and holds no mastering filter string of its own")
+        check("delivery_master_filter()" not in region,
+              f"{mod}: nor the single-graph shortcut, which cannot measure its "
+              "own output and undershot the loudness gate by 2.4 dB on real speech")
+
+
+def test_the_shared_master_measures_rather_than_asserts():
+    """The loop is closed against the LIMITED signal, not loudnorm's output.
+
+    Correcting only loudnorm's error left +0.38 dB of margin; correcting again
+    after the limiter (which itself costs 0.4-1.6 dB) left +1.13 dB. Losing the
+    second measurement would silently give back most of the margin, so the shape
+    of the loop is pinned here rather than left to a comment.
+    """
+    src = (ROOT / "delivery_master.py").read_text(encoding="utf-8")
+    body = src.split("def master_audio(", 1)[1]
+    check(body.count("measure_integrated_lufs(") >= 3,
+          "the master measures at every stage, including after the limiter")
+    check(body.count("delivery_limiter_filter()") >= 1 and body.count("limiter") >= 3,
+          "the limiter -- the only owner of the peak ceiling -- is applied, not just named")
+    check("_clamp(" in body,
+          "a corrective gain is bounded, so a bad measurement fails the gate "
+          "loudly instead of muting or blowing up a render")
+    for banned in ("import main", "import quality_", "import generate", "import narration"):
+        check(banned not in src,
+              f"delivery_master does not import {banned!r} -- production must not "
+              "depend on the module that judges it")
 
 
 def test_the_bitrate_is_high_enough_for_the_delivery_rate():
@@ -175,6 +249,8 @@ if __name__ == "__main__":
     test_the_exact_shipped_defect_is_now_rejected()
     test_the_floor_still_catches_the_opposite_failure()
     test_every_mastering_encode_pins_the_rate()
+    test_both_finishing_paths_call_the_one_mastering_implementation()
+    test_the_shared_master_measures_rather_than_asserts()
     test_the_bitrate_is_high_enough_for_the_delivery_rate()
     test_the_renderer_reads_the_contract_from_a_neutral_module()
     print("delivery audio contract tests: PASS")
