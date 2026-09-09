@@ -64,9 +64,6 @@ def _run_evidence_seed(original_generate, args, kwargs):
     if not fact:
         return None, None
 
-    # quality_certification_generate pins research_dossier() to the exact dossier
-    # already collected for this bundle, so this reads the same evidence view the
-    # canonical orchestrator will use a moment later.
     dossier = C.G.research_dossier(fact)
     inventory = C.W.build_claim_inventory(fact, dossier_facts=dossier, grounded=bool(dossier))
     seed = S.build_evidence_seed(fact, inventory)
@@ -103,16 +100,15 @@ def run_bundle(
     attempts_limit = max(1, min(int(max_attempts), MAX_HARD_ATTEMPTS))
     original_generate = C.O.generate_candidate_v21
     attempt_evidence: list[dict[str, Any]] = []
+    selected_topic_id = {"value": ""}
 
     def retrying_generate(*args, **kwargs):
         last_manifest = None
         last_debug: dict[str, Any] = {"accepted": False, "error": "no Writer attempt executed"}
+        fact = args[0] if args else kwargs.get("fact")
+        if isinstance(fact, dict):
+            selected_topic_id["value"] = str(fact.get("id") or "").strip()
 
-        # Attempt the evidence-only seed FIRST when explicitly requested.  The
-        # September 8 live Venus run already spent three provider candidates and
-        # proved their remaining defects were form-level; seed-first avoids
-        # burning scarce TPM on another creative draft.  This is not acceptance:
-        # original_generate still executes every canonical Writer V2.1 gate.
         if prefer_evidence_seed:
             print("[cert-writer] trying deterministic evidence-only seed through canonical V2.1 gates")
             seed_manifest, seed_debug = _run_evidence_seed(original_generate, args, kwargs)
@@ -169,6 +165,8 @@ def run_bundle(
         result["certification_candidate_attempts"] = len(attempt_evidence)
         result["evidence_seed_enabled"] = bool(prefer_evidence_seed)
         _write_json(out / "writer_attempts.json", {
+            "topic_id": selected_topic_id["value"] or str(result.get("topic_id") or ""),
+            "requested_topic": topic,
             "max_provider_attempts": attempts_limit,
             "evidence_seed_enabled": bool(prefer_evidence_seed),
             "attempt_count": len(attempt_evidence),
@@ -178,6 +176,8 @@ def run_bundle(
         return result
     except Exception as exc:
         _write_json(out / "writer_attempts.json", {
+            "topic_id": selected_topic_id["value"],
+            "requested_topic": topic,
             "max_provider_attempts": attempts_limit,
             "evidence_seed_enabled": bool(prefer_evidence_seed),
             "attempt_count": len(attempt_evidence),
@@ -186,6 +186,8 @@ def run_bundle(
         })
         _write_json(out / "certification_failure.json", {
             "stage": "writer_v21_bundle",
+            "topic_id": selected_topic_id["value"],
+            "requested_topic": topic,
             "error_type": type(exc).__name__,
             "error": str(exc),
             "attempt_count": len(attempt_evidence),
