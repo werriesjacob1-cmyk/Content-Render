@@ -107,3 +107,59 @@ count, caption evidence. Do not infer media success from a green tick.
 C7 — complete on this branch pending release proof. C8 — production-realism
 extension is the open half. **S9 — PARTIAL**: capability + health closed,
 cost-aware LLM routing still OPEN and deliberately not attempted here.
+
+---
+
+# OPEN BLOCKER — production-realism loudness (as of `cab66a8`)
+
+**Status: NOT merge-ready. One measured, well-diagnosed problem remains.**
+
+Everything else in the realism proof works on the integrated head: Piper
+SUCCESS, Whisper **57/57** word timings, 1080x1920 scenes, per-scene audio
+split, ASS captions, music bed, ducking, mastering, AAC 48 kHz. The artifact is
+then rejected by the audio gate for loudness alone.
+
+| exact head | mastering | measured | gate |
+|---|---|---|---|
+| `ec2a649` | single loudnorm `TP=-2.5` | **-16.42 LUFS** | outside [-16.0, -11.5] |
+| `cab66a8` | loudnorm `TP=-1.5` + `alimiter -2.5 dBFS` | **-16.26 LUFS** | outside, by 0.26 dB |
+
+True peak is NOT the problem any more; the decoupled limiter fixed that. The
+remaining gap is integrated loudness undershooting the -14 target.
+
+## What is established
+
+- Single-pass loudnorm in dynamic mode **systematically undershoots** its
+  integrated target, and the tighter its true-peak argument, the worse:
+  measured ~0.2 dB per 0.5 dB of TP tightening on synthetic mixes, ~2.4 dB on
+  real Piper speech.
+- Decoupling helped and is strictly better on both axes (see the commit), but
+  only bought 0.16 dB of the 0.42 dB needed.
+- Two-pass loudnorm with `linear=true` was measured and **rejected on its own**:
+  linear mode does not limit, so it pushed the decoded peak to +0.06 dBTP.
+
+## Exact next action (the synthesis, untried)
+
+Two-pass loudnorm **for loudness only**, with the `alimiter` still enforcing the
+peak ceiling. The earlier objection to two-pass was that linear mode does not
+limit — that objection is neutralised now that a dedicated limiter owns the
+peak. Expected: accurate -14 LUFS *and* a guaranteed ceiling, each stage doing
+one job.
+
+Implementation shape: `_mix_final` (and `main.py`'s mastering block, which must
+stay identical or the contract diverges again) build the mixed audio, measure it
+with the existing analysis pass, then apply
+`loudnorm=...:measured_I=..:measured_TP=..:measured_LRA=..:measured_thresh=..:offset=..:linear=true,alimiter=...`.
+That is a real restructure of both finishing paths, not a constant change.
+
+**Do NOT** resolve this by widening `LUFS_MIN`, lowering the QA ceiling, or
+relaxing any gate. The gate is correct; the mastering is what is inaccurate.
+
+## Also proven on this head (`cab66a8`)
+
+Edge voice probe PASSED: `en-GB-RyanNeural`, `edge_boundary_counts_returned: [0]`,
+`timing_source: faster_whisper_fallback`, 40/40 words, `provider_calls_made: 0`,
+`publishing_side_effects: 0`. Phase 5 evidence re-confirmed post-integration.
+
+`tests` workflow (zero-provider `test` + `factory-proof`) is green on the head
+before this one; re-confirm on whatever head fixes the loudness.
