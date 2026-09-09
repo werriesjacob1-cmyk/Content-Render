@@ -15,6 +15,7 @@ North Star: **produce a genuinely post-worthy private flagship video with the ge
 - [x] Make scene-1 statement / later-curiosity-question rule unambiguous at the final runtime instruction boundary.
 - [x] Add zero-provider rejection replay analyzer (`writer_replay.py`) and regressions.
 - [x] Add certification-only Groq capacity skip for requests that cannot fit the known TPM envelope.
+- [x] Align Groq capacity reserve with the structured caller's real `max_tokens=3000` budget; exact 8k boundary is regression-tested.
 - [x] Keep normal unattended production provider policy unchanged.
 - [x] Open draft PR #73 from `superchad/flagship-writer-recovery-20260908`.
 - [x] Obtain green exact-head CI on the first reviewed PR #73 head.
@@ -22,7 +23,7 @@ North Star: **produce a genuinely post-worthy private flagship video with the ge
 
 ## Current gate
 
-- [ ] Re-run exact-head CI after the final audit/documentation correction and any remaining zero-provider hardening.
+- [ ] Re-run exact-head CI after the final audit/documentation/provider-capacity hardening.
 - [ ] Final narrow merge-boundary audit of PR #73: `main SHA -> PR head -> changed scope -> exact-head CI -> publishing/provider boundaries`.
 - [ ] **Jacob merge authorization for PR #73.** No merge without explicit authorization.
 
