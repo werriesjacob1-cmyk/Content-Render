@@ -1,7 +1,4 @@
-flagship-certification-requested=2026-09-08T13:33:00-05:00
-topic=venus_day
-treatment=TIMELINE_TRANSFORMATION
-free_science_network=yes
-writer_policy=evidence-seed-first-then-resilient-provider-fallback
-attempt=4
+topic=auto
 purpose=private-artifact-only
+request_id=superchad-flagship-20260908-01
+authorized_by=jacob
