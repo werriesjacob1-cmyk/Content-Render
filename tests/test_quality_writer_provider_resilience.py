@@ -38,13 +38,21 @@ def test_20b_is_flagship_fallback_not_primary_peer():
           "existing weak-provider classification is preserved")
 
 
-def test_groq_capacity_check_reserves_completion_tokens():
-    fits, est = R.groq_request_fits("small prompt")
-    check(fits and est >= 1, "small structured request remains Groq-eligible")
-    huge = "x" * (R.GROQ_TPM_LIMIT * 4)
-    fits, est = R.groq_request_fits(huge)
-    check(not fits and est >= R.GROQ_TPM_LIMIT,
-          "request at the whole TPM envelope is rejected because completion still needs room")
+def test_groq_capacity_check_reserves_full_structured_completion_budget():
+    check(R.GROQ_COMPLETION_RESERVE == 3000,
+          "Groq capacity reserve matches generate.py structured max_tokens=3000")
+
+    # estimate_tokens is len//4. At 5,000 estimated prompt tokens, the request
+    # plus the 3,000-token structured completion ceiling exactly fills 8k and
+    # remains eligible. One additional estimated prompt token must fail closed.
+    exact_prompt = "x" * (5000 * 4)
+    fits, est = R.groq_request_fits(exact_prompt)
+    check(fits and est == 5000, "exact 8k request boundary remains Groq-eligible")
+
+    over_prompt = "x" * (5001 * 4)
+    fits, est = R.groq_request_fits(over_prompt)
+    check(not fits and est == 5001,
+          "one token beyond prompt+completion 8k boundary skips Groq")
 
 
 def test_oversize_request_skips_strict_and_loose_groq_but_restores_key():
@@ -174,7 +182,7 @@ def test_context_restores_generate_globals():
 
 if __name__ == "__main__":
     test_20b_is_flagship_fallback_not_primary_peer()
-    test_groq_capacity_check_reserves_completion_tokens()
+    test_groq_capacity_check_reserves_full_structured_completion_budget()
     test_oversize_request_skips_strict_and_loose_groq_but_restores_key()
     test_short_120b_throttle_waits_and_retries_same_strict_model()
     test_hard_120b_failure_tries_20b_strict_before_loose_chain()
