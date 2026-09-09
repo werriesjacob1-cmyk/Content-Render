@@ -4,7 +4,8 @@ Recovery state for resuming in a fresh session. Concise by design.
 
 - **branch**: `claude/flagship6-writer-repair-policy-20260909`
 - **base/main SHA**: `fed4b0fd80ca353668fe80283bbe23e3fcbcd8ca`
-- **pushed SHA**: see `git log -1` (updated each milestone)
+- **pushed SHA**: `868e3be` (code) + this checkpoint commit
+- **PR**: #78 (draft, DO NOT MERGE)
 - **source artifact**: run 34305189931, artifact 10086461186, topic
   `greenland_shark_age`, treatment INSIDE_THE_SYSTEM, 3 candidates / 9 rounds
 
@@ -120,14 +121,31 @@ the log only gives in aggregate — stated as an estimate, not a measurement.
   WOULD have written.
 - **F — adversarial tests**: DONE. 15 checks in
   `tests/test_repair_policy_and_provider_health.py`, all ten named classes.
-- **G — CI**: exact-head run pending on the PR.
+- **G — CI**: PR #78 (draft). Exact-head run **34326519427** on `868e3be`:
+  `test` SUCCESS, `factory-proof` SUCCESS.
+
+## Finding 5 — there were THREE Groq doors, not two
+Found while CI ran on the previous commit. `_v2_structured_call` calls Groq
+directly, bypassing `_walk`, and is the door the production orchestrator uses
+for every draft, critic and repair round. It now checks health, records its own
+429s and clears the cooldown on success. A test asserts all three doors do all
+three things, so a fourth cannot be added silently.
 
 ## Local proof
 57 suites green; 1598 zero-provider checks; new suite registered in tests.yml.
 
+## Gates explicitly unchanged
+`MAX_REPAIR_ROUNDS` = 2 · `WORD_HARD_LO/HI` 68-108 · `SCENE_WORD_CAP` 25 ·
+`QUALITY_HARD_FLOOR` 6.8 · provenance and semantic verification still
+fail-closed · every mutation re-enters the full gate chain · no topic-specific
+logic anywhere.
+
+## Remaining uncertainty
+Whether the richer repair prompt actually converts these rejections into an
+ACCEPTED candidate cannot be known offline — replay cannot know what a model
+would have written. That is the one question the next private flagship answers.
+
 ## Exact next action
-Implement `must_also_satisfy` in `writer_v2_repair.classify_repair()` (populated
-from the CURRENT `validate_err` + runtime narration contract regardless of
-tier), render it in `build_repair_prompt()`, and populate `must_preserve` with
-mandatory key terms when the validate_err is a key-term failure. Tier priority
-for the PRIMARY target stays exactly as-is — no gate weakened, no extra rounds.
+Await Jacob's authorization. Recommendation: READY FOR ONE MORE PRIVATE
+FLAGSHIP once PR #78 is merged and actual-main CI is green. Do not run it from
+this branch.
