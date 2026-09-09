@@ -116,6 +116,8 @@ jobs:
           run_check "capability preflight" env -u GROQ_API_KEY python tests/test_capability_preflight.py
           run_check "review readiness" env -u GROQ_API_KEY python tests/test_review_readiness.py
           run_check "visual torture routing" env -u GROQ_API_KEY python tests/test_visual_torture_corpus.py
+          run_check "writer length contract" env -u GROQ_API_KEY python tests/test_writer_length_contract.py
+          run_check "writer rejection-corpus replay" env -u GROQ_API_KEY python tests/test_writer_replay.py
           run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
           run_check "quality-stack preflight" env -u GROQ_API_KEY python quality_stack_cli.py --preflight
 

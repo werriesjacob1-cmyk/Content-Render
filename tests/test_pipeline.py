@@ -3245,6 +3245,72 @@ def test_writer_v2_claim_inventory():
           "spelled-out numbers extracted too (billion, three)")
 
 
+def test_provider_request_ceiling_routing():
+    section("generate._provider_can_serve: skip a provider that structurally CANNOT serve the request")
+    # Run-#5 (2026-09-08, live production run): every Groq structured-output
+    # attempt returned HTTP 413 "Request too large ... Limit 8000, Requested
+    # 10126" -- a STRUCTURAL refusal (the prompt is bigger than the free tier's
+    # 8,000 tokens-per-minute ceiling), yet the code retried it with throttle
+    # backoff (7.15s, 7.65s, 6.91s, 13.52s, 12.16s, 14.02s) on every structured
+    # call, burning ~60s of pure wall-clock for a call that could never succeed.
+    check(G.PROVIDER_REQUEST_TOKEN_CEILINGS["groq"] == 8000,
+          "the capability table records Groq's free-tier 8000-token request ceiling")
+    check(G._provider_token_ceiling("groq", env={}) == 8000, "groq's ceiling reads back from the table")
+
+    # the two cases that matter, stated in the units the bug was reported in
+    check(G._provider_can_serve("groq", 10126, env={}) is False,
+          "the run-#5 case: a ~10,126-token prompt is NOT eligible for groq (413, not 429)")
+    check(G._provider_can_serve("groq", 2500, env={}) is True,
+          "a comfortably-under-ceiling prompt (2500 tokens) stays eligible -- structured output is still used")
+
+    # boundary: the ceiling is what the provider WILL serve, not what it refuses
+    check(G._provider_can_serve("groq", 7999, env={}) is True, "one token under the ceiling is eligible")
+    check(G._provider_can_serve("groq", 8000, env={}) is True, "exactly AT the ceiling is eligible (<=, not <)")
+    check(G._provider_can_serve("groq", 8001, env={}) is False, "one token OVER the ceiling is not eligible")
+
+    # a provider with no ceiling on record must never be skipped (fail OPEN --
+    # this gate exists to skip PROVABLY impossible calls, not to invent limits)
+    check(G._provider_can_serve("gemini", 999999, env={}) is True,
+          "an unknown provider is always eligible (no ceiling on record -> never block)")
+    check(G._provider_token_ceiling("gemini", env={}) is None, "no ceiling on record for gemini")
+
+    # env override: an upgraded tier raises the ceiling, 0 disables the check
+    check(G._provider_ceiling_env_name("groq") == "GROQ_REQUEST_TOKEN_CEILING",
+          "the override env var is named per-provider")
+    check(G._provider_can_serve("groq", 10126, env={"GROQ_REQUEST_TOKEN_CEILING": "30000"}) is True,
+          "raising the ceiling by env makes the same 10,126-token prompt eligible again")
+    check(G._provider_can_serve("groq", 10126, env={"GROQ_REQUEST_TOKEN_CEILING": "0"}) is True,
+          "a 0 override disables the ceiling check entirely for that provider")
+    check(G._provider_can_serve("groq", 10126, env={"GROQ_REQUEST_TOKEN_CEILING": "not-a-number"}) is False,
+          "a garbage override falls back to the table default rather than silently disabling the gate")
+
+    # the estimator this routes on is the existing chars//4 heuristic -- a real
+    # ~40k-char legacy-sized prompt must land over the ceiling, not under it
+    big_prompt = "x" * 40504          # ~10,126 est. tokens, the run-#5 size
+    check(W2.estimate_tokens(big_prompt) == 10126, "estimate_tokens reproduces the run-#5 figure")
+    check(G._provider_can_serve("groq", W2.estimate_tokens(big_prompt), env={}) is False,
+          "estimator + gate together reject the real run-#5 prompt")
+    check(G._provider_can_serve("groq", G.estimate_tokens("short prompt"), env={}) is True,
+          "estimator + gate together accept a small prompt")
+
+    # never raises on weird input (it sits in the hot path of every structured
+    # call; a crash here would be worse than the wasted backoff it prevents)
+    for weird in (None, "", 0, -1, -10126, "10126", "abc", 3.7, True, False, [], {}, object()):
+        try:
+            got = G._provider_can_serve("groq", weird)
+            ok = got is True or got is False
+        except Exception:  # noqa: BLE001
+            ok = False
+        check(ok, f"_provider_can_serve returns a plain bool and never raises on {weird!r}")
+    check(G._provider_can_serve("groq", None, env={}) is True,
+          "an unusable estimate fails OPEN (can't prove it won't fit -> let the network decide)")
+    check(G._provider_can_serve("groq", "10126", env={}) is False,
+          "a numeric STRING estimate is still measured against the ceiling")
+    check(G._provider_can_serve(None, 10126, env={}) is True, "a missing provider name is never blocked")
+    check(G._provider_can_serve("  GROQ  ", 10126, env={}) is False,
+          "provider names are matched case/whitespace-insensitively")
+
+
 def test_writer_v2_prompt_size():
     section("writer_v2.build_writer_prompt_v2 / estimate_tokens: the actual size-reduction claim")
     fact = G.load_bank()[10]
@@ -4534,6 +4600,7 @@ def main():
     test_writer_v2_treatments()
     test_writer_v2_story_packet()
     test_writer_v2_claim_inventory()
+    test_provider_request_ceiling_routing()
     test_writer_v2_prompt_size()
     test_writer_v2_schema()
     test_writer_v2_assemble_manifest()

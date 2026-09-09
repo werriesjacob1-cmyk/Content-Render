@@ -464,6 +464,39 @@ else:
                    "scene must reframe, never just restate the premise.")
 
 
+def writer_length_contract(spoken_lines=8):
+    """The length budget the Writer V2.1 prompt must state, built from the SAME
+    constants validate() enforces.
+
+    2026-09-08 root cause (flagship runs #2-#5, 36 replayed rounds): the V2.1
+    writer prompt in writer_v2.py never stated a total word budget or the
+    per-scene cap at all -- LENGTH_HINT/WORDS_PER_SCENE only ever reached the
+    LEGACY build_prompt() in this module. So 17 of 36 rounds (47%) were
+    rejected for a budget the writer was never given: 12 total-word-count
+    violations (109-141 words against a 108 hard ceiling) and 5 per-scene
+    violations (28-31 words against a 25 cap). The model was not ignoring the
+    budget; nobody had told it there was one.
+
+    writer_v2 cannot import this module (generate imports writer_v2, not the
+    reverse), so the contract is injected by the caller instead. Returning the
+    raw numbers -- rather than a pre-baked sentence -- lets a test assert that
+    what the prompt SAYS and what validate() ENFORCES are the same numbers,
+    which is the drift this whole class of bug came from."""
+    lines = max(1, int(spoken_lines or 1))
+    return {
+        "mode": LENGTH_MODE,
+        "word_lo": WORD_LO,
+        "word_hi": WORD_HI,
+        "word_hard_lo": WORD_HARD_LO,
+        "word_hard_hi": WORD_HARD_HI,
+        "scene_word_cap": SCENE_WORD_CAP,
+        "scene_min": SCENE_MIN,
+        "scene_max": SCENE_MAX,
+        "spoken_lines": lines,
+        "words_per_line": max(1, round(((WORD_LO + WORD_HI) / 2) / lines)),
+    }
+
+
 def draft_is_weak(overall, quality):
     """True when a draft lacks usable quality evidence OR scores below the bar.
 
@@ -3578,6 +3611,86 @@ def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name=
     return out, (data.get("usage") or {})
 
 
+# ---------------------------------------------------------------------------
+# PROVIDER CAPABILITY TABLE -- known per-request size ceilings (2026-09-08).
+#
+# The distinction this table exists to encode: an HTTP 429 ("you're going too
+# fast") is TRANSIENT and worth waiting out with backoff; an HTTP 413
+# ("Request too large ... Limit 8000, Requested 10126") is STRUCTURAL -- the
+# request is bigger than the provider's per-minute ceiling and will NEVER be
+# served no matter how long we wait. A real production run burned ~60s of pure
+# backoff (7.15s, 7.65s, 6.91s, 13.52s, 12.16s, 14.02s) re-attempting Groq
+# structured output with a ~10,000-token writer prompt against Groq's free-tier
+# 8,000 tokens-per-minute cap -- every attempt a guaranteed 413.
+#
+# Values are the provider's documented per-request/per-minute TOKEN ceiling for
+# the tier we actually run on. Each is overridable at runtime with
+# `<PROVIDER>_REQUEST_TOKEN_CEILING` (e.g. GROQ_REQUEST_TOKEN_CEILING=30000
+# once an account is upgraded off the free tier); set it to 0 to disable the
+# check entirely for that provider.
+# ---------------------------------------------------------------------------
+PROVIDER_REQUEST_TOKEN_CEILINGS = {
+    "groq": 8000,   # Groq free tier: 8,000 tokens/minute, enforced as HTTP 413
+}
+
+
+def _provider_ceiling_env_name(provider):
+    """Pure. Env var that overrides a provider's request-token ceiling."""
+    return f"{str(provider or '').strip().upper()}_REQUEST_TOKEN_CEILING"
+
+
+def _provider_token_ceiling(provider, table=None, env=None):
+    """Pure. The known per-request token ceiling for `provider`, or None when
+    we have no ceiling on record (unknown provider, or the ceiling explicitly
+    disabled with a 0/blank/garbage env override). Never raises."""
+    table = PROVIDER_REQUEST_TOKEN_CEILINGS if table is None else table
+    env = os.environ if env is None else env
+    key = str(provider or "").strip().lower()
+    if not key:
+        return None
+    ceiling = table.get(key)
+    try:
+        override = env.get(_provider_ceiling_env_name(key))
+    except Exception:  # noqa: BLE001 -- an exotic mapping is not worth crashing over
+        override = None
+    if override not in (None, ""):
+        try:
+            ceiling = int(float(str(override).strip()))
+        except (TypeError, ValueError):
+            pass  # garbage override -> keep the table default
+    if ceiling is None:
+        return None
+    try:
+        ceiling = int(ceiling)
+    except (TypeError, ValueError):
+        return None
+    return ceiling if ceiling > 0 else None
+
+
+def _provider_can_serve(provider, estimated_tokens, table=None, env=None):
+    """Pure, never raises. False ONLY when we can PROVE the request cannot fit
+    the provider's known ceiling -- i.e. we have a ceiling on record AND the
+    estimated size strictly exceeds it. Everything else is True (fail OPEN):
+    an unknown provider, a disabled ceiling, and an unusable/None/negative
+    estimate all mean "we can't prove it won't fit, so let the call happen and
+    let the network tell us." A request estimated at EXACTLY the ceiling is
+    eligible -- the ceiling is what the provider will serve, not what it
+    refuses. The estimate itself comes from writer_v2.estimate_tokens (chars//4,
+    live-verified to ~1-2% against Groq's own 'Requested' figure)."""
+    ceiling = _provider_token_ceiling(provider, table=table, env=env)
+    if ceiling is None:
+        return True
+    try:
+        if isinstance(estimated_tokens, bool) or estimated_tokens is None:
+            return True
+        est = int(estimated_tokens)
+    except (TypeError, ValueError):
+        return True
+    if est <= 0:
+        return True
+    return est <= ceiling
+
+
 def _v2_structured_call(prompt, schema, schema_name, debug_calls):
     """Shared structured-output-then-fallback call used by both the initial
     draft and every critic/repair round. Tries Groq structured output first
@@ -3586,8 +3699,23 @@ def _v2_structured_call(prompt, schema, schema_name, debug_calls):
     via the prompt text, parsed the normal way). Appends one entry to
     debug_calls (mutated in place) recording provider/model/usage/structured
     for every network call actually made, so callers can sum tokens/calls
-    across a whole repair loop. Returns (raw_text_or_None, structured_bool)."""
-    if GROQ_KEY:
+    across a whole repair loop. Returns (raw_text_or_None, structured_bool).
+
+    2026-09-08: the Groq attempt is now CAPABILITY-GATED (_provider_can_serve).
+    A prompt bigger than Groq's known per-minute token ceiling can only ever
+    return HTTP 413 -- a structural refusal, not a throttle -- so retrying it
+    with backoff burns wall-clock for nothing (~60s in one real run). When the
+    prompt provably doesn't fit we skip straight to the call_groq() chain and
+    say WHY in the log. Nothing changes when the prompt DOES fit: Groq's
+    schema-enforced structured output is genuinely valuable and stays first."""
+    est_tokens = estimate_tokens(prompt)
+    groq_fits = _provider_can_serve("groq", est_tokens)
+    if GROQ_KEY and not groq_fits:
+        print(f"  [writer-v2] skipping groq structured output for {schema_name}: prompt is "
+              f"~{est_tokens} est. tokens vs groq's {_provider_token_ceiling('groq')}-token "
+              f"request ceiling -- STRUCTURAL (HTTP 413), not a throttle, so no amount of "
+              f"backoff would make it succeed; going straight to the call_groq chain")
+    if GROQ_KEY and groq_fits:
         model0 = MODEL_CHAIN[0]
         try:
             raw, usage = _call_openai_compat_structured(

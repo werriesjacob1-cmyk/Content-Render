@@ -86,11 +86,16 @@ def generate_candidate_v21(
     dossier = G.research_dossier(fact) if fact else []
     grounded = bool(dossier)
     claim_inventory = W.build_claim_inventory(fact, dossier_facts=dossier, grounded=grounded)
+    # The writer is told the SAME word budget validate() enforces. Without this
+    # the prompt stated no total-word or per-scene budget at all, and 17 of 36
+    # replayed flagship rounds died on limits the model was never given.
+    treatment_beats = len((W.TREATMENTS.get(treatment) or {}).get("beats") or [])
     prompt = W.build_writer_prompt_v2(
         treatment,
         claim_inventory,
         avoid_topics=avoid_topics,
         visual_evidence=(fact or {}).get("queries"),
+        length_contract=G.writer_length_contract(spoken_lines=treatment_beats + 2),
     )
     calls: list[dict[str, Any]] = []
     debug: dict[str, Any] = {

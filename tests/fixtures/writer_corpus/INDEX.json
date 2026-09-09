@@ -1,0 +1,34 @@
+[
+  {
+    "file": "flagship_02_2dbad04.json",
+    "source_run_id": 34257803289,
+    "flagship_attempt": 2,
+    "topic_hint": "greenland_shark",
+    "attempt_count": 3,
+    "total_rounds": 6
+  },
+  {
+    "file": "flagship_03_4b7584c.json",
+    "source_run_id": 34263047438,
+    "flagship_attempt": 3,
+    "topic_hint": "venus_day",
+    "attempt_count": 3,
+    "total_rounds": 9
+  },
+  {
+    "file": "flagship_04_39275e3.json",
+    "source_run_id": 34264652218,
+    "flagship_attempt": 4,
+    "topic_hint": "venus_day",
+    "attempt_count": 4,
+    "total_rounds": 12
+  },
+  {
+    "file": "flagship_05_240bdc1.json",
+    "source_run_id": 34284331800,
+    "flagship_attempt": 5,
+    "topic_hint": "greenland_shark",
+    "attempt_count": 3,
+    "total_rounds": 9
+  }
+]

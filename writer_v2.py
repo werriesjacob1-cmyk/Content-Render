@@ -479,14 +479,49 @@ BANNED: vague philosophy, fortune-cookie lines, "everything you know/learned abo
 
 STRUCTURE: follow the BEAT PROGRESSION given below exactly, in order -- it is a genuinely different shape from a generic hook -> question -> fact-list -> twist, and the whole point of this treatment is that the page doesn't feel formulaic. Each beat is ONE sentence a narrator would actually say out loud, building on the beat before it, never restating an earlier beat's point.
 
+EVERY BEAT MUST ADVANCE (the most common way these scripts fail): each beat has to add something the beat before it did not -- a new consequence, obstacle, actor, scale, or reveal. Re-describing the SAME mechanism in different words is NOT a new beat. If three beats in a row are all explaining one process, you have written one beat three times and the script is rejected as repetition. Before each line ask: what does the viewer know now that they did not know one line ago? If the honest answer is "the same thing, worded differently", drop it and move the story forward instead.
+
+A REAL QUESTION, NOT A QUESTION MARK: the curiosity-gap line must be a genuine interrogative -- it opens with a question word (how/why/what/can/does/could) or inverts the verb. Sticking "?" onto the end of a statement is not a question and is rejected.
+  BAD:  "This animal keeps living for centuries?"   <- a statement wearing a question mark
+  GOOD: "So how does anything survive four centuries?"
+
+PLAIN WORDS: prefer the everyday word every time. If a technical term is genuinely unavoidable, translate it IN THE SAME SENTENCE using words a twelve-year-old would use -- and the translation itself must be plain. "a chemical that stops its body freezing solid" is a translation; "a chemical chaperone that stabilizes enzymes" is just more jargon. If you cannot say it plainly, describe what the thing DOES and never name it at all.
+
 CURIOSITY GAP (hard requirement): the hook OR one of the first 3 beats must literally end in a question mark "?" -- a genuine question the story then actually answers by the payoff, not a rhetorical throwaway. A script with no "?" anywhere in the hook or first 3 beats is invalid. The hook itself does not have to be the question (it usually shouldn't be, per the HOOK rule above) -- put it in beat 1, 2, or 3 instead.
 
 Return ONLY valid JSON matching this exact shape, no markdown, no commentary:
-{"title": "...", "hook": "the first spoken line, 8-14 words", "hook_source_claim_ids": ["claim_001"], "beats": [{"voiceover": "one spoken sentence", "visual_intent": "the concrete filmable subject on screen for this beat -- a real thing, not a mood", "source_claim_ids": ["claim_002"]}], "payoff": "the final beat's realization in one sentence -- a resonant thought, never a command like 'save this' and never a restatement of the hook", "payoff_source_claim_ids": ["claim_003"]}"""
+{"title": "...", "hook": "the first spoken line, 8-14 words", "hook_source_claim_ids": ["claim_001"], "beats": [{"voiceover": "one spoken sentence", "visual_intent": "the concrete filmable subject on screen for this beat -- a real thing, not a mood", "source_claim_ids": ["claim_002"]}], "payoff": "the final beat's realization in one sentence -- a resonant thought, never a command like 'save this' and never a restatement of the hook", "payoff_source_claim_ids": ["claim_003"]}
+
+THE PAYOFF MUST BE CONCRETE, NOT UPLIFT. Banned ending shapes: "shows how amazing/resilient/enduring nature is", "reminds us how much we still don't know", "a testament to ...", and any variation that gestures at wonder instead of landing an idea. Test it: if your last line would fit equally well at the end of ANY other science video, it is the wrong line. It must be a thought only THIS story could have earned."""
+
+
+def render_length_contract(contract):
+    """Render generate.writer_length_contract() into the prompt's LENGTH block.
+
+    Kept separate and pure so a test can assert the numbers the writer is TOLD
+    are literally the numbers validate() enforces. That equality is the whole
+    point: flagship runs #2-#5 lost 17 of 36 rounds to a word budget and a
+    per-scene cap that existed only in the validator, never in the prompt."""
+    if not contract:
+        return ""
+    c = contract
+    return (
+        "\n\nLENGTH CONTRACT (mechanically enforced -- a script outside these bounds is REJECTED "
+        "outright, not politely trimmed for you):\n"
+        f"- TOTAL spoken words, counting the hook + every beat + the payoff together: aim "
+        f"{c['word_lo']}-{c['word_hi']}. Hard limits {c['word_hard_lo']}-{c['word_hard_hi']}.\n"
+        f"- That works out to roughly {c['words_per_line']} words per spoken line across your "
+        f"{c['spoken_lines']} lines. Budget it deliberately as you write.\n"
+        f"- NO single spoken line may exceed {c['scene_word_cap']} words. \"One sentence\" is not "
+        "permission to write a long one -- a 30-word sentence is still rejected.\n"
+        "- COUNT the words you actually wrote before you answer, and cut until you are inside the "
+        "range. Do not write long and assume something downstream trims it: nothing does. Over the "
+        "limit is simply thrown away, and the whole script dies with it."
+    )
 
 
 def build_writer_prompt_v2(treatment_name, claim_inventory, avoid_topics=None,
-                            visual_evidence=None, treatments=None):
+                            visual_evidence=None, treatments=None, length_contract=None):
     """Assembles the full V2 writer prompt: WRITER_V2_STATIC (stable) + this
     call's treatment beats + a compact, ID-labeled EVIDENCE CLAIMS list (from
     build_claim_inventory -- replaces the old free-prose story packet, since
@@ -523,6 +558,7 @@ def build_writer_prompt_v2(treatment_name, claim_inventory, avoid_topics=None,
 
     return (
         WRITER_V2_STATIC
+        + render_length_contract(length_contract)
         + f"\n\nTHIS VIDEO'S TREATMENT: {treatment_name} -- write EXACTLY {len(t['beats'])} beats, in this order:\n"
         + beat_lines
         + "\n\n" + claims_block
