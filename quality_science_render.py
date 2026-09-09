@@ -19,6 +19,7 @@ import quality_render_bridge as B
 import quality_science_motion as QSM
 import quality_visual_bible as QVB
 import writer_story_bridge as WSB
+import quality_evidence as QE
 
 
 def _augment_provenance(motion_plans, motion_state) -> None:
@@ -43,7 +44,7 @@ def _augment_provenance(motion_plans, motion_state) -> None:
     payload["visual_bible_applied_before_asset_search"] = True
     payload["final_asset_lineage_file"] = "final_asset_lineage.json"
     with path.open("w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+        f.write(QE.dumps(payload))
 
 
 def _write_scene_timeline(manifest: Mapping[str, Any]) -> dict[str, Any]:
@@ -68,7 +69,7 @@ def _write_scene_timeline(manifest: Mapping[str, Any]) -> dict[str, Any]:
     payload = {"schema": "quality-scene-timeline-v1", "scene_count": len(rows),
                "measured_body_duration_s": round(cursor, 3), "scenes": rows}
     Path(legacy.OUT).mkdir(parents=True, exist_ok=True)
-    (Path(legacy.OUT) / "scene_timeline.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    QE.write_json(Path(legacy.OUT) / "scene_timeline.json", payload)
     return payload
 
 

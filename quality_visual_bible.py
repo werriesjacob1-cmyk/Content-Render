@@ -15,6 +15,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any, Mapping
+import quality_evidence as QE
 
 
 class VisualIntent(str, Enum):
@@ -205,7 +206,7 @@ def write_visual_bible(manifest: Mapping[str, Any], path: str | Path) -> dict[st
     payload = bible.to_dict()
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    QE.write_json(p, payload, sort_keys=True)
     return payload
 
 

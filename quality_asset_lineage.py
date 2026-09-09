@@ -11,6 +11,7 @@ from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+import quality_evidence as QE
 
 
 @dataclass(frozen=True)
@@ -64,7 +65,7 @@ def write_lineage(entries: Sequence[AssetLineageEntry], path: str | Path) -> dic
     }
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    QE.write_json(p, payload, sort_keys=True)
     return payload
 
 

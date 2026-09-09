@@ -42,6 +42,7 @@ import quality_postrender_review as PQR
 import quality_repair_controller as RC
 import quality_science_render as QSR
 import quality_visual_bible as QVB
+import quality_evidence as QE
 
 
 def run(cmd: list[str]) -> None:
@@ -181,7 +182,7 @@ def proof(out_root: str) -> dict[str, Any]:
 
     manifest = _manifest()
     manifest_path = root / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    QE.write_json(manifest_path, manifest)
     visual_bible = QVB.write_visual_bible(manifest, out / "visual_bible.json")
 
     old_work, old_out = legacy.WORK, legacy.OUT
@@ -254,7 +255,7 @@ def proof(out_root: str) -> dict[str, Any]:
 
         timeline = QSR._write_scene_timeline(manifest)
         audio = AQA.review(str(final), str(manifest_path))
-        (out / "audio_qa_report.json").write_text(json.dumps(audio, indent=2), encoding="utf-8")
+        QE.write_json(out / "audio_qa_report.json", audio)
         if audio.get("mechanical_pass") is not True:
             raise RuntimeError("real downstream final audio failed QA: " + "; ".join(audio.get("mechanical_reasons") or []))
 
@@ -265,7 +266,7 @@ def proof(out_root: str) -> dict[str, Any]:
             sheet_paths=tuple(str(work / f"proof_sheet_{i}.jpg") for i in range(3)),
         )
         repair_plan = PQR.build_repair_targets(_repair_verdict(), packet, timeline["scenes"])
-        (out / "targeted_repair_plan.json").write_text(json.dumps(repair_plan, indent=2), encoding="utf-8")
+        QE.write_json(out / "targeted_repair_plan.json", repair_plan)
         targets = repair_plan.get("targets") or []
         if len(targets) != 1 or not targets[0].get("affected_scene_ids"):
             raise RuntimeError("holistic QA did not map defect to concrete scene target")
@@ -316,7 +317,7 @@ def proof(out_root: str) -> dict[str, Any]:
             "repaired_mp4": str(repaired_video),
             "repaired_bytes": repaired_video.stat().st_size,
         }
-        (root / "proof_report.json").write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
+        QE.write_json(root / "proof_report.json", result, sort_keys=True)
         return result
     finally:
         legacy.WORK, legacy.OUT = old_work, old_out
@@ -331,7 +332,7 @@ def main(argv=None) -> int:
     except Exception as exc:
         print(f"DOWNSTREAM FACTORY PROOF FAILED: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 1
-    print(json.dumps(result, indent=2, sort_keys=True))
+    print(QE.dumps(result, sort_keys=True))
     return 0
 
 

@@ -22,6 +22,7 @@ import shutil
 from typing import Any, Callable, Mapping, Sequence
 
 import quality_audio_qa as AQA
+import quality_evidence as QE
 
 MAX_REPAIR_TARGETS = 2
 MAX_AFFECTED_SCENES_PER_TARGET = 3
@@ -164,4 +165,4 @@ def execute_replacements(
 def write_evidence(evidence: Mapping[str, Any], path: str | Path) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(dict(evidence), indent=2, sort_keys=True), encoding="utf-8")
+    QE.write_json(p, dict(evidence), sort_keys=True)
