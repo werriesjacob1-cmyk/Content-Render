@@ -3263,10 +3263,19 @@ def test_provider_request_ceiling_routing():
     check(G._provider_can_serve("groq", 2500, env={}) is True,
           "a comfortably-under-ceiling prompt (2500 tokens) stays eligible -- structured output is still used")
 
-    # boundary: the ceiling is what the provider WILL serve, not what it refuses
-    check(G._provider_can_serve("groq", 7999, env={}) is True, "one token under the ceiling is eligible")
-    check(G._provider_can_serve("groq", 8000, env={}) is True, "exactly AT the ceiling is eligible (<=, not <)")
-    check(G._provider_can_serve("groq", 8001, env={}) is False, "one token OVER the ceiling is not eligible")
+    # boundary: the ceiling is what the provider WILL serve, not what it refuses.
+    # Measured against prompt + reserved output, because Groq bills max_tokens
+    # against the same per-minute envelope -- a prompt-only comparison never
+    # fires on the real writer prompt (~2.3k tokens) and left this gate inert.
+    _res = G.STRUCTURED_MAX_OUTPUT_TOKENS
+    check(G._provider_can_serve("groq", 8000 - _res - 1, env={}) is True,
+          "one token under the combined ceiling is eligible")
+    check(G._provider_can_serve("groq", 8000 - _res, env={}) is True,
+          "exactly AT the combined ceiling is eligible (<=, not <)")
+    check(G._provider_can_serve("groq", 8000 - _res + 1, env={}) is False,
+          "one token OVER the combined ceiling is not eligible")
+    check(G._provider_can_serve("groq", 7999, env={}, reserved_output_tokens=0) is True,
+          "with no reserved output, the prompt alone is judged against the ceiling")
 
     # a provider with no ceiling on record must never be skipped (fail OPEN --
     # this gate exists to skip PROVABLY impossible calls, not to invent limits)

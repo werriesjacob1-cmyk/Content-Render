@@ -3589,7 +3589,7 @@ def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name=
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7,
-        "max_tokens": 3000,
+        "max_tokens": STRUCTURED_MAX_OUTPUT_TOKENS,
         "response_format": {
             "type": "json_schema",
             "json_schema": {"name": schema_name, "schema": schema, "strict": True},
@@ -3629,6 +3629,11 @@ def _call_openai_compat_structured(url, key, model, prompt, schema, schema_name=
 # once an account is upgraded off the free tier); set it to 0 to disable the
 # check entirely for that provider.
 # ---------------------------------------------------------------------------
+# Output budget reserved on every structured call. Groq counts this against the
+# SAME per-minute token envelope as the prompt, so provider eligibility must
+# include it (see _provider_can_serve).
+STRUCTURED_MAX_OUTPUT_TOKENS = 3000
+
 PROVIDER_REQUEST_TOKEN_CEILINGS = {
     "groq": 8000,   # Groq free tier: 8,000 tokens/minute, enforced as HTTP 413
 }
@@ -3667,7 +3672,8 @@ def _provider_token_ceiling(provider, table=None, env=None):
     return ceiling if ceiling > 0 else None
 
 
-def _provider_can_serve(provider, estimated_tokens, table=None, env=None):
+def _provider_can_serve(provider, estimated_tokens, table=None, env=None,
+                        reserved_output_tokens=STRUCTURED_MAX_OUTPUT_TOKENS):
     """Pure, never raises. False ONLY when we can PROVE the request cannot fit
     the provider's known ceiling -- i.e. we have a ceiling on record AND the
     estimated size strictly exceeds it. Everything else is True (fail OPEN):
@@ -3676,7 +3682,14 @@ def _provider_can_serve(provider, estimated_tokens, table=None, env=None):
     let the network tell us." A request estimated at EXACTLY the ceiling is
     eligible -- the ceiling is what the provider will serve, not what it
     refuses. The estimate itself comes from writer_v2.estimate_tokens (chars//4,
-    live-verified to ~1-2% against Groq's own 'Requested' figure)."""
+    live-verified to ~1-2% against Groq's own 'Requested' figure).
+
+    The reserved OUTPUT budget counts too. Groq bills max_tokens against the
+    same per-minute envelope as the prompt, so comparing the prompt alone
+    under-detects: the live writer prompt is only ~2.3k estimated tokens, yet
+    Groq reported 'Requested 10126' against its 8000 ceiling. Counting the
+    reservation is what makes this gate fire on the calls that actually 413.
+    Pass reserved_output_tokens=0 for a caller that reserves nothing."""
     ceiling = _provider_token_ceiling(provider, table=table, env=env)
     if ceiling is None:
         return True
@@ -3688,7 +3701,11 @@ def _provider_can_serve(provider, estimated_tokens, table=None, env=None):
         return True
     if est <= 0:
         return True
-    return est <= ceiling
+    try:
+        reserved = 0 if isinstance(reserved_output_tokens, bool) else int(reserved_output_tokens or 0)
+    except (TypeError, ValueError):
+        reserved = 0
+    return (est + max(0, reserved)) <= ceiling
 
 
 def _v2_structured_call(prompt, schema, schema_name, debug_calls):
