@@ -134,6 +134,8 @@ jobs:
           run_check "provider capability gate" python tests/test_provider_capability_gate.py
           run_check "evidence json boundary" env -u GROQ_API_KEY python tests/test_quality_evidence.py
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py
+          run_check "lineage survives repair" env -u GROQ_API_KEY python tests/test_asset_lineage_after_repair.py
+          run_check "visual intent load-bearing" env -u GROQ_API_KEY python tests/test_visual_intent_load_bearing.py
           run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
           run_check "quality-stack preflight" env -u GROQ_API_KEY python quality_stack_cli.py --preflight
 
@@ -205,9 +207,11 @@ jobs:
           python quality_downstream_factory_proof.py --out artifacts/downstream_factory_proof
           test -s artifacts/downstream_factory_proof/out/final.mp4
           test -s artifacts/downstream_factory_proof/out/repaired.mp4
+          test -s artifacts/downstream_factory_proof/out/repaired_asset_lineage.json
           python - <<'PY'
-          import json
-          p=json.load(open('artifacts/downstream_factory_proof/proof_report.json'))
+          import json, subprocess
+          root='artifacts/downstream_factory_proof/'
+          p=json.load(open(root+'proof_report.json'))
           assert p['provider_calls_made'] == 0
           assert p['network_calls_made'] == 0
           assert p['audio_mechanical_pass'] is True
@@ -215,6 +219,29 @@ jobs:
           assert p['all_rendered_scenes_attributable'] is True
           assert p['repair_unaffected_scenes_preserved'] is True
           assert p['repair_re_qa_audio_pass'] is True
+          # Provenance must describe the REPAIRED artifact, not the pre-repair one.
+          assert p['repaired_lineage_scene_count'] == p['manifest_scene_count']
+          assert p['repaired_lineage_replaced_scene_ids'] == sorted(p['repair_target_scene_ids'])
+          assert p['repaired_lineage_all_attributable'] is True
+
+          lin=json.load(open(root+'out/repaired_asset_lineage.json'))
+          assert lin['applies_to_video'] == p['repaired_mp4']
+          assert lin['repair_of_video'] == p['actual_final_mp4']
+          swapped={r['scene_id'] for r in lin['scenes'] if r['repair_replaced']}
+          assert swapped == set(p['repair_target_scene_ids']), swapped
+          for r in lin['scenes']:
+              if r['repair_replaced']:
+                  assert r['replaced_output_file'] and r['output_file'] != r['replaced_output_file']
+
+          # Delivery encode: assert the measured artifact, not the intent.
+          for name in ('final.mp4','repaired.mp4'):
+              out=subprocess.run(['ffprobe','-v','error','-select_streams','a',
+                                  '-show_entries','stream=sample_rate,codec_name',
+                                  '-of','json',root+'out/'+name],
+                                 capture_output=True,text=True,check=True).stdout
+              st=json.loads(out)['streams'][0]
+              assert st['codec_name']=='aac', (name, st)
+              assert int(st['sample_rate'])==48000, (name, st)
           print(json.dumps(p, indent=2, sort_keys=True))
           PY
           ffprobe -v error -show_entries format=duration,size -of json artifacts/downstream_factory_proof/out/final.mp4

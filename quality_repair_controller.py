@@ -149,6 +149,12 @@ def execute_replacements(
         "targeted_scene_ids": sorted(target_ids),
         "unaffected_scene_preservation": preservation,
         "targeted_scene_changed": changed,
+        # The exact per-scene files the repaired video was assembled from.
+        # Downstream provenance has to be rebuilt against these: lineage written
+        # before the repair names the ORIGINAL scene files, so publishing the
+        # repaired artifact with that record would attribute it to assets it
+        # does not contain.
+        "repaired_scene_files": dict(new_paths),
         "output_video": str(out_video),
         "output_sha256": sha256(out_video),
         "provider_calls_made": 0,

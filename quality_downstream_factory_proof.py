@@ -325,6 +325,27 @@ def proof(out_root: str) -> dict[str, Any]:
         if repair_evidence.get("re_qa", {}).get("audio_mechanical_pass") is not True:
             raise RuntimeError("repaired assembly failed local audio re-QA")
 
+        # Provenance has to follow the repair. final_asset_lineage.json names the
+        # ORIGINAL scene files; the repaired artifact contains different ones, so
+        # shipping the repaired video against that record would attribute it to
+        # assets it no longer holds. Rebuild lineage against the files the repair
+        # actually assembled, with the swap named rather than implied.
+        assembled = repair_evidence["repaired_scene_files"]
+        repaired_lineage = QAL.write_repaired_lineage(
+            lineage,
+            {sid: assembled[sid] for sid in target_ids},
+            out / "repaired_asset_lineage.json",
+            repaired_video=repaired_video,
+            base_video=final,
+        )
+        for label, payload in (("final", lineage), ("repaired", repaired_lineage)):
+            phantom = QAL.phantom_assets(payload)
+            if phantom:
+                raise RuntimeError(
+                    f"{label} lineage attributes scene(s) {list(phantom)} to files "
+                    "that do not exist"
+                )
+
         result = {
             "schema": "content-render-downstream-factory-proof-v1",
             # measured, not asserted -- see the interception above
@@ -349,6 +370,10 @@ def proof(out_root: str) -> dict[str, Any]:
             "repair_re_qa_audio_pass": repair_evidence["re_qa"]["audio_mechanical_pass"],
             "repaired_mp4": str(repaired_video),
             "repaired_bytes": repaired_video.stat().st_size,
+            "repaired_lineage_scene_count": repaired_lineage["scene_count"],
+            "repaired_lineage_replaced_scene_ids": repaired_lineage["repaired_scene_ids"],
+            "repaired_lineage_all_attributable": repaired_lineage["all_rendered_scenes_attributable"],
+            "lineage_phantom_assets": 0,
         }
         QE.write_json(root / "proof_report.json", result, sort_keys=True)
         return result
