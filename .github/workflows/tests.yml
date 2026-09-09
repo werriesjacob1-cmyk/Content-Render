@@ -1,8 +1,8 @@
 name: tests
 
-# Gate every PR on the legacy zero-quota suite plus focused Writer V2.1
-# diagnostics and the additive production-quality stack. No suite makes
-# network calls; provider-aware quality-stack tests run with GROQ_API_KEY unset.
+# Gate every PR on the legacy zero-quota suite, Writer V2.1 diagnostics, and the
+# additive quality/manufacturing stack. The factory-proof job renders a real MP4
+# using only local FFmpeg/synthetic fixture media: zero provider/network calls.
 on:
   pull_request:
   push:
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,38 +27,35 @@ jobs:
       - name: Prove checkout identity and required quality paths
         run: |
           echo "checked_out_sha=$(git rev-parse HEAD)"
-          test -f writer_v21_visual_preflight.py
-          test -f tests/test_writer_v21_visual_feasibility.py
-          test -f tests/test_writer_v21_runtime_contract.py
-          test -f tests/test_writer_replay.py
-          test -f writer_replay.py
-          test -f wr21_takeover_bakeoff.py
-          test -f wr21_run.py
-          test -f writer_v21_quality_bakeoff.py
-          test -f writer_v21_factual_audit.py
-          test -f writer_v21_provider_guardrail.py
-          test -f wr21_quality_bakeoff.py
-          test -f wr21_quality_preregister.py
-          test -f wr21_quality_generate.py
-          test -f tests/test_writer_v21_quality_bakeoff.py
-          test -f tests/test_writer_v21_quality_bakeoff_integrity.py
-          test -f tests/test_writer_v21_factual_audit.py
-          test -f tests/test_writer_v21_provider_guardrail.py
-          test -f publish_publer.py
-          test -f tests/test_publish_kill_switch.py
           for f in \
+            writer_v21_visual_preflight.py tests/test_writer_v21_visual_feasibility.py \
+            tests/test_writer_v21_runtime_contract.py tests/test_writer_replay.py writer_replay.py \
+            wr21_takeover_bakeoff.py wr21_run.py writer_v21_quality_bakeoff.py \
+            writer_v21_factual_audit.py writer_v21_provider_guardrail.py \
+            wr21_quality_bakeoff.py wr21_quality_preregister.py wr21_quality_generate.py \
+            tests/test_writer_v21_quality_bakeoff.py tests/test_writer_v21_quality_bakeoff_integrity.py \
+            tests/test_writer_v21_factual_audit.py tests/test_writer_v21_provider_guardrail.py \
+            publish_publer.py tests/test_publish_kill_switch.py \
+            quality_learning_ledger.py quality_learning_capture.py quality_story_selector.py \
+            quality_visual_bible.py quality_asset_lineage.py quality_repair_controller.py \
+            quality_production_generate.py quality_queue_contract.py quality_downstream_factory_proof.py \
+            tests/test_quality_learning_ledger.py tests/test_quality_learning_capture.py \
+            tests/test_quality_story_selector.py tests/test_quality_visual_bible.py \
+            tests/test_quality_asset_lineage.py tests/test_quality_repair_controller.py \
+            tests/test_quality_queue_contract.py tests/test_quality_production_generate.py \
+            tests/test_production_transition_contracts.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
             quality_render_bridge.py quality_science_motion.py quality_science_render.py \
             quality_postrender_review.py quality_audio_qa.py quality_certification_generate.py \
             quality_certification_retry.py quality_writer_provider_resilience.py \
-            quality_writer_evidence_seed.py \
-            research_grounding.py review_readiness.py science_motion.py scientific_media.py \
-            sound_brain.py still_model_bakeoff.py story_packet.py writer_story_bridge.py \
-            video_model_bakeoff.py video_repair_lab.py vision_gateway.py visual_director.py \
-            visual_torture_corpus.py voice_bakeoff.py \
-            .github/workflows/quality_certification_render.yml; do
+            quality_writer_evidence_seed.py research_grounding.py review_readiness.py \
+            science_motion.py scientific_media.py sound_brain.py still_model_bakeoff.py \
+            story_packet.py writer_story_bridge.py video_model_bakeoff.py video_repair_lab.py \
+            vision_gateway.py visual_director.py visual_torture_corpus.py voice_bakeoff.py \
+            .github/workflows/quality_certification_render.yml .github/workflows/render.yml \
+            .github/workflows/buffer.yml; do
             test -f "$f"
           done
           test ! -f writer_v21_adapter.py
@@ -102,6 +99,16 @@ jobs:
           run_check "sealed quality evidence" python tests/test_writer_v21_quality_bakeoff_integrity.py
           run_check "publishing kill switch" env -u AUTO_PUBLISH_ENABLED python tests/test_publish_kill_switch.py
 
+          run_check "learning ledger" env -u GROQ_API_KEY python tests/test_quality_learning_ledger.py
+          run_check "learning capture" env -u GROQ_API_KEY python tests/test_quality_learning_capture.py
+          run_check "topic-treatment writability" env -u GROQ_API_KEY python tests/test_quality_story_selector.py
+          run_check "visual bible" env -u GROQ_API_KEY python tests/test_quality_visual_bible.py
+          run_check "asset lineage" env -u GROQ_API_KEY python tests/test_quality_asset_lineage.py
+          run_check "bounded repair controller" env -u GROQ_API_KEY python tests/test_quality_repair_controller.py
+          run_check "queue cutover contract" env -u GROQ_API_KEY python tests/test_quality_queue_contract.py
+          run_check "unattended provider guard" env -u GROQ_API_KEY python tests/test_quality_production_generate.py
+          run_check "production transition workflows" env -u GROQ_API_KEY python tests/test_production_transition_contracts.py
+
           run_check "quality stack" env -u GROQ_API_KEY python tests/test_quality_stack.py
           run_check "story packet" env -u GROQ_API_KEY python tests/test_story_packet.py
           run_check "writer-story evidence bridge" env -u GROQ_API_KEY python tests/test_writer_story_bridge.py
@@ -124,20 +131,91 @@ jobs:
           run_check "quality-stack status" env -u GROQ_API_KEY python quality_stack_cli.py --status-only
           run_check "quality-stack preflight" env -u GROQ_API_KEY python quality_stack_cli.py --preflight
 
-          run_check "live runner + quality-stack syntax preflight" python -m py_compile \
+          run_check "syntax preflight" python -m py_compile \
             wr21_takeover_bakeoff.py wr21_run.py writer_v21_visual_preflight.py \
             writer_v21_quality_bakeoff.py writer_v21_factual_audit.py \
             writer_v21_provider_guardrail.py writer_v21_orchestrator.py writer_replay.py \
             wr21_quality_bakeoff.py wr21_quality_preregister.py wr21_quality_generate.py publish_publer.py \
-            asset_gateway.py capability_preflight.py final_video_qa.py \
-            generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
-            quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
-            quality_render_bridge.py quality_science_motion.py quality_science_render.py \
-            quality_postrender_review.py quality_audio_qa.py quality_certification_generate.py \
-            quality_certification_retry.py quality_writer_provider_resilience.py \
-            quality_writer_evidence_seed.py \
+            quality_learning_ledger.py quality_learning_capture.py quality_story_selector.py \
+            quality_visual_bible.py quality_asset_lineage.py quality_repair_controller.py \
+            quality_production_generate.py quality_queue_contract.py quality_downstream_factory_proof.py \
+            asset_gateway.py capability_preflight.py final_video_qa.py generated_media_controller.py \
+            image_to_video_bakeoff.py molecular_media.py quality_runtime.py quality_session.py \
+            quality_stack.py quality_stack_cli.py quality_render_bridge.py quality_science_motion.py \
+            quality_science_render.py quality_postrender_review.py quality_audio_qa.py \
+            quality_certification_generate.py quality_certification_retry.py \
+            quality_writer_provider_resilience.py quality_writer_evidence_seed.py \
             research_grounding.py review_readiness.py science_motion.py scientific_media.py \
             sound_brain.py still_model_bakeoff.py story_packet.py writer_story_bridge.py \
             video_model_bakeoff.py video_repair_lab.py vision_gateway.py visual_director.py \
             visual_torture_corpus.py voice_bakeoff.py
           exit "$failed"
+
+  factory-proof:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Ensure local media prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          need_apt=0
+          command -v ffmpeg >/dev/null 2>&1 || need_apt=1
+          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
+          case "$font_family" in *DejaVu*) ;; *) need_apt=1 ;; esac
+          if [ "$need_apt" -eq 1 ]; then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+          fi
+          ffmpeg -version >/dev/null
+      - name: Install render dependencies
+        run: pip install -r requirements.txt
+      - name: Render actual zero-provider downstream proof
+        env:
+          GROQ_API_KEY: ""
+          GEMINI_API_KEY: ""
+          OPENROUTER_API_KEY: ""
+          CEREBRAS_API_KEY: ""
+          TOGETHER_API_KEY: ""
+          FIREWORKS_API_KEY: ""
+          MISTRAL_API_KEY: ""
+          PEXELS_API_KEY: ""
+          ELEVENLABS_API_KEY: ""
+          FAL_KEY: ""
+          FAL_API_KEY: ""
+          POLLINATIONS_API_KEY: ""
+          MUSIC_URL: ""
+          SFX_CUTS: "0"
+          MUSIC_DUCK: "1"
+        run: |
+          set -euo pipefail
+          python quality_downstream_factory_proof.py --out artifacts/downstream_factory_proof
+          test -s artifacts/downstream_factory_proof/out/final.mp4
+          test -s artifacts/downstream_factory_proof/out/repaired.mp4
+          python - <<'PY'
+          import json
+          p=json.load(open('artifacts/downstream_factory_proof/proof_report.json'))
+          assert p['provider_calls_made'] == 0
+          assert p['network_calls_made'] == 0
+          assert p['audio_mechanical_pass'] is True
+          assert p['captions_ass_present'] is True
+          assert p['all_rendered_scenes_attributable'] is True
+          assert p['repair_unaffected_scenes_preserved'] is True
+          assert p['repair_re_qa_audio_pass'] is True
+          print(json.dumps(p, indent=2, sort_keys=True))
+          PY
+          ffprobe -v error -show_entries format=duration,size -of json artifacts/downstream_factory_proof/out/final.mp4
+      - name: Upload zero-provider factory proof evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: downstream-factory-proof-${{ github.sha }}
+          path: artifacts/downstream_factory_proof
+          if-no-files-found: error
+          retention-days: 14
