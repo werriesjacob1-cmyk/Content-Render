@@ -2,6 +2,14 @@
 """Zero-provider unit checks for the production-realism proof harness."""
 from __future__ import annotations
 
+import os
+import sys
+
+# This file is executed directly by CI (`python tests/...py`), so Python's
+# default sys.path starts at tests/.  Add the repository root explicitly rather
+# than relying on a workflow-only PYTHONPATH side effect.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import quality_production_realism_proof as P
 
 
