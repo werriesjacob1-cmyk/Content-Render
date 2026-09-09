@@ -84,16 +84,46 @@ rewritten narration will be judged against.
 
 ---
 
+## Finding 4 — measured provider waste (S9)
+
+Counted from the run's own job log (102320299424), not estimated:
+
+- **9 paid sleeps** on Groq `gpt-oss-120b` 429s, totalling **99.51 s**
+- 10 `failed HTTP 429` fall-throughs
+- retry-after values **5.80–14.47 s** (median 10.48)
+- writer stage wall clock **164 s** (02:57:40 → 03:00:24)
+- **61% of the writer stage was spent asleep on one rate-limited model**
+
+Excluding sleeps, ~65 s of work spread over ~18 calls ≈ 3.6 s median spacing —
+well inside every observed retry-after. So after the first 429 records a
+cooldown, subsequent 120b attempts land inside a live cooldown and become
+instant skips. The first bounded in-loop retry is deliberately preserved, so
+the eliminable portion is the other 8 sleeps: **~89 s of ~99.5 s**, roughly
+**55% of writer wall clock**. Exact saving depends on inter-call spacing, which
+the log only gives in aggregate — stated as an estimate, not a measurement.
+
 ## Workstream status
 
-- **A — replay new corpus**: DONE. `flagship_06_fed4b0f.json` imported +
-  indexed; matrix above.
-- **B — repair policy**: root cause confirmed; implementation next.
-- **C — repair anti-drift contract**: pending.
-- **D — provider session health**: pending.
-- **E — champion/challenger**: pending.
-- **F — adversarial tests**: pending.
-- **G — CI**: pending.
+- **A — replay new corpus**: DONE (`flagship_06_fed4b0f.json` + INDEX; matrix
+  above; runs 02-05 baseline re-pinned to its own fixtures).
+- **B — repair policy**: DONE. `must_also_satisfy` rides with the primary
+  target at every tier; `must_preserve` protects already-named key terms.
+- **C — anti-drift contract**: DONE. `narration_deterministic_contract()` from
+  validate()'s own constants; HOOK_WORD_LO/HI, KEY_TERMS_MIN_NAMED and
+  FORBIDDEN_CONNECTORS extracted so prompt and validator cannot diverge.
+- **D — provider session health**: DONE. Per-(provider,model) cooldown from the
+  provider's own retry delay, clamped, checked in `_walk` and in the
+  certification strict loop, cleared on success, evidence in a separate channel.
+- **E — champion/challenger**: structural evidence covered by the F suite
+  (contract reaches prompt, factual target preserved, gates unchanged). No
+  counterfactual acceptance claimed — offline replay cannot know what a model
+  WOULD have written.
+- **F — adversarial tests**: DONE. 15 checks in
+  `tests/test_repair_policy_and_provider_health.py`, all ten named classes.
+- **G — CI**: exact-head run pending on the PR.
+
+## Local proof
+57 suites green; 1598 zero-provider checks; new suite registered in tests.yml.
 
 ## Exact next action
 Implement `must_also_satisfy` in `writer_v2_repair.classify_repair()` (populated
