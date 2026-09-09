@@ -16,6 +16,42 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
+Downstream machinery is now proven on REAL ffmpeg output, and the proof
+immediately earned its keep by exposing a defect every render had shipped.
+
+- **Every render shipped 96 kHz AAC.** `loudnorm` resamples internally to
+  192 kHz and never restores the rate; with no `-ar` the encoder falls back to
+  the nearest rate it supports. The audio gate had been *recording*
+  `sample_rate: 96000` in its own report and passing it for months, because it
+  only had a FLOOR. **This was found by downloading the CI artifact and probing
+  it — not by reading a green tick.** Do that on every proof artifact.
+- Pinning 48 kHz alone made it WORSE (+0.07 dBTP, breaching the gate's own
+  −0.5 ceiling): at the correct rate 96 kbit/s was bitrate-starved and the
+  codec overshot the limiter by ~1.6 dB; the 96 kHz encode had masked that by
+  spending the bits where nobody can hear them. 128 kbit/s lands at −1.49 dB.
+  **Rate and bitrate are ONE decision** — `DELIVERY_SAMPLE_RATE` and
+  `DELIVERY_AUDIO_BITRATE` live in `quality_audio_qa` and `main.py` imports
+  both. Same anti-drift rule as the Writer length contract.
+- **Lineage did not survive repair.** `final_asset_lineage.json` is written
+  before the bounded repair and still named the ORIGINAL scene files after
+  those scenes were replaced, while claiming full attributability — provenance
+  that is confidently wrong. `quality_asset_lineage.repaired_lineage()` now
+  rebuilds it from the files the repair actually assembled.
+- **The visual bible IS load-bearing — but only in `quality_science_render`.**
+  Proven by counterfactual (narration byte-identical, one bible field changed →
+  a different asset WINS ranking). The factory proof only WRITES the bible; it
+  renders fixed scene files and has no asset selection to steer. Do not read
+  its `visual_bible_scene_count` as evidence the bible was obeyed.
+- **Actions storage: the repo already enforces 7-day artifact retention** —
+  measured from real `expires_at` values, every render artifact older than a
+  week is already expired. An earlier commit in this branch claimed a 90-day
+  default; that was wrong. The 90%-of-0.5 GB alert came from ~35 MB × 2
+  renders/day inside a 7-day window, which the TikTok-only upload cuts ~80%.
+  There is no historical hoard to delete.
+- `engineering/CONTENT_RENDER_MASTER_TODO.md` now exists (it did not before,
+  in either repo) with per-item status and the storage recommendation.
+
 ## Session 2026-09-08/09 — THE WRITER ROOT CAUSE (read this before touching the Writer)
 Flagship certification attempts #1-#5 all failed at the Writer stage. **The cause was
 not model weakness and not the quality gates: the Writer V2.1 prompt never stated a
