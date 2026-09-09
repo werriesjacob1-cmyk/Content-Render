@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Install the Ubuntu media packages a render needs, and refuse to be broken by an
-# apt repository this project does not use.
+# apt repository this project does not install from.
 #
-# THE INCIDENT THIS EXISTS FOR (2026-09-09, main @ 024b0b8)
+# THE INCIDENT THIS EXISTS FOR (2026-09-09, main @ 024b0b8, run 34383772981)
 #
 # The factory proof died before rendering a single frame:
 #
@@ -14,26 +14,38 @@
 # Read the second line: apt had ALREADY ignored the bad index and carried on
 # with the Ubuntu ones. Nothing we install comes from Google Chrome. The job
 # failed purely because `apt-get update` exits non-zero when ANY configured
-# source fails, and `set -e` did the rest. Re-running on fresh runners in
-# different regions did not clear it.
+# source fails, and `set -e` did the rest. Re-running on fresh runners in three
+# Azure regions did not clear it, so it was not a transient worth waiting out.
 #
-# So a third-party repository that ships on GitHub's runner image, and that we
-# never install from, had a veto over every render, every proof, and the private
-# flagship certification -- all of which run this same block.
+# The runner image is ubuntu-24.04, which does not ship ffmpeg, so that apt path
+# is on the critical path of EVERY render -- including the private flagship
+# certification. A third-party repository on GitHub's runner image had a veto
+# over the one run this project most needs to succeed.
 #
-# THE FIX, AND ITS LIMIT
+# WHY THE EXIT CODE IS TOLERATED AND THE INSTALL IS NOT
 #
-# The update below reads ONLY Ubuntu's own sources, via apt options pointed at a
-# temporary directory. The runner's real apt configuration is never modified, so
-# there is nothing to restore and nothing to leak into later steps.
+# `apt-get update`'s exit code cannot distinguish "a repository we never use is
+# serving bad metadata" from "Ubuntu's index is broken". So it is not used as
+# the verdict. The verdict is whether the packages we actually need install and
+# run:
 #
-# This removes an irrelevant failure path. It does NOT make missing packages
-# survivable: if no Ubuntu source can be found, or the update fails, or the
-# install fails, or the tools are not runnable afterwards, this script exits
-# non-zero. Fail closed, loudly, on anything that actually matters.
+#   - if Ubuntu's index really were broken, `apt-get install` below fails and
+#     this script exits non-zero;
+#   - if ffmpeg, ffprobe or DejaVu are not runnable afterwards, this script
+#     exits non-zero.
+#
+# So an irrelevant repository can no longer stop a render, and a missing encoder
+# still stops it dead. That distinction is the whole point: `apt-get update ||
+# true` on its own would have cleared the red tick and shipped a render with no
+# encoder.
+#
+# An earlier version of this script tried to be cleverer -- it filtered
+# /etc/apt/sources.list.d down to an allowlist of Ubuntu mirror hostnames and
+# updated only those. It failed on the very first CI run, because the runner's
+# own ubuntu.sources did not match the allowlist and the script correctly
+# refused to continue. Guessing at mirror hostnames is knowledge that rots.
+# Proving the packages installed is knowledge that does not.
 set -euo pipefail
-
-UBUNTU_HOSTS='archive\.ubuntu\.com|security\.ubuntu\.com|ports\.ubuntu\.com|azure\.archive\.ubuntu\.com|[a-z0-9.-]*\.archive\.ubuntu\.com'
 
 log() { printf '[prereq] %s\n' "$*"; }
 
@@ -46,63 +58,36 @@ media_present() {
   esac
 }
 
-collect_ubuntu_sources() {
-  # Copy only source definitions that point at Ubuntu's own archives. Both the
-  # legacy one-line .list format and 24.04's deb822 .sources format are handled,
-  # because the runner image uses .sources for Ubuntu and .list for the
-  # third-party repositories.
-  local dest="$1" found=0 f
-  for f in /etc/apt/sources.list /etc/apt/sources.list.d/*; do
-    [ -f "$f" ] || continue
-    case "$f" in *.list|*.sources|/etc/apt/sources.list) ;; *) continue ;; esac
-    if grep -qsE "$UBUNTU_HOSTS" "$f"; then
-      cp "$f" "$dest/$(basename "$f")"
-      found=$((found + 1))
-      log "using Ubuntu source $(basename "$f")"
-    else
-      log "ignoring non-Ubuntu source $(basename "$f")"
-    fi
-  done
-  [ "$found" -gt 0 ] || return 1
-}
-
 if media_present; then
   log "ffmpeg, ffprobe and DejaVu already present; no apt needed"
 else
-  src_dir="$(mktemp -d)"
-  empty_list="$(mktemp)"
-  trap 'rm -rf "$src_dir" "$empty_list"' EXIT
-
-  if ! collect_ubuntu_sources "$src_dir"; then
-    echo "[prereq] FATAL: no Ubuntu apt source found on this runner." >&2
-    echo "[prereq] Refusing to guess -- a render must not proceed without ffmpeg." >&2
-    exit 1
-  fi
-
-  # A bounded retry for a genuinely transient Ubuntu mirror hiccup. This is not
-  # a way to tolerate a broken index: after the last attempt the failure stands.
-  updated=0
+  # Bounded retries absorb a genuinely transient mirror hiccup. A persistent
+  # failure is NOT swallowed here -- it is simply not the verdict; the install
+  # below is.
   for attempt in 1 2 3; do
-    if sudo apt-get update -qq \
-        -o Dir::Etc::sourcelist="$empty_list" \
-        -o Dir::Etc::sourceparts="$src_dir"; then
-      updated=1
+    if sudo apt-get update -qq; then
+      log "apt-get update clean (attempt ${attempt})"
       break
     fi
-    log "apt-get update attempt ${attempt} failed against Ubuntu sources; retrying"
-    sleep $((attempt * 5))
+    log "apt-get update reported errors on attempt ${attempt}"
+    if [ "$attempt" -eq 3 ]; then
+      log "continuing anyway: update's exit code cannot tell an unused"
+      log "third-party repository from a broken Ubuntu index, so the install"
+      log "below decides. It fails closed if the packages are unavailable."
+    else
+      sleep $((attempt * 5))
+    fi
   done
-  if [ "$updated" -ne 1 ]; then
-    echo "[prereq] FATAL: apt-get update failed against Ubuntu's own sources." >&2
-    exit 1
-  fi
 
+  # NOT tolerated. If the packages cannot be resolved or fetched -- including
+  # the case where Ubuntu's own index is the broken one -- this fails the step.
   sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y \
     --no-install-recommends ffmpeg fonts-dejavu-core
 fi
 
-# Verify what was actually installed, not what was requested. Every consumer of
-# this action needs all three, so all three are checked everywhere.
+# Verify what is actually on the machine, not what was requested. Every consumer
+# of this action needs all three, so all three are checked everywhere -- before
+# this was shared, each workflow checked a different subset.
 ffmpeg -version >/dev/null
 ffprobe -version >/dev/null
 font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"

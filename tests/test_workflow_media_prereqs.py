@@ -66,6 +66,18 @@ def _script() -> str:
     return (ACTION_DIR / "ensure_media_prereqs.sh").read_text(encoding="utf-8")
 
 
+def _code() -> str:
+    """The script's executable lines only.
+
+    The comment block quotes the failing apt commands verbatim -- deliberately,
+    since the next reader needs the incident in front of them -- so a naive
+    substring check counts prose as code. A test in this repo has matched its
+    own explanatory comment before; that is why this helper exists.
+    """
+    return "\n".join(ln for ln in _script().splitlines()
+                     if not ln.lstrip().startswith("#"))
+
+
 def test_the_shared_action_exists_and_is_wired_in():
     check((ACTION_DIR / "action.yml").is_file(),
           "the shared media-prerequisite action exists")
@@ -88,33 +100,50 @@ def test_no_workflow_runs_a_bare_apt_update_again():
           f"no workflow runs apt-get update directly any more (offenders: {offenders})")
 
 
-def test_the_update_reads_only_ubuntu_sources():
-    """The third-party repositories are excluded, not merely tolerated."""
-    s = _script()
-    check("Dir::Etc::sourceparts" in s and "Dir::Etc::sourcelist" in s,
-          "the update is pointed at a filtered source directory")
-    check("archive.ubuntu.com" in s.replace("\\", ""),
-          "which is built from Ubuntu's own archives")
-    check("/etc/apt/sources.list.d" in s,
-          "read from the runner's real source directory rather than invented")
-    # The runner image is never mutated: a step that moved files aside would
-    # leave the job's later steps in whatever state a mid-step failure left.
-    check(not re.search(r"\bmv\b.*sources\.list", s) and "rm -f /etc/apt" not in s,
-          "and the runner's apt configuration is never modified, so there is "
-          "nothing to restore if this step dies partway")
+def test_the_update_exit_code_is_not_the_verdict():
+    """An unused repository failing must not decide whether a render happens.
+
+    This assertion is about BEHAVIOUR, not mechanism, and that is a correction.
+    The first version of this test asserted the implementation -- that the
+    script filtered apt sources down to an allowlist of Ubuntu mirror hostnames.
+    It passed locally and the action failed on its first CI run, because the
+    runner's own ubuntu.sources did not match the allowlist. A test that pins
+    HOW something is done cannot notice that the how is wrong.
+    """
+    s = _code()
+    # Invocations, not mentions: the script also LOGS about apt-get update, and
+    # counting those would make this assertion meaningless.
+    updates = [ln for ln in s.splitlines() if "sudo apt-get update" in ln]
+    check(len(updates) == 1, f"there is exactly one update invocation ({len(updates)})")
+    check("if sudo apt-get update" in s,
+          "its exit code is examined rather than allowed to abort the step")
+    # No hostname knowledge anywhere: mirror names are exactly the kind of fact
+    # that rots, and did.
+    check("archive.ubuntu.com" not in s and "sources.list.d" not in s,
+          "the executable script encodes no guess about apt mirror hostnames "
+          "or source-file layout")
+    check("dl.google.com" in _script(),
+          "the incident it defends against is named where the next reader "
+          "will see it, rather than the behaviour looking arbitrary")
 
 
 def test_the_action_still_fails_closed():
     """The counterweight: this must not become 'ignore apt errors'."""
-    s = _script()
+    s = _code()
     check("set -euo pipefail" in s, "the script still runs under set -e")
     # An install that fails must not be swallowed.
-    install = [ln for ln in s.splitlines() if "apt-get install" in ln]
+    install = [ln for ln in s.splitlines() if "sudo env" in ln and "apt-get install" in ln]
     check(len(install) == 1, f"there is exactly one install invocation ({len(install)})")
     check("|| true" not in install[0] and "||" not in install[0],
           "and its failure is not swallowed")
-    check(s.count("exit 1") >= 3,
-          "missing Ubuntu sources, a failed update and a missing font each abort")
+    check("exit 1" in s, "a missing caption font aborts the step")
+    # Narrowly about apt. `fc-match ... || true` is legitimate elsewhere: it
+    # captures a font name whose ABSENCE the case statement then rejects, which
+    # is the opposite of swallowing a failure.
+    apt_lines = [ln for ln in s.splitlines() if "apt-get" in ln and "log " not in ln]
+    swallowed = [ln.strip() for ln in apt_lines if "|| true" in ln or "|| :" in ln]
+    check(not swallowed,
+          f"no apt command has its failure swallowed outright ({swallowed})")
     for tool in ("ffmpeg -version", "ffprobe -version"):
         check(tool in s, f"{tool} is verified after install, not assumed")
     check("DejaVu" in s and "fc-match" in s,
@@ -122,18 +151,22 @@ def test_the_action_still_fails_closed():
 
 
 def test_the_retry_is_bounded_and_not_a_way_to_ignore_failure():
-    s = _script()
+    s = _code()
     check("for attempt in 1 2 3" in s, "the update retry is bounded at three attempts")
-    body = s.split("for attempt in 1 2 3", 1)[1].split("fi", 1)[0]
-    check("updated=1" in body, "a success is recorded rather than assumed")
-    check('if [ "$updated" -ne 1 ]' in s,
-          "and exhausting the retries is a hard failure, not a shrug")
+    # Exhausting the retries does not abort, deliberately -- but the install
+    # immediately after does, so a genuinely broken Ubuntu index still stops the
+    # render. That is the line this design walks, so it is pinned here.
+    install_at = s.index("apt-get install")
+    retry_at = s.index("for attempt in 1 2 3")
+    check(retry_at < install_at,
+          "the install runs after the retries and decides the outcome")
+    check("sleep" in s, "and the attempts are spaced rather than hammering")
 
 
 if __name__ == "__main__":
     test_the_shared_action_exists_and_is_wired_in()
     test_no_workflow_runs_a_bare_apt_update_again()
-    test_the_update_reads_only_ubuntu_sources()
+    test_the_update_exit_code_is_not_the_verdict()
     test_the_action_still_fails_closed()
     test_the_retry_is_bounded_and_not_a_way_to_ignore_failure()
     print("workflow media prerequisite tests: PASS")
