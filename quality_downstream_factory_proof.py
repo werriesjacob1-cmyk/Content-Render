@@ -236,10 +236,17 @@ def proof(out_root: str) -> dict[str, Any]:
             cap_path = work / f"captioned_{tag}.mp4"
             dur = float(legacy.ffprobe_dur(str(body_path)))
             _make_captioned(body_path, ass_path, cap_path, dur)
-            return _mix_final(cap_path, dest, dur)
+            result = dict(_mix_final(cap_path, dest, dur))
+            # Surfaced so callers can record duration/caption evidence without
+            # reaching back into this function's locals.
+            result["duration_s"] = dur
+            result["ass_path"] = ass_path
+            return result
 
         final = out / "final.mp4"
         mix = _finish_assembly(scene_files, final)
+        body_duration = float(mix["duration_s"])
+        ass = Path(mix["ass_path"])
         if not final.is_file() or final.stat().st_size < 10000:
             raise RuntimeError("real downstream final.mp4 was not produced")
 
