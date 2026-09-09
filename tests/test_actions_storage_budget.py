@@ -39,9 +39,8 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import re
 import sys
-
-import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -65,19 +64,92 @@ def check(cond, label):
 
 
 def _upload_steps(path: Path):
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    for job in (doc.get("jobs") or {}).values():
-        for step in job.get("steps") or []:
-            uses = str(step.get("uses") or "")
-            if uses.startswith("actions/upload-artifact"):
-                w = step.get("with") or {}
-                paths = [p.strip() for p in str(w.get("path") or "").splitlines() if p.strip()]
-                yield {
-                    "name": str(w.get("name") or ""),
-                    "paths": paths,
-                    "retention": w.get("retention-days"),
-                    "step": str(step.get("name") or uses),
-                }
+    """Upload steps, parsed WITHOUT PyYAML.
+
+    The zero-quota job installs no dependencies -- that is the point of it -- so
+    this walks the step blocks by indentation instead. It is a narrow parser for
+    a shape this repo controls, not a general YAML reader, and it fails loudly
+    rather than silently returning nothing: see the guard in each test that a
+    minimum number of steps was found. (Written after the first version of this
+    file imported yaml, passed locally, and turned CI red.)
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    steps, cur = [], None
+    for i, raw in enumerate(lines):
+        m = re.match(r"^(\s*)- (?:name|uses):\s*(.*)$", raw)
+        if m:
+            if cur:
+                # Close the previous block HERE. Forgetting this let every block
+                # run to EOF, so each one "contained" every later step and the
+                # last retention-days in the file won every lookup.
+                cur["end"] = i
+                steps.append(cur)
+            cur = {"indent": len(m.group(1)), "start": i, "end": len(lines)}
+            continue
+        if cur is not None:
+            stripped = raw.strip()
+            indent = len(raw) - len(raw.lstrip())
+            if stripped and not stripped.startswith("#") and indent <= cur["indent"]:
+                cur["end"] = i
+                steps.append(cur)
+                cur = None
+    if cur:
+        steps.append(cur)
+
+    for st in steps:
+        block = lines[st["start"]:st["end"]]
+        text = "\n".join(block)
+        if "actions/upload-artifact" not in text:
+            continue
+        name = _scalar(block, "name:", skip_step_name=True)
+        head = block[0].split("#", 1)[0].strip()
+        step_label = head[len("- name:"):].strip() if head.startswith("- name:") else "upload-artifact"
+        retention = _scalar(block, "retention-days:")
+        yield {
+            "name": name or "",
+            "paths": _path_list(block),
+            "retention": int(retention) if retention and retention.isdigit() else None,
+            "step": step_label,
+        }
+
+
+def _scalar(block, key, skip_step_name=False):
+    """Last value for `key` in the block, ignoring comments.
+
+    `skip_step_name` skips the step's own `- name:` line so the artifact name
+    inside `with:` is what is returned.
+    """
+    found = None
+    for ln in block:
+        s = ln.split("#", 1)[0].rstrip()
+        stripped = s.strip()
+        if skip_step_name and stripped.startswith("- name:"):
+            continue
+        if stripped.startswith(key):
+            found = stripped[len(key):].strip()
+    return found
+
+
+def _path_list(block):
+    """The `path:` value, whether inline or a `|` block scalar."""
+    for i, ln in enumerate(block):
+        stripped = ln.split("#", 1)[0].strip()
+        if not stripped.startswith("path:"):
+            continue
+        inline = stripped[len("path:"):].strip()
+        if inline and inline != "|":
+            return [inline]
+        indent = len(ln) - len(ln.lstrip())
+        out = []
+        for nxt in block[i + 1:]:
+            body = nxt.split("#", 1)[0]
+            if not body.strip():
+                continue
+            if len(body) - len(body.lstrip()) <= indent:
+                break
+            out.append(body.strip())
+        return out
+    return []
 
 
 def _mentions_media(paths) -> bool:
@@ -87,6 +159,25 @@ def _mentions_media(paths) -> bool:
         if any(p.endswith(sfx) or p.endswith(f"*{sfx}") for sfx in MEDIA_SUFFIXES):
             return True
     return False
+
+
+def test_the_parser_actually_found_the_uploads():
+    """A hand-rolled parser that quietly returns nothing would pass every test.
+
+    This is the guard for that. It is not hypothetical: the first version of
+    this parser failed to close each step block, so every block ran to end of
+    file and the last retention-days in the workflow won every lookup.
+    """
+    for name in HEAVY_PROOFS:
+        ups = list(_upload_steps(WORKFLOWS / name))
+        check(len(ups) == 2,
+              f"{name}: exactly the evidence and media uploads were parsed "
+              f"({len(ups)} found)")
+        for up in ups:
+            check(up["name"] and up["paths"],
+                  f"{name}: '{up['step']}' parsed a name and at least one path")
+            check(up["step"] != "upload-artifact",
+                  f"{name}: the step's own name was parsed, so failures name it")
 
 
 def test_every_upload_declares_a_retention():
@@ -154,6 +245,7 @@ def test_every_heavy_proof_actually_splits():
 
 
 if __name__ == "__main__":
+    test_the_parser_actually_found_the_uploads()
     test_every_upload_declares_a_retention()
     test_rendered_video_is_short_lived()
     test_the_evidence_artifact_carries_no_video()
