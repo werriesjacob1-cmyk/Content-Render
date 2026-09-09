@@ -14,7 +14,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
 
 class VisualIntent(str, Enum):
@@ -207,3 +207,52 @@ def write_visual_bible(manifest: Mapping[str, Any], path: str | Path) -> dict[st
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     return payload
+
+
+def apply_visual_bible(manifest: Mapping[str, Any], bible: Mapping[str, Any]) -> dict[str, Any]:
+    """Return a visual-planning copy with bible constraints made load-bearing.
+
+    Spoken narration/source-claim IDs are untouched. Only visual-planner fields
+    are added. The returned copy can be passed to ``visual_director`` and
+    deterministic science-motion planning *before* any asset search.
+    """
+    by_id = {
+        str(row.get("scene_id")): row
+        for row in (bible.get("scenes") or [])
+        if isinstance(row, Mapping) and str(row.get("scene_id") or "")
+    }
+    out = dict(manifest)
+    directed: list[dict[str, Any]] = []
+    for idx, raw in enumerate(manifest.get("scenes") or [], 1):
+        if not isinstance(raw, Mapping):
+            continue
+        scene = dict(raw)
+        sid = str(scene.get("id") or scene.get("scene_id") or idx)
+        contract = by_id.get(sid)
+        if not contract:
+            raise ValueError(f"visual bible missing scene {sid}")
+        scene["scientific_subject"] = str(contract.get("subject") or "").strip()
+        scene["must_show"] = [str(x) for x in (contract.get("must_show") or []) if str(x).strip()]
+        scene["visual_intent"] = str(contract.get("intent") or "").strip()
+        scene["visual_subject_id"] = str(contract.get("subject_id") or "").strip()
+        scene["visual_source_family"] = str(contract.get("preferred_source_family") or "").strip()
+        scene["visual_continuity_with"] = [str(x) for x in (contract.get("continuity_with") or []) if str(x)]
+        avoid = [str(x) for x in (contract.get("avoid") or []) if str(x).strip()]
+        existing_forbidden = [str(x) for x in (scene.get("forbidden_generic_substitutions") or []) if str(x).strip()]
+        scene["forbidden_generic_substitutions"] = list(dict.fromkeys(existing_forbidden + avoid))
+        notes = [
+            f"visual_intent={scene['visual_intent']}",
+            f"camera={contract.get('preferred_camera_language') or ''}",
+            f"source_family={scene['visual_source_family']}",
+        ]
+        if scene["visual_continuity_with"]:
+            notes.append("reuse representation from scene(s) " + ",".join(scene["visual_continuity_with"]))
+        scene["visual_notes"] = "; ".join(x for x in notes if x and not x.endswith("="))
+        if scene["visual_intent"] in {
+            VisualIntent.PROCESS.value, VisualIntent.COMPARE.value, VisualIntent.ESTABLISH_SCALE.value
+        }:
+            scene["motion_required"] = True
+        directed.append(scene)
+    out["scenes"] = directed
+    out["_visual_bible_schema"] = str(bible.get("schema") or "")
+    return out
