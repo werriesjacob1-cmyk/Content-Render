@@ -207,24 +207,23 @@ jobs:
           LIST_NAME: ${{ vars.LIST_NAME }}
         run: python repackage.py out/final.mp4
 
-      - name: Upload all platform cuts
+      - name: Upload TikTok cut + review evidence
         uses: actions/upload-artifact@v4
         with:
           name: final-video-${{ github.run_number }}
+          # ONE video encode while TikTok is the single review surface.
+          # repackage.py still BUILDS every platform cut -- that is compute,
+          # not storage, and storage is what is scarce -- so scaling back up to
+          # all platforms later means re-listing them here, not touching the
+          # pipeline. This step used to upload SEVEN encodes of the same video
+          # with no retention-days at all, so it inherited the 90-day default:
+          # the largest single consumer of a 0.5 GB/month Actions storage plan.
+          #
+          # The json/png review evidence stays: it is KB-scale, and qa_report /
+          # proof_frame are how a render actually gets judged.
           path: |
             out/tiktok_reels_shorts.mp4
-            out/instagram_reels.mp4
-            out/youtube_shorts.mp4
-            out/facebook_reels.mp4
-            out/square.mp4
-            out/landscape.mp4
-            out/final.mp4
             out/cover.jpg
-          # Seven encodes of the same video per successful render. With no
-          # retention set this inherited the 90-day default, which is the
-          # largest consumer of a 0.5 GB/month Actions storage allowance.
-          # A week is long enough to download and review a render.
-          retention-days: 7
             out/post.json
             out/platforms.json
             out/platform_text.json
