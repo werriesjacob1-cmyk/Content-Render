@@ -59,12 +59,38 @@ jobs:
             --batch 25
           echo "--- bank size ---"
           python -c "import json;print(len(json.load(open('topic_bank.json'))['facts']),'facts')"
+      - name: Validate expanded bank before commit (zero quota)
+        env:
+          GROQ_API_KEY: x
+        run: |
+          set -euo pipefail
+          python tests/test_pipeline.py
       - name: Commit new facts
         run: |
           git config user.name "bank-bot"
           git config user.email "bot@users.noreply.github.com"
           git add topic_bank.json
           git commit -m "auto: expand topic bank toward 500 (WTF facts)" 2>/dev/null || echo "nothing to commit"
+          pushed=0
           for a in 1 2 3; do
-            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+            if git push; then
+              pushed=1
+              break
+            fi
+            echo "push retry $a"
+            # There is no fourth attempt. Do not mutate/revalidate after the
+            # final failed push and then accidentally let the step exit 0.
+            if [ "$a" -eq 3 ]; then
+              break
+            fi
+            git pull --rebase origin "$(git branch --show-current)"
+            # The rebase changes the exact tree we are about to publish. Re-run
+            # the same zero-quota integrity suite so a concurrent bank update
+            # cannot turn a previously-valid local commit into an unvalidated
+            # combined bank before the next push attempt.
+            GROQ_API_KEY=x python tests/test_pipeline.py
           done
+          if [ "$pushed" -ne 1 ]; then
+            echo "::error::topic-bank commit could not be pushed after 3 attempts"
+            exit 1
+          fi

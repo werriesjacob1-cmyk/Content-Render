@@ -76,6 +76,33 @@ def test_every_scheduled_provider_spending_lane_is_gated():
               f"{wf} still allows explicit manual dispatch")
 
 
+def test_expand_bank_validates_before_bot_commit_and_after_rebase():
+    """A GitHub-token bot push may not trigger a second push workflow. Validate
+    the generated bank before committing, and validate AGAIN if a failed push
+    rebases the commit onto a concurrently changed branch before retrying."""
+    y = text(".github/workflows/expand_bank.yml")
+    expand_i = y.index("python expand_bank.py")
+    first_validate_i = y.index("python tests/test_pipeline.py")
+    commit_i = y.index('git commit -m "auto: expand topic bank toward 500 (WTF facts)"')
+    rebase_i = y.index("git pull --rebase")
+    second_validate_i = y.index("python tests/test_pipeline.py", first_validate_i + 1)
+    check(expand_i < first_validate_i < commit_i,
+          "expanded bank is validated after generation and before the bot commit")
+    check(commit_i < rebase_i < second_validate_i,
+          "a push-retry rebase is revalidated before the next push attempt")
+    retry_block = y[rebase_i:second_validate_i]
+    check("|| true" not in retry_block,
+          "a failed/conflicted rebase cannot be swallowed and followed by an unsafe push retry")
+    check('pushed=0' in y and 'pushed=1' in y and 'if [ "$pushed" -ne 1 ]' in y,
+          "the workflow records whether any push actually succeeded")
+    check('if [ "$a" -eq 3 ]' in y,
+          "the final failed push does not perform a pointless rebase with no next attempt")
+    check("topic-bank commit could not be pushed after 3 attempts" in y and "exit 1" in y,
+          "three failed pushes make the workflow fail closed instead of reporting success")
+    check("Validate expanded bank before commit (zero quota)" in y,
+          "pre-commit bank validation is an explicit workflow step")
+
+
 def test_stamping_cannot_relabel_a_v21_manifest_as_legacy():
     """render.yml stamps the queue immediately before REQUIRING the legacy
     label, so an unstamped V2.1 manifest would otherwise be auto-blessed as
