@@ -206,10 +206,10 @@ merging stale branches.
 
 ## Known useful concepts not yet promoted
 
-- **PR #37:** topic/domain cleanup is mostly evolved into main, but its
-  `expand_bank.yml` pre-commit zero-quota validation step is not present on
-  current main. Extract that safeguard as a small future hardening change rather
-  than merging the stale PR.
+- **PR #37:** topic/domain cleanup is mostly evolved into main. Its one missing
+  safeguard — zero-quota validation after bank expansion and before the bot
+  commit — has been extracted onto current main as **draft PR #91**. Do not merge
+  stale #37; close it after #91 is independently green and explicitly merged.
 - **PR #42:** `scientific_media.py` exists on main, but the old direct
   `main.py` integration that let NASA SVS compete with Pexels and routed
   PubChem before generic still fallback is not currently present in the legacy
