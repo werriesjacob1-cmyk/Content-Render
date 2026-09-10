@@ -3,8 +3,9 @@
 
 Twelve committed August manifests across ten domains (animals, biology, body,
 chemistry, geology, light, materials, neurology, physics, space) are used as the
-false-positive control: they are real, human-approved, post-worthy output, and
-the repair must not touch a single one of their queries.
+false-positive control: they are real rendered/high-scoring historical outputs,
+not a claim of explicit human approval, and the repair must not gratuitously
+rewrite a single one of their queries.
 
 The failure classes use the ACTUAL query strings observed in live runs, not
 invented ones:
@@ -53,8 +54,10 @@ def _load(path):
 def test_1_good_queries_are_never_gratuitously_rewritten():
     """The false-positive control, and the most important test here.
 
-    These 12 manifests rendered and scored 7.0-8.29. If the repair rewrites their
-    queries it is not a fix, it is a regression with extra steps."""
+    These 12 manifests were preserved from rendered/high-scoring August output
+    and scored 7.0-8.29 historically. They are compatibility controls, not proof
+    every old visual choice was ideal. A generic repair should nevertheless leave
+    queries that do not violate its defect contract untouched."""
     check(len(CORPUS) == 12, f"12 real historical manifests present ({len(CORPUS)})")
     domains, total, repaired = set(), 0, 0
     for path in CORPUS:
