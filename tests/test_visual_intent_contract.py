@@ -268,13 +268,12 @@ def test_13_query_repair_cannot_hide_a_separate_content_defect():
     """Repairing disposable metadata never buys a pass for bad narration."""
     man = _load(CORPUS[0])
     man["scenes"][0]["search_query"] = "galaxy stars space"
-    # A formal connector is a separate, existing narration hard gate.
-    man["scenes"][0]["voiceover"] = "Thus, this sentence still fails the spoken-English gate."
+    man["hook"] = "Too short"  # independent existing content gate, checked before scenes
     V.repair_scene_queries(man["scenes"], man.get("keyword", ""), G._domain_family(man.get("domain")))
     err = G.validate(man, man.get("viewer_job") or "CURIOSITY_ITCH")
     check(err is not None, "a separate content defect still fails after query-only repair")
-    check("formal connector" in err or "Thus" in err,
-          f"the remaining failure is the narration defect, not silently cleared ({err!r})")
+    check("hook length" in err,
+          f"the remaining failure is the narration/content defect, not silently cleared ({err!r})")
 
 
 # 14 ---------------------------------------------------------------------------
