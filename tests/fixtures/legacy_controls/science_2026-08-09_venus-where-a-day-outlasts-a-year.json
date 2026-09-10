@@ -1,0 +1,87 @@
+{
+  "title": "Venus: Where a Day Outlasts a Year",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "venus time",
+  "metaphor": "planet's broken clock",
+  "vibe": "eerie",
+  "hook": "Your calendar on Venus would tear itself apart.",
+  "hook_headline": "ONE DAY = LONGER THAN A YEAR",
+  "script": "Your calendar on Venus would tear itself apart. What if you tried to live out a single year there? You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year. The Sun there rises in the west and sets in the east, spinning backward like a broken music box. That retrograde spin is why a day so long feels like it bends time itself. The air would crush you long before you noticed.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Your calendar on Venus would tear itself apart.",
+      "on_screen_text": "VENUS TIME",
+      "search_query": "planet venus surface",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 6,
+      "voiceover": "What if you tried to live out a single year there?",
+      "on_screen_text": "BROKEN CLOCK",
+      "search_query": "planets orbiting sun",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "You wouldn't even finish one day, because a Venus day of 243 Earth days outlasts its 225-day year.",
+      "on_screen_text": "243 VS 225",
+      "search_query": "planet venus surface",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "The Sun there rises in the west and sets in the east, spinning backward like a broken music box.",
+      "on_screen_text": "WEST TO EAST",
+      "search_query": "space planet rotation",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 5,
+      "voiceover": "That retrograde spin is why a day so long feels like it bends time itself.",
+      "on_screen_text": "TIME BENDS",
+      "search_query": "planet venus surface",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "The air would crush you long before you noticed.",
+      "on_screen_text": "CRUSHING AIR",
+      "search_query": "planet venus surface",
+      "motion": "static",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "What if your calendar on Venus tore itself apart? #venustime",
+    "A day there is longer than its year. Real.",
+    "Team Sunrise in the west? Or east?"
+  ],
+  "hashtags": [
+    "#venus",
+    "#spacefacts",
+    "#timewarp",
+    "#planets",
+    "#science",
+    "#astronomy"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-09_venus-where-a-day-outlasts-a-year",
+  "cta_style": "LOOP",
+  "domain": "space"
+}
