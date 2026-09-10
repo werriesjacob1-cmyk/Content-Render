@@ -641,20 +641,32 @@ def _gemini_chat(prompt, max_tokens, temperature):
 
 _JUDGE_CONSEC_FAILS = 0   # consecutive transport failures of the footage judge
 _JUDGE_CIRCUIT_OPEN = False  # once open, the judge stops making doomed calls
+_JUDGE_LAST_ERROR = ""    # why the most recent judge call failed, for the log
 
 
-def _judge_note(ok):
+def _judge_note(ok, err=""):
     """Track judge health for the circuit breaker: a success closes it, 3
-    back-to-back transport failures open it (stop making doomed calls)."""
-    global _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN
+    back-to-back transport failures open it (stop making doomed calls).
+
+    The message names the ACTUAL last error. It used to say "rate-limited 3x in
+    a row" unconditionally, which is a diagnosis the breaker never made -- it
+    counts every transport failure. On render 34453163265 the real cause was a
+    RETIRED model returning 404 on every call, and the log confidently reported
+    a rate limit, pointing the next reader at quota instead of at a dead model.
+    A breaker that misreports why it tripped costs more than the calls it saves.
+    """
+    global _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN, _JUDGE_LAST_ERROR
     if ok:
         _JUDGE_CONSEC_FAILS = 0
     else:
         _JUDGE_CONSEC_FAILS += 1
+        if err:
+            _JUDGE_LAST_ERROR = str(err)[:160]
         if _JUDGE_CONSEC_FAILS >= 3 and not _JUDGE_CIRCUIT_OPEN:
             _JUDGE_CIRCUIT_OPEN = True
-            print("  [judge] circuit OPEN — footage judge rate-limited 3x in a row; "
-                  "shipping the top stock clip for the rest of this run (no more doomed judge calls)")
+            why = f" last error: {_JUDGE_LAST_ERROR}" if _JUDGE_LAST_ERROR else ""
+            print("  [judge] circuit OPEN — footage judge failed on 3 consecutive scenes; "
+                  f"shipping the top stock clip for the rest of this run (no more doomed judge calls).{why}")
 
 
 _CEREBRAS_JUDGE_MODEL_CACHE = None
@@ -683,6 +695,81 @@ def _cerebras_judge_model():
         except Exception as e:  # noqa: BLE001
             print(f"  Cerebras /v1/models lookup failed ({e}); skipping Cerebras judge")
     _CEREBRAS_JUDGE_MODEL_CACHE = picked
+    return picked or None
+
+
+_GROQ_JUDGE_MODEL_CACHE = None
+
+# Not chat models, or too specialised to score footage relevance.
+_JUDGE_MODEL_EXCLUDE = ("whisper", "tts", "embed", "guard", "moderation", "vision", "audio")
+
+
+def _rank_judge_models(ids):
+    """Order candidate judge models strongest-first. Pure, so it is unit-tested
+    without a network call.
+
+    Size before everything: the hardcoded JUDGE_MODEL comment records why a weak
+    judge is worse than none -- 'llama-3.1-8b-instant scored an ocean-waves clip
+    9/10 against a "humanity fits in a sugar cube" line in production'. So the
+    deliberately-small tiers ('instant', 'mini', 'small', 'lite') rank last no
+    matter how they are numbered, and within a tier the larger parameter count
+    wins. Ties break on name so the choice is deterministic run to run.
+    """
+    def size(n):
+        return max((int(x) for x in re.findall(r"(\d+)\s*b\b", n.lower())), default=0)
+
+    def weak(n):
+        return any(t in n.lower() for t in ("instant", "mini", "small", "lite"))
+
+    usable = [i for i in ids
+              if i and not any(b in i.lower() for b in _JUDGE_MODEL_EXCLUDE)]
+    return sorted(usable, key=lambda n: (weak(n), -size(n), n))
+
+
+def _groq_judge_model():
+    """The Groq model THIS key can actually use, discovered via /v1/models.
+
+    2026-09-10, render 34453163265: the hardcoded JUDGE_MODEL
+    'llama-3.3-70b-versatile' now 404s at Groq. Cerebras 404'd on the same run,
+    and Gemini/OpenRouter are DELIBERATELY excluded from the judge chain, so
+    every scene's judge call failed, three consecutive failures opened the judge
+    circuit, and the rest of the video shipped unjudged stock. Footage relevance
+    is the weakest dimension in the QA report; a silently dead judge is a large
+    part of why.
+
+    This is the same fix `_cerebras_judge_model` already applies one provider
+    over, and the same rule CLAUDE.md states for generation: discover models at
+    runtime, never hardcode a version. Falls back to the JUDGE_MODEL constant on
+    any discovery failure, so behaviour is unchanged when discovery is
+    unavailable."""
+    global _GROQ_JUDGE_MODEL_CACHE
+    if _GROQ_JUDGE_MODEL_CACHE is not None:
+        return _GROQ_JUDGE_MODEL_CACHE or None
+    key = os.environ.get("GROQ_API_KEY", "")
+    picked = ""
+    if key:
+        try:
+            req = urllib.request.Request(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {key}", "User-Agent": "content-render/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                ids = [m.get("id") for m in json.loads(r.read().decode()).get("data", []) if m.get("id")]
+            ranked = _rank_judge_models(ids)
+            picked = ranked[0] if ranked else ""
+            if picked:
+                print(f"  [judge] groq model discovered: {picked}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  Groq /v1/models lookup failed ({e}); SKIPPING Groq judge this run "
+                  f"(refusing to fall back to the retired {JUDGE_MODEL})")
+    # Falling back to JUDGE_MODEL here would recreate the exact outage this
+    # discovery exists to fix: 'llama-3.3-70b-versatile' is RETIRED and 404s
+    # (render 34453163265), so a transient catalogue hiccup would send a
+    # known-dead model, 404, and open the breaker -- shipping the rest of the
+    # video's stock unjudged. An empty cache means "Groq unavailable THIS run":
+    # the caller skips straight to Cerebras/Together/Fireworks/Mistral, and the
+    # empty string still short-circuits the catalogue request for every later
+    # scene. It is session-local, so the next run retries discovery normally.
+    _GROQ_JUDGE_MODEL_CACHE = picked
     return picked or None
 
 
@@ -739,14 +826,21 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
 
     # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
     #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
-    if groq_key:
+    last_err = ""
+    groq_model = _groq_judge_model() if groq_key else None
+    if not groq_model and groq_key:
+        # Discovery could not name a live model. Skipping Groq entirely is the
+        # point: sending the retired constant is what caused the outage.
+        last_err = "Groq: model discovery unavailable (no live model to call)"
+    if groq_key and groq_model:
         try:
             out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
-                                      groq_key, JUDGE_MODEL, prompt, max_tokens, temperature)
+                                      groq_key, groq_model, prompt, max_tokens, temperature)
             if out is not None:
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to Cerebras
+            last_err = f"Groq: {e}"
             print("  Groq judge call failed, trying Cerebras:", e)
     # 2) Cerebras — free, generous, separate bucket.
     cere_model = _cerebras_judge_model() if cere_key else None
@@ -758,6 +852,7 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to OpenRouter
+            last_err = f"Cerebras: {e}"
             print("  Cerebras judge call failed, trying OpenRouter:", e)
     # 3) The ADDED free buckets — Together → Fireworks → Mistral. These extend the
     #    judge's capacity WITHOUT ever touching Gemini or OpenRouter (reserved
@@ -780,12 +875,13 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to the next added bucket
+            last_err = f"{label}: {e}"
             print(f"  {label} judge call failed:", e)
     # nothing worked — Gemini + OpenRouter are DELIBERATELY not used by the judge
     # (reserved for generation), so a judge outage simply ships the top stock clip.
     if groq_key or cere_key or any(k for _, _, k, _ in added):
         _LAST_GROQ_FAILED = True
-        _judge_note(False)
+        _judge_note(False, last_err)
     return None
 
 
@@ -2017,14 +2113,72 @@ def _keywords_from_text(text, k=3):
     return " ".join(ordered[:k])
 
 
-def _diversify_scene_queries(scenes):
+def _subject_anchored_query(subject, voiceover, taken):
+    """'<subject> <one distinguishing word from this scene>', or "" if unusable.
+
+    Pure and unit-tested: the whole point is that a REPLACEMENT query must still
+    be filmable. Leading with the subject keeps the search on the thing the video
+    is actually about; one voiceover word makes this scene's search differ from
+    its neighbours'. Distinguishing words are tried in the same longest-first
+    order `_keywords_from_text` uses, skipping any that already appears in the
+    subject (which would add nothing) and any combination already taken.
+
+    Returns "" when there is no subject or no usable distinguishing word, so the
+    caller falls back to the previous behaviour rather than inventing a query.
+    """
+    subject = (subject or "").strip()
+    if not subject:
+        return ""
+    subj_words = set(re.findall(r"[a-z][a-z-]+", subject.lower()))
+    words = re.findall(r"[A-Za-z][A-Za-z-]+", (voiceover or "").lower())
+    cand = [w for w in words if w not in _QUERY_STOPWORDS and len(w) > 3
+            and w not in subj_words]
+    seen_w = set()
+    for w in sorted(cand, key=len, reverse=True):
+        if w in seen_w:
+            continue
+        seen_w.add(w)
+        q = f"{subject} {w}"
+        if q.lower() not in (taken or {}):
+            return q
+    return subject if subject.lower() not in (taken or {}) else ""
+
+
+def _diversify_scene_queries(scenes, subject=""):
     """Guarantee every scene searches for a VISUALLY DISTINCT subject. The LLM is
     told to do this, but a rate-limited/near-miss script sometimes repeats a
     search_query (run 53: scenes 2 AND 6 both 'sunlight water droplets', so the
     end lingered ~20s on the same footage). When a query repeats an earlier
     scene's, rebuild it from that scene's own voiceover keywords; if that still
     collides or is empty, fall back to the on_screen_text. Purely additive — a
-    script with already-distinct queries is left untouched."""
+    script with already-distinct queries is left untouched.
+
+    SUBJECT ANCHORING (2026-09-10, from render 34453163265). Deriving a query
+    from the voiceover ALONE reproduces the exact anti-pattern `_footage_intent`
+    was built to kill: it searches the scene's METAPHOR instead of its subject.
+    `_keywords_from_text` takes the three LONGEST non-stopwords, so scene 8 of the
+    Anglo-Zanzibar video -- "An entire kingdom fell in less time than a lunch
+    break" -- became the query 'kingdom entire lunch'. No stock library can match
+    that; the judge scored it 3/10 and the video pulled generic B-roll, which the
+    final-QA judge then flagged as "footage largely unrelated". Diversification
+    had traded a RELEVANT repeated query for an IRRELEVANT novel one.
+
+    So the replacement now leads with the video's own subject (the manifest
+    `keyword`) and uses the voiceover only to DISTINGUISH one scene from another
+    -- the same "lead with the subject, not the metaphor" rule `_footage_intent`
+    already follows.
+
+    UNIQUENESS IS PREFERRED, NOT MANDATORY. When a subject is available and no
+    unique subject-led phrasing can be formed, the ORIGINAL duplicate query is
+    kept rather than invented around. A repeated but RELEVANT query still yields
+    a different clip -- `used_footage_<page>.json` clip-ID dedup owns that, and
+    excluded 500 prior ids on the render above -- whereas a manufactured query
+    returns footage about the wrong subject, which is the failure this function
+    caused. Scene numbers, the word "footage", generic filler and metaphor
+    keywords are never appended just to make a query look distinct.
+
+    With no subject available the old voiceover-only behaviour is unchanged."""
+    subject = (subject or "").strip()
     seen = {}
     for i, sc in enumerate(scenes, 1):
         q = (sc.get("search_query") or "").strip()
@@ -2033,9 +2187,28 @@ def _diversify_scene_queries(scenes):
             seen[key] = i
             continue
         # duplicate (or empty) — derive a fresh, scene-specific query
-        alt = _keywords_from_text(sc.get("voiceover", ""))
-        if not alt or alt.lower() in seen:
-            alt = (sc.get("on_screen_text") or alt or q).strip()
+        if subject:
+            # Subject-led, or nothing. Falling through to on_screen_text / the
+            # voiceover keywords here would reintroduce the very salad this
+            # function now exists to prevent, just one rung lower down.
+            alt = _subject_anchored_query(subject, sc.get("voiceover", ""), seen)
+            if alt and alt.lower() in seen:
+                alt = ""
+            if not alt and q:
+                # No unique subject-led phrasing exists. KEEP the original: a
+                # repeated RELEVANT query still returns a different clip (clip-ID
+                # dedup owns that), whereas an invented one returns footage about
+                # the wrong thing. Uniqueness is preferred, not mandatory.
+                alt = ""
+            elif not alt:
+                # Empty original and no anchored option — fall back rather than
+                # leave a scene with no query at all.
+                alt = (sc.get("on_screen_text") or "").strip()
+        else:
+            # No subject available: legacy behaviour, unchanged.
+            alt = _keywords_from_text(sc.get("voiceover", ""))
+            if not alt or alt.lower() in seen:
+                alt = (sc.get("on_screen_text") or alt or q).strip()
         if alt and alt.lower() != key:
             print(f"  [footage] scene {i} query '{q}' duplicated scene {seen.get(key)} "
                   f"— diversified to '{alt}'")
@@ -3549,7 +3722,7 @@ def main():
     # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
 
-    _diversify_scene_queries(m["scenes"])
+    _diversify_scene_queries(m["scenes"], subject=(m.get("keyword") or ""))
     _diversify_scene_motions(m["scenes"])
 
     scene_files = []
