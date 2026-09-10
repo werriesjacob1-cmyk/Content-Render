@@ -81,6 +81,15 @@ _QUERY_STOPWORDS = {
     "makes", "made", "make", "take", "takes", "took", "gets", "get", "got", "goes", "went",
     "comes", "came", "give", "gives", "gave", "know", "knows", "think", "thinks", "seem",
     "seems", "look", "looks", "feel", "feels", "become", "becomes", "happen", "happens",
+    # Preserve the already-audited #88 subject-anchor filter floor. These glue /
+    # aspect words were filtered by main.py before this contract was extracted;
+    # dropping them here would turn phrases such as "Because ... squeeze
+    # through ..." into junk retrieval discriminators like "octopus because".
+    "also", "none", "lives", "live", "lived", "fine", "making", "use", "used", "using",
+    "known", "never", "always", "like", "being", "been", "have", "has", "had", "does",
+    "did", "done", "going", "come", "keep", "means", "without", "within", "around",
+    "across", "through", "because", "while", "during", "before", "after", "since",
+    "until", "again", "once", "should", "might", "must", "them", "who", "whom",
 }
 
 
@@ -97,7 +106,8 @@ def query_defect(query, voiceover="", domain_family=""):
         return DEFECT_EMPTY
     if UNSTOCKABLE_Q.search(q):
         return DEFECT_UNSTOCKABLE
-    if (domain_family != "space"
+    if (domain_family
+            and domain_family != "space"
             and COSMIC_FILLER_Q_RE.search(q)
             and not SPACE_CONTEXT_RE.search(voiceover or "")):
         return DEFECT_COSMIC_FILLER
