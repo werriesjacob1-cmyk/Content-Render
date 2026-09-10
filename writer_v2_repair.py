@@ -341,6 +341,52 @@ def _line_factual_payload(text):
     }
 
 
+def _initialism(entity):
+    """'United States' -> 'US'. Empty for single-word entities.
+
+    Deterministic and generic: the initials of a multi-word entity, nothing
+    else. No abbreviation dictionary, no per-phrase list.
+    """
+    words = [w for w in re.findall(r"[A-Za-z]+", entity or "") if w]
+    if len(words) < 2:
+        return ""
+    return "".join(w[0] for w in words).upper()
+
+
+def _entity_supported(entity, allowed_entities):
+    """Is `entity` covered by the cited claims' own entities?
+
+    Exact (case/possessive-insensitive) match, or the entity is the INITIALISM
+    of a cited multi-word entity.
+
+    WHY THE INITIALISM CASE EXISTS (measured, flagship corpus)
+
+    Two deterministic gates were fighting each other. `deterministic_mechanical_trim`
+    shortens a hook to fit its word cap, and one real corpus round shortened
+    "the United States" to "the U.S." to do it -- changing nothing else in the
+    script. The provenance checker then flagged "U.S" as an unsupported entity,
+    semantic violations went 0 -> 5, and a brand-new hard violation appeared,
+    so the trim that satisfied one gate manufactured work for another. The
+    resulting PROVENANCE repair is the repair type most likely to damage the
+    script, spent on a defect that does not exist.
+
+    Verbatim "United States" citing that claim was ALREADY clean -- this fixes
+    the abbreviation case only, and only against entities the cited claims
+    actually contain.
+    """
+    e = (entity or "").strip().lower()
+    if not e:
+        return True
+    if e in allowed_entities or _strip_possessive(e) in allowed_entities:
+        return True
+    compact = re.sub(r"[^a-z]", "", e).upper()
+    if len(compact) >= 2:
+        for allowed in allowed_entities:
+            if _initialism(allowed) == compact:
+                return True
+    return False
+
+
 def _allowed_vocab(cited_claims, key_terms):
     numbers, units, entities, terms = set(), set(), set(), set()
     for c in cited_claims:
@@ -442,7 +488,8 @@ def _check_line(beat_index, text, cited_ids, claims_by_id, key_terms):
         e_l = e.lower()
         e_base = _strip_possessive(e_l)
         if (e_l not in allowed["entities"] and e_l not in allowed["terms"]
-                and e_base not in allowed["entities"] and e_base not in allowed["terms"]):
+                and e_base not in allowed["entities"] and e_base not in allowed["terms"]
+                and not _entity_supported(e, allowed["entities"])):
             violations.append(TraceabilityViolation(
                 beat_index, "unsupported_entity", e, cited_ids,
                 detail=f"entity {e!r} not found in the cited claim(s) or key_terms", severity="hard"))
@@ -964,6 +1011,18 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         except Exception:
             preserve = []
 
+    # The critic is asked, in its own schema, for "a short list of specific things
+    # in the beats you are NOT flagging that the rewrite must not disturb (a
+    # phrase, a fact, a transition that already works)". That list used to reach
+    # the repairer ONLY on tier 3 -- so on tier 1 (an unsupported claim) and tier
+    # 2 (a validate failure), the two tiers that fire in almost every real round,
+    # the critic's own record of what already works was computed and then thrown
+    # away. Those are exactly the rounds where craft collapsed in flagship #7.
+    # It costs nothing to carry it everywhere, and the repairer cannot preserve
+    # what it was never told about.
+    critic_preserve = [p for p in ((critic_verdict or {}).get("must_preserve") or []) if p]
+    preserve = critic_preserve + [p for p in preserve if p not in critic_preserve]
+
     all_tier1 = list(hard_violations or []) + list(semantic_violations or [])
     if all_tier1:
         target_beats = sorted({v.beat_index for v in all_tier1 if 0 <= v.beat_index <= num_beats + 1})
@@ -972,6 +1031,8 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
             "repair_type": "PROVENANCE", "target_beats": target_beats or list(range(0, num_beats + 2)),
             "diagnosis": diagnosis or "unsupported factual content found",
             "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 1,
+            "narrative_contract": narrative_function_contract(
+                writer_out, target_beats, num_beats),
         }
 
     if validate_err:
@@ -980,7 +1041,9 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
             repair_type, target_beats = mapped
             return {"repair_type": repair_type, "target_beats": target_beats,
                     "diagnosis": validate_err, "must_preserve": preserve,
-                    "must_also_satisfy": must_also, "tier": 2}
+                    "must_also_satisfy": must_also, "tier": 2,
+                    "narrative_contract": narrative_function_contract(
+                        writer_out, target_beats, num_beats)}
         return {"repair_type": "NONE", "target_beats": [], "diagnosis": validate_err,
                 "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 2}
 
@@ -1001,10 +1064,11 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         "repair_type": repair_type,
         "target_beats": target_beats,
         "diagnosis": (critic_verdict.get("diagnosis") or "")[:500],
-        "must_preserve": list(critic_verdict.get("must_preserve") or []) + [
-            p for p in preserve if p not in (critic_verdict.get("must_preserve") or [])],
+        "must_preserve": preserve,
         "must_also_satisfy": must_also,
         "tier": 3,
+        "narrative_contract": narrative_function_contract(
+            writer_out, target_beats, num_beats),
     }
 
 
@@ -1035,6 +1099,71 @@ def detect_stall(prev_writer_out, new_writer_out, target_beats, num_beats):
     import writer_v2 as _W2
     return all(_W2._normalize_text(prev.get(i, "")).strip() == _W2._normalize_text(new.get(i, "")).strip()
               for i in target_beats)
+
+
+BEAT_ROLE_OBLIGATIONS = {
+    "HOOK": "it is the FIRST line the viewer hears. After your rewrite it must still "
+            "open on the most surprising concrete image in the script -- not a summary, "
+            "not a definition, and never the script's conclusion.",
+    "PAYOFF": "it is the LAST line, the idea the whole script has been building toward. "
+              "After your rewrite it must still land as a payoff. A payoff that reads as "
+              "a citation, a date list, or a restatement of an earlier beat is a FAILED "
+              "repair even when every word of it is supported.",
+    "MIDDLE BEAT": "it advances the escalation between the hook and the payoff. After "
+                   "your rewrite it must still move the script FORWARD -- adding something "
+                   "the previous lines had not yet said.",
+}
+
+
+def beat_role(beat_index, num_beats):
+    """Structural role of a beat_index. Pure, and deliberately not topic-aware."""
+    if beat_index <= 0:
+        return "HOOK"
+    if beat_index >= num_beats + 1:
+        return "PAYOFF"
+    return "MIDDLE BEAT"
+
+
+def narrative_function_contract(writer_out, target_beats, num_beats):
+    """What each targeted beat is FOR, and what it must not steal from later beats.
+
+    WHY THIS EXISTS (flagship #7, greenland_shark_age, attempt 2)
+
+    The repair targeted beats [1, 3, 4] and changed exactly those three -- every
+    other beat stayed byte-identical, so the targeting machinery worked. Coherence
+    still collapsed from 7 to 2, because of what beat 1 became:
+
+        before  "The journey belongs to a single protein locked inside its eye."
+        after   "This eye-lens protein, formed once in the embryo, makes the
+                 Greenland shark the longest-lived vertebrate."
+
+    Asked only to make the line supported, the repairer reached for the strongest
+    claim in the evidence -- which is the video's CONCLUSION -- and imported the
+    payoff's punchline into line two. The payoff then restated it, so the script
+    gave away its ending up front.
+
+    That is evidence gravity: the cheapest way to make a beat "supported" is to
+    quote the most quotable claim available, and the most quotable claim is
+    usually the ending. Stating each beat's job, and naming what the later beats
+    still have to land, is what makes a supported rewrite also a survivable one.
+    """
+    lines = []
+    for idx in sorted(set(target_beats or [])):
+        role = beat_role(idx, num_beats)
+        lines.append(f"- beat_index {idx} is the {role}: {BEAT_ROLE_OBLIGATIONS[role]}")
+    payoff_idx = num_beats + 1
+    payoff_text = (writer_out or {}).get("payoff") or ""
+    # Only warn about stealing the payoff when the payoff is NOT itself being
+    # rewritten this round -- telling the repairer both to rewrite a line and to
+    # leave it alone is worse than saying nothing.
+    targets = set(target_beats or [])
+    if payoff_text and targets and payoff_idx not in targets:
+        lines.append(
+            f"- beat_index {payoff_idx} (the PAYOFF) is NOT yours to rewrite this round, "
+            f"and it still has to land this point: \"{payoff_text}\" -- your rewrite must "
+            f"not say it first. A beat that states the payoff's conclusion destroys the "
+            f"script even though every word is supported.")
+    return lines
 
 
 def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treatments=None, stalled=False):
@@ -1078,6 +1207,18 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
             + "\nThese are not style preferences. They are the checks that decide whether this "
               "script survives.")
 
+    # What the targeted beats are FOR. Without this a repair can satisfy the
+    # diagnosis perfectly and still wreck the script -- see
+    # narrative_function_contract's docstring for the measured case.
+    role_lines = plan.get("narrative_contract")
+    if role_lines is None:
+        role_lines = narrative_function_contract(writer_out, target_beats, num_beats)
+    role_block = ""
+    if role_lines:
+        role_block = (
+            "\n\nWHAT THESE BEATS ARE FOR. Your rewrite has to fix the diagnosis AND leave "
+            "each beat still doing its job:\n" + "\n".join(role_lines))
+
     repair_type = plan.get("repair_type", "STRUCTURAL")
     if repair_type == "PROVENANCE":
         instruction = (
@@ -1085,8 +1226,16 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
             "Rewrite ONLY these beats so every specific claim, name, or number they contain is "
             "genuinely supported by the EVIDENCE CLAIMS list -- remove or replace unsupported "
             "specifics using ONLY what the cited claims actually say. Do not invent new facts, even "
-            "plausible-sounding ones. It is fine for a rewritten beat to be more general/qualitative "
-            "if the evidence doesn't support a specific number or name."
+            "plausible-sounding ones.\n"
+            "When you drop an unsupported specific, look through the EVIDENCE CLAIMS for a "
+            "DIFFERENT specific that IS supported and does the same job in the line, and use that. "
+            "The evidence usually contains one. Reach for a vaguer, more general sentence only "
+            "when no supported specific fits -- generalising is the last resort, not the "
+            "default.\n"
+            "Do not solve this by quoting the strongest-sounding claim in the list. The most "
+            "quotable claim is usually the script's ENDING, and moving it into an earlier beat "
+            "makes the script give away its own conclusion. Fix the line you were given; do not "
+            "borrow a later line's point."
         )
     elif plan.get("tier") == 2 and repair_type == "STRUCTURAL":
         instruction = (
@@ -1124,6 +1273,7 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
         + f"\n\nONLY rewrite beat_index {target_beats}. Do not return any other beat_index. "
         f"Every returned beat needs voiceover + visual_intent (use \"\" for visual_intent on beat_index "
         f"0 or {num_beats + 1}) + source_claim_ids (the claim IDs that support the rewritten text)."
+        + role_block
         + preserve_block
         + also_block
         + "\n\nReturn ONLY valid JSON in EXACTLY this shape -- a single object with one key \"repairs\" "
