@@ -1,0 +1,244 @@
+#!/usr/bin/env python3
+"""The visual-intent contract, proven on a DIVERSE corpus of real manifests.
+
+Twelve committed August manifests across ten domains (animals, biology, body,
+chemistry, geology, light, materials, neurology, physics, space) are used as the
+false-positive control: they are real, human-approved, post-worthy output, and
+the repair must not touch a single one of their queries.
+
+The failure classes use the ACTUAL query strings observed in live runs, not
+invented ones:
+  * chess_possible_games  -- 'deep space stars moving', 'galaxy stars space'
+  * Anglo-Zanzibar        -- 'kingdom entire lunch'
+  * banana radiation      -- the shipped control that passed QA
+
+TWO MECHANISMS, DELIBERATELY SEPARATE. Prevention stops a bad query being built
+(`_diversify_scene_queries` subject anchoring); repair rescues a candidate whose
+query validate() rejects. They cover different defects and the tests say which
+covers which, rather than implying one catches everything.
+
+Zero network, zero providers, zero LLM.
+"""
+from __future__ import annotations
+
+import copy
+import glob
+import json
+import os
+from pathlib import Path
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ.setdefault("GROQ_API_KEY", "x")
+
+import generate as G
+import main as M
+import visual_intent as V
+
+ROOT = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+CORPUS = sorted(glob.glob(str(ROOT / "tests" / "fixtures" / "legacy_controls" / "science_*.json")))
+
+
+def check(cond, label):
+    if not cond:
+        raise AssertionError(label)
+    print(f"PASS {label}")
+
+
+def _load(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+# 1 ----------------------------------------------------------------------------
+def test_1_good_queries_are_never_gratuitously_rewritten():
+    """The false-positive control, and the most important test here.
+
+    These 12 manifests rendered and scored 7.0-8.29. If the repair rewrites their
+    queries it is not a fix, it is a regression with extra steps."""
+    check(len(CORPUS) == 12, f"12 real historical manifests present ({len(CORPUS)})")
+    domains, total, repaired = set(), 0, 0
+    for path in CORPUS:
+        man = _load(path)
+        domains.add(man["domain"])
+        fam = G._domain_family(man["domain"])
+        before = [s["search_query"] for s in man["scenes"]]
+        changed = V.repair_scene_queries(man["scenes"], man.get("keyword", ""), fam)
+        after = [s["search_query"] for s in man["scenes"]]
+        total += len(before)
+        repaired += len(changed)
+        check(before == after, f"{man['domain']}: every query byte-identical after repair")
+    check(len(domains) >= 8, f"corpus spans >=8 distinct domains ({len(domains)}: {sorted(domains)})")
+    check(repaired == 0, f"0 of {total} real approved queries were rewritten (got {repaired})")
+
+
+# 2 ----------------------------------------------------------------------------
+def test_2_cosmic_filler_on_a_non_space_scene_is_repaired():
+    """The chess_possible_games failure class, with its real query strings."""
+    scenes = [{"search_query": "galaxy stars space",
+               "voiceover": "After just four moves the board holds billions of arrangements.",
+               "source_claim_ids": ["c1"]}]
+    changed = V.repair_scene_queries(scenes, "chess", "math")
+    check(len(changed) == 1, f"the cosmic-filler query is repaired ({changed})")
+    check(changed[0][3] == V.DEFECT_COSMIC_FILLER, "classified as cosmic filler, precisely")
+    new = scenes[0]["search_query"]
+    check(new.startswith("chess"), f"the repair is subject-led ({new!r})")
+    check(not V.COSMIC_FILLER_Q_RE.search(new), "and contains no cosmic filler")
+    check(V.query_defect(new, scenes[0]["voiceover"], "math") is None,
+          "the repaired query passes the SAME predicate validate() applies")
+
+
+# 3 ----------------------------------------------------------------------------
+def test_3_a_literal_astronomy_scene_may_still_use_space_words():
+    """Cosmic imagery is correct for a space story. The rule must not ban it."""
+    vo = "Venus spins so slowly that its day outlasts its year."
+    check(V.query_defect("venus planet surface", vo, "space") is None,
+          "a space-domain query is untouched")
+    check(V.query_defect("milky way galaxy", vo, "space") is None,
+          "even explicit cosmic wording is legal when the domain IS space")
+    # and a deliberate space METAPHOR in a non-space story stays legal, because
+    # the scene's own narration mentions space -- the pre-existing escape hatch.
+    meta = "Its heart beats slower than a star collapses."
+    check(V.query_defect("deep space nebula", meta, "biology") is None,
+          "a scene whose own narration is space-related keeps its space imagery")
+
+
+# 4 ----------------------------------------------------------------------------
+def test_4_metaphor_words_never_become_the_visual_subject():
+    """The Anglo-Zanzibar 'kingdom entire lunch' class.
+
+    HONEST SCOPE: this salad carries no `query_defect` -- it is not unstockable
+    vocabulary and not cosmic filler -- so the REPAIR path does not catch it. It
+    is handled by PREVENTION instead: the subject-anchored diversifier refuses to
+    build it. Both are asserted here so the division of labour is explicit."""
+    vo = "An entire kingdom fell in less time than a lunch break."
+    check(V.query_defect("kingdom entire lunch", vo, "history") is None,
+          "the salad has no defect code -- repair is NOT the mechanism for it")
+    built = V.subject_led_query("anglo zanzibar war", vo, {})
+    check(built.startswith("anglo zanzibar war"), f"prevention builds subject-led ({built!r})")
+    for metaphor in ("lunch", "entire"):
+        check(metaphor not in built, f"the metaphor word {metaphor!r} is not the subject")
+    check(M._subject_anchored_query("anglo zanzibar war", vo, {}) == built,
+          "main.py delegates to the same contract -- one rule, not two")
+
+
+# 5 ----------------------------------------------------------------------------
+def test_5_repair_touches_only_search_query():
+    """The accuracy invariant. Retrieval metadata is not a licence to edit science."""
+    scenes = [{
+        "id": 1, "duration": 5.0,
+        "search_query": "deep space nebula",
+        "voiceover": "Bananas carry a naturally radioactive form of potassium.",
+        "on_screen_text": "POTASSIUM-40",
+        "source_claim_ids": ["base_001", "base_002"],
+        "motion": "zoom_in", "footage_mode": "video",
+    }]
+    original = copy.deepcopy(scenes[0])
+    V.repair_scene_queries(scenes, "banana radiation", "physics")
+    got = scenes[0]
+    check(got["search_query"] != original["search_query"], "the query WAS repaired")
+    for field in ("voiceover", "source_claim_ids", "on_screen_text", "id",
+                  "duration", "motion", "footage_mode"):
+        check(got[field] == original[field],
+              f"{field} is byte-identical through repair")
+    check(set(got) == set(original), "no field added or removed")
+
+
+# 6 ----------------------------------------------------------------------------
+def test_6_unrepairable_scene_keeps_its_query_and_still_fails():
+    """Fail closed. Never ship unrelated footage just to obtain an MP4."""
+    scenes = [{"search_query": "galaxy stars space", "voiceover": "It is there."}]
+    changed = V.repair_scene_queries(scenes, "", "math")   # no subject to anchor to
+    check(changed == [], "with nothing grounded to build from, nothing is repaired")
+    check(scenes[0]["search_query"] == "galaxy stars space",
+          "the original is left intact so validate() still rejects the candidate")
+    check(V.subject_led_query("", "anything", {}) == "",
+          "no subject -> empty, never invented filler")
+
+
+# 7 ----------------------------------------------------------------------------
+def test_7_no_topic_specific_conditionals():
+    """The regression topics are FIXTURES, not production policy.
+
+    Checks EXECUTABLE CODE, not raw text. Comments and docstrings naming the
+    incident that motivated a rule are how this repo documents provenance
+    everywhere ('render-209 bug', 'the Sun video'), and stripping that would make
+    the code harder to maintain, not safer. What must not exist is a topic string
+    the program can branch on."""
+    import io, tokenize
+
+    def code_only(path):
+        """Source with every comment and string literal removed."""
+        out = []
+        with open(path, "rb") as fh:
+            for tok in tokenize.tokenize(io.BytesIO(fh.read()).readline):
+                if tok.type in (tokenize.COMMENT, tokenize.STRING):
+                    continue
+                out.append(tok.string)
+        return " ".join(out).lower()
+
+    for mod in ("visual_intent.py", "generate.py", "main.py"):
+        src = code_only(ROOT / mod)
+        for topic in ("chess", "zanzibar", "anglo", "banana", "shortest_war",
+                      "possible_games"):
+            check(topic not in src,
+                  f"{mod} has no executable reference to {topic!r} (comments are fine)")
+
+    # And no literal topic ids anywhere in the contract's own logic.
+    vi = code_only(ROOT / "visual_intent.py")
+    for tok in ("topic_id", "domain ==", "keyword =="):
+        check(tok not in vi, f"the contract branches on no topic identity ({tok!r})")
+
+
+# 8 ----------------------------------------------------------------------------
+def test_8_abstract_topics_are_not_categorically_rejected():
+    """An abstract concept is not automatically unfilmable."""
+    cases = [
+        ("chess", "Four moves produce billions of arrangements on the board.", "math"),
+        ("dice probability", "Rolling two dice gives eleven possible totals.", "math"),
+        ("information entropy", "Each coin flip carries exactly one bit.", "math"),
+    ]
+    for subject, vo, fam in cases:
+        q = V.subject_led_query(subject, vo, {}, fam)
+        check(q and q.startswith(subject),
+              f"abstract subject {subject!r} still yields a usable query ({q!r})")
+        check(V.query_defect(q, vo, fam) is None, f"and it is legal ({q!r})")
+
+
+# 9 ----------------------------------------------------------------------------
+def test_9_one_contract_not_two():
+    """generate.py must not keep a private copy of the rule."""
+    check(G.UNSTOCKABLE_Q is V.UNSTOCKABLE_Q, "UNSTOCKABLE_Q is the shared object")
+    check(G.COSMIC_FILLER_Q_RE is V.COSMIC_FILLER_Q_RE, "COSMIC_FILLER_Q_RE is shared")
+    check(G.SPACE_CONTEXT_RE is V.SPACE_CONTEXT_RE, "SPACE_CONTEXT_RE is shared")
+    gsrc = (ROOT / "generate.py").read_text(encoding="utf-8")
+    check(gsrc.count("COSMIC_FILLER_Q_RE = re.compile") == 0,
+          "generate.py no longer defines its own copy")
+
+
+# 10 ---------------------------------------------------------------------------
+def test_10_visual_failure_is_distinguishable_from_provider_failure():
+    """The chess run was reported as likely quota exhaustion while Gemini worked."""
+    visual = ["scene 3 query 'galaxy stars space' is generic cosmic/space imagery, but ...",
+              "scene 2 query 'human anatomy' uses un-filmable terms"]
+    other = ["script word count 126 out of range (target 78-98, hard 68-108)",
+             "only 1/3 mandatory key terms named (['Greenland shark'])",
+             "hook length 18 words out of range"]
+    for e in visual:
+        check(bool(G._VISUAL_QUERY_ERR_RE.search(e)), f"classified as visual_intent: {e[:40]!r}")
+    for e in other:
+        check(not G._VISUAL_QUERY_ERR_RE.search(e),
+              f"a CONTENT failure is not mislabelled visual: {e[:40]!r}")
+
+
+if __name__ == "__main__":
+    test_1_good_queries_are_never_gratuitously_rewritten()
+    test_2_cosmic_filler_on_a_non_space_scene_is_repaired()
+    test_3_a_literal_astronomy_scene_may_still_use_space_words()
+    test_4_metaphor_words_never_become_the_visual_subject()
+    test_5_repair_touches_only_search_query()
+    test_6_unrepairable_scene_keeps_its_query_and_still_fails()
+    test_7_no_topic_specific_conditionals()
+    test_8_abstract_topics_are_not_categorically_rejected()
+    test_9_one_contract_not_two()
+    test_10_visual_failure_is_distinguishable_from_provider_failure()
+    print("visual intent contract tests: PASS")

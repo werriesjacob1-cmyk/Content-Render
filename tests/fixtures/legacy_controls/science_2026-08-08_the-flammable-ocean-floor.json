@@ -1,0 +1,105 @@
+{
+  "title": "The Flammable Ocean Floor",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "frozen methane",
+  "metaphor": "ocean floor gas ice",
+  "vibe": "eerie",
+  "hook": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
+  "hook_headline": "OCEAN FLOOR IS ON FIRE",
+  "script": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice. What happens if climate change thaws these frozen methane deposits under the sea? A block the size of a washing machine expands to fill a two-story home. These deposits hold ten times more carbon than our entire atmosphere. As oceans warm, the solid seabed loses its grip. The ocean floor literally liquefies. Collapsing slopes can sever the subsea cables carrying almost all internet traffic. Our world sits on a thin crust holding back a trapped sea of gas.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
+      "on_screen_text": "FLAMMABLE OCEAN ICE",
+      "search_query": "frozen methane bubbles",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "What happens if climate change thaws these frozen methane deposits under the sea?",
+      "on_screen_text": "THAWING SEABED",
+      "search_query": "ocean floor methane",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "A block the size of a washing machine expands to fill a two-story home.",
+      "on_screen_text": "RAPID EXPANSION",
+      "search_query": "methane hydrate",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "These deposits hold ten times more carbon than our entire atmosphere.",
+      "on_screen_text": "10X ATMOSPHERE",
+      "search_query": "deep ocean water surface",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 3,
+      "voiceover": "As oceans warm, the solid seabed loses its grip.",
+      "on_screen_text": "SEABED FAILS",
+      "search_query": "underwater ocean seabed",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 2,
+      "voiceover": "The ocean floor literally liquefies.",
+      "on_screen_text": "LIQUEFIED SEAFLOOR",
+      "search_query": "underwater landslide ocean",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 4,
+      "voiceover": "Collapsing slopes can sever the subsea cables carrying almost all internet traffic.",
+      "on_screen_text": "INTERNET CABLES AT RISK",
+      "search_query": "fiber optic cable ocean",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 8,
+      "duration": 5,
+      "voiceover": "Our world sits on a thin crust holding back a trapped sea of gas.",
+      "on_screen_text": "TRAPPED SEA OF GAS",
+      "search_query": "planet earth space view",
+      "motion": "zoom_out",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "What happens if frozen methane on the ocean floor thaws? Is climate change melting the seabed?",
+    "Deep beneath the ocean floor, massive deposits of frozen methane gas sit under immense pressure.",
+    "There is over 10 times more carbon trapped under the ocean floor than in our entire atmosphere."
+  ],
+  "hashtags": [
+    "#methane",
+    "#ocean",
+    "#climate",
+    "#science",
+    "#deepsea",
+    "#earth"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-08_the-flammable-ocean-floor",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "geology"
+}

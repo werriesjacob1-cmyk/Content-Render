@@ -1,0 +1,96 @@
+{
+  "title": "Why Water Breaks the Rules of Physics",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "why ice floats",
+  "metaphor": "water freezing paradox",
+  "vibe": "awe",
+  "hook": "Every ice cube in your glass is breaking a fundamental law of physics.",
+  "hook_headline": "ICE BREAKS PHYSICS",
+  "script": "Every ice cube in your glass is breaking a fundamental law of physics. Almost every liquid shrinks when freezing, so why does water expand and float? As water freezes, its hydrogen bonds lock into open rings, making ice less dense. Trapped ice expands with over thirty thousand pounds of pressure per square inch. That easily shatters solid mountain rock. If ice sank instead, lakes and oceans would freeze solid from the bottom up. Life on Earth depends on a simple substance that refuses to sink.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Every ice cube in your glass is breaking a fundamental law of physics.",
+      "on_screen_text": "BREAKING PHYSICS",
+      "search_query": "ice floating water",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 5,
+      "voiceover": "Almost every liquid shrinks when freezing, so why does water expand and float?",
+      "on_screen_text": "WHY ICE FLOATS",
+      "search_query": "frozen lake surface",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "As water freezes, its hydrogen bonds lock into open rings, making ice less dense.",
+      "on_screen_text": "LESS DENSE STRUCTURE",
+      "search_query": "cracked ice macro",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 5,
+      "voiceover": "Trapped ice expands with over thirty thousand pounds of pressure per square inch.",
+      "on_screen_text": "OUTWARD ICE PRESSURE",
+      "search_query": "mountain cliff rock crack",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 3,
+      "voiceover": "That easily shatters solid mountain rock.",
+      "on_screen_text": "SHATTERING SOLID ROCK",
+      "search_query": "ice expanding crack rock",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "If ice sank instead, lakes and oceans would freeze solid from the bottom up.",
+      "on_screen_text": "FREEZING BOTTOM UP",
+      "search_query": "frozen ocean aerial",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "Life on Earth depends on a simple substance that refuses to sink.",
+      "on_screen_text": "LIFE DEPENDS ON FLOATING",
+      "search_query": "underwater ice surface sun",
+      "motion": "zoom_out",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "Why ice floats is one of the stranger glitches in physics. What would happen if solid ice sank instead?",
+    "Water reaches maximum density at four degrees Celsius, keeping deep lakes liquid under frozen surfaces.",
+    "Without this floating ice anomaly, aquatic ecosystems across the northern hemisphere would cease to exist."
+  ],
+  "hashtags": [
+    "#physics",
+    "#science",
+    "#nature",
+    "#ice",
+    "#facts",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-08-05_why-water-breaks-the-rules-of-physics",
+  "cta_style": "LOOP",
+  "domain": "chemistry"
+}
