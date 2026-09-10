@@ -764,6 +764,55 @@ def test_content_alignment():
 # --------------------------------------------------------------------------
 # 3. _diversify_scene_queries: footage variety
 # --------------------------------------------------------------------------
+def test_judge_model_discovery_and_breaker_message():
+    section("main: the footage judge picks a LIVE model, and says why it tripped")
+    # Render 34453163265: JUDGE_MODEL 'llama-3.3-70b-versatile' now 404s at Groq,
+    # Cerebras 404'd too, and Gemini/OpenRouter are deliberately excluded from the
+    # judge chain -- so every judge call failed, the circuit opened after 3
+    # scenes, and the rest of the video shipped UNJUDGED stock. Footage relevance
+    # is the weakest QA dimension; a silently dead judge is a large part of why.
+    ids = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "openai/gpt-oss-120b",
+           "openai/gpt-oss-20b", "whisper-large-v3", "meta-llama/llama-guard-4-12b",
+           "playai-tts", "qwen/qwen3-32b"]
+    ranked = M._rank_judge_models(ids)
+    check(ranked[0] == "openai/gpt-oss-120b", f"the largest chat model leads ({ranked[0]})")
+    check(ranked[-1] == "llama-3.1-8b-instant",
+          "the deliberately-small tier ranks LAST -- an 8b judge scored an "
+          "ocean-waves clip 9/10 against a 'sugar cube' line in production")
+    for bad in ("whisper-large-v3", "playai-tts", "meta-llama/llama-guard-4-12b"):
+        check(bad not in ranked, f"non-chat model excluded ({bad})")
+    check(M._rank_judge_models(ids) == M._rank_judge_models(list(reversed(ids))),
+          "ranking is deterministic regardless of catalogue order")
+    check(M._rank_judge_models([]) == [], "empty catalogue -> empty, no crash")
+    check(M._rank_judge_models(["llama-3.1-8b-instant", "qwen/qwen3-32b"])[0] == "qwen/qwen3-32b",
+          "a mid-size model still beats the instant tier")
+
+    # The breaker used to claim "rate-limited 3x in a row" unconditionally -- a
+    # diagnosis it never actually made. It counts EVERY transport failure, and on
+    # that render the real cause was a retired model 404ing. A breaker that
+    # misreports why it tripped sends the next reader hunting a quota problem.
+    import io, contextlib
+    M._JUDGE_CONSEC_FAILS, M._JUDGE_CIRCUIT_OPEN, M._JUDGE_LAST_ERROR = 0, False, ""
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        for _ in range(3):
+            M._judge_note(False, "Groq: HTTP Error 404: Not Found")
+    msg = buf.getvalue()
+    check("circuit OPEN" in msg, "three consecutive failures still open the circuit")
+    check("404" in msg, f"and the message names the REAL error ({msg.strip()[-60:]!r})")
+    check("rate-limited" not in msg, "no longer asserts a rate limit it never diagnosed")
+
+    # a success still closes it, and the breaker does not fire early
+    M._JUDGE_CONSEC_FAILS, M._JUDGE_CIRCUIT_OPEN, M._JUDGE_LAST_ERROR = 0, False, ""
+    buf2 = io.StringIO()
+    with contextlib.redirect_stdout(buf2):
+        M._judge_note(False, "x"); M._judge_note(False, "x"); M._judge_note(True)
+        M._judge_note(False, "x"); M._judge_note(False, "x")
+    check("circuit OPEN" not in buf2.getvalue(),
+          "a success between failures resets the counter -- no premature open")
+    check(M._JUDGE_CIRCUIT_OPEN is False, "and the circuit is still closed")
+
+
 def test_diversify_queries():
     section("main._diversify_scene_queries: no scene lingers on a repeat clip")
 
@@ -4587,6 +4636,7 @@ def main():
     test_validate_rejections()
     test_validate_two_quantity_comparison_not_restated()
     test_content_alignment()
+    test_judge_model_discovery_and_breaker_message()
     test_diversify_queries()
     test_diversify_motions()
     test_footage_intent_anchors_on_subject()

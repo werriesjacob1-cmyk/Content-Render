@@ -641,20 +641,32 @@ def _gemini_chat(prompt, max_tokens, temperature):
 
 _JUDGE_CONSEC_FAILS = 0   # consecutive transport failures of the footage judge
 _JUDGE_CIRCUIT_OPEN = False  # once open, the judge stops making doomed calls
+_JUDGE_LAST_ERROR = ""    # why the most recent judge call failed, for the log
 
 
-def _judge_note(ok):
+def _judge_note(ok, err=""):
     """Track judge health for the circuit breaker: a success closes it, 3
-    back-to-back transport failures open it (stop making doomed calls)."""
-    global _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN
+    back-to-back transport failures open it (stop making doomed calls).
+
+    The message names the ACTUAL last error. It used to say "rate-limited 3x in
+    a row" unconditionally, which is a diagnosis the breaker never made -- it
+    counts every transport failure. On render 34453163265 the real cause was a
+    RETIRED model returning 404 on every call, and the log confidently reported
+    a rate limit, pointing the next reader at quota instead of at a dead model.
+    A breaker that misreports why it tripped costs more than the calls it saves.
+    """
+    global _JUDGE_CONSEC_FAILS, _JUDGE_CIRCUIT_OPEN, _JUDGE_LAST_ERROR
     if ok:
         _JUDGE_CONSEC_FAILS = 0
     else:
         _JUDGE_CONSEC_FAILS += 1
+        if err:
+            _JUDGE_LAST_ERROR = str(err)[:160]
         if _JUDGE_CONSEC_FAILS >= 3 and not _JUDGE_CIRCUIT_OPEN:
             _JUDGE_CIRCUIT_OPEN = True
-            print("  [judge] circuit OPEN — footage judge rate-limited 3x in a row; "
-                  "shipping the top stock clip for the rest of this run (no more doomed judge calls)")
+            why = f" last error: {_JUDGE_LAST_ERROR}" if _JUDGE_LAST_ERROR else ""
+            print("  [judge] circuit OPEN — footage judge failed on 3 consecutive scenes; "
+                  f"shipping the top stock clip for the rest of this run (no more doomed judge calls).{why}")
 
 
 _CEREBRAS_JUDGE_MODEL_CACHE = None
@@ -684,6 +696,72 @@ def _cerebras_judge_model():
             print(f"  Cerebras /v1/models lookup failed ({e}); skipping Cerebras judge")
     _CEREBRAS_JUDGE_MODEL_CACHE = picked
     return picked or None
+
+
+_GROQ_JUDGE_MODEL_CACHE = None
+
+# Not chat models, or too specialised to score footage relevance.
+_JUDGE_MODEL_EXCLUDE = ("whisper", "tts", "embed", "guard", "moderation", "vision", "audio")
+
+
+def _rank_judge_models(ids):
+    """Order candidate judge models strongest-first. Pure, so it is unit-tested
+    without a network call.
+
+    Size before everything: the hardcoded JUDGE_MODEL comment records why a weak
+    judge is worse than none -- 'llama-3.1-8b-instant scored an ocean-waves clip
+    9/10 against a "humanity fits in a sugar cube" line in production'. So the
+    deliberately-small tiers ('instant', 'mini', 'small', 'lite') rank last no
+    matter how they are numbered, and within a tier the larger parameter count
+    wins. Ties break on name so the choice is deterministic run to run.
+    """
+    def size(n):
+        return max((int(x) for x in re.findall(r"(\d+)\s*b\b", n.lower())), default=0)
+
+    def weak(n):
+        return any(t in n.lower() for t in ("instant", "mini", "small", "lite"))
+
+    usable = [i for i in ids
+              if i and not any(b in i.lower() for b in _JUDGE_MODEL_EXCLUDE)]
+    return sorted(usable, key=lambda n: (weak(n), -size(n), n))
+
+
+def _groq_judge_model():
+    """The Groq model THIS key can actually use, discovered via /v1/models.
+
+    2026-09-10, render 34453163265: the hardcoded JUDGE_MODEL
+    'llama-3.3-70b-versatile' now 404s at Groq. Cerebras 404'd on the same run,
+    and Gemini/OpenRouter are DELIBERATELY excluded from the judge chain, so
+    every scene's judge call failed, three consecutive failures opened the judge
+    circuit, and the rest of the video shipped unjudged stock. Footage relevance
+    is the weakest dimension in the QA report; a silently dead judge is a large
+    part of why.
+
+    This is the same fix `_cerebras_judge_model` already applies one provider
+    over, and the same rule CLAUDE.md states for generation: discover models at
+    runtime, never hardcode a version. Falls back to the JUDGE_MODEL constant on
+    any discovery failure, so behaviour is unchanged when discovery is
+    unavailable."""
+    global _GROQ_JUDGE_MODEL_CACHE
+    if _GROQ_JUDGE_MODEL_CACHE is not None:
+        return _GROQ_JUDGE_MODEL_CACHE or None
+    key = os.environ.get("GROQ_API_KEY", "")
+    picked = ""
+    if key:
+        try:
+            req = urllib.request.Request(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {key}", "User-Agent": "content-render/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                ids = [m.get("id") for m in json.loads(r.read().decode()).get("data", []) if m.get("id")]
+            ranked = _rank_judge_models(ids)
+            picked = ranked[0] if ranked else ""
+            if picked:
+                print(f"  [judge] groq model discovered: {picked}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  Groq /v1/models lookup failed ({e}); using {JUDGE_MODEL}")
+    _GROQ_JUDGE_MODEL_CACHE = picked or JUDGE_MODEL
+    return _GROQ_JUDGE_MODEL_CACHE or None
 
 
 def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
@@ -739,14 +817,16 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
 
     # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
     #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
+    last_err = ""
     if groq_key:
         try:
             out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
-                                      groq_key, JUDGE_MODEL, prompt, max_tokens, temperature)
+                                      groq_key, _groq_judge_model(), prompt, max_tokens, temperature)
             if out is not None:
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to Cerebras
+            last_err = f"Groq: {e}"
             print("  Groq judge call failed, trying Cerebras:", e)
     # 2) Cerebras — free, generous, separate bucket.
     cere_model = _cerebras_judge_model() if cere_key else None
@@ -758,6 +838,7 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to OpenRouter
+            last_err = f"Cerebras: {e}"
             print("  Cerebras judge call failed, trying OpenRouter:", e)
     # 3) The ADDED free buckets — Together → Fireworks → Mistral. These extend the
     #    judge's capacity WITHOUT ever touching Gemini or OpenRouter (reserved
@@ -780,12 +861,13 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
                 _judge_note(True)
                 return out
         except Exception as e:  # noqa: BLE001 - fall through to the next added bucket
+            last_err = f"{label}: {e}"
             print(f"  {label} judge call failed:", e)
     # nothing worked — Gemini + OpenRouter are DELIBERATELY not used by the judge
     # (reserved for generation), so a judge outage simply ships the top stock clip.
     if groq_key or cere_key or any(k for _, _, k, _ in added):
         _LAST_GROQ_FAILED = True
-        _judge_note(False)
+        _judge_note(False, last_err)
     return None
 
 
