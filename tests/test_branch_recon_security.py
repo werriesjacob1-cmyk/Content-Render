@@ -9,6 +9,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "branch_recon.yml"
+CONTROL_WORKFLOW = ROOT / ".github" / "workflows" / "control_plane_tests.yml"
 
 
 def check(condition, message):
@@ -19,8 +20,13 @@ def check(condition, message):
 
 def main():
     text = WORKFLOW.read_text(encoding="utf-8")
+    control = CONTROL_WORKFLOW.read_text(encoding="utf-8")
 
     check("workflow_dispatch:" in text, "branch recon remains manual-dispatch only")
+    check("superchad/mission-1b-branch-recon-hardening-01" not in control,
+          "control-plane CI no longer direct-push triggers the completed historical hardening branch")
+    check("pull_request:" in control and "- main" in control,
+          "control-plane security tests still cover PR changes and direct pushes to main")
     for forbidden_trigger in ("pull_request_target:", "schedule:", "push:", "pull_request:"):
         check(forbidden_trigger not in text, f"generic recon has no {forbidden_trigger[:-1]} trigger")
 
