@@ -76,6 +76,20 @@ def test_every_scheduled_provider_spending_lane_is_gated():
               f"{wf} still allows explicit manual dispatch")
 
 
+def test_expand_bank_validates_before_bot_commit():
+    """A GitHub-token bot push may not trigger a second push workflow. The bank
+    must therefore prove its zero-quota integrity checks BEFORE committing the
+    generated topic_bank.json, not rely on downstream CI that may never run."""
+    y = text(".github/workflows/expand_bank.yml")
+    expand_i = y.index("python expand_bank.py")
+    validate_i = y.index("python tests/test_pipeline.py")
+    commit_i = y.index('git commit -m "auto: expand topic bank toward 500 (WTF facts)"')
+    check(expand_i < validate_i < commit_i,
+          "expanded bank is validated after generation and before the bot commit")
+    check("Validate expanded bank before commit (zero quota)" in y,
+          "pre-commit bank validation is an explicit workflow step")
+
+
 def test_stamping_cannot_relabel_a_v21_manifest_as_legacy():
     """render.yml stamps the queue immediately before REQUIRING the legacy
     label, so an unstamped V2.1 manifest would otherwise be auto-blessed as
