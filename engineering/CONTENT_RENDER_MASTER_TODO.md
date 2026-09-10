@@ -1,144 +1,263 @@
-# Content Render — master backlog
+# Content Render — canonical master backlog
 
-**Status of this file (read first).** The closure mission asked for
-`engineering/CONTENT_RENDER_MASTER_TODO.md` to be *updated*, preserving an
-existing 33-item backlog and reconciling rather than overwriting. **That file did
-not exist** — not at this path, not anywhere in `content-render`, and not in the
-sibling `TikTok2` repo attached to this session. Nothing was overwritten, but
-nothing could be reconciled either: the 33-item list is not reproduced below,
-because inventing 33 plausible items would be worse than admitting they are not
-in hand. What follows is only what there is direct evidence for. If the real
-backlog exists somewhere else, merge it into this file rather than treating this
-as the whole picture.
+**Authoritative control-plane status as of 2026-09-10.**
 
-Last updated: 2026-09-09, branch `claude/integrated-factory-proof-20260909`
-(PR #76). Exact-head CI verified on `b651b596f2415ac4555109a9ef879f5f23d60851`
-— both the `test` job and the `factory-proof` job SUCCESS on that same SHA.
+This file is the canonical repo-level backlog for Content Render. It replaces the
+stale 2026-09-09 status language that predated PRs #81, #87, and #88 and several
+live/private render attempts. Historical PRs remain in GitHub history; open PRs
+must not be used as the project's memory system.
 
----
+Current production main at this update:
 
-## Named closure targets
+`78338ef6d54ca488233ac4505267474b3500c0c0`
 
-### C8 — real zero-provider factory proof green on exact head — **COMPLETE**
-Both jobs SUCCESS on one SHA, and the artifact was downloaded and probed rather
-than inferred from the exit code. That inspection is what found the audio defect
-below, which is the point of the standard.
+That commit is the merge of PR #88 (footage relevance + live judge failover),
+on top of PR #87 (deterministic Writer repair) and PR #81 (Actions artifact
+storage budget). Actual-main CI was green after the #88 merge.
 
-Evidence: run 34302889958 (`b651b59`), artifact
-`downstream-factory-proof-<sha>`; both MP4s h264 540×960 / AAC 48 kHz, 16.03 s;
-`provider_calls_made` 0 and `network_calls_made` 0 **measured** via interception,
-with `network_calls_detail` empty.
+## North Star
 
-### A6 — bounded QA → repair → reassemble → re-QA invariant — **COMPLETE**
-`tests/test_repair_invariant_adversarial.py`. Attacks the invariant from the
-directions the real defect came from: unauthorized scene refused, partial
-replacement refused, missing asset fails closed, no-op replacement refused,
-unaffected scenes proven unchanged by SHA256, re-QA measured on the *repaired*
-artifact, failing re-QA surfaced rather than swallowed, and both assemblies
-proven to run through the same canonical finishing path.
+**UNMET: no certified, post-worthy science video has yet cleared the complete
+factory and human product bar.**
 
-Visual confirmation from the CI artifact: at t=7 s the two cuts carry an
-identical burned-in caption over a demonstrably different background — the
-repair changed the visual and nothing else.
+Private/diagnostic MP4s have been produced and are useful evidence, but an MP4
+or a machine PASS does not by itself satisfy the product goal. The target is a
+video Jacob would genuinely publish without excuses.
 
-### A8 — per-scene asset lineage, including after repair — **COMPLETE**
-Was a real defect, not a gap in test coverage: `final_asset_lineage.json` is
-written before the repair and still named `work/s2.mp4` / `work/s3.mp4` after
-those exact scenes were replaced, while reporting
-`all_rendered_scenes_attributable: true`. A repaired video would have shipped
-with provenance naming assets it does not contain.
+Until the North Star is met, each substantial engineering cycle must end in one
+of two outcomes:
 
-Now `quality_asset_lineage.repaired_lineage()` derives the repaired record from
-the pre-repair one, pointing at the files the repair actually assembled (from the
-controller's new `repaired_scene_files`, not a re-derivation), naming which
-scenes were swapped and what each replaced. Fails closed on an unknown scene, a
-no-op replacement, and an empty replacement set. `phantom_assets()` fails the run
-when lineage names a file that is not on disk. Gated in CI.
+1. a better real MP4 to inspect; or
+2. one narrowly proven blocker that directly prevented a real MP4.
 
-### S5/S6 — visual intent load-bearing before asset selection — **COMPLETE for the production render path; explicitly NOT claimed for the factory proof**
-The distinction the mission warned about is real and is recorded rather than
-rounded up. A bible that is written and ignored produces identical evidence to
-one that governs routing, so the proof is a counterfactual with narration held
-byte-identical:
+Do not insert broad research/measurement projects between those outcomes unless
+the experiment directly decides which blocker to attack.
 
-- changing only `must_show` changes which asset **wins** ranking (diagram →
-  seafloor footage);
-- changing only the intent (ORIENT → PROCESS) flips `motion_required`;
-- applying the same bible twice is identical, so the above is sensitivity and
-  not nondeterminism;
-- `quality_science_render` is pinned to apply the bible **before** motion
-  planning and asset resolution, and to feed the directed manifest to both.
+## Immediate critical path
 
-`quality_downstream_factory_proof` only *writes* the bible. It renders from fixed
-scene files and performs no asset selection, so there is nothing for a bible to
-steer there; its `visual_bible_scene_count` means the bible was produced, not
-obeyed. A test asserts the proof does not start claiming otherwise.
+1. **S6 upstream visual intent — ACTIVE / PARTIAL.** The downstream certification
+   renderer already has Visual Director, Visual Bible, science-motion routing,
+   authentic-media adapters, lineage, and final QA. The live legacy generation
+   path can still reject an otherwise usable script solely because disposable
+   `search_query` metadata is bad before those downstream systems get a chance
+   to help.
+2. **Metadata-only visual-intent repair — IN PROGRESS, not yet pushed/merged.**
+   Desired contract: bad retrieval metadata may be repaired generically and
+   deterministically, narration/evidence must remain byte-identical, the full
+   existing validator must run again, and unrecoverable cases still fail closed.
+3. **Next real private render.** Once the above change is exact-head green and
+   merged by explicit authorization, run one real private candidate and judge
+   the finished MP4 under `engineering/NEXT_MP4_ACCEPTANCE.md`.
+4. **Do not start topic-filmability architecture, Writer V2.1 redesign, provider
+   model bakeoffs, Audience Intelligence, Sound Brain, or premium-visual spend
+   before that render unless new evidence directly requires it.**
 
----
+## Canonical backlog — Claude / production items
 
-## Also closed in this mission
+### C1 — empirical word-window recalibration — DEFERRED
+Current prompt/validator length arithmetic was materially improved and live
+length failures stopped being the dominant blocker. Revisit only with enough
+new live data to justify changing the window.
 
-- **Delivery audio encode.** Every render shipped 96 kHz AAC: `loudnorm`
-  resamples internally to 192 kHz and never restores the rate, so with no `-ar`
-  the encoder fell back to the nearest rate it supports. The audio gate had
-  recorded `sample_rate: 96000` and passed it, because it only had a floor.
-  Fixing the rate then exposed that 96 kbit/s was bitrate-starved at 48 kHz
-  (+0.07 dBTP, breaching the gate's own ceiling); 128 kbit/s lands at −1.49 dB,
-  the loudnorm target. Rate and bitrate now live together in `quality_audio_qa`
-  and are imported by `main.py`.
-- **Three boundary safety gaps**: `expand_bank.yml` was the one scheduled lane
-  that could still reach paid generation ungated *and* auto-commit;
-  `stamp_manifest` could bless an unversioned V2.1-certified manifest as legacy;
-  the proof's zero-call claims were hardcoded literals and are now measured.
-- **Evidence serialization** (`quality_evidence.py`): one fail-closed boundary
-  for all ten evidence-writing sites.
+### C2 — offline Writer replay harness — COMPLETE / ACTIVE TOOLING
+`writer_replay.py` and the accumulated Writer corpus provide zero-provider
+replay for prompt/repair experiments.
 
----
+### C3 — remove single-provider fragility — PARTIAL
+Provider fallback exists, but the project should continue removing avoidable
+single-provider dependencies only when they are observed on the critical path.
 
-## Open
+### C4 — compact prompt / recover constrained-provider eligibility — PARTIAL
+Useful optimization, not today's blocker.
 
-- **The Writer question is still open and only a paid run can close it.** The
-  V2.1 prompt now states the budget `validate()` enforces, with a drift test.
-  Whether Gemini *obeys* it is unmeasured. Use `writer_replay.py` against
-  `tests/fixtures/writer_corpus/` for any further prompt idea first — that is
-  free; a flagship run is not.
-- **Production resolution is unproven by the factory proof.** It renders
-  540×960 synthetic scenes for speed, so production's 1080×1920 scaling path is
-  not exercised. The proof covers finishing, not scaling.
-- **ffmpeg encoding and audio QA on real TTS remain unproven end to end** — the
-  proof uses synthesized tones, not a real narration track.
-- **The publishing path is still documented inconsistently.** `CLAUDE.md`'s
-  architecture section says "GitHub Release → Zapier → Buffer"; the code has no
-  Buffer anywhere and `render.yml` has a direct **Publer** step. Needs Jacob to
-  say which path is actually live, then the wording fixed.
+### C5 — structurally impossible provider skip — SUBSTANTIALLY COMPLETE
+Request-size/capability accounting and skip evidence are load-bearing.
 
-## Storage — inventory and recommendation (no deletion performed)
+### C6 — "more repair rounds will solve Writer failures" — CLOSED / DISPROVEN
+Historical replay showed extra rounds would not solve the dominant failure
+classes. Keep bounded repair.
 
-Deleting historical artifacts is Jacob's decision and none were deleted.
+### C7 — Writer reliability / creative-output quality — PARTIAL
+Legacy calibration showed the current deterministic gates are not the primary
+miscalibration: 12/12 real August controls survived them. The Writer remains
+high-variance and topic-sensitive, but a live legacy candidate has reached 7.14.
+Do not reopen broad Writer architecture before the next visual-intent/render
+cycle.
 
-Measured, not assumed: **the repository already applies a 7-day artifact
-retention** — `final-video-284` (2026-09-01, 24.7 MB), `final-video-253`
-(43.9 MB) and `final-video-248` (39.3 MB) all show `expires_at` exactly 7 days
-after creation and all are already `expired: true`. An earlier commit message in
-this branch claimed render artifacts inherited a 90-day default; that claim was
-wrong, and the `retention-days: 7` it added was a no-op. The real saving came
-from dropping six redundant encodes and the `work/` scratch tree.
+### C8 — downstream render / visual / audio / QA proof — COMPLETE
+Production-realism evidence proved 1080x1920 rendering, real TTS/Piper/Edge
+paths, Whisper alignment, captions, shared mastering, AAC 48 kHz, true-peak
+headroom, repair/reassembly parity, and zero-provider factory proof. Reopen only
+if a new real artifact falsifies one of those guarantees.
 
-That also explains the 90%-of-0.5 GB alert without any 90-day hoard: at ~35 MB
-per successful render, twice daily, a 7-day window holds ~490 MB on its own. The
-TikTok-only narrowing cuts each render artifact to roughly one encode plus small
-JSON, an ~80% reduction, and directly addresses the alert.
+### C9 — topic / production readiness — PARTIAL / OPEN
+Do not blacklist abstract subjects. If topic readiness is advanced, it should
+measure whether the *current* visual stack can plausibly illustrate the story,
+preferably as a non-gating preference/tie-breaker first. Not on the critical
+path until visual-intent repair has been tested on another real render.
 
-**Recommendation, for Jacob to accept or decline:**
+### C10 — documentation — PARTIAL
+Keep canonical status here and remove stale path/provider/publishing comments
+that repeatedly create false work.
 
-1. **Nothing to reclaim from render artifacts** — every one older than 7 days is
-   already expired. There is no historical hoard to delete.
-2. **The only meaningful reclaimable set is this PR's own superseded
-   factory-proof artifacts**: roughly ten commits × ~10.6 MB ≈ ~106 MB, of which
-   only the newest has evidentiary value. Deleting the superseded ones is safe;
-   they also expire on their own.
-3. Factory-proof retention has been cut 7 → 3 days. Its name intentionally
-   carries the commit SHA, because this mission's evidence standard is exact-SHA
-   and a stable name would let a later push silently replace the artifact a claim
-   was made against. Storage therefore grows with pushes, not time, so retention
-   is the only lever that does not weaken the evidence.
+## Canonical backlog — SUPERCHAD items
+
+### S1 — Topic x Treatment intelligence — SHADOW
+Do not promote from small convenience samples.
+
+### S2 — append-only learning ledger — IMPLEMENTED / LIVE-PROVEN
+Failed private attempts and treatment/context evidence have been captured.
+
+### S3 — Audience Intelligence shadow — OPEN
+Not on the current render blocker.
+
+### S4 — Human Preference Evaluation — OPEN
+Lexical deterministic craft proxies are useful longitudinal diagnostics but are
+not human preference or prose-quality measurement.
+
+### S5 — Visual Continuity — LOAD-BEARING DOWNSTREAM
+Visual Bible/continuity behavior is in the production certification renderer.
+
+### S6 — Visual Intent — PARTIAL / ACTIVE
+**Important correction to the old status:** downstream visual intent is
+load-bearing, but upstream legacy generation can still die on bad visual-query
+metadata before downstream routing. The current mission is to close this seam
+without weakening validation or hardcoding individual topics.
+
+### S7 — premium visual escalation — OPEN
+No Higgsfield/FAL/premium spend without explicit authorization and a demonstrated
+need from a real video.
+
+### S8 — finished-video certified reserve — OPEN
+Long-term delivery guarantee remains unfinished.
+
+### S9 — provider capability + cost + session-health router — PARTIAL
+Capability and session-health behavior are substantially implemented; explicit
+cost-aware LLM routing remains unimplemented. Not today's blocker.
+
+### S10 — champion/challenger experiments — ADVANCED / PARTIAL
+Deterministic replay/rescore coverage is useful, but weak lexical proxies must
+not be mistaken for human creative quality.
+
+## Canonical backlog — audit / operating items
+
+### A1 — deliberate V2.1 cutover — OPEN
+No cutover until a real candidate proves the promoted path.
+
+### A2 — queue migration/version safety — IMPLEMENTED
+Legacy/version compatibility guards are present.
+
+### A3 — operational memory vs append-only evidence — FOUNDATION PRESENT
+
+### A4 — persist failed private attempts — LIVE-PROVEN
+
+### A5 — treatment persistence — LIVE-PROVEN
+
+### A6 — bounded QA -> repair -> re-QA — COMPLETE
+Repair cannot bypass final QA and both original/repaired assemblies use the
+same finishing path.
+
+### A7 — temporal/video-aware QA — OPEN
+Current final QA samples the video but long-term temporal understanding can
+still improve.
+
+### A8 — final per-scene asset lineage — COMPLETE
+Lineage is updated through repair and fails closed on phantom/unknown assets.
+
+### A9 — finished certified reserve — OPEN
+Same long-term delivery problem as S8.
+
+### A10 — scheduled provider-spend policy — GUARDED
+Legacy scheduled spend is opt-in; manual/private runs remain explicit actions.
+
+### A11 — operational prerequisites/storage — PARTIAL HARDENING
+PR #81's storage split is merged. PR #80 remains an optional apt/repository
+hardening change and is not a current video blocker.
+
+### A12 — analytics/human-preference dataset — OPEN
+
+### A13 — branch/ruleset integrity — OPEN
+Main remains operationally sensitive; explicit merge boundaries continue to be
+required.
+
+## Proven durable capabilities already on main
+
+Do not rebuild these from scratch:
+
+- Visual Director / visual-class routing.
+- Visual Bible and continuity contracts.
+- Authentic scientific-media adapters (NASA/PubChem/RCSB modules).
+- Deterministic science-motion machinery.
+- Quality stack / quality runtime.
+- Writer semantic coverage fail-closed primitives.
+- Final-video multimodal QA.
+- Per-scene final asset lineage.
+- Bounded repair controller and re-QA.
+- Real-production audio mastering contract.
+- Provider session-health/cooldown.
+- Footage subject anchoring and relevance-over-forced-uniqueness.
+- Runtime Groq judge-model discovery/failover.
+- TikTok-only retained video artifact policy during certification.
+- Publishing/autopublish kill switches.
+
+Some older PRs contain *integration concepts* that are not fully load-bearing in
+the legacy lane. Preserve those concepts as backlog evidence rather than
+merging stale branches.
+
+## Known useful concepts not yet promoted
+
+- **PR #37:** topic/domain cleanup is mostly evolved into main, but its
+  `expand_bank.yml` pre-commit zero-quota validation step is not present on
+  current main. Extract that safeguard as a small future hardening change rather
+  than merging the stale PR.
+- **PR #42:** `scientific_media.py` exists on main, but the old direct
+  `main.py` integration that let NASA SVS compete with Pexels and routed
+  PubChem before generic still fallback is not currently present in the legacy
+  path. Preserve as prior art; do not merge stale #42.
+- **PR #44:** current main fixed the retired Groq text judge via runtime model
+  discovery, but the old Qwen multimodal thumbnail fallback and three-frame
+  generated-video verification remain distinct, unpromoted ideas. Re-evaluate
+  only after a real MP4 shows the need.
+- **PR #82:** narrative-function repair remains an experiment, not a measured
+  systemic fix. Do not merge from its stale branch.
+- **PR #85:** numeric Gemini-version sorting and manual Writer-model override are
+  valid latent correctness/experiment-enablement ideas, but neither is a proven
+  current quality lever. Keep off the critical path.
+
+## PR hygiene policy
+
+Open PRs are release state, not project memory.
+
+Default target:
+- at most 1 active implementation/release PR;
+- at most 1 explicit experiment PR;
+- at most 1 optional hardening PR.
+
+When a PR is integrated, superseded, or reduced to historical evidence, close
+it without deleting the branch unless branch deletion is separately authorized.
+Record any still-useful concept here first.
+
+## Publishing boundary
+
+AUTO_PUBLISH remains OFF.
+
+No Release, Publer, posting, deployment, or autopublish activation without
+Jacob's explicit authorization. The production code currently contains direct
+Publer support; stale documentation that describes Buffer/Zapier as the active
+path should be corrected separately once the intended distribution path is
+confirmed.
+
+## Product acceptance
+
+The next real MP4 is judged under:
+
+`engineering/NEXT_MP4_ACCEPTANCE.md`
+
+Machine PASS is necessary but not sufficient. The final product verdict must be
+one of:
+
+- **POST-WORTHY**
+- **REPAIRABLE — NOT POST-WORTHY YET**
+- **REJECT — NEW CANDIDATE**
+
+The North Star closes only on **POST-WORTHY**.
