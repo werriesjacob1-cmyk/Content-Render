@@ -802,6 +802,53 @@ def test_judge_model_discovery_and_breaker_message():
     check("404" in msg, f"and the message names the REAL error ({msg.strip()[-60:]!r})")
     check("rate-limited" not in msg, "no longer asserts a rate limit it never diagnosed")
 
+    # ---- discovery failure must NOT resurrect the retired model -----------
+    # Adversarial: the whole point of discovery is that JUDGE_MODEL is DEAD.
+    # Caching `picked or JUDGE_MODEL` on failure would recreate the outage --
+    # catalogue hiccup -> known-dead model -> 404 -> breaker opens -> the rest
+    # of the video ships unjudged. Zero network: urlopen is forced to raise.
+    import urllib.request as _ur
+    calls = []
+
+    def _boom(*a, **k):
+        raise OSError("simulated /v1/models outage")
+
+    real_urlopen, real_chat = _ur.urlopen, M._openai_compat_chat
+    M._GROQ_JUDGE_MODEL_CACHE = None
+    try:
+        _ur.urlopen = _boom
+        os.environ["GROQ_API_KEY"] = "test-key"
+        picked = M._groq_judge_model()
+        check(picked is None,
+              f"discovery failure yields NO groq model, not the retired one ({picked!r})")
+        check(M._GROQ_JUDGE_MODEL_CACHE == "",
+              "the unavailable result is cached session-locally, so later scenes "
+              "do not repeat the catalogue request")
+
+        # and the chain must skip Groq entirely, still reaching a later provider
+        def _spy(url, key, model, prompt, max_tokens, temperature):
+            calls.append((url, model))
+            if "groq" in url:
+                raise AssertionError("Groq was called despite failed discovery")
+            return "7"
+
+        M._openai_compat_chat = _spy
+        M._JUDGE_CONSEC_FAILS, M._JUDGE_CIRCUIT_OPEN = 0, False
+        M._CEREBRAS_JUDGE_MODEL_CACHE = "llama-3.3-70b"
+        os.environ["CEREBRAS_API_KEY"] = "test-key"
+        out = M._groq_chat("score this", max_tokens=5)
+        check(out == "7", f"a later judge provider still answers ({out!r})")
+        check(all("groq" not in u for u, _ in calls),
+              f"the retired model was never sent to a chat endpoint ({calls})")
+        check(all(m != "llama-3.3-70b-versatile" for _, m in calls),
+              "and the retired id appears in no call at all")
+    finally:
+        _ur.urlopen, M._openai_compat_chat = real_urlopen, real_chat
+        M._GROQ_JUDGE_MODEL_CACHE = None
+        M._CEREBRAS_JUDGE_MODEL_CACHE = None
+        M._JUDGE_CONSEC_FAILS, M._JUDGE_CIRCUIT_OPEN = 0, False
+        os.environ.pop("CEREBRAS_API_KEY", None)
+
     # a success still closes it, and the breaker does not fire early
     M._JUDGE_CONSEC_FAILS, M._JUDGE_CIRCUIT_OPEN, M._JUDGE_LAST_ERROR = 0, False, ""
     buf2 = io.StringIO()
@@ -869,6 +916,44 @@ def test_diversify_queries():
           "no usable distinguishing word -> the bare subject, still filmable")
     check(M._subject_anchored_query("banana radiation", "", {"banana radiation": 1}) == "",
           "and if even that is taken, empty rather than a duplicate")
+
+    # ---- relevance outranks forced uniqueness ----------------------------
+    # When a subject exists but NO unique subject-led phrasing can be formed,
+    # keeping the relevant duplicate beats inventing an irrelevant query. A
+    # repeated query still yields a different clip (clip-ID dedup owns that);
+    # a manufactured one returns footage about the wrong thing.
+    sc5 = copy.deepcopy(FIX_ASTRO["scenes"])[:3]
+    for s in sc5:
+        s["search_query"] = "saturn rings"
+        s["voiceover"] = "It is there."          # no usable distinguishing word
+        s["on_screen_text"] = "LOOK CLOSER"      # tempting salad, must NOT be used
+    M._diversify_scene_queries(sc5, subject="saturn rings")
+    qs5 = [s["search_query"] for s in sc5]
+    check(all(q == "saturn rings" for q in qs5),
+          f"the relevant duplicate is KEPT rather than invented around ({qs5})")
+    check(all("LOOK CLOSER".lower() not in q.lower() for q in qs5),
+          "on_screen_text salad is never substituted in")
+    for junk in ("scene", "footage", "video", "clip"):
+        check(all(junk not in q.lower() for q in qs5),
+              f"no generic filler appended to force uniqueness ({junk!r})")
+
+    # but a usable distinguishing word still WINS uniqueness
+    sc6 = copy.deepcopy(FIX_ASTRO["scenes"])[:2]
+    sc6[0]["search_query"] = sc6[1]["search_query"] = "saturn rings"
+    sc6[1]["voiceover"] = "Cassini photographed the icy shepherd moons."
+    M._diversify_scene_queries(sc6, subject="saturn rings")
+    check(sc6[1]["search_query"] != "saturn rings",
+          f"a distinguishing term is still used when one exists ({sc6[1]['search_query']!r})")
+    check(sc6[1]["search_query"].startswith("saturn rings"),
+          "and it remains subject-led")
+
+    # NO subject -> legacy fallback preserved exactly
+    sc7 = copy.deepcopy(FIX_ASTRO["scenes"])[:2]
+    sc7[0]["search_query"] = sc7[1]["search_query"] = "planet space"
+    sc7[1]["voiceover"] = "Cassini photographed the icy shepherd moons."
+    M._diversify_scene_queries(sc7)          # no subject argument
+    check(sc7[1]["search_query"] != "planet space",
+          "with no subject the old voiceover-derived behaviour still diversifies")
 
     # end to end: the subject reaches the query when scenes collide
     sc4 = copy.deepcopy(FIX_ASTRO["scenes"])

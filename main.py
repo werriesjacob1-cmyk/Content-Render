@@ -759,9 +759,18 @@ def _groq_judge_model():
             if picked:
                 print(f"  [judge] groq model discovered: {picked}")
         except Exception as e:  # noqa: BLE001
-            print(f"  Groq /v1/models lookup failed ({e}); using {JUDGE_MODEL}")
-    _GROQ_JUDGE_MODEL_CACHE = picked or JUDGE_MODEL
-    return _GROQ_JUDGE_MODEL_CACHE or None
+            print(f"  Groq /v1/models lookup failed ({e}); SKIPPING Groq judge this run "
+                  f"(refusing to fall back to the retired {JUDGE_MODEL})")
+    # Falling back to JUDGE_MODEL here would recreate the exact outage this
+    # discovery exists to fix: 'llama-3.3-70b-versatile' is RETIRED and 404s
+    # (render 34453163265), so a transient catalogue hiccup would send a
+    # known-dead model, 404, and open the breaker -- shipping the rest of the
+    # video's stock unjudged. An empty cache means "Groq unavailable THIS run":
+    # the caller skips straight to Cerebras/Together/Fireworks/Mistral, and the
+    # empty string still short-circuits the catalogue request for every later
+    # scene. It is session-local, so the next run retries discovery normally.
+    _GROQ_JUDGE_MODEL_CACHE = picked
+    return picked or None
 
 
 def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
@@ -818,10 +827,15 @@ def _groq_chat(prompt, max_tokens=20, temperature=0, model="llama-3.1-8b-instant
     # 1) Groq FIRST — strongest generous free bucket (100k tokens/day); the tiny
     #    judge prompts (max_tokens=20) barely dent it, so it rarely runs out.
     last_err = ""
-    if groq_key:
+    groq_model = _groq_judge_model() if groq_key else None
+    if not groq_model and groq_key:
+        # Discovery could not name a live model. Skipping Groq entirely is the
+        # point: sending the retired constant is what caused the outage.
+        last_err = "Groq: model discovery unavailable (no live model to call)"
+    if groq_key and groq_model:
         try:
             out = _openai_compat_chat("https://api.groq.com/openai/v1/chat/completions",
-                                      groq_key, _groq_judge_model(), prompt, max_tokens, temperature)
+                                      groq_key, groq_model, prompt, max_tokens, temperature)
             if out is not None:
                 _judge_note(True)
                 return out
@@ -2152,7 +2166,17 @@ def _diversify_scene_queries(scenes, subject=""):
     So the replacement now leads with the video's own subject (the manifest
     `keyword`) and uses the voiceover only to DISTINGUISH one scene from another
     -- the same "lead with the subject, not the metaphor" rule `_footage_intent`
-    already follows. Distinctness is preserved, so no scene lingers on a repeat.
+    already follows.
+
+    UNIQUENESS IS PREFERRED, NOT MANDATORY. When a subject is available and no
+    unique subject-led phrasing can be formed, the ORIGINAL duplicate query is
+    kept rather than invented around. A repeated but RELEVANT query still yields
+    a different clip -- `used_footage_<page>.json` clip-ID dedup owns that, and
+    excluded 500 prior ids on the render above -- whereas a manufactured query
+    returns footage about the wrong subject, which is the failure this function
+    caused. Scene numbers, the word "footage", generic filler and metaphor
+    keywords are never appended just to make a query look distinct.
+
     With no subject available the old voiceover-only behaviour is unchanged."""
     subject = (subject or "").strip()
     seen = {}
@@ -2163,9 +2187,28 @@ def _diversify_scene_queries(scenes, subject=""):
             seen[key] = i
             continue
         # duplicate (or empty) — derive a fresh, scene-specific query
-        alt = _subject_anchored_query(subject, sc.get("voiceover", ""), seen)
-        if not alt or alt.lower() in seen:
-            alt = (sc.get("on_screen_text") or alt or q).strip()
+        if subject:
+            # Subject-led, or nothing. Falling through to on_screen_text / the
+            # voiceover keywords here would reintroduce the very salad this
+            # function now exists to prevent, just one rung lower down.
+            alt = _subject_anchored_query(subject, sc.get("voiceover", ""), seen)
+            if alt and alt.lower() in seen:
+                alt = ""
+            if not alt and q:
+                # No unique subject-led phrasing exists. KEEP the original: a
+                # repeated RELEVANT query still returns a different clip (clip-ID
+                # dedup owns that), whereas an invented one returns footage about
+                # the wrong thing. Uniqueness is preferred, not mandatory.
+                alt = ""
+            elif not alt:
+                # Empty original and no anchored option — fall back rather than
+                # leave a scene with no query at all.
+                alt = (sc.get("on_screen_text") or "").strip()
+        else:
+            # No subject available: legacy behaviour, unchanged.
+            alt = _keywords_from_text(sc.get("voiceover", ""))
+            if not alt or alt.lower() in seen:
+                alt = (sc.get("on_screen_text") or alt or q).strip()
         if alt and alt.lower() != key:
             print(f"  [footage] scene {i} query '{q}' duplicated scene {seen.get(key)} "
                   f"— diversified to '{alt}'")
