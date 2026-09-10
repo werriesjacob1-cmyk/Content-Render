@@ -76,16 +76,23 @@ def test_every_scheduled_provider_spending_lane_is_gated():
               f"{wf} still allows explicit manual dispatch")
 
 
-def test_expand_bank_validates_before_bot_commit():
-    """A GitHub-token bot push may not trigger a second push workflow. The bank
-    must therefore prove its zero-quota integrity checks BEFORE committing the
-    generated topic_bank.json, not rely on downstream CI that may never run."""
+def test_expand_bank_validates_before_bot_commit_and_after_rebase():
+    """A GitHub-token bot push may not trigger a second push workflow. Validate
+    the generated bank before committing, and validate AGAIN if a failed push
+    rebases the commit onto a concurrently changed branch before retrying."""
     y = text(".github/workflows/expand_bank.yml")
     expand_i = y.index("python expand_bank.py")
-    validate_i = y.index("python tests/test_pipeline.py")
+    first_validate_i = y.index("python tests/test_pipeline.py")
     commit_i = y.index('git commit -m "auto: expand topic bank toward 500 (WTF facts)"')
-    check(expand_i < validate_i < commit_i,
+    rebase_i = y.index("git pull --rebase")
+    second_validate_i = y.index("python tests/test_pipeline.py", first_validate_i + 1)
+    check(expand_i < first_validate_i < commit_i,
           "expanded bank is validated after generation and before the bot commit")
+    check(commit_i < rebase_i < second_validate_i,
+          "a push-retry rebase is revalidated before the next push attempt")
+    retry_block = y[rebase_i:second_validate_i]
+    check("|| true" not in retry_block,
+          "a failed/conflicted rebase cannot be swallowed and followed by an unsafe push retry")
     check("Validate expanded bank before commit (zero quota)" in y,
           "pre-commit bank validation is an explicit workflow step")
 
