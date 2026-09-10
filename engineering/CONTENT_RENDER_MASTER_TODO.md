@@ -97,16 +97,28 @@ obeyed. A test asserts the proof does not start claiming otherwise.
 
 ## Open
 
-- **The Writer question is still open and only a paid run can close it.** The
-  V2.1 prompt now states the budget `validate()` enforces, with a drift test.
-  Whether Gemini *obeys* it is unmeasured. Use `writer_replay.py` against
-  `tests/fixtures/writer_corpus/` for any further prompt idea first — that is
-  free; a flagship run is not.
-- **Production resolution is unproven by the factory proof.** It renders
-  540×960 synthetic scenes for speed, so production's 1080×1920 scaling path is
-  not exercised. The proof covers finishing, not scaling.
-- **ffmpeg encoding and audio QA on real TTS remain unproven end to end** — the
-  proof uses synthesized tones, not a real narration track.
+- **C7 — the Writer question is now MEASURED, and narrower than it was**
+  (2026-09-10, `reports/LEGACY_V21_CALIBRATION_CHECKPOINT.md`). It no longer
+  needs a paid run to make progress. 12/12 known-good August scripts pass today's
+  deterministic gates; 5/54 V2.1 rounds do; and on the *same scorer* the five
+  that get there score 4.0–5.57 vs legacy's 7.0–8.29. **The Writer is the
+  limiting subsystem — not the gates, and not the word budget** (36 of 54 rounds
+  are already a legal length and still fail). Still open:
+  - ONE provider call would close it outright — run a legacy control's exact
+    narration through `score_script` today. ~8 confirms the scorer is stable.
+  - The V2.1-only **traceability / semantic-critic** layer is the one gate layer
+    the calibration cannot exonerate; legacy artifacts carry no provenance, so
+    there is no control for it. If a gate is miscalibrated, look there.
+  - Use `writer_replay.py` + `legacy_v21_replay.py` (both $0) before spending on
+    any prompt idea. A flagship run is not free; these are.
+- **S10 — ADVANCED.** Craft measurement went 1/36 → 36/36 deterministically
+  measurable (PR #83 tooling), and the legacy corpus now gives a *known-good*
+  reference class that did not exist before.
+- ~~Production resolution unproven~~ — **CLOSED.** `quality_production_realism_proof.py`
+  renders the production 1080×1920 canvas and asserts it (`legacy.W, legacy.H`).
+- ~~ffmpeg encoding / audio QA on real TTS unproven~~ — **CLOSED.** The realism
+  proof narrates with real Piper TTS and force-aligns it through the production
+  faster-whisper path; its workflow is on main. Landed via the PR #79 merge.
 - **The publishing path is still documented inconsistently.** `CLAUDE.md`'s
   architecture section says "GitHub Release → Zapier → Buffer"; the code has no
   Buffer anywhere and `render.yml` has a direct **Publer** step. Needs Jacob to
@@ -142,3 +154,24 @@ JSON, an ~80% reduction, and directly addresses the alert.
    and a stable name would let a later push silently replace the artifact a claim
    was made against. Storage therefore grows with pushes, not time, so retention
    is the only lever that does not weaken the evidence.
+
+---
+
+## Decisions waiting on Jacob (2026-09-10) — nothing here was actioned
+
+1. **Merge PR #83** — exact-head certified (`fe943d5`, `test` + `factory-proof`
+   green at job level, 1598 zero-quota checks). One production fix.
+2. **Merge PR #80 and #81** — each fixes a defect verified still live on main:
+   four bare `sudo apt-get update -qq` calls, and mastering scratch still written
+   into the uploaded artifact directory (`quality_downstream_factory_proof.py:142`).
+3. **Decide #37 and #44 — these are genuinely unlanded, not duplicates.**
+   `expand_bank.yml` still commits topic-bank changes without running the test
+   suite; `main.py:792` still pins `JUDGE_MODEL = "llama-3.3-70b-versatile"` and
+   the fal clip check still samples a single frame.
+4. **Close the graveyard** — 21 of 29 open PRs are stale duplicates of work
+   already on main. Never treat an open PR here as outstanding work without
+   checking main first.
+5. **Authorize (or decline) ONE `score_script` provider call** on a legacy
+   control's narration — the cheapest remaining question in the project.
+6. **Publishing path** — still documented inconsistently (see below); needs a
+   one-line answer from Jacob, then the wording fixed.
