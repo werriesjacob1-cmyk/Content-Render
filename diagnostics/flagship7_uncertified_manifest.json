@@ -1,0 +1,87 @@
+{
+  "schema": "content-render-uncertified-diagnostic-v1",
+  "diagnostic_only": true,
+  "certified": false,
+  "source_run_id": 34404373120,
+  "source_main_sha": "024b0b8d1dc56454c7c245864535f46b235852af",
+  "source_candidate": "attempt_3_round_2",
+  "source_candidate_evidence": {
+    "mechanical_hard_count": 0,
+    "semantic_violation_count": 0,
+    "semantic_verified": true,
+    "validate_err": null,
+    "quality_score": 4.0,
+    "quality_floor": 6.8,
+    "certification_result": "REJECTED_QUALITY_FLOOR"
+  },
+  "title": "A Shark Older Than Countries",
+  "hook": "Greenland sharks swimming today were born before America existed.",
+  "payoff": "The oldest dated shark, born between 1504 and 1744, lived during the Ming Dynasty, making it the longest-lived vertebrate of its time.",
+  "keyword": "Greenland shark longevity",
+  "domain": "science",
+  "vibe": "awe",
+  "captions": "UNCERTIFIED DIAGNOSTIC — Greenland shark longevity",
+  "hashtags": ["#science", "#greenlandshark", "#ocean", "#biology"],
+  "render": {
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "voiceover": "Greenland sharks swimming today were born before America existed.",
+      "search_query": "Greenland shark underwater Arctic",
+      "on_screen_text": "OLDER THAN AMERICA",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 2,
+      "voiceover": "Deep inside her eye sits a protein older than our country.",
+      "search_query": "Greenland shark eye close up",
+      "on_screen_text": "A PROTEIN IN HER EYE",
+      "motion": "pan"
+    },
+    {
+      "id": 3,
+      "voiceover": "How could tissue made inside an embryo survive for around 400 years?",
+      "search_query": "shark eye lens tissue microscope",
+      "on_screen_text": "AROUND 400 YEARS",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 4,
+      "voiceover": "The Greenland shark grows only about a centimeter each year.",
+      "search_query": "Greenland shark swimming deep sea",
+      "on_screen_text": "ABOUT 1 CM A YEAR",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 5,
+      "voiceover": "Massive concentrations of urea protect her proteins from denaturation.",
+      "search_query": "protein molecular structure laboratory",
+      "on_screen_text": "PROTEINS THAT LAST",
+      "motion": "pan"
+    },
+    {
+      "id": 6,
+      "voiceover": "Centuries later, scientists radiocarbon-dated that untouched core to unlock her history.",
+      "search_query": "radiocarbon dating laboratory scientist sample",
+      "on_screen_text": "RADIOCARBON DATING",
+      "motion": "zoom_out"
+    },
+    {
+      "id": 7,
+      "voiceover": "That single molecule proved the longest-lived vertebrate was born during the Ming Dynasty.",
+      "search_query": "Greenland shark underwater ancient ocean",
+      "on_screen_text": "LONGEST-LIVED VERTEBRATE",
+      "motion": "zoom_in"
+    },
+    {
+      "id": 8,
+      "voiceover": "The oldest dated shark, born between 1504 and 1744, lived during the Ming Dynasty, making it the longest-lived vertebrate of its time.",
+      "search_query": "Greenland shark deep ocean close up",
+      "on_screen_text": "BORN 1504–1744",
+      "motion": "zoom_out"
+    }
+  ]
+}
