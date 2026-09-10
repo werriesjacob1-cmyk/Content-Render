@@ -172,3 +172,46 @@ No merge, no flagship, no provider call, no paid render, no Release, no Publer,
 no posting, no deploy, no secret change. `AUTO_PUBLISH_ENABLED` untouched. No
 production prompt, gate, floor, repair or model change. PR #82, #80 untouched;
 PR #83 not modified during this mission.
+
+---
+
+# Open-PR triage (read-only inventory — nothing merged, closed or commented)
+
+**29 open PRs**, not the ~20 previously assumed. Every classification below was
+checked against the actual main checkout, not against PR titles.
+
+| class | n | PRs |
+|---|---|---|
+| MERGE CANDIDATE | 3 | #80, #81, #83 |
+| KEEP EXPERIMENT | 1 | #82 |
+| SUPERSEDED — CLOSE | 2 | #46 (→#44), #67 (→#80) |
+| NEEDS DECISION | 2 | #37, #44 |
+| **OBSOLETE — CLOSE** | **21** | #42, #43, #45, #47–#56, #68–#71, #73, #74, #75, #77 |
+
+**21 of 29 open PRs are stale duplicates of work already on main.** For each, the
+PR's own distinctive module/symbol/report was confirmed present in the main
+checkout. Eight of them additionally cannot merge as-is (dirty/unstable, or based
+on a non-main branch). This is the graveyard, and it is most of the list.
+
+## The three merge candidates each fix a defect verified still live on main
+
+- **#83** — the current minimal release candidate. Based on `024b0b8`, clean,
+  `test` + `factory-proof` green on exact head `fe943d5`, 1598 zero-quota checks.
+- **#80** — main still has **four** bare `sudo apt-get update -qq` calls
+  (`render.yml:65`, `quality_certification_render.yml:103`,
+  `production_realism_proof.yml:51`, `tests.yml:190`). Verified by grep. Merging
+  it also retires #67, whose diff #80 deletes outright.
+- **#81** — `quality_downstream_factory_proof.py:142` still reads
+  `work = Path(dest).parent / "master_work"`, i.e. mastering scratch is still
+  written into the uploaded artifact directory. Verified by grep. This is the
+  ~190 MB half of the Actions-storage overage.
+
+## The two that need Jacob, because they are NOT already shipped
+
+- **#37** — half-landed. Domain canonicalisation is on main; the workflow gate is
+  not: `.github/workflows/expand_bank.yml` still commits topic-bank changes
+  **without running the zero-quota suite first**. Its CI is currently red.
+- **#44** — wholly unlanded, and it touches production judging. `main.py:792` on
+  main still reads `JUDGE_MODEL = "llama-3.3-70b-versatile"`, and the fal clip
+  safety check still samples a single frame. I re-verified this line by hand
+  after initially misreading a truncated grep as a refutation.
