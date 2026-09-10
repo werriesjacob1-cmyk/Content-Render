@@ -53,10 +53,29 @@ the same beat before and after provenance repair:
               the Ming Dynasty, making it the longest-lived vertebrate of its
               time."
 
-The first pair is a video. The second is a citation. The provenance critic
-flagged the round-1 payoff as `UNSUPPORTED_ADDITION` — it is *true and follows
-from the cited facts*, but it is not a restatement of them, and the repair
-replaced evocative-but-entailed language with literal-but-dead language.
+The first pair is a video. The second is a citation.
+
+**CORRECTION (2026-09-10).** This report originally said the round-1 payoff was
+"true and follows from the cited facts" and that the critic had over-fired.
+**That was wrong**, and the correction makes the craft problem worse rather than
+better. The topic bank's own `whatif` — carried verbatim into the claim inventory
+as `base_004` — says the shark was "already a century old before **America** was
+even a country". The writer swapped the supported referent (America, 1776) for an
+unsupported one ("modern science"), which requires an external date that appears
+in no claim and is most likely false besides: a shark born in the 1620s was a
+century old around the 1720s, well after the Royal Society and Newton's
+*Principia*. `UNSUPPORTED_ADDITION` fired **correctly**.
+
+The indictment of repair therefore sharpens. `base_004` was in the repair's own
+evidence block, cited by the hook itself, so a fully supported AND equally vivid
+payoff was available:
+
+    supported and vivid   "...already a century old before America was even a country"
+    what repair produced  "The oldest dated shark, born between 1504 and 1744, ..."
+
+Factual safety did not force citation prose. The repair had a better, safe option
+in front of it and did not take it. See
+`reports/FLAGSHIP7_CRAFT_REPAIR_CHECKPOINT.md`.
 
 ### Finding 2 — two gates contradict each other, reproducibly
 
