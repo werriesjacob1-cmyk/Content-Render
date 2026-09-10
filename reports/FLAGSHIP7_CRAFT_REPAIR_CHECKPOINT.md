@@ -229,9 +229,35 @@ initialisms rather than by any abbreviation list.
 - Repair aim is imprecise but not wild: of 32 parseable pairs, 26 changed exactly
   the targeted beats, 5 under-applied, 1 changed an extra beat.
 
-## Gates confirmed unchanged so far
-Nothing modified yet. `QUALITY_HARD_FLOOR` 6.8, `MAX_REPAIR_ROUNDS` 2, word
-budget, semantic checks, provenance checks all untouched.
+## Exact-head CI (PR #82)
+`5dc22169e40643a00344c0198a14f037ab907fc6` — workflow `tests` run **34426335446**,
+event `pull_request`: `test` **SUCCESS**, `factory-proof` **SUCCESS**.
+
+`production-realism-proof` did **not** run, and that is correct rather than
+missing: it triggers only on `main.py` / `quality_audio_qa.py` /
+`quality_downstream_factory_proof.py` / its own harness files, none of which this
+branch touches. The 7 changed files are `writer_v2_repair.py`, one new test, the
+tests workflow, three reports and the flagship-7 fixture.
+
+## Gates confirmed unchanged
+`QUALITY_HARD_FLOOR` 6.8, `MAX_REPAIR_ROUNDS` 2, `WORD_*` budget, semantic
+taxonomy (`SEMANTIC_UNSUPPORTED_VERDICTS` still exactly
+`{UNSUPPORTED_ADDITION, CONTRADICTED}`), provenance hard-violation kinds — all
+untouched, and asserted by `test_10_none_of_the_gates_moved`. The only
+provenance behaviour change is that an initialism of a cited multi-word entity
+now counts as that entity; a fabricated entity still fails closed.
+
+## Backlog
+- **C7 — PARTIAL.** Three structural defects and one gate conflict fixed; whether
+  repair now produces BETTER candidates is untestable offline and unmeasured in
+  the corpus.
+- **S10 — PARTIAL.** 36-pair champion evidence landed; challenger proven
+  structurally only. Offline replay cannot generate a counterfactual score and
+  none is claimed.
+- **S4 — OPEN (shadow).** Touched only far enough to define what repair must
+  preserve.
+- **C8 — COMPLETE.** Not reopened.
+- **S9 — PARTIAL.** Cost-aware routing untouched, as instructed.
 
 ## Exact next action
 Exact-head CI on the draft PR, then the merge decision is Jacob's.
