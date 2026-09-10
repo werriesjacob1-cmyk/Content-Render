@@ -1,0 +1,336 @@
+{
+ "schema": "legacy-v21-calibration-v1",
+ "bounds_short": {
+  "word_hard": [
+   68,
+   108
+  ],
+  "word_target": [
+   78,
+   98
+  ],
+  "scenes": [
+   5,
+   8
+  ],
+  "scene_word_cap": 25,
+  "hook_words": [
+   4,
+   16
+  ]
+ },
+ "bounds_long": {
+  "word_hard": [
+   85,
+   115
+  ],
+  "word_target": [
+   95,
+   110
+  ],
+  "scenes": [
+   7,
+   10
+  ],
+  "scene_word_cap": 25,
+  "hook_words": [
+   4,
+   16
+  ]
+ },
+ "not_testable_gates": {
+  "traceability_hard": "legacy manifests carry no source_claim_ids or claim inventory",
+  "semantic_support": "requires the LLM critic and a claim inventory; neither exists here",
+  "information_gain": "LLM call; excluded by the zero-provider constraint",
+  "score_script": "LLM rubric call; excluded by the zero-provider constraint"
+ },
+ "rows": [
+  {
+   "video_id": "science_2026-08-03_the-metal-that-remembers-its-shape",
+   "fact_id": "shape_memory_metal",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.29,
+   "manifest_commit_sha": "85600b7f4982955ba4a486de838ccc3c70d6acb2",
+   "manifest_commit_date": "2026-08-03",
+   "word_count": 94,
+   "scene_count": 7,
+   "hook_words": 13,
+   "max_scene_words": 14,
+   "cta_style": "SAVE_WORTHY",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-05_why-water-breaks-the-rules-of-physics",
+   "fact_id": "water_expands_ice",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.71,
+   "manifest_commit_sha": "5e46492667d03f8443409d7ba9bf4edfdc3d1d32",
+   "manifest_commit_date": "2026-08-05",
+   "word_count": 85,
+   "scene_count": 7,
+   "hook_words": 13,
+   "max_scene_words": 14,
+   "cta_style": "LOOP",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-05_what-actually-happens-to-a-body-in-space",
+   "fact_id": "human_vacuum",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.14,
+   "manifest_commit_sha": "842d20614b791f6f2927a501d7978a0b1cc386f4",
+   "manifest_commit_date": "2026-08-05",
+   "word_count": 92,
+   "scene_count": 8,
+   "hook_words": 13,
+   "max_scene_words": 13,
+   "cta_style": "COMMENT",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
+   "fact_id": "pitch_drop_experiment",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.0,
+   "manifest_commit_sha": "f390828c9723277162d8c1afeff3a3866588bf6a",
+   "manifest_commit_date": "2026-08-07",
+   "word_count": 91,
+   "scene_count": 7,
+   "hook_words": 12,
+   "max_scene_words": 15,
+   "cta_style": "SAVE_WORTHY",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-07_how-machines-learn-your-brain-code",
+   "fact_id": "brain_computer_interfaces",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.0,
+   "manifest_commit_sha": "7cf71cf5408715a29351b7d9fe54b19639869df8",
+   "manifest_commit_date": "2026-08-07",
+   "word_count": 94,
+   "scene_count": 7,
+   "hook_words": 12,
+   "max_scene_words": 17,
+   "cta_style": "LOOP",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-08_the-flammable-ocean-floor",
+   "fact_id": "frozen_methane",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.0,
+   "manifest_commit_sha": "f7928c588cf0c52a3ae2575bdb5e06826c1b3460",
+   "manifest_commit_date": "2026-08-08",
+   "word_count": 93,
+   "scene_count": 8,
+   "hook_words": 15,
+   "max_scene_words": 15,
+   "cta_style": "SAVE_WORTHY",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-09_venus-where-a-day-outlasts-a-year",
+   "fact_id": "venus_day",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.71,
+   "manifest_commit_sha": "cbae3e07a3ac81c92321f8a35c8c31d65f5dca01",
+   "manifest_commit_date": "2026-08-09",
+   "word_count": 80,
+   "scene_count": 6,
+   "hook_words": 8,
+   "max_scene_words": 19,
+   "cta_style": "LOOP",
+   "validate_err_short": null,
+   "validate_err_long": "scene count 6 out of range (7-10, mode long)",
+   "gate_family_short": null,
+   "gate_family_long": "length:scene_count",
+   "passes_modes": [
+    "short"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-10_the-animal-that-poops-in-cubes",
+   "fact_id": "wombat_cube_poop",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.14,
+   "manifest_commit_sha": "517d2eb7910f7e86492f3c2676dd858badf92be6",
+   "manifest_commit_date": "2026-08-10",
+   "word_count": 100,
+   "scene_count": 8,
+   "hook_words": 8,
+   "max_scene_words": 24,
+   "cta_style": "COMMENT",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-12_your-head-ages-faster-than-your-feet",
+   "fact_id": "head_ages_faster",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.0,
+   "manifest_commit_sha": "e897194b72dae33b72646aac8fd78c4c21ce5094",
+   "manifest_commit_date": "2026-08-12",
+   "word_count": 99,
+   "scene_count": 8,
+   "hook_words": 10,
+   "max_scene_words": 15,
+   "cta_style": "SAVE_WORTHY",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-13_your-fingerprints-aren-t-in-your-genes",
+   "fact_id": "twin_fingerprints",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.14,
+   "manifest_commit_sha": "ee3553da8369096fd50cb63a2c6c923569709a66",
+   "manifest_commit_date": "2026-08-13",
+   "word_count": 102,
+   "scene_count": 8,
+   "hook_words": 9,
+   "max_scene_words": 21,
+   "cta_style": "COMMENT",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
+   "fact_id": "spider_biomass",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 8.14,
+   "manifest_commit_sha": "024b68ed2519b4ac74a8b6e672c0c3540e6c2102",
+   "manifest_commit_date": "2026-08-14",
+   "word_count": 104,
+   "scene_count": 7,
+   "hook_words": 12,
+   "max_scene_words": 25,
+   "cta_style": "SAVE_WORTHY",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  },
+  {
+   "video_id": "science_2026-08-16_light-that-doesn-t-move",
+   "fact_id": "slow_light_lab",
+   "fact_in_bank_today": true,
+   "stored_quality_overall": 7.86,
+   "manifest_commit_sha": "647493280f1c7c80df8a8507fbe99d1a17a0a3b8",
+   "manifest_commit_date": "2026-08-16",
+   "word_count": 103,
+   "scene_count": 7,
+   "hook_words": 8,
+   "max_scene_words": 22,
+   "cta_style": "LOOP",
+   "validate_err_short": null,
+   "validate_err_long": null,
+   "gate_family_short": null,
+   "gate_family_long": null,
+   "passes_modes": [
+    "short",
+    "long"
+   ],
+   "reaches_scorer": true,
+   "provenance_testability": "NOT TESTABLE",
+   "provenance_reason": "legacy manifests carry no source_claim_ids or claim inventory"
+  }
+ ]
+}
