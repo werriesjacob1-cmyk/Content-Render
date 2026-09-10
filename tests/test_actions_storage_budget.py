@@ -244,6 +244,22 @@ def test_every_heavy_proof_actually_splits():
               f"{name}: the two artifacts have distinct names ({names})")
 
 
+def test_heavy_tests_do_not_push_run_on_historical_branches():
+    """PR pushes are already covered by pull_request; stale branch-specific push
+    triggers duplicate heavy test/factory-proof work and can refill Actions
+    storage. Only main needs a direct push trigger."""
+    y = (WORKFLOWS / "tests.yml").read_text(encoding="utf-8")
+    for stale in (
+        "claude/epic-edison-jybjd1",
+        "superchad/writer-v2-semantic-failclosed-01",
+        "claude/p0-manifest-semantic-merge-01",
+    ):
+        check(stale not in y, f"tests.yml no longer direct-push triggers stale branch {stale}")
+    check("pull_request:" in y, "all PR heads remain covered by the pull_request trigger")
+    push_block = y.split("  push:", 1)[1].split("permissions:", 1)[0]
+    check("- main" in push_block, "main still receives direct-push CI")
+
+
 def test_mastering_scratch_never_lands_in_the_uploaded_directory():
     """The measured master writes WAVs; they must not go where evidence goes.
 
@@ -291,5 +307,6 @@ if __name__ == "__main__":
     test_the_evidence_artifact_carries_no_video()
     test_the_audit_trail_outlives_the_video()
     test_every_heavy_proof_actually_splits()
+    test_heavy_tests_do_not_push_run_on_historical_branches()
     test_mastering_scratch_never_lands_in_the_uploaded_directory()
     print("actions storage budget tests: PASS")
