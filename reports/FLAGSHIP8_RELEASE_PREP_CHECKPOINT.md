@@ -8,20 +8,52 @@
 
 ## What this release contains — the whole production delta
 
-**One production file changed: `writer_v2_repair.py` (+59 / -3).**
+**One production file, ONE production fix: `writer_v2_repair.py`, all of it
+inside `classify_repair`. Traceability is byte-identical to main.**
 
-1. **Critic `must_preserve` reaches every repair tier.** The critic is asked, in
-   its own schema, for "a short list of specific things in the beats you are NOT
-   flagging that the rewrite must not disturb". `classify_repair` used it on tier
-   3 only; tier 1 (unsupported claim) and tier 2 (validate failure) computed it
-   and threw it away — and those two tiers fire in nearly every real round.
-2. **A cited multi-word entity's genuine initialism counts as that entity.**
-   `deterministic_mechanical_trim` shortened "the United States" to "the U.S." to
-   fit a hook word cap, changing nothing else; provenance then flagged "U.S" as
-   unsupported (semantic violations 0 -> 5, plus a new hard violation), so one
-   deterministic gate manufactured a PROVENANCE repair for a defect that did not
-   exist. Computed initials only — no abbreviation dictionary, no topic list. The
-   verbatim form was always clean; fabricated entities still fail closed.
+**Critic `must_preserve` reaches every repair tier.** The critic is asked, in its
+own schema, for "a short list of specific things in the beats you are NOT
+flagging that the rewrite must not disturb". `classify_repair` used it on tier 3
+only; tier 1 (unsupported claim) and tier 2 (validate failure) computed it and
+threw it away — and those two tiers fire in nearly every real round.
+
+Carrying it into tier 1 unfiltered introduces a contradiction main could not
+produce, so the fix ships with its own guard: an entry naming text this round's
+own violations say must change is dropped, and the list is deduplicated
+case-insensitively. Without that, one prompt could say "remove Atlantis, it is
+unsupported" and "MUST PRESERVE EXACTLY: Atlantis". `test_7`/`test_8`/`test_9`
+pin it.
+
+### WITHDRAWN after adversarial review: the initialism fix
+
+An earlier version of this release also taught traceability that a cited
+multi-word entity's initialism counts as that entity. It is **gone**, for two
+independent reasons:
+
+1. **It opened a hole in the HARD provenance gate.** Initials are a lossy hash,
+   so a fabricated entity passes whenever its initials collide with an unrelated
+   cited one — cite "Deep Nautical Analysis" and a fabricated "DNA" is admitted.
+   Verified against a faithful reconstruction of the withdrawn helpers in
+   `test_6`, which then proves the hard gate rejects it today.
+2. **Its justification was mis-attributed.** The claim was that two deterministic
+   gates fought: `deterministic_mechanical_trim` abbreviated the hook and
+   provenance rejected the result. That function explicitly refuses to touch the
+   hook or payoff and never invents text, so the abbreviation came from an LLM
+   repair round. There was no gate conflict to resolve.
+
+**Correction to how (1) was first written up.** The repro that raised it —
+"The US government funded this secret ice mission" against a cited "Ultraviolet
+Sensor" — does return zero hard violations, but not because of the initialism
+rule: "us" is a pronoun in `_CONNECTIVE_STOPWORDS`, so "US" never reaches the
+entity check on any version of this code, including plain main. A single-word
+entity in sentence-initial position is separately classified WEAK and reported
+soft by deliberate V2.1 design. The hole is real; that particular line did not
+demonstrate it. `test_6` demonstrates it with a non-stopword acronym placed
+mid-sentence.
+
+Consequence: "U.S." is still rejected against a cited "United States" — a known,
+accepted false positive. A factual gate failing CLOSED is the correct direction,
+and `test_5` pins it so nobody re-opens the hatch by accident.
 
 Nothing else in production changed. `writer_v21_orchestrator.py` is **untouched**:
 its `treatment_name`/`treatments` delta on PR #82 existed solely to feed the
@@ -99,7 +131,7 @@ PR #80 untouched.
 3. Trigger exactly ONE private `topic=auto` certification-only flagship.
 
 Its purpose is **not** to validate the excluded experiment. It is to answer:
-**does the production Writer, with these two deterministic corrections, produce a
+**does the production Writer, with this one deterministic correction, produce a
 certified candidate and reach the renderer?**
 
 ## Backlog
