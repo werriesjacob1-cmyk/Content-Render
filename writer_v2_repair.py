@@ -964,6 +964,42 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         except Exception:
             preserve = []
 
+    # The critic is asked, in its own schema, for "a short list of specific things
+    # in the beats you are NOT flagging that the rewrite must not disturb (a
+    # phrase, a fact, a transition that already works)". That list used to reach
+    # the repairer ONLY on tier 3 -- so on tier 1 (an unsupported claim) and tier
+    # 2 (a validate failure), the two tiers that fire in almost every real round,
+    # the critic's own record of what already works was computed and then thrown
+    # away. It costs nothing to carry it everywhere, and the repairer cannot
+    # preserve what it was never told about.
+    # The critic writes `must_preserve` from a craft reading, with no sight of
+    # the mechanical traceability pass. Carrying it into tier 1 unfiltered can
+    # therefore put "remove Atlantis, it is unsupported" and "MUST PRESERVE
+    # EXACTLY: Atlantis" in the SAME prompt -- a contradiction main could not
+    # produce, because tier 1/2 never received this list at all. So an entry is
+    # dropped whenever it names text the round's own violations say must change.
+    flagged = {str(v.value).strip().lower()
+               for v in (list(hard_violations or []) + list(semantic_violations or []))
+               if getattr(v, "value", None)}
+
+    def _contradicts_diagnosis(entry):
+        text = str(entry).strip().lower()
+        if not text:
+            return True
+        return any(f and (f in text or text in f) for f in flagged)
+
+    critic_preserve = [p for p in ((critic_verdict or {}).get("must_preserve") or [])
+                       if p and not _contradicts_diagnosis(p)]
+    # Deduplicate within the critic's own list too -- it is uncapped freeform.
+    seen, deduped = set(), []
+    for entry in critic_preserve:
+        key = str(entry).strip().lower()
+        if key not in seen:
+            seen.add(key)
+            deduped.append(entry)
+    critic_preserve = deduped
+    preserve = critic_preserve + [p for p in preserve if p not in critic_preserve]
+
     all_tier1 = list(hard_violations or []) + list(semantic_violations or [])
     if all_tier1:
         target_beats = sorted({v.beat_index for v in all_tier1 if 0 <= v.beat_index <= num_beats + 1})
@@ -1001,8 +1037,7 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         "repair_type": repair_type,
         "target_beats": target_beats,
         "diagnosis": (critic_verdict.get("diagnosis") or "")[:500],
-        "must_preserve": list(critic_verdict.get("must_preserve") or []) + [
-            p for p in preserve if p not in (critic_verdict.get("must_preserve") or [])],
+        "must_preserve": preserve,
         "must_also_satisfy": must_also,
         "tier": 3,
     }
