@@ -341,6 +341,51 @@ def _line_factual_payload(text):
     }
 
 
+def _initialism(entity):
+    """'United States' -> 'US'. Empty for single-word entities.
+
+    Deterministic and generic: the initials of a multi-word entity, nothing
+    else. No abbreviation dictionary, no per-phrase list.
+    """
+    words = [w for w in re.findall(r"[A-Za-z]+", entity or "") if w]
+    if len(words) < 2:
+        return ""
+    return "".join(w[0] for w in words).upper()
+
+
+def _entity_supported(entity, allowed_entities):
+    """Is `entity` covered by the cited claims' own entities?
+
+    Exact (case/possessive-insensitive) match, or the entity is the INITIALISM
+    of a cited multi-word entity.
+
+    WHY THE INITIALISM CASE EXISTS (measured, flagship corpus)
+
+    Two deterministic gates were fighting each other. `deterministic_mechanical_trim`
+    shortens a hook to fit its word cap, and one real corpus round shortened
+    "the United States" to "the U.S." to do it -- changing nothing else in the
+    script. The provenance checker then flagged "U.S" as an unsupported entity:
+    semantic violations went 0 -> 5 and a brand-new hard violation appeared. So
+    a trim that satisfied one gate manufactured a PROVENANCE repair -- the repair
+    type that rewrites factual content -- for a defect that does not exist.
+
+    The verbatim form was ALWAYS clean; this fixes the abbreviation case only,
+    and only against entities the cited claims actually contain. A fabricated
+    entity still fails closed.
+    """
+    e = (entity or "").strip().lower()
+    if not e:
+        return True
+    if e in allowed_entities or _strip_possessive(e) in allowed_entities:
+        return True
+    compact = re.sub(r"[^a-z]", "", e).upper()
+    if len(compact) >= 2:
+        for allowed in allowed_entities:
+            if _initialism(allowed) == compact:
+                return True
+    return False
+
+
 def _allowed_vocab(cited_claims, key_terms):
     numbers, units, entities, terms = set(), set(), set(), set()
     for c in cited_claims:
@@ -442,7 +487,8 @@ def _check_line(beat_index, text, cited_ids, claims_by_id, key_terms):
         e_l = e.lower()
         e_base = _strip_possessive(e_l)
         if (e_l not in allowed["entities"] and e_l not in allowed["terms"]
-                and e_base not in allowed["entities"] and e_base not in allowed["terms"]):
+                and e_base not in allowed["entities"] and e_base not in allowed["terms"]
+                and not _entity_supported(e, allowed["entities"])):
             violations.append(TraceabilityViolation(
                 beat_index, "unsupported_entity", e, cited_ids,
                 detail=f"entity {e!r} not found in the cited claim(s) or key_terms", severity="hard"))
@@ -964,6 +1010,17 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         except Exception:
             preserve = []
 
+    # The critic is asked, in its own schema, for "a short list of specific things
+    # in the beats you are NOT flagging that the rewrite must not disturb (a
+    # phrase, a fact, a transition that already works)". That list used to reach
+    # the repairer ONLY on tier 3 -- so on tier 1 (an unsupported claim) and tier
+    # 2 (a validate failure), the two tiers that fire in almost every real round,
+    # the critic's own record of what already works was computed and then thrown
+    # away. It costs nothing to carry it everywhere, and the repairer cannot
+    # preserve what it was never told about.
+    critic_preserve = [p for p in ((critic_verdict or {}).get("must_preserve") or []) if p]
+    preserve = critic_preserve + [p for p in preserve if p not in critic_preserve]
+
     all_tier1 = list(hard_violations or []) + list(semantic_violations or [])
     if all_tier1:
         target_beats = sorted({v.beat_index for v in all_tier1 if 0 <= v.beat_index <= num_beats + 1})
@@ -1001,8 +1058,7 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         "repair_type": repair_type,
         "target_beats": target_beats,
         "diagnosis": (critic_verdict.get("diagnosis") or "")[:500],
-        "must_preserve": list(critic_verdict.get("must_preserve") or []) + [
-            p for p in preserve if p not in (critic_verdict.get("must_preserve") or [])],
+        "must_preserve": preserve,
         "must_also_satisfy": must_also,
         "tier": 3,
     }
