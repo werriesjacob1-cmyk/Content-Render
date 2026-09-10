@@ -27,49 +27,13 @@ Closed without merging or deleting branches:
 - #52 — constrained video-repair lab implementation already present on main.
 - #53 — Sound Brain implementation already present on main.
 - #54 — RCSB molecular-media implementation already present on main.
+- #55 — end-to-end quality stack integrated/evolved.
+- #56 — fail-closed Writer V2.1 semantic coverage integrated/evolved.
+- #70 — flagship #4 root-cause fixes integrated/evolved.
+- #71 — trusted flagship trigger integrated/evolved; the old scale-comparison
+  promotion intent was superseded by the current fail-closed comparability rule.
 
 Branches/history were intentionally retained.
-
-## High-confidence next closure candidates
-
-### #55 — Integration: end-to-end quality stack behind zero-spend policy
-**Recommended disposition: CLOSE — integrated/evolved.**
-
-Every major capability described by the PR is present on current main: the
-quality stack, runtime/session, evidence/story packet, Visual Director,
-scientific/molecular media, deterministic motion, generated-media controller,
-vision gateway, voice/sound/repair labs, final QA, review-readiness, and related
-tests. Several files have evolved after that integration, which is exactly why
-the stale integration PR should not be merged now.
-
-### #56 — Writer V2.1 semantic coverage fail-closed
-**Recommended disposition: CLOSE — integrated/evolved.**
-
-Current main contains the fail-closed semantic coverage module and an evolved
-Writer V2.1 orchestrator. The current semantic gate still requires explicit
-coverage and distinguishes verifier outage from script factual defects. The old
-PR should not be merged over the newer Writer stack.
-
-### #70 — flagship #4 root-cause fixes
-**Recommended disposition: CLOSE — integrated/evolved.**
-
-The substantive fixes are visible on current main:
-- two-quantity anti-restatement false-positive handling is present and has since
-  been tightened;
-- deterministic mechanical trim exists and has been further corrected;
-- connector/entity extraction logic is present;
-- the stale secret-bearing `writer_v2_recon.yml` is absent;
-- `groq_healthcheck.yml` is guarded to main.
-
-The stale branch should not be merged.
-
-### #71 — generic flagship readiness
-**Recommended disposition: CLOSE — integrated/evolved.**
-
-The topic-selectable trusted certification trigger is present on current main.
-The scale-comparison machinery has since been deliberately made inert in
-production because sealed ratios alone do not prove semantic comparability.
-That later fail-closed decision supersedes the old PR's promotion intent.
 
 ## Partial / extract-before-close
 
@@ -80,13 +44,13 @@ close.**
 Most domain-family cleanup has evolved into current `generate.py` and
 `funnel.py`.
 
-One still-useful behavior is NOT present on current main:
-`expand_bank.yml` in #37 ran `python tests/test_pipeline.py` after expansion
-and before the bot commit. Current main has the newer scheduled-spend guard but
-does not have this pre-commit zero-quota validation step.
+The one missing safeguard has now been extracted from stale #37 into **draft
+PR #91** on current main: after `expand_bank.py` mutates the bank, the existing
+zero-quota `tests/test_pipeline.py` suite must pass before the bot may commit.
+PR #91 also pins the ordering with a transition-contract regression.
 
-Do not merge stale #37. Extract only the pre-commit validation safeguard as a
-small future hardening change.
+Do not merge stale #37. Once #91 is independently green and merged by explicit
+authorization, #37 can be closed as fully superseded.
 
 ### #42 — NASA SVS + PubChem direct legacy integration
 **Recommended disposition: KEEP AS PRIOR ART until concept is captured/decided.**
