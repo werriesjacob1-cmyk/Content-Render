@@ -106,6 +106,66 @@ exactly what flagship #7 attempt 3 shows (5.14 → unscored → 4.00).
 
 ---
 
+## FINDING B5 — the real mechanism is EVIDENCE GRAVITY, not "flattening"
+
+"Provenance repair turns lines into citation prose" is too narrow, and two of the
+three attempts contradict it:
+
+- **attempt 1**: repair moved the payoff TOWARD the good supported line —
+  it ended at *"A shark alive now was already swimming before America was even a
+  country."* Repair is capable of finding the vivid supported option.
+- **attempt 2**: the payoff never changed at all across all three rounds, yet
+  overall still fell 5.57 -> 4.14.
+- **attempt 3**: the payoff did flatten into a date-stuffed citation.
+
+Attempt 2 is the decisive case. The repair targeted beats [1, 3, 4] and changed
+EXACTLY those three; every non-targeted beat stayed byte-identical, so the
+targeting machinery worked as designed. And `coherence` still collapsed **7 -> 2**
+(clarity 8 -> 5, surprise 5 -> 4, payoff 4 -> 3).
+
+The cause is visible in beat 1:
+
+    before  "The journey belongs to a single protein locked inside its eye."
+    after   "This eye-lens protein, formed once in the embryo, makes the
+             Greenland shark the longest-lived vertebrate."
+
+The repair made beat 1 supported by reaching for the strongest, most-quotable
+claim available — and that claim is the video's CONCLUSION. It imported the
+payoff's punchline into the second line of the script. The payoff then restates
+it, so the script announces its ending up front and coherence collapses.
+
+**ROOT CAUSE (generic).** PROVENANCE repair receives the entire evidence
+inventory and one instruction — make this beat supported — with no statement of
+what the beat is FOR, no statement of what it must NOT say because a later beat
+says it, and an explicit licence to generalise. The cheapest way for a model to
+make a line "supported" is to restate the most-quotable claim in the inventory,
+which is usually the conclusion. So repair pulls beats toward the payoff's
+content and toward citation phrasing, collapsing the information ORDERING that
+makes a script escalate — even when it edits only the beats it was told to edit.
+
+Flattening (attempt 3) and pre-empting the payoff (attempt 2) are two symptoms of
+that one cause.
+
+## FINDING B6 — the fix is NOT the advancement policy
+
+Checked before building it, and the evidence says a repair-frontier / re-basing
+policy would not have helped:
+
+| attempt | craft drop | which repair caused it |
+|---|---|---|
+| 1 | (unscored) | first repair |
+| 2 | 5.57 -> 4.14 | **first** repair |
+| 3 | 5.14 -> 4.00 | **first** repair (payoff flattened at round 0 -> 1) |
+
+In every case the damage is done by the FIRST repair, from the only base that
+existed. Re-basing round 2 on a better round 0 could not have prevented any of
+it, and it would introduce the stale-evidence hazard the orchestrator already
+warns about at lines 290-304 (a plan computed for one text applied to another).
+
+`select_best_candidate` is already lexicographically safe and already keeps every
+round as a candidate, so acceptance needs no change either. **Controller
+unchanged; the defect is in the repair plan and prompt.**
+
 ## Gates confirmed unchanged so far
 Nothing modified yet. `QUALITY_HARD_FLOOR` 6.8, `MAX_REPAIR_ROUNDS` 2, word
 budget, semantic checks, provenance checks all untouched.
