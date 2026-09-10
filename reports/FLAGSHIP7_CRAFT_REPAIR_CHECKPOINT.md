@@ -274,3 +274,85 @@ a craft score alongside every `validate_err`), so bucket C can exist at all. Tha
 is a contained change to the orchestrator's scoring call, and until it lands,
 "does repair make scripts better or merely cleaner?" is unanswerable by
 construction.
+
+
+---
+
+# MEASUREMENT UNBLOCKER (2026-09-10) — the craft question is now answerable
+
+## The route changed, and why
+
+SUPERCHAD proposed rescoring with `score_script` and, failing that, adding a
+prospective `diagnostic_craft_score`. **`generate.score_script()` is an LLM call**
+(`call_groq`, generate.py:3375). That route therefore meant ~72 provider calls
+retrospectively plus a **recurring per-render cost** — and it would measure with
+an instrument this corpus has already caught being unreliable.
+
+The repo already ships pure, zero-LLM, `"gating": False` diagnostics built for
+exactly this. Verified: `writer_v21_editorial_diagnostics`,
+`writer_v21_story_shape`, `writer_v21_hook_payoff` and the new
+`writer_craft_rescore` are **imported by none of** `generate.py`,
+`writer_v2_repair.py`, `writer_v21_orchestrator.py`, `main.py`. So the
+"a diagnostic must never affect eligibility" requirement is satisfied **by
+construction**, not by a guard that could rot.
+
+**No production instrumentation was needed. Zero provider calls. Zero cost.**
+
+## Measurable pairs: 1 of 36 -> 36 of 36
+
+## The answer: repair is craft-NEUTRAL, not craft-destroying
+
+| population | IMPROVED | FLAT | DEGRADED |
+|---|---|---|---|
+| all pairs (N=36) | 11 | 12 | 13 |
+| **factual/mechanical improvement (N=24)** | **10** | **5** | **9** |
+| by repair type — PROVENANCE (N=32) | 11 | 8 | 13 |
+
+**The premise this mission inherited is not supported.** Among the pairs where
+repair actually fixed something, craft went up about as often as it went down.
+There is no epidemic of provenance repair destroying scripts. The flagship-#7
+attempt-2 collapse remains real and remains worth preventing — it is a
+demonstrated single-case failure mode, not a pattern.
+
+## Instrument limits, stated plainly
+
+Two of the five preregistered components (`generic_payoff_hits`,
+`resolution_cue_present`) never move **within** a pair, so the effective
+instrument is **three components**, all lexical/structural proxies. It cannot see
+prose quality, rhythm, or whether a line is enjoyable to hear.
+
+An earlier run of the tool read `moralizing_hits` where the module returns
+`generic_ai_moralizing_hits`, so that component silently scored 0 on all 72
+rounds and looked like a real measurement. Caught by checking the raw value
+distribution rather than the deltas.
+
+## Critic non-determinism — quantified
+
+Exactly **1 of 36** pairs is byte-identical parent->child. On it:
+
+| signal | parent -> child | kind |
+|---|---|---|
+| `critic_avg` | 7.111 -> 6.556 | LLM |
+| `semantic_violation_count` | **0 -> 3** | LLM |
+| `mechanical_hard_count` | 0 -> 0 | deterministic |
+
+On identical text the deterministic checks are stable and the LLM judge is not.
+The semantic count going **0 -> 3 from nothing** matters beyond noise: semantic
+violations drive tier-1 PROVENANCE repair, so some fraction of provenance
+repairs are triggered by judge variance rather than by a defect. N=1, so this
+bounds nothing — but it is the only control the corpus offers and it points one
+way.
+
+## PR #82 disposition — SPLIT
+
+- **LAND (deterministic correctness):** critic `must_preserve` carried at every
+  tier; initialism recognition ending the trim-vs-provenance gate conflict; the
+  test suite. These fix code defects that stand regardless of the craft question.
+- **ACTIVE EXPERIMENT (behavioural):** the narrative-function contract. It is now
+  treatment-derived rather than house-style, and it targets a real single-case
+  failure — but the corpus does not show the epidemic it was written for, so it
+  should not be sold as fixing a measured problem.
+
+## Backlog
+C7 PARTIAL · S10 **advanced** (36/36 measurable, deterministic, reproducible) ·
+S4 open · C8 COMPLETE · S9 PARTIAL.
