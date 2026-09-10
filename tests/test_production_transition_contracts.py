@@ -40,11 +40,22 @@ def test_render_dequeue_is_version_compatible_and_live_generation_guarded():
 
 
 def test_render_prerequisites_use_single_combined_install_path():
+    """The invariants survived moving into the shared action; they did not move
+    by accident.
+
+    An unused Google Chrome apt repository serving bad metadata took down the
+    factory proof on main, and every workflow carried its own copy of this
+    block. The copies are gone; the properties are asserted at their new home.
+    """
     y = text(".github/workflows/render.yml")
-    check("fc-match" in y, "production uses robust fc-match font probe")
-    check("ffmpeg fonts-dejavu-core" in y, "ffmpeg and DejaVu install together")
-    check("fc-list | grep -qi dejavu" not in y, "old SIGPIPE-prone/slow font probe removed")
-    check(y.count("apt-get update") == 1, "production prerequisite step has at most one apt update")
+    check("./.github/actions/media-prereqs" in y,
+          "production takes media prerequisites from the one shared action")
+    prereq = text(".github/actions/media-prereqs/ensure_media_prereqs.sh")
+    check("fc-match" in prereq, "production uses robust fc-match font probe")
+    check("ffmpeg fonts-dejavu-core" in prereq, "ffmpeg and DejaVu install together")
+    check("fc-list | grep -qi dejavu" not in prereq, "old SIGPIPE-prone/slow font probe removed")
+    invocations = [ln for ln in prereq.splitlines() if "sudo apt-get update" in ln]
+    check(len(invocations) == 1, "production prerequisite step has at most one apt update")
 
 
 def test_private_learning_is_cache_only_and_artifact_visible():

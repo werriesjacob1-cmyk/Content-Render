@@ -40,20 +40,7 @@ jobs:
           python-version: "3.11"
 
       - name: Ensure local media prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          need_apt=0
-          command -v ffmpeg >/dev/null 2>&1 || need_apt=1
-          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
-          case "$font_family" in *DejaVu*) ;; *) need_apt=1 ;; esac
-          if [ "$need_apt" -eq 1 ]; then
-            sudo apt-get update -qq
-            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
-          fi
-          ffmpeg -version >/dev/null
-          ffprobe -version >/dev/null
-
+        uses: ./.github/actions/media-prereqs
       - name: Install render dependencies
         run: pip install -r requirements.txt
 

@@ -6,6 +6,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WF = ROOT / ".github" / "workflows" / "quality_certification_render.yml"
+# The prerequisite logic moved OUT of this workflow into one shared action, after
+# an unused Google Chrome apt repository took down the factory proof on main and
+# would have taken down this flagship -- four near-identical copies, one of which
+# was on the critical path of the run that matters most. The invariants below did
+# not move with it by accident: they are asserted against the shared script, so
+# the flagship still cannot render with a missing encoder or a substitute font.
+PREREQ = ROOT / ".github" / "actions" / "media-prereqs" / "ensure_media_prereqs.sh"
 
 
 def check(cond, label):
@@ -145,7 +152,9 @@ def test_default_flagship_path_proves_the_factory_not_a_handcrafted_seed():
 
 def test_fast_reliable_prerequisite_check_replaces_false_font_probe():
     text = WF.read_text(encoding="utf-8")
-    prereq_block = text.split("Ensure ffmpeg and fonts", 1)[1].split("Install render dependencies", 1)[0]
+    check("./.github/actions/media-prereqs" in text,
+          "the flagship takes media prerequisites from the one shared action")
+    prereq_block = PREREQ.read_text(encoding="utf-8")
     check("fc-list | grep" not in prereq_block,
           "font check no longer uses the unreliable fc-list-pipe-grep probe")
     check("fc-match -f '%{family}' 'DejaVu Sans'" in prereq_block,
@@ -155,15 +164,22 @@ def test_fast_reliable_prerequisite_check_replaces_false_font_probe():
     check("command -v ffmpeg" in prereq_block, "ffmpeg presence check is fast and reliable")
     check(prereq_block.count("ffmpeg -version") >= 1 and prereq_block.count("fc-match") >= 2,
           "ffmpeg and fonts are proved present after prerequisite setup, not merely assumed")
+    check("ffprobe -version" in prereq_block,
+          "and ffprobe too -- sharing the action made this check strictly "
+          "stronger here, where it was previously absent")
 
 
 def test_real_render_dependencies_are_proved_before_execution():
     text = WF.read_text(encoding="utf-8")
     render_pos = text.index("python quality_science_render.py")
-    ffmpeg_pos = text.index("ffmpeg -version")
+    # The prerequisite step now proves ffmpeg inside the shared action, so the
+    # ordering assertion anchors on the step that runs it.
+    ffmpeg_pos = text.index("./.github/actions/media-prereqs")
     deps_pos = text.index("pip install -r requirements.txt")
     check(ffmpeg_pos < render_pos and deps_pos < render_pos,
           "ffmpeg and Python render dependencies are proven before flagship rendering")
+    check("ffmpeg -version" in PREREQ.read_text(encoding="utf-8"),
+          "and that step really does prove ffmpeg, rather than being named as if it did")
 
 
 if __name__ == "__main__":
