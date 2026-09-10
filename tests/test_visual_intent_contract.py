@@ -217,17 +217,29 @@ def test_9_one_contract_not_two():
 
 # 10 ---------------------------------------------------------------------------
 def test_10_visual_failure_is_distinguishable_from_provider_failure():
-    """The chess run was reported as likely quota exhaustion while Gemini worked."""
-    visual = ["scene 3 query 'galaxy stars space' is generic cosmic/space imagery, but ...",
-              "scene 2 query 'human anatomy' uses un-filmable terms"]
-    other = ["script word count 126 out of range (target 78-98, hard 68-108)",
-             "only 1/3 mandatory key terms named (['Greenland shark'])",
-             "hook length 18 words out of range"]
-    for e in visual:
-        check(bool(G._VISUAL_QUERY_ERR_RE.search(e)), f"classified as visual_intent: {e[:40]!r}")
-    for e in other:
-        check(not G._VISUAL_QUERY_ERR_RE.search(e),
-              f"a CONTENT failure is not mislabelled visual: {e[:40]!r}")
+    """The chess run was reported as likely quota exhaustion while Gemini worked.
+
+    Classification now comes from the shared predicate itself, never from
+    brittle parsing of validate()'s human-readable error text.
+    """
+    scenes = [
+        {"search_query": "galaxy stars space",
+         "voiceover": "After four moves the board holds billions of arrangements."},
+        {"search_query": "human anatomy",
+         "voiceover": "A person lifts a hand."},
+    ]
+    for i, scene in enumerate(scenes, 1):
+        err, code = G._visual_query_failure(scene, i, {"domain": "mathematics"})
+        check(bool(err) and str(code).startswith("visual_intent:"),
+              f"shared predicate classifies visual failure precisely ({code!r})")
+
+    # Non-visual validator errors cannot acquire a visual defect code merely
+    # because their prose happens to contain words such as "scene" or "hook".
+    clean_scene = {"search_query": "chess board",
+                   "voiceover": "A chess board can hold many different positions."}
+    err, code = G._visual_query_failure(clean_scene, 1, {"domain": "mathematics"})
+    check(err is None and code is None,
+          "clean retrieval metadata is not mislabelled as visual failure")
 
 
 
