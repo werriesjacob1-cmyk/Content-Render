@@ -102,6 +102,7 @@ jobs:
           run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
           run_check "quality proof harness" python tests/test_writer_v21_quality_bakeoff.py
           run_check "symmetric factual audit" python tests/test_writer_v21_factual_audit.py
+          run_check "visual intent contract" python tests/test_visual_intent_contract.py
           run_check "provider comparability" python tests/test_writer_v21_provider_guardrail.py
           run_check "sealed quality evidence" python tests/test_writer_v21_quality_bakeoff_integrity.py
           run_check "publishing kill switch" env -u AUTO_PUBLISH_ENABLED python tests/test_publish_kill_switch.py

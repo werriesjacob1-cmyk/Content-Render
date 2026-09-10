@@ -6,6 +6,7 @@ hook overlay (first 2s), background music bed, no-repeat footage.
 """
 
 import os, sys, json, subprocess, shutil, wave, struct, re, time, urllib.request, urllib.parse, urllib.error
+import visual_intent as VI
 import random
 
 W, H = 1080, 1920
@@ -2114,34 +2115,22 @@ def _keywords_from_text(text, k=3):
 
 
 def _subject_anchored_query(subject, voiceover, taken):
-    """'<subject> <one distinguishing word from this scene>', or "" if unusable.
+    """Thin delegate to the shared visual-intent contract.
 
-    Pure and unit-tested: the whole point is that a REPLACEMENT query must still
-    be filmable. Leading with the subject keeps the search on the thing the video
-    is actually about; one voiceover word makes this scene's search differ from
-    its neighbours'. Distinguishing words are tried in the same longest-first
-    order `_keywords_from_text` uses, skipping any that already appears in the
-    subject (which would add nothing) and any combination already taken.
+    This logic used to live here in full, which meant `main.py` built
+    replacement queries under one set of rules while `generate.py` `validate()`
+    judged them under another, with no way for either to see the other. Both now
+    call `visual_intent`, a leaf module (stdlib only) that neither imports from
+    -- the same anti-drift shape as the delivery audio contract.
 
-    Returns "" when there is no subject or no usable distinguishing word, so the
-    caller falls back to the previous behaviour rather than inventing a query.
+    The #88 subject-anchor safety floor is preserved: subject-led, one usable
+    literal term from THIS scene's narration, "" when nothing safe exists. The
+    shared contract intentionally adds a few visual-filler stopwords, but never
+    re-admits glue words the production builder already filtered. Anything
+    returned here is also checked by the SAME visual-intent predicate used by
+    validation.
     """
-    subject = (subject or "").strip()
-    if not subject:
-        return ""
-    subj_words = set(re.findall(r"[a-z][a-z-]+", subject.lower()))
-    words = re.findall(r"[A-Za-z][A-Za-z-]+", (voiceover or "").lower())
-    cand = [w for w in words if w not in _QUERY_STOPWORDS and len(w) > 3
-            and w not in subj_words]
-    seen_w = set()
-    for w in sorted(cand, key=len, reverse=True):
-        if w in seen_w:
-            continue
-        seen_w.add(w)
-        q = f"{subject} {w}"
-        if q.lower() not in (taken or {}):
-            return q
-    return subject if subject.lower() not in (taken or {}) else ""
+    return VI.subject_led_query(subject, voiceover, taken)
 
 
 def _diversify_scene_queries(scenes, subject=""):
