@@ -59,6 +59,12 @@ jobs:
             --batch 25
           echo "--- bank size ---"
           python -c "import json;print(len(json.load(open('topic_bank.json'))['facts']),'facts')"
+      - name: Validate expanded bank before commit (zero quota)
+        env:
+          GROQ_API_KEY: x
+        run: |
+          set -euo pipefail
+          python tests/test_pipeline.py
       - name: Commit new facts
         run: |
           git config user.name "bank-bot"
