@@ -1,42 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-05_why-water-breaks-the-rules-of-physics",
-      "metaphor": "water freezing paradox",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "LOOP",
-      "hook_frame": "EVERYDAY_UNSEEN",
-      "title": "Why Water Breaks the Rules of Physics",
-      "fact_id": "water_expands_ice",
-      "domain": "chemistry",
-      "hook": "Every ice cube in your glass is breaking a fundamental law of physics.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 6.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 8.0,
-        "clarity": 8.0,
-        "coherence": 9.0,
-        "overall": 7.71
-      },
-      "final_qa": {
-        "footage_matches_narration": 9,
-        "visual_variety": 8,
-        "caption_legible": 8,
-        "narration_flow": 10,
-        "biggest_issue": "Frame 1 contains garbled, unreadable text baked into the source video footage.",
-        "audio_judged": true,
-        "aborted": false
-      }
-    },
-    {
       "video_id": "science_2026-08-05_what-actually-happens-to-a-body-in-space",
       "metaphor": "vacuum boiling effect",
       "viewer_job": "REFRAME",
@@ -433,6 +397,36 @@
         "biggest_issue": "Footage is largely generic B-roll unrelated to the Anglo-Zanzibar war, and the narration has unnatural, disjointed pauses.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-09-10_the-universe-you-can-t-see-part-1",
+      "metaphor": "kitchen counter physics",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "COMMENT",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Universe You Can't See: Part 1",
+      "fact_id": "banana_radioactive",
+      "domain": "physics",
+      "hook": "Part one: fresh bananas emit real nuclear radiation into your home.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 10,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "The Universe You Can't See",
+        "part": 1
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 5.0,
+        "escalation": 8.0,
+        "payoff": 6.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.14
       }
     }
   ]

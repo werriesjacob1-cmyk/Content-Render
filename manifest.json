@@ -1,105 +1,123 @@
 {
-  "title": "The Shortest War in History",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "shortest war",
-  "metaphor": "history at absurd scale",
-  "vibe": "tense",
-  "hook": "A standard television episode lasts longer than an entire international war.",
-  "hook_headline": "WAR OVER IN 38 MINUTES",
-  "script": "A standard television episode lasts longer than an entire international war. How did Britain and Zanzibar settle a war in thirty-eight minutes? In 1896, British warships sank an armed yacht Queen Victoria had personally gifted. The shelling only continued because nobody could reach the palace roof to surrender. A shell finally snapped the flagpole. Arranging the ceasefire took longer than the actual combat. Britain even billed the shattered palace for the artillery fired at them. An entire kingdom fell in less time than a lunch break.",
+  "title": "The Universe You Can't See: Part 1",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "banana radiation",
+  "metaphor": "kitchen counter physics",
+  "vibe": "awe",
+  "hook": "Part one: fresh bananas emit real nuclear radiation into your home.",
+  "hook_headline": "ONE MILLION BANANAS",
+  "script": "Part one: fresh bananas emit real nuclear radiation into your home. What would actually happen if you ate a million at once? One banana gives about 0.1 microsieverts of exposure from potassium-40. Massive cargo crates of them regularly trigger nuclear sensors at border checkpoints. Yet radiation is not what harms you. Plain potassium stops your heart first. Your own body fires potassium-40 decays roughly 5,000 times a second. Your kidneys flush the excess, so that internal dose never adds up. Does sharing a bed with a radiating human comfort or unsettle you? Follow so you do not miss part two.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "A standard television episode lasts longer than an entire international war.",
-      "on_screen_text": "the shortest war",
-      "search_query": "historic warship sea",
+      "voiceover": "Part one: fresh bananas emit real nuclear radiation into your home.",
+      "on_screen_text": "PART 1: BANANA RADIATION",
+      "search_query": "bananas bunch",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "How did Britain and Zanzibar settle a war in thirty-eight minutes?",
-      "on_screen_text": "38 minute war",
-      "search_query": "antique map close up",
-      "motion": "zoom_out",
+      "voiceover": "What would actually happen if you ate a million at once?",
+      "on_screen_text": "A MILLION AT ONCE?",
+      "search_query": "fruit market",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "In 1896, British warships sank an armed yacht Queen Victoria had personally gifted.",
-      "on_screen_text": "royal yacht sunk",
-      "search_query": "vintage naval flag",
-      "motion": "zoom_out",
+      "duration": 4,
+      "voiceover": "One banana gives about 0.1 microsieverts of exposure from potassium-40.",
+      "on_screen_text": "BANANA RADIATION DOSE",
+      "search_query": "banana yellow",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "The shelling only continued because nobody could reach the palace roof to surrender.",
-      "on_screen_text": "trapped under fire",
-      "search_query": "old fort by the sea",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "Massive cargo crates of them regularly trigger nuclear sensors at border checkpoints.",
+      "on_screen_text": "BORDER ALARMS TRIGGERED",
+      "search_query": "cargo shipping container port",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 3,
-      "voiceover": "A shell finally snapped the flagpole.",
-      "on_screen_text": "flag sheared down",
-      "search_query": "old naval cannon",
-      "motion": "zoom_in",
+      "voiceover": "Yet radiation is not what harms you.",
+      "on_screen_text": "NOT THE RADIATION",
+      "search_query": "heart monitor screen",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "Arranging the ceasefire took longer than the actual combat.",
-      "on_screen_text": "ceasefire took longer",
-      "search_query": "vintage pocket watch",
-      "motion": "static",
+      "duration": 3,
+      "voiceover": "Plain potassium stops your heart first.",
+      "on_screen_text": "HEART STOPS FIRST",
+      "search_query": "human chest breathing",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 5,
-      "voiceover": "Britain even billed the shattered palace for the artillery fired at them.",
-      "on_screen_text": "billed for ammo",
-      "search_query": "smoke over coastal town",
-      "motion": "zoom_out",
+      "duration": 4,
+      "voiceover": "Your own body fires potassium-40 decays roughly 5,000 times a second.",
+      "on_screen_text": "5,000 DECAYS A SECOND",
+      "search_query": "person silhouette glowing",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 8,
       "duration": 4,
-      "voiceover": "An entire kingdom fell in less time than a lunch break.",
-      "on_screen_text": "shortest war record",
-      "search_query": "historic warship sea",
-      "motion": "zoom_out",
+      "voiceover": "Your kidneys flush the excess, so that internal dose never adds up.",
+      "on_screen_text": "BALANCED FROM WITHIN",
+      "search_query": "drinking glass water",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 9,
+      "duration": 4,
+      "voiceover": "Does sharing a bed with a radiating human comfort or unsettle you?",
+      "on_screen_text": "COMFORT OR UNSETTLE?",
+      "search_query": "couple sleeping in bed",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 10,
+      "duration": 3,
+      "voiceover": "Follow so you do not miss part two.",
+      "on_screen_text": "FOLLOW FOR PART 2",
+      "search_query": "person walking city street",
+      "motion": "zoom_in",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Could any conflict today be over in 38 minutes, or is modern warfare permanently prolonged? This was the shortest war in recorded history.",
-    "The 1896 Anglo-Zanzibar conflict remains history's fastest military collapse.",
-    "A entire fleet sunk and a surrender signed in less time than a sitcom."
+    "The Universe You Can't See (Part 1): Banana radiation is real, but you radiate far more. Comforting or creepy?",
+    "Every eight hours in bed with another person exposes you to half a banana of gamma radiation. Would you sleep alone instead?",
+    "Your kidneys flush extra potassium so fast that banana dose never accumulates. Did you expect your own body to be more radioactive than your food?"
   ],
   "hashtags": [
-    "#history",
-    "#military",
-    "#facts",
-    "#war",
-    "#weirdhistory",
-    "#science"
+    "#physics",
+    "#science",
+    "#biology",
+    "#radiation",
+    "#curiosity",
+    "#learnontiktok"
   ],
   "render": {
     "voice": "en-US-GuyNeural",
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-09-10_the-shortest-war-in-history",
-  "cta_style": "LOOP",
-  "domain": "history"
+  "video_id": "science_2026-09-10_the-universe-you-can-t-see-part-1",
+  "cta_style": "COMMENT",
+  "domain": "physics"
 }
