@@ -136,10 +136,33 @@ this branch claimed render artifacts inherited a 90-day default; that claim was
 wrong, and the `retention-days: 7` it added was a no-op. The real saving came
 from dropping six redundant encodes and the `work/` scratch tree.
 
-That also explains the 90%-of-0.5 GB alert without any 90-day hoard: at ~35 MB
-per successful render, twice daily, a 7-day window holds ~490 MB on its own. The
-TikTok-only narrowing cuts each render artifact to roughly one encode plus small
-JSON, an ~80% reduction, and directly addresses the alert.
+~~That also explains the 90%-of-0.5 GB alert without any 90-day hoard: at ~35 MB
+per successful render, twice daily, a 7-day window holds ~490 MB on its own.~~
+
+**CORRECTED 2026-09-10 — that paragraph attributed the alert to the wrong
+thing.** The retention finding above still stands, but renders were not what
+filled the quota. When the account subsequently hit **100%**, the live API showed
+**604 MB across 43 artifacts, every one created that same day, and not one of
+them a render**:
+
+    downstream-factory-proof   16 x ~22.4 MB = 360 MB
+    production-realism-proof    9 x ~27.0 MB = 244 MB
+
+**Storage grows with PUSHES, not with time** — exactly as item 3 below predicted,
+but the magnitude was underestimated: the two video proofs re-render on every
+push, so one day of PR iteration across two branches spent the entire monthly
+allowance. The artifacts are near-pure video: one realism artifact was 27.59 MB
+of which `final.mp4` was 27.588 MB (**99.98%**).
+
+The fix is on **PR #81** (unmerged): split each proof upload so measured reports
+and the proof frame keep 14 days (~240 KB) while rendered MP4s keep 1 day, with a
+test asserting the evidence half OUTLIVES the media — shortening everything would
+pass a size check and destroy the audit trail.
+
+**Operational note:** artifact deletion needs UI or PAT access. A session token
+gets **403 on every DELETE**. The overage self-clears anyway on the 1–3 day
+retention, so this is not urgent — but do not plan on deleting your way out of it
+from inside a session.
 
 **Recommendation, for Jacob to accept or decline:**
 
