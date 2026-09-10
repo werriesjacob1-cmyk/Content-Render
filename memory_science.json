@@ -427,6 +427,15 @@
         "clarity": 9.0,
         "coherence": 8.0,
         "overall": 7.14
+      },
+      "final_qa": {
+        "footage_matches_narration": 6,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Frame 3 is a plain blank background offering zero visual context.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
