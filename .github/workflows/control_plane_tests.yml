@@ -13,7 +13,6 @@ on:
   push:
     branches:
       - main
-      - superchad/mission-1b-branch-recon-hardening-01
     paths:
       - ".github/workflows/branch_recon.yml"
       - ".github/workflows/control_plane_tests.yml"
