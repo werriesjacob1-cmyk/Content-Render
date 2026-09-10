@@ -43,12 +43,27 @@ immediately earned its keep by exposing a defect every render had shipped.
   a different asset WINS ranking). The factory proof only WRITES the bible; it
   renders fixed scene files and has no asset selection to steer. Do not read
   its `visual_bible_scene_count` as evidence the bible was obeyed.
-- **Actions storage: the repo already enforces 7-day artifact retention** —
-  measured from real `expires_at` values, every render artifact older than a
-  week is already expired. An earlier commit in this branch claimed a 90-day
-  default; that was wrong. The 90%-of-0.5 GB alert came from ~35 MB × 2
-  renders/day inside a 7-day window, which the TikTok-only upload cuts ~80%.
-  There is no historical hoard to delete.
+- **Actions storage** — the retention finding here still holds (no 90-day
+  default, no historical hoard), but the CAUSE attributed to renders was wrong
+  and was corrected on 2026-09-09 when the account hit **100%** of 0.5 GB.
+  Measured from the live API: **604 MB across 43 artifacts, every one created
+  that same day**, and none of them renders:
+
+      downstream-factory-proof   16 x ~22.4 MB = 360 MB
+      production-realism-proof    9 x ~27.0 MB = 244 MB
+
+  Storage grows with **pushes, not with time**. The proofs render real video on
+  every push, so one day of PR iteration on two branches spent the whole monthly
+  allowance. The artifacts are also almost pure video — the realism artifact was
+  27.59 MB of which `final.mp4` was 27.588 MB (**99.98%**).
+  Fixed by splitting each proof upload: measured reports + proof frame kept 14
+  days (~240 KB), rendered MP4s kept 1 day. Pinned by
+  `tests/test_actions_storage_budget.py`, which also asserts the evidence half
+  OUTLIVES the media — shortening everything would pass a size check and destroy
+  the audit trail.
+  **Note for whoever hits this next: artifact deletion needs UI/PAT access; the
+  session token used here got 403 on every DELETE.** The overage self-clears
+  anyway, since these artifacts expire on a 1-3 day retention.
 - `engineering/CONTENT_RENDER_MASTER_TODO.md` now exists (it did not before,
   in either repo) with per-item status and the storage recommendation.
 

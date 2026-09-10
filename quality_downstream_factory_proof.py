@@ -32,6 +32,7 @@ from pathlib import Path
 import shutil
 import socket
 import subprocess
+import tempfile
 import urllib.request
 import sys
 from typing import Any
@@ -128,7 +129,8 @@ def _make_captioned(body: Path, ass: Path, dest: Path, duration: float) -> None:
     ])
 
 
-def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
+def _mix_final(captioned: Path, dest: Path, duration: float,
+               work_dir: Path | None = None) -> dict[str, Any]:
     """Mix -> SHARED measured master -> mux. Identical sequence to production.
 
     The mix and the master are separate steps on purpose. Mastering has to
@@ -139,7 +141,19 @@ def _mix_final(captioned: Path, dest: Path, duration: float) -> dict[str, Any]:
     merely look alike.
     """
     legacy._apply_vibe("awe")
-    work = Path(dest).parent / "master_work"
+    # Mastering scratch must NOT live inside dest's directory. `out/` is what the
+    # workflow uploads as evidence, and the measured master writes four
+    # uncompressed WAVs per assembly -- 12.3 MB of stage intermediates that
+    # nobody reads, since every measurement they carry is already in the master
+    # report this function returns.
+    #
+    # This shipped in the mastering rewrite and went unnoticed: it silently added
+    # ~12 MB to every factory-proof artifact, which is a real share of the day
+    # the account hit 100% of its Actions storage. Production never had the bug
+    # -- main.py masters into WORK, which is already separate from OUT.
+    work = Path(work_dir) if work_dir is not None else Path(
+        tempfile.mkdtemp(prefix="delivery_master_"))
+    work = work / f"master_{Path(dest).stem}"
     work.mkdir(parents=True, exist_ok=True)
     tag = Path(dest).stem
     mixed = work / f"mixed_{tag}.wav"
@@ -294,7 +308,7 @@ def proof(out_root: str) -> dict[str, Any]:
             cap_path = work / f"captioned_{tag}.mp4"
             dur = float(legacy.ffprobe_dur(str(body_path)))
             _make_captioned(body_path, ass_path, cap_path, dur)
-            result = dict(_mix_final(cap_path, dest, dur))
+            result = dict(_mix_final(cap_path, dest, dur, work_dir=work))
             # Surfaced so callers can record duration/caption evidence without
             # reaching back into this function's locals.
             # str, not Path: this dict is written straight into the JSON proof

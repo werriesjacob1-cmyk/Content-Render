@@ -313,7 +313,7 @@ def proof(out_root: str) -> dict[str, Any]:
         captioned = work / "captioned.mp4"
         QDF._make_captioned(body, ass, captioned, body_duration)
         final = out / "final.mp4"
-        finishing = QDF._mix_final(captioned, final, body_duration)
+        finishing = QDF._mix_final(captioned, final, body_duration, work_dir=work)
         if not final.is_file() or final.stat().st_size < 10000:
             raise RuntimeError("production-realism final.mp4 was not produced")
 

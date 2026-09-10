@@ -47,6 +47,7 @@ jobs:
             tests/test_production_transition_contracts.py \
             tests/test_delivery_audio_contract.py tests/test_delivery_contract_load_bearing.py \
             tests/test_delivery_mastering_adversarial.py \
+            tests/test_actions_storage_budget.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
@@ -139,6 +140,7 @@ jobs:
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py
           run_check "delivery contract load-bearing" env -u GROQ_API_KEY python tests/test_delivery_contract_load_bearing.py
           run_check "delivery mastering adversarial" env -u GROQ_API_KEY python tests/test_delivery_mastering_adversarial.py
+          run_check "actions storage budget" env -u GROQ_API_KEY python tests/test_actions_storage_budget.py
           run_check "production realism proof contract" env -u GROQ_API_KEY python tests/test_quality_production_realism_proof.py
           run_check "repair policy + provider health" env -u GROQ_API_KEY python tests/test_repair_policy_and_provider_health.py
           run_check "lineage survives repair" env -u GROQ_API_KEY python tests/test_asset_lineage_after_repair.py
@@ -257,24 +259,31 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: downstream-factory-proof-${{ github.sha }}
-          # Evidence only. The sibling work/ directory holds scratch
-          # intermediates (per-scene mp4s, body/captioned cuts, wav slices,
-          # music loop pieces) that are regenerated on every run and are worth
-          # nothing after it -- uploading them multiplied this artifact's size
-          # for no reviewable benefit, on a 0.5 GB/month Actions storage plan.
+          # EVIDENCE ONLY -- the MP4s go in a separate short-lived artifact
+          # below. Measured on a real run: the artifact was 22.4 MB, of which
+          # the two MP4s were essentially all of it and the JSON a rounding
+          # error. Every push produced a fresh copy, so a day of ordinary PR
+          # iteration filled the account's entire 0.5 GB Actions allowance.
+          #
+          # The split costs nothing in rigor. What a later reviewer needs is the
+          # measured report -- loudness, true peak, sample rate, dimensions,
+          # lineage -- and that is what this keeps, for long enough to be useful.
           path: |
             artifacts/downstream_factory_proof/out
             artifacts/downstream_factory_proof/proof_report.json
+            !artifacts/downstream_factory_proof/out/*.mp4
           if-no-files-found: error
-          # Shortest practical, measured rather than guessed. This artifact is
-          # ~10.7 MB (two real MP4s) and a NEW one is kept per run: on a
-          # pull_request event github.sha is the ephemeral MERGE commit, not the
-          # head SHA, so the name does not identify the head a claim is made
-          # against -- resolve that through the run's head_sha. What the unique
-          # name does buy is that a later push cannot silently overwrite the
-          # artifact an earlier claim was made against. So storage grows with
-          # pushes, not with time, and retention is the only lever that does not
-          # weaken the evidence. 3 days still covers an async review; the render
-          # artifacts it shares the budget with expire on the repository's own
-          # 7-day default.
-          retention-days: 3
+          retention-days: 14
+      - name: Upload zero-provider factory proof media
+        uses: actions/upload-artifact@v4
+        with:
+          name: downstream-factory-proof-media-${{ github.sha }}
+          # The rendered MP4s, kept only as long as anyone actually reaches for
+          # them. Probing the real artifact is this project's core doctrine --
+          # the 96 kHz defect and the -0.0 dBTP defect were both found that way,
+          # not from a green tick -- and both were found within hours of the run.
+          # Nobody has ever downloaded one of these on day three. If a stale run
+          # needs re-examining, re-running CI regenerates it exactly.
+          path: artifacts/downstream_factory_proof/out/*.mp4
+          if-no-files-found: error
+          retention-days: 1

@@ -201,13 +201,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: production-realism-proof-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          # EVIDENCE ONLY. Measured on a real run: 27.59 MB total, of which
+          # final.mp4 was 27.588 MB -- 99.98%. Everything a reviewer reads is
+          # the remaining 236 KB, so keeping the reports for two weeks costs
+          # less than keeping one video for one day.
           path: |
-            artifacts/production_realism_proof/edge_voice/edge_voice.mp3
             artifacts/production_realism_proof/edge_voice/edge_voice_report.json
-            artifacts/production_realism_proof/piper_video/out/final.mp4
             artifacts/production_realism_proof/piper_video/out/audio_qa_report.json
             artifacts/production_realism_proof/piper_video/out/proof_frame.jpg
             artifacts/production_realism_proof/piper_video/proof_report.json
             artifacts/production_realism_proof/piper_video/manifest.json
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 14
+      - name: Upload production-realism media
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-realism-proof-media-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          # The rendered video and the Edge voice sample, kept only as long as
+          # they are actually reached for. The proof frame above survives in the
+          # evidence artifact, so the run still shows a viewer-facing image after
+          # the video expires.
+          path: |
+            artifacts/production_realism_proof/piper_video/out/final.mp4
+            artifacts/production_realism_proof/edge_voice/edge_voice.mp3
+          if-no-files-found: error
+          retention-days: 1
