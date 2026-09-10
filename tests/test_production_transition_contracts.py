@@ -93,6 +93,12 @@ def test_expand_bank_validates_before_bot_commit_and_after_rebase():
     retry_block = y[rebase_i:second_validate_i]
     check("|| true" not in retry_block,
           "a failed/conflicted rebase cannot be swallowed and followed by an unsafe push retry")
+    check('pushed=0' in y and 'pushed=1' in y and 'if [ "$pushed" -ne 1 ]' in y,
+          "the workflow records whether any push actually succeeded")
+    check('if [ "$a" -eq 3 ]' in y,
+          "the final failed push does not perform a pointless rebase with no next attempt")
+    check("topic-bank commit could not be pushed after 3 attempts" in y and "exit 1" in y,
+          "three failed pushes make the workflow fail closed instead of reporting success")
     check("Validate expanded bank before commit (zero quota)" in y,
           "pre-commit bank validation is an explicit workflow step")
 
