@@ -1,0 +1,166 @@
+name: private-legacy-render-once-20260910
+
+on:
+  push:
+    branches:
+      - superchad/private-legacy-render-20260910-01
+    paths:
+      - .github/workflows/private_legacy_render_once_20260910.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: private-legacy-render-once-20260910
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PAGE: science
+      CONTENT_RENDER_QUEUE_WRITER_VERSION: legacy_v1
+      CONTENT_RENDER_QUEUE_CERT_VERSION: legacy_generation
+      CONTENT_RENDER_REQUIRED_WRITER_VERSION: legacy_v1
+      CONTENT_RENDER_REQUIRED_CERT_VERSION: legacy_generation
+    steps:
+      - name: Checkout exact trigger commit
+        uses: actions/checkout@v4
+
+      - name: Prove trusted production parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "trigger_sha=$(git rev-parse HEAD)"
+          git merge-base --is-ancestor 78338ef6d54ca488233ac4505267474b3500c0c0 HEAD
+          test "$(git diff --name-only 78338ef6d54ca488233ac4505267474b3500c0c0..HEAD | tr '\n' ' ')" = ".github/workflows/private_legacy_render_once_20260910.yml "
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ensure ffmpeg and fonts once
+        shell: bash
+        run: |
+          set -euo pipefail
+          need_apt=0
+          command -v ffmpeg >/dev/null 2>&1 || need_apt=1
+          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
+          case "$font_family" in
+            *DejaVu*) ;;
+            *) need_apt=1 ;;
+          esac
+          if [ "$need_apt" -eq 1 ]; then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+          fi
+          ffmpeg -version >/dev/null 2>&1
+
+      - name: Install production dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Piper voice
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-en_US-ryan-high-v1
+
+      - name: Fetch Piper voice fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p voices
+          BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
+          if [ ! -s voices/voice.onnx ]; then
+            curl -fsSL -o voices/voice.onnx "$BASE/en_US-ryan-high.onnx"
+            curl -fsSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json"
+          fi
+
+      - name: Generate exactly one fresh legacy-v1 manifest
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_GENERATION: "1"
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          TOGETHER_MODEL: ${{ vars.TOGETHER_MODEL }}
+          FIREWORKS_MODEL: ${{ vars.FIREWORKS_MODEL }}
+          MISTRAL_MODEL: ${{ vars.MISTRAL_MODEL }}
+          LENGTH_MODE: auto
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_production_generate.py manifest.json
+          test -s manifest.json
+          echo "--- generated manifest summary ---"
+          python - <<'PY'
+          import json
+          m=json.load(open('manifest.json'))
+          print('keyword=', m.get('keyword'))
+          print('title=', m.get('title'))
+          print('scenes=', len(m.get('scenes') or []))
+          PY
+
+      - name: Render with production engine
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
+          MUSIC_URL: ${{ vars.MUSIC_URL }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          FAL_VIDEO_MODEL: ${{ vars.FAL_VIDEO_MODEL }}
+          FAL_MAX_CLIPS: "0"
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python main.py manifest.json
+          test -s out/final.mp4
+
+      - name: Prove private output
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -lh out/final.mp4
+          sha256sum out/final.mp4
+          ffprobe -v error -show_entries format=duration:stream=codec_name,codec_type,width,height,sample_rate -of json out/final.mp4 > out/private_render_probe.json
+          cat out/private_render_probe.json
+
+      - name: Repackage TikTok review cut
+        env:
+          BIO_LINK: ${{ vars.BIO_LINK }}
+          CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
+          LIST_NAME: ${{ vars.LIST_NAME }}
+        run: python repackage.py out/final.mp4
+
+      - name: Upload private review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-legacy-render-20260910-${{ github.run_id }}
+          path: |
+            out/tiktok_reels_shorts.mp4
+            out/qa_report.json
+            out/private_render_probe.json
+            manifest.json
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Assert no publishing path exists in this workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.event_name }}" = "push"
+          echo "PRIVATE RENDER COMPLETE — artifact only; this workflow contains no Release, Publer, deploy, or publish step."
