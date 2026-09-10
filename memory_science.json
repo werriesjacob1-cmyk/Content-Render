@@ -424,6 +424,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.0
+      },
+      "final_qa": {
+        "footage_matches_narration": 3,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 4,
+        "biggest_issue": "Footage is largely generic B-roll unrelated to the Anglo-Zanzibar war, and the narration has unnatural, disjointed pauses.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
