@@ -3049,6 +3049,24 @@ def test_rank_gemini_models_prefers_full_over_lite():
     ranked3 = G._rank_gemini_models(["gemini-2.0-flash", "gemini-3.6-flash", "gemini-2.5-flash"])
     check(ranked3[0] == "gemini-3.6-flash", "newest numbered id leads when nothing is tagged -latest")
 
+    # 2026-09-10: the tier sort was a STRING sort while the docstring promised
+    # "newest numbered id first". Every case above uses single-digit majors, where
+    # string order and version order happen to agree -- which is exactly why this
+    # went unnoticed. These cases separate them.
+    check(G._rank_gemini_models(["gemini-3.8-flash", "gemini-10-flash"])[0] == "gemini-10-flash",
+          "a double-digit major outranks a single-digit one (string sort put '3' above '1')")
+    check(G._rank_gemini_models(["gemini-2.5-flash", "gemini-10.1-flash"])[0] == "gemini-10.1-flash",
+          "10.1 outranks 2.5 -- version order, not lexical order")
+    check(G._rank_gemini_models(["gemini-omni-1.1-flash", "gemini-3.8-flash"])[0] == "gemini-3.8-flash",
+          "a non-numeric name segment cannot outrank a higher version ('o' > '3' lexically)")
+    # the real model set this key returned on 2026-09-10
+    live = G._rank_gemini_models(["gemini-flash-latest", "gemini-omni-1.1-flash", "gemini-3.8-flash"])
+    check(live == ["gemini-flash-latest", "gemini-3.8-flash", "gemini-omni-1.1-flash"],
+          f"the live key's models order newest-first behind the alias ({live})")
+    # an id with no version at all must not crash or jump the queue
+    novers = G._rank_gemini_models(["gemini-flash", "gemini-3.8-flash"])
+    check(novers[0] == "gemini-3.8-flash", "an unversioned id sorts below a versioned one")
+
     # a lite-only list still returns something usable (never empty)
     check(G._rank_gemini_models(["gemini-flash-lite-latest"]) == ["gemini-flash-lite-latest"],
           "lite-only input isn't discarded, just the only option")
