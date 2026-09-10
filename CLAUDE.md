@@ -1,20 +1,30 @@
-# CLAUDE.md — project state & how to continue (read this first)
+# CLAUDE.md — historical project notes + operating context
 
 This repo is an **autonomous faceless-video pipeline** for a short-form science
-channel. A new session should read this file plus the latest
-`reports/video_review_*.md` to catch up, then continue the work below.
+channel.
+
+**READ THIS FIRST IN A NEW SESSION:** the canonical current state is now
+`engineering/CONTENT_RENDER_MASTER_TODO.md`, and the next real video's product
+bar is `engineering/NEXT_MP4_ACCEPTANCE.md`. The dated sections below are
+historical evidence and lessons, not a guarantee that every old provider,
+workflow, PR, or "OPEN" statement is still current.
 
 ## The goal (standing, do not drift from this)
-- Produce **consistently GOOD, genuinely interesting** short science videos across
-  **different topics** — not "1 good then 1 bad." The page should feel addictive
-  in both presentation AND content ("scientist brain," strange-but-true facts).
-- **Do NOT post yet.** Everything publishes to a GitHub Release that a Zapier/Buffer
-  hook picks up **as a Draft**. Posting happens only after the profile is
-  consistently good and the user approves.
-- **Free tier only.** The user does NOT want to pay for anything until the
-  platforms show traction. Maximize free providers; never require a paid key.
+- Produce **consistently excellent, genuinely interesting** short science videos
+  across **different topics** — not "1 good then 1 bad." The page should feel
+  addictive in both presentation AND content ("scientist brain,"
+  strange-but-true facts).
+- **Do NOT publish yet.** `AUTO_PUBLISH_ENABLED` remains off. Current production
+  code contains an independently gated direct Publer path; older Zapier/Buffer
+  descriptions later in this file are historical. No Release, Publer, posting,
+  deployment, or autopublish activation without Jacob's explicit authorization.
+- **Prefer free/low-cost providers and deliberate spend.** Existing paid/billed
+  provider accounts have been used historically, but no new provider-backed or
+  premium-media spend should be assumed merely because credentials exist.
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
+- **North Star:** an actual finished video Jacob genuinely wants to post. Green
+  CI, a successful render, or a machine QA PASS alone does not close the mission.
 
 ## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
 Downstream machinery is now proven on REAL ffmpeg output, and the proof
