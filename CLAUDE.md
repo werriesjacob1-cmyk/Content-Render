@@ -16,6 +16,83 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Session 2026-09-10 — CALIBRATION: the Writer is the constraint, not the gates
+**Read this before planning any Writer, gate, prompt or repair work.** Branch
+`claude/legacy-v21-calibration-20260910`, report
+`reports/LEGACY_V21_CALIBRATION_CHECKPOINT.md`, tool `legacy_v21_replay.py`
+($0, zero providers, zero network, re-runnable).
+
+The standing worry was that the V2.1 gate stack had drifted and now rejects
+scripts we already know make good videos. **It has not.**
+
+- **12 of 12 real August videos** (narration byte-for-byte from
+  `git show <sha>:manifest.json`, scores 7.0-8.29 read from
+  `memory_science.json`) **pass today's deterministic gate stack** and would
+  reach the quality scorer. None is blocked. Fixtures:
+  `tests/fixtures/legacy_controls/`.
+- Across **54 preserved V2.1 certification rounds, 5 clear the same gates** —
+  and on the **same scorer function with the same rubric**, those five score
+  **4.0-5.57** against legacy's **7.0-8.29**. That row is the finding: it is not
+  a gate result at all.
+- **DIAGNOSIS: WRITER / PROMPT / MODEL DEFICIT.** Stop building gates and repair
+  plumbing; the constraint is the quality of what the Writer produces.
+
+Why it is not tautological (a committed August manifest passed August's
+validate() by construction): `validate()` changed in exactly four ways since
+2026-08-07 — one constant extraction with identical behaviour (`4..16` hook
+words; **it looks like a new gate and is not**), two genuinely NEW gates
+(`FALSE_PRESENT_STAKES_RE`, `GENERIC_REFRAME_CLICHE_RE`), two relaxations.
+**0 of 12 controls trip either new gate.** Word windows, `SCENE_WORD_CAP` and
+the hook range are numerically identical to August.
+
+**Scorer comparability: IDENTICAL for 9/12, MATERIALLY COMPARABLE for 3/12.**
+Both paths call the same function (`writer_v21_orchestrator.py:161` ->
+`G.score_script`). Its rubric/criteria/aggregation are unchanged since
+2026-08-03; the only later commit (`e3ed744`) changed fail-open -> fail-closed
+policy and docstrings, not one scoring semantic. Only
+`CTA_RUBRIC_HINTS["COMMENT"]` was reworded (2026-09-03) — 1 of 7 criteria, on
+the 3 COMMENT controls. So the 8.14-vs-5.57 comparison is VALID.
+
+**Two durable cautions for whoever works here next:**
+- **Provenance on legacy artifacts is NOT TESTABLE, and that is not a failure.**
+  Legacy manifests carry no `source_claim_ids`, no claim inventory, not even a
+  `fact_id` (the fact link lives only in `memory_science.json`). Never count
+  absent metadata as a gate failure, and never research a fact today and
+  back-date it as the evidence the old Writer had.
+- **A round's `beats` list IS the full spoken sequence** — `beats[0]` is the hook
+  and `beats[-1]` is the payoff, both ALSO stored separately. Joining
+  `hook + beats + payoff` double-counts and inflates every word count 20-30.
+  This produced a wrong median (133 vs the true 109.5) before being caught by
+  cross-checking `validate()`'s own printed counts (0/13 agreed, then 13/13).
+  `legacy_v21_replay.py` runs that cross-check every invocation and REFUSES to
+  emit a comparison if it disagrees. Keep that guard.
+
+**The cheapest open question in the project** (needs ONE provider call, still
+unauthorized): run a legacy control's exact narration through `score_script`
+today. If it still scores ~8, the scorer is proven stable and the Writer deficit
+is confirmed outright. The one gate layer this experiment CANNOT exonerate is
+V2.1's traceability/semantic critic — it is the only layer with no legacy control.
+
+### PR state as of 2026-09-10 (29 open PRs — 21 are already on main)
+- **#83 GO FOR MERGE** — `claude/flagship8-deterministic-release-20260910` head
+  `fe943d5`, `test` + `factory-proof` green at job level on the exact head, 1598
+  zero-quota checks. ONE production fix: the critic's `must_preserve` now reaches
+  repair tiers 1/2, with a guard dropping any entry the round's own violations
+  say must change. **An initialism hatch was WITHDRAWN** after review — initials
+  are a lossy hash, so a cited "Deep Nautical Analysis" admitted a fabricated
+  "DNA". Traceability is byte-identical to main. Do not re-add it.
+- **#82 KEEP EXPERIMENT, do not merge** (green, deliberately unmerged).
+- **#80 / #81 MERGE CANDIDATES** — both fix defects verified still live on main:
+  four bare `sudo apt-get update -qq` calls, and
+  `quality_downstream_factory_proof.py:142` still writing mastering scratch into
+  the uploaded artifact dir.
+- **#37 and #44 NEED A HUMAN DECISION — genuinely unlanded.** `expand_bank.yml`
+  still commits topic-bank changes without running the test suite; `main.py:792`
+  still pins the retired `JUDGE_MODEL = "llama-3.3-70b-versatile"` and the fal
+  clip check still samples one frame.
+- Everything else is a stale duplicate of shipped work. **Do not assume an open
+  PR represents outstanding work — check main first.**
+
 ## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
 Downstream machinery is now proven on REAL ffmpeg output, and the proof
 immediately earned its keep by exposing a defect every render had shipped.
@@ -43,16 +120,31 @@ immediately earned its keep by exposing a defect every render had shipped.
   a different asset WINS ranking). The factory proof only WRITES the bible; it
   renders fixed scene files and has no asset selection to steer. Do not read
   its `visual_bible_scene_count` as evidence the bible was obeyed.
-- **Actions storage: the repo already enforces 7-day artifact retention** —
-  measured from real `expires_at` values, every render artifact older than a
-  week is already expired. An earlier commit in this branch claimed a 90-day
-  default; that was wrong. The 90%-of-0.5 GB alert came from ~35 MB × 2
-  renders/day inside a 7-day window, which the TikTok-only upload cuts ~80%.
-  There is no historical hoard to delete.
+- **Actions storage — CORRECTED 2026-09-10, this paragraph was wrong about the
+  CAUSE.** The retention finding still holds (no 90-day default, no historical
+  hoard). But "~35 MB × 2 renders/day" was NOT what filled the quota. When the
+  account hit **100%** of 0.5 GB it was measured from the live API: **604 MB
+  across 43 artifacts, every one created that same day, and none of them a
+  render** — `downstream-factory-proof` 16 × ~22.4 MB = 360 MB and
+  `production-realism-proof` 9 × ~27.0 MB = 244 MB. **Storage grows with PUSHES,
+  not with time**: the proofs render real video on every push, so one day of PR
+  iteration on two branches spent the whole monthly allowance. The artifacts are
+  near-pure video (one realism artifact was 27.59 MB of which `final.mp4` was
+  27.588 MB — 99.98%). Fix lives on **PR #81** (unmerged): split each proof
+  upload so measured reports + proof frame keep 14 days (~240 KB) and rendered
+  MP4s keep 1 day. **Artifact deletion needs UI/PAT access — a session token
+  gets 403 on every DELETE.** The overage self-clears anyway on the 1–3 day
+  retention.
 - `engineering/CONTENT_RENDER_MASTER_TODO.md` now exists (it did not before,
   in either repo) with per-item status and the storage recommendation.
 
 ## Session 2026-09-08/09 — THE WRITER ROOT CAUSE (read this before touching the Writer)
+> **SUPERSEDED IN PART, 2026-09-10.** The prompt-budget defect below was real and
+> is fixed. But its headline — "the cause was not model weakness" — did NOT
+> survive measurement. See the calibration section at the top of this file:
+> length is not the dominant blocker, and the Writer itself is now the limiting
+> subsystem. Read that first, then this for the history.
+
 Flagship certification attempts #1-#5 all failed at the Writer stage. **The cause was
 not model weakness and not the quality gates: the Writer V2.1 prompt never stated a
 word budget at all.** `LENGTH_HINT`/`WORDS_PER_SCENE` only ever reached the LEGACY
@@ -62,6 +154,12 @@ certification actually uses — stated no total-word budget and no per-scene cap
 
 Replaying all 4 preserved rejection artifacts (**13 candidates / 36 rounds**, now
 committed as fixtures): **18 of 36 rounds (50%) died on pure length arithmetic** —
+<!-- CORRECTED 2026-09-10: across the fuller 54-round corpus (flagships 02-07) the
+     length FAMILY is 22/54 = 41%, and a third of those are a short/long MODE
+     MISMATCH (a draft legal for LONG judged under SHORT), not an over-long draft.
+     36 of 54 rounds are already inside a legal word window and STILL fail. Do not
+     plan work off the "50% is length" figure. -->
+
 12 total-word (109-141 words vs a 108 hard cap) + 5 per-scene (28-31 vs a 25 cap) +
 1 hook length. The other 16 were craft defects (repetition, fake interrogatives,
 formal connectors, restated facts).
