@@ -2317,15 +2317,80 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
 # contract and the delivery audio contract already follow.
 from visual_intent import (  # noqa: E402
     UNSTOCKABLE_Q, COSMIC_FILLER_Q_RE, SPACE_CONTEXT_RE,
+    DEFECT_EMPTY, DEFECT_UNSTOCKABLE, DEFECT_COSMIC_FILLER,
     query_defect, repair_scene_queries,
 )
 
-# validate() error strings that mean ONLY the retrieval metadata is wrong -- the
-# narration, evidence and every content gate already passed. These are the only
-# failures the deterministic visual repair may attempt, so a repair can never be
-# mistaken for a content fix.
-_VISUAL_QUERY_ERR_RE = re.compile(r"uses un-filmable terms|is generic cosmic/space imagery")
-_last_failure_kind = ""   # set when a candidate dies specifically on visual intent
+# Accumulates only observed failure classes for this process/run. This is
+# diagnostic evidence, never an eligibility gate. It is deliberately a set:
+# several attempts can fail for different reasons and "last failure wins" would
+# misdiagnose a mixed run.
+_generation_failure_kinds = set()
+
+
+def _visual_query_failure(scene, scene_index, fact=None):
+    """Return (human_error, defect_code) for a scene's retrieval metadata.
+
+    The defect DECISION is owned by visual_intent.query_defect(). This adapter
+    only preserves validate()'s existing human-readable error strings. Keeping
+    those strings stable avoids turning a shared contract into a broad validator
+    rewrite while removing the previous duplicate predicate logic.
+    """
+    if not isinstance(scene, dict):
+        return None, None
+    q = (scene.get("search_query") or "").strip()
+    vo = scene.get("voiceover") or ""
+    family = _domain_family((fact or {}).get("domain")) if fact else ""
+    defect = query_defect(q, vo, family)
+    if defect == DEFECT_EMPTY:
+        return f"scene {scene_index} missing search_query", defect
+    if defect == DEFECT_UNSTOCKABLE:
+        return f"scene {scene_index} query '{q}' uses un-filmable terms", defect
+    if defect == DEFECT_COSMIC_FILLER:
+        return (
+            f"scene {scene_index} query '{q}' is generic cosmic/space imagery, but "
+            f"this fact's domain is {(fact or {}).get('domain')!r} and the scene's own voiceover "
+            f"never mentions anything space-related — pick a search_query that actually "
+            f"shows this scene's real subject instead of defaulting to space filler "
+            f"(render-209 bug: 'night sky stars' on a human-ancestry payoff line)"
+        ), defect
+    return None, None
+
+
+def _first_visual_query_failure(manifest, fact=None):
+    for i, scene in enumerate((manifest or {}).get("scenes") or [], 1):
+        err, code = _visual_query_failure(scene, i, fact)
+        if err:
+            return err, code
+    return None, None
+
+
+def _record_generation_failure(kind):
+    if kind:
+        _generation_failure_kinds.add(str(kind))
+
+
+def _terminal_generation_failure_message():
+    """Honest final diagnosis when no candidate survives.
+
+    Never infer provider/quota exhaustion from "no manifest": live chess proved
+    a healthy provider can still yield zero manifests because visual metadata is
+    rejected. Attempt-level provider logs remain the authority for provider
+    failures.
+    """
+    if _generation_failure_kinds:
+        kinds = ", ".join(sorted(_generation_failure_kinds))
+        return (
+            "ERROR: could not generate a valid manifest — no clean script this run "
+            f"(observed failure kinds: {kinds}). Provider/quota exhaustion is NOT "
+            "inferred from this condition. Aborting so no degraded video is published."
+        )
+    return (
+        "ERROR: could not generate a valid manifest — no clean script this run. "
+        "See attempt-level diagnostics for the actual content/provider failures; "
+        "provider/quota exhaustion is NOT inferred from this condition. "
+        "Aborting so no degraded video is published."
+    )
 
 
 # render-215: "a waterfall three times taller than Angel Falls" shipped with the
@@ -2686,18 +2751,12 @@ def validate(m, job_name, fact=None):
                      f"no natural flow, out loud (render-215: 'keep London mild while Calgary at the "
                      f"same latitude freezes'); split into two short sentences instead, one entity per "
                      f"sentence")
-        # stock libraries return junk (flesh closeups, random labs) for these:
-        # the belly-button-as-stomach incident came from 'human stomach anatomy'
-        if UNSTOCKABLE_Q.search(s["search_query"]):
-            return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
-        if (fact and _domain_family(fact.get("domain")) != "space"
-                and COSMIC_FILLER_Q_RE.search(s["search_query"])
-                and not SPACE_CONTEXT_RE.search(s["voiceover"])):
-            return (f"scene {i} query '{s['search_query']}' is generic cosmic/space imagery, but "
-                    f"this fact's domain is {fact.get('domain')!r} and the scene's own voiceover "
-                    f"never mentions anything space-related — pick a search_query that actually "
-                    f"shows this scene's real subject instead of defaulting to space filler "
-                    f"(render-209 bug: 'night sky stars' on a human-ancestry payoff line)")
+        # Retrieval metadata is judged by the ONE shared visual-intent predicate.
+        # This adapter preserves the existing human error text; the decision
+        # itself no longer has a private copy inside validate().
+        visual_err, _visual_code = _visual_query_failure(s, i, fact)
+        if visual_err:
+            return visual_err
         lm = LANDMARK_COMPARISON_RE.search(s["voiceover"])
         if lm and lm.group(1).lower() not in s["search_query"].lower():
             return (f"scene {i} voiceover compares to a specific named landmark/object "
@@ -4182,19 +4241,12 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 print(f"  attempt {attempt+1} invalid: model returned a {type(m).__name__}, not a JSON object")
                 continue
             err = validate(m, job_name, fact=chosen_fact)
-            if err and _VISUAL_QUERY_ERR_RE.search(err):
-                # The narration passed every content gate and only the RETRIEVAL
-                # metadata is wrong. Discarding the whole candidate for that is
-                # what killed the chess_possible_games run: a valid script about
-                # combinatorics carried 'deep space stars moving', validate()
-                # correctly refused it, and nothing tried to fix the one field
-                # that was broken.
-                #
-                # Repair is deterministic, uses only the subject plus each
-                # scene's OWN narration, touches nothing but `search_query`, and
-                # re-runs the SAME validate() afterwards -- so this cannot pass a
-                # script the gates would otherwise reject. If no safe query can
-                # be derived the candidate still fails, honestly.
+            visual_err, visual_code = _first_visual_query_failure(m, chosen_fact)
+            if err and visual_err == err:
+                # The first validator failure is retrieval metadata. Repair only
+                # that disposable metadata, then run the SAME full validator
+                # again. If a content defect was earlier in validator order,
+                # err != visual_err and this path never fires.
                 repaired = repair_scene_queries(
                     m.get("scenes"), (m.get("keyword") or ""),
                     _domain_family((chosen_fact or {}).get("domain")))
@@ -4202,18 +4254,16 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                     for idx, old_q, new_q, code in repaired:
                         print(f"  [visual-repair] scene {idx} {code}: {old_q!r} -> {new_q!r}")
                     err = validate(m, job_name, fact=chosen_fact)
+                    visual_err, visual_code = _first_visual_query_failure(m, chosen_fact)
                     if not err:
                         print(f"  attempt {attempt+1}: visual intent repaired deterministically "
                               f"({len(repaired)} scene(s)); narration and evidence untouched")
             if err:
                 print(f"  attempt {attempt+1} invalid: {err}")
-                if _VISUAL_QUERY_ERR_RE.search(err):
-                    # Precise failure class. A production controller must be able
-                    # to tell "this candidate's VISUALS are unusable" apart from
-                    # "the provider was down" -- the chess run was reported as a
-                    # likely quota exhaustion while Gemini was working fine.
-                    _last_failure_kind = "visual_intent"
-                    print("  [failure-kind] visual_intent — narration/provider are NOT implicated")
+                if visual_err and err == visual_err:
+                    _record_generation_failure("visual_intent")
+                    print(f"  [failure-kind] visual_intent ({visual_code}) — "
+                          "narration/provider are NOT implicated")
                 # keep it as a backup if it at least has the core pieces
                 if all(k in m for k in ("title", "hook", "script", "scenes", "captions")) and near_miss is None:
                     near_miss = m
@@ -4337,20 +4387,20 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             print(f"  near-miss still {_wc(_scenes)} words after trimming to {len(_scenes)} scenes "
                   f"(cap {NEARMISS_MAX_WORDS}) — abandoning this weak/long draft (consistency over cadence)")
             return None
-        # fill in queries the model left out or made un-filmable. Duplicate
-        # queries are deliberately NOT swapped here (they used to be, via a
-        # "seen" set) -- that was the same bug fixed in validate(): main.py's
-        # fetch_clip already excludes previously-used clip ids per scene, so
-        # two scenes sharing a query get different clips automatically, and
-        # swapping to an unrelated pool term (e.g. "night sky timelapse" for
-        # an ocean/plankton scene) was actively making footage LESS relevant,
-        # not preventing repeated footage.
-        pool = (chosen_fact.get("queries", []) if chosen_fact else []) + VARIETY_QUERIES
-        for i, s in enumerate(nm.get("scenes", [])):
+        # Normalize harmless structural defaults, then route ALL defective
+        # retrieval metadata through the same subject-led contract used above.
+        # The old fallback selected from chosen_fact.queries + VARIETY_QUERIES;
+        # that could "repair" an unfilmable scene with unrelated generic wallpaper
+        # and then pass re-validation. If no safe subject-led query can be
+        # derived now, the original stays in place and validate() rejects it.
+        for s in nm.get("scenes", []):
             s.setdefault("motion", "zoom_in"); s.setdefault("duration", 5)
             s.setdefault("on_screen_text", "")
-            if not s.get("search_query") or UNSTOCKABLE_Q.search(s.get("search_query", "")):
-                s["search_query"] = pool[i % len(pool)]
+        _near_visual_repairs = repair_scene_queries(
+            nm.get("scenes"), (nm.get("keyword") or ""),
+            _domain_family((chosen_fact or {}).get("domain")))
+        for idx, old_q, new_q, code in _near_visual_repairs:
+            print(f"  [visual-repair] near-miss scene {idx} {code}: {old_q!r} -> {new_q!r}")
         # strip any lingering banned generic save-command phrasing -- even the
         # last-resort near-miss path must not ship the old hard-coded line.
         for s in nm.get("scenes", []):
@@ -4449,6 +4499,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
 
 
 def main():
+    _generation_failure_kinds.clear()
     if not GROQ_KEY:
         print("ERROR: GROQ_API_KEY not set"); sys.exit(1)
 
@@ -4735,8 +4786,7 @@ def main():
         # non-zero exit into "no render, no release", so a quota-starved run
         # publishes NOTHING rather than a thin, repetitive fallback video. The
         # daily cron simply tries again once the free quotas reset.
-        print("ERROR: could not generate a valid manifest — no clean script this run "
-              "(likely LLM quota exhausted). Aborting so no degraded video is published.")
+        print(_terminal_generation_failure_message())
         sys.exit(1)
 
     # HARD QUALITY FLOOR (see QUALITY_HARD_FLOOR): we have a manifest, but if the
