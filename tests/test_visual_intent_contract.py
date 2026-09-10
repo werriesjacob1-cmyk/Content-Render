@@ -230,6 +230,104 @@ def test_10_visual_failure_is_distinguishable_from_provider_failure():
               f"a CONTENT failure is not mislabelled visual: {e[:40]!r}")
 
 
+
+
+# 11 ---------------------------------------------------------------------------
+def test_11_subject_builder_preserves_the_pr88_stopword_floor():
+    """Shared extraction must not re-admit glue words #88 already filtered."""
+    cases = [
+        ("octopus", "Because an octopus can squeeze through a tiny opening.", "octopus squeeze"),
+        ("roots", "Water moves through roots before rising into the tree.", "roots rising"),
+        ("shark", "A shark can live around ice for centuries.", "shark centuries"),
+    ]
+    banned = {"because", "through", "around", "before", "after", "during",
+              "within", "without", "while", "since", "until"}
+    for subject, voice, _label in cases:
+        q = V.subject_led_query(subject, voice, {})
+        tail = set(q.lower().split()) - set(subject.lower().split())
+        check(not (tail & banned),
+              f"{subject}: glue words never become retrieval discriminators ({q!r})")
+
+
+# 12 ---------------------------------------------------------------------------
+def test_12_visual_repair_is_idempotent():
+    scenes = [{
+        "search_query": "galaxy stars space",
+        "voiceover": "After four moves the chessboard already has billions of arrangements.",
+    }]
+    first = V.repair_scene_queries(scenes, "chess", "math")
+    after_first = copy.deepcopy(scenes)
+    second = V.repair_scene_queries(scenes, "chess", "math")
+    check(len(first) == 1, f"first pass repaired the defect ({first})")
+    check(second == [], f"second pass is a no-op ({second})")
+    check(scenes == after_first, "idempotent repair leaves the first repaired result byte-identical")
+
+
+# 13 ---------------------------------------------------------------------------
+def test_13_query_repair_cannot_hide_a_separate_content_defect():
+    """Repairing disposable metadata never buys a pass for bad narration."""
+    man = _load(CORPUS[0])
+    man["scenes"][0]["search_query"] = "galaxy stars space"
+    # A formal connector is a separate, existing narration hard gate.
+    man["scenes"][0]["voiceover"] = "Thus, this sentence still fails the spoken-English gate."
+    V.repair_scene_queries(man["scenes"], man.get("keyword", ""), G._domain_family(man.get("domain")))
+    err = G.validate(man, man.get("viewer_job") or "CURIOSITY_ITCH")
+    check(err is not None, "a separate content defect still fails after query-only repair")
+    check("formal connector" in err or "Thus" in err,
+          f"the remaining failure is the narration defect, not silently cleared ({err!r})")
+
+
+# 14 ---------------------------------------------------------------------------
+def test_14_validate_consumes_the_shared_predicate_not_private_regex_logic():
+    """One contract means validate's decision cannot drift from query_defect."""
+    src = (ROOT / "generate.py").read_text(encoding="utf-8")
+    check('UNSTOCKABLE_Q.search(s["search_query"])' not in src,
+          "validate no longer hand-implements the unstockable predicate")
+    check('COSMIC_FILLER_Q_RE.search(s["search_query"])' not in src,
+          "validate no longer hand-implements the cosmic predicate")
+    check("_visual_query_failure(s, i, fact)" in src,
+          "validate delegates visual-query decisions through the shared predicate adapter")
+
+    man = _load(CORPUS[0])
+    man["scenes"][0]["search_query"] = "galaxy stars space"
+    # Keep the line non-space so the shared predicate must reject.
+    man["scenes"][0]["voiceover"] = "A shape-memory wire changes form when it warms."
+    expected, code = G._visual_query_failure(man["scenes"][0], 1, {"domain": "materials"})
+    check(code == V.DEFECT_COSMIC_FILLER, f"shared predicate classifies cosmic filler ({code})")
+    got = G.validate(man, man.get("viewer_job") or "CURIOSITY_ITCH", fact={"domain": "materials"})
+    check(got == expected, f"validate surfaces the shared predicate's exact decision ({got!r})")
+
+
+# 15 ---------------------------------------------------------------------------
+def test_15_terminal_failure_reporting_is_honest_and_load_bearing():
+    """No-manifest is not synonymous with provider/quota exhaustion."""
+    G._generation_failure_kinds.clear()
+    G._record_generation_failure("visual_intent")
+    msg = G._terminal_generation_failure_message()
+    check("visual_intent" in msg, f"observed visual failure reaches terminal diagnosis ({msg!r})")
+    check("likely LLM quota exhausted" not in msg,
+          "terminal failure no longer makes the disproven quota inference")
+    check("NOT inferred" in msg, "terminal text explicitly refuses the unsupported provider inference")
+    G._generation_failure_kinds.clear()
+
+
+# 16 ---------------------------------------------------------------------------
+def test_16_near_miss_cannot_escape_to_generic_variety_wallpaper():
+    """The last-resort path must use the same fail-closed visual contract."""
+    src = (ROOT / "generate.py").read_text(encoding="utf-8")
+    check('pool = (chosen_fact.get("queries", []) if chosen_fact else []) + VARIETY_QUERIES' not in src,
+          "near-miss visual repair no longer selects from the generic variety pool")
+    near = src.split("if not manifest and near_miss is not None:", 1)[1]
+    check("repair_scene_queries(" in near,
+          "near-miss path routes defective queries through the shared repair contract")
+
+    scenes = [{"search_query": "galaxy stars space", "voiceover": "It is there."}]
+    before = copy.deepcopy(scenes)
+    changed = V.repair_scene_queries(scenes, "", "math")
+    check(changed == [] and scenes == before,
+          "an unrecoverable visual query remains defective instead of becoming generic wallpaper")
+
+
 if __name__ == "__main__":
     test_1_good_queries_are_never_gratuitously_rewritten()
     test_2_cosmic_filler_on_a_non_space_scene_is_repaired()
@@ -241,4 +339,10 @@ if __name__ == "__main__":
     test_8_abstract_topics_are_not_categorically_rejected()
     test_9_one_contract_not_two()
     test_10_visual_failure_is_distinguishable_from_provider_failure()
+    test_11_subject_builder_preserves_the_pr88_stopword_floor()
+    test_12_visual_repair_is_idempotent()
+    test_13_query_repair_cannot_hide_a_separate_content_defect()
+    test_14_validate_consumes_the_shared_predicate_not_private_regex_logic()
+    test_15_terminal_failure_reporting_is_honest_and_load_bearing()
+    test_16_near_miss_cannot_escape_to_generic_variety_wallpaper()
     print("visual intent contract tests: PASS")
