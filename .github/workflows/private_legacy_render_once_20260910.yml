@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout exact trigger commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Prove trusted production parent
         shell: bash
