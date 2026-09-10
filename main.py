@@ -2123,9 +2123,12 @@ def _subject_anchored_query(subject, voiceover, taken):
     call `visual_intent`, a leaf module (stdlib only) that neither imports from
     -- the same anti-drift shape as the delivery audio contract.
 
-    Behaviour is unchanged: subject-led, one literal term from THIS scene's
-    narration, "" when nothing safe exists. It is now additionally guaranteed
-    that anything returned here passes the SAME check validate() will apply.
+    The #88 subject-anchor safety floor is preserved: subject-led, one usable
+    literal term from THIS scene's narration, "" when nothing safe exists. The
+    shared contract intentionally adds a few visual-filler stopwords, but never
+    re-admits glue words the production builder already filtered. Anything
+    returned here is also checked by the SAME visual-intent predicate used by
+    validation.
     """
     return VI.subject_led_query(subject, voiceover, taken)
 
