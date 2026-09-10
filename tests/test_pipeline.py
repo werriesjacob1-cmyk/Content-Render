@@ -791,6 +791,47 @@ def test_diversify_queries():
     M._diversify_scene_queries(sc3)
     check(sc3[3]["search_query"].strip() != "", "empty query gets populated")
 
+    # ---- subject anchoring (render 34453163265) --------------------------
+    # A duplicate query used to be rebuilt from the voiceover ALONE, via
+    # _keywords_from_text's longest-three-words rule. Scene 8 of the
+    # Anglo-Zanzibar video -- "An entire kingdom fell in less time than a lunch
+    # break" -- became 'kingdom entire lunch': unfilmable word salad that the
+    # footage judge scored 3/10, and final QA then failed the whole video for
+    # "footage largely unrelated". Diversification had swapped a RELEVANT
+    # repeated query for an IRRELEVANT novel one.
+    war_vo = "An entire kingdom fell in less time than a lunch break."
+    check(M._keywords_from_text(war_vo) == "kingdom entire lunch",
+          "the historical salad query still reproduces from voiceover alone")
+    anchored = M._subject_anchored_query("anglo zanzibar war", war_vo, {})
+    check(anchored.startswith("anglo zanzibar war"),
+          f"the replacement now LEADS with the video's subject ({anchored!r})")
+    check("lunch" not in anchored, "and does not search the scene's metaphor")
+
+    # a distinguishing word still differentiates neighbouring scenes
+    a = M._subject_anchored_query("banana radiation", "Bananas contain potassium isotopes.", {})
+    b = M._subject_anchored_query("banana radiation", "Bananas contain potassium isotopes.",
+                                  {a.lower(): 1})
+    check(a != b, f"a taken query is not handed out twice ({a!r} vs {b!r})")
+
+    # guards: never invent a query when there is nothing to anchor to
+    check(M._subject_anchored_query("", war_vo, {}) == "",
+          "no subject -> empty, so the caller keeps its old fallback path")
+    check(M._subject_anchored_query("banana radiation", "", {}) == "banana radiation",
+          "no usable distinguishing word -> the bare subject, still filmable")
+    check(M._subject_anchored_query("banana radiation", "", {"banana radiation": 1}) == "",
+          "and if even that is taken, empty rather than a duplicate")
+
+    # end to end: the subject reaches the query when scenes collide
+    sc4 = copy.deepcopy(FIX_ASTRO["scenes"])
+    sc4[1]["search_query"] = "planet space"
+    sc4[5]["search_query"] = "planet space"
+    sc4[5]["voiceover"] = "An entire kingdom fell in less time than a lunch break."
+    M._diversify_scene_queries(sc4, subject="saturn rings")
+    check(sc4[5]["search_query"].startswith("saturn rings"),
+          f"the duplicate scene's new query is subject-anchored ({sc4[5]['search_query']!r})")
+    qs4 = [s["search_query"].lower() for s in sc4]
+    check(len(qs4) == len(set(qs4)), f"and every query is still distinct: {qs4}")
+
 
 # --------------------------------------------------------------------------
 # 3b. _diversify_scene_motions: no video is zoom-only for its whole runtime

@@ -2017,14 +2017,62 @@ def _keywords_from_text(text, k=3):
     return " ".join(ordered[:k])
 
 
-def _diversify_scene_queries(scenes):
+def _subject_anchored_query(subject, voiceover, taken):
+    """'<subject> <one distinguishing word from this scene>', or "" if unusable.
+
+    Pure and unit-tested: the whole point is that a REPLACEMENT query must still
+    be filmable. Leading with the subject keeps the search on the thing the video
+    is actually about; one voiceover word makes this scene's search differ from
+    its neighbours'. Distinguishing words are tried in the same longest-first
+    order `_keywords_from_text` uses, skipping any that already appears in the
+    subject (which would add nothing) and any combination already taken.
+
+    Returns "" when there is no subject or no usable distinguishing word, so the
+    caller falls back to the previous behaviour rather than inventing a query.
+    """
+    subject = (subject or "").strip()
+    if not subject:
+        return ""
+    subj_words = set(re.findall(r"[a-z][a-z-]+", subject.lower()))
+    words = re.findall(r"[A-Za-z][A-Za-z-]+", (voiceover or "").lower())
+    cand = [w for w in words if w not in _QUERY_STOPWORDS and len(w) > 3
+            and w not in subj_words]
+    seen_w = set()
+    for w in sorted(cand, key=len, reverse=True):
+        if w in seen_w:
+            continue
+        seen_w.add(w)
+        q = f"{subject} {w}"
+        if q.lower() not in (taken or {}):
+            return q
+    return subject if subject.lower() not in (taken or {}) else ""
+
+
+def _diversify_scene_queries(scenes, subject=""):
     """Guarantee every scene searches for a VISUALLY DISTINCT subject. The LLM is
     told to do this, but a rate-limited/near-miss script sometimes repeats a
     search_query (run 53: scenes 2 AND 6 both 'sunlight water droplets', so the
     end lingered ~20s on the same footage). When a query repeats an earlier
     scene's, rebuild it from that scene's own voiceover keywords; if that still
     collides or is empty, fall back to the on_screen_text. Purely additive — a
-    script with already-distinct queries is left untouched."""
+    script with already-distinct queries is left untouched.
+
+    SUBJECT ANCHORING (2026-09-10, from render 34453163265). Deriving a query
+    from the voiceover ALONE reproduces the exact anti-pattern `_footage_intent`
+    was built to kill: it searches the scene's METAPHOR instead of its subject.
+    `_keywords_from_text` takes the three LONGEST non-stopwords, so scene 8 of the
+    Anglo-Zanzibar video -- "An entire kingdom fell in less time than a lunch
+    break" -- became the query 'kingdom entire lunch'. No stock library can match
+    that; the judge scored it 3/10 and the video pulled generic B-roll, which the
+    final-QA judge then flagged as "footage largely unrelated". Diversification
+    had traded a RELEVANT repeated query for an IRRELEVANT novel one.
+
+    So the replacement now leads with the video's own subject (the manifest
+    `keyword`) and uses the voiceover only to DISTINGUISH one scene from another
+    -- the same "lead with the subject, not the metaphor" rule `_footage_intent`
+    already follows. Distinctness is preserved, so no scene lingers on a repeat.
+    With no subject available the old voiceover-only behaviour is unchanged."""
+    subject = (subject or "").strip()
     seen = {}
     for i, sc in enumerate(scenes, 1):
         q = (sc.get("search_query") or "").strip()
@@ -2033,7 +2081,7 @@ def _diversify_scene_queries(scenes):
             seen[key] = i
             continue
         # duplicate (or empty) — derive a fresh, scene-specific query
-        alt = _keywords_from_text(sc.get("voiceover", ""))
+        alt = _subject_anchored_query(subject, sc.get("voiceover", ""), seen)
         if not alt or alt.lower() in seen:
             alt = (sc.get("on_screen_text") or alt or q).strip()
         if alt and alt.lower() != key:
@@ -3549,7 +3597,7 @@ def main():
     # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
 
-    _diversify_scene_queries(m["scenes"])
+    _diversify_scene_queries(m["scenes"], subject=(m.get("keyword") or ""))
     _diversify_scene_motions(m["scenes"])
 
     scene_files = []
