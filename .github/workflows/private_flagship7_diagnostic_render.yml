@@ -1,0 +1,198 @@
+name: private-flagship7-diagnostic-render
+
+on:
+  push:
+    branches:
+      - superchad/flagship7-private-diagnostic-render-20260909
+    paths:
+      - diagnostics/flagship7_uncertified_manifest.json
+      - .github/workflows/private_flagship7_diagnostic_render.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: private-flagship7-diagnostic-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PAGE: science
+      VOICE_ENGINE: piper
+      WHISPER_MODEL: base
+      MUSIC_DUCK: "1"
+      SFX_CUTS: "0"
+      AI_IMAGE: "0"
+      ELEVENLABS_API_KEY: ""
+      GROQ_API_KEY: ""
+      GEMINI_API_KEY: ""
+      OPENROUTER_API_KEY: ""
+      CEREBRAS_API_KEY: ""
+      TOGETHER_API_KEY: ""
+      FIREWORKS_API_KEY: ""
+      MISTRAL_API_KEY: ""
+      FAL_KEY: ""
+      FAL_API_KEY: ""
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+
+    steps:
+      - name: Checkout exact diagnostic branch SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prove private diagnostic boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import json
+          m=json.load(open('diagnostics/flagship7_uncertified_manifest.json'))
+          assert m['diagnostic_only'] is True
+          assert m['certified'] is False
+          assert m['source_run_id'] == 34404373120
+          assert m['source_candidate'] == 'attempt_3_round_2'
+          e=m['source_candidate_evidence']
+          assert e['mechanical_hard_count'] == 0
+          assert e['semantic_violation_count'] == 0
+          assert e['semantic_verified'] is True
+          assert e['validate_err'] is None
+          assert e['quality_score'] == 4.0
+          assert e['quality_floor'] == 6.8
+          print('UNCERTIFIED PRIVATE DIAGNOSTIC ONLY — NOT ELIGIBLE FOR PUBLISHING')
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ensure local media prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          need_apt=0
+          command -v ffmpeg >/dev/null 2>&1 || need_apt=1
+          font_family="$(fc-match -f '%{family}' 'DejaVu Sans' 2>/dev/null || true)"
+          case "$font_family" in *DejaVu*) ;; *) need_apt=1 ;; esac
+          if [ "$need_apt" -eq 1 ]; then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+          fi
+          ffmpeg -version >/dev/null
+          ffprobe -version >/dev/null
+
+      - name: Install render dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Piper voice
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-en_US-ryan-high-v1
+
+      - name: Fetch local neural voice fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p voices
+          BASE="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high"
+          if [ ! -s voices/voice.onnx ]; then
+            curl -fsSL -o voices/voice.onnx "$BASE/en_US-ryan-high.onnx"
+            curl -fsSL -o voices/voice.onnx.json "$BASE/en_US-ryan-high.onnx.json"
+          fi
+          test -s voices/voice.onnx
+          test -s voices/voice.onnx.json
+
+      - name: Prefetch Whisper alignment model
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from faster_whisper import WhisperModel
+          WhisperModel('base', device='cpu', compute_type='int8')
+          print('whisper_model_prefetched=base')
+          PY
+
+      - name: Render actual private diagnostic video
+        id: render
+        shell: bash
+        env:
+          PIPER_MODEL: ${{ github.workspace }}/voices/voice.onnx
+        run: |
+          set -u
+          rm -rf out work
+          set +e
+          python main.py diagnostics/flagship7_uncertified_manifest.json
+          rc=$?
+          set -e
+          echo "renderer_exit_code=$rc" >> "$GITHUB_OUTPUT"
+          test -s out/final.mp4
+          echo "Diagnostic renderer exit code: $rc (final.mp4 exists; quality certification was intentionally not granted)"
+
+      - name: Mechanical final-audio QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality_audio_qa.py \
+            --video out/final.mp4 \
+            --manifest diagnostics/flagship7_uncertified_manifest.json \
+            --report out/audio_qa_report.json
+
+      - name: Probe actual MP4 and stamp UNCERTIFIED metadata
+        shell: bash
+        env:
+          RENDERER_RC: ${{ steps.render.outputs.renderer_exit_code }}
+        run: |
+          set -euo pipefail
+          ffprobe -v error -show_entries stream=index,codec_name,codec_type,width,height,sample_rate,bit_rate -show_entries format=duration,size,bit_rate -of json out/final.mp4 > out/ffprobe.json
+          python - <<'PY'
+          import json, os
+          p=json.load(open('out/ffprobe.json'))
+          streams=p.get('streams') or []
+          v=next(s for s in streams if s.get('codec_type')=='video')
+          a=next(s for s in streams if s.get('codec_type')=='audio')
+          assert v.get('codec_name') == 'h264'
+          assert int(v.get('width') or 0) == 1080
+          assert int(v.get('height') or 0) == 1920
+          assert a.get('codec_name') == 'aac'
+          assert int(a.get('sample_rate') or 0) == 48000
+          meta={
+            'schema':'content-render-uncertified-diagnostic-result-v1',
+            'certified':False,
+            'publish_eligible':False,
+            'source_flagship_run':34404373120,
+            'source_candidate':'attempt_3_round_2',
+            'source_quality_score':4.0,
+            'quality_floor':6.8,
+            'renderer_exit_code':int(os.environ.get('RENDERER_RC') or 0),
+            'video_probe':p,
+            'warning':'PRIVATE DIAGNOSTIC ONLY — NOT CERTIFIED, NOT FOR PUBLISHING'
+          }
+          json.dump(meta, open('out/UNCERTIFIED_DIAGNOSTIC.json','w'), indent=2)
+          print(json.dumps(meta, indent=2))
+          PY
+
+      - name: Upload private diagnostic artifact only
+        uses: actions/upload-artifact@v4
+        with:
+          name: UNCERTIFIED-flagship7-diagnostic-${{ github.sha }}
+          retention-days: 3
+          path: |
+            out/final.mp4
+            out/cover.jpg
+            out/audio_qa_report.json
+            out/ffprobe.json
+            out/UNCERTIFIED_DIAGNOSTIC.json
+            diagnostics/flagship7_uncertified_manifest.json
+          if-no-files-found: error
+
+      - name: Assert no publishing path exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "PRIVATE DIAGNOSTIC COMPLETE"
+          echo "No Release, Publer, deploy, commit, or publishing step exists in this workflow."
