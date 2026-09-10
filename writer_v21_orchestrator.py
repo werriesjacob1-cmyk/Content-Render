@@ -261,6 +261,12 @@ def generate_candidate_v21(
             # clean -- 1 of 9 rounds in flagship #6.
             narration_contract=narration_contract,
             writer_out=writer_out,
+            # The treatment defines what each beat is FOR. Without it the repair
+            # contract falls back to a generic role and can push every hook
+            # toward one house style -- five of eight treatments deliberately
+            # open ORDINARY.
+            treatment_name=treatment,
+            treatments=getattr(W, "TREATMENTS", None),
         )
         if not coverage_ok and not mech_hard and not validate_err:
             plan = {

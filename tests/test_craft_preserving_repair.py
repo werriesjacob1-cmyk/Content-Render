@@ -115,13 +115,40 @@ def test_1_the_critic_preservation_signal_survives_every_tier():
 # 2 ---------------------------------------------------------------------------
 def test_2_every_targeted_beat_is_told_what_it_is_for():
     plan = _plan([0, 2, 7])
-    contract = plan["narrative_contract"]
-    joined = "\n".join(contract)
+    joined = "\n".join(plan["narrative_contract"])
     check("beat_index 0 is the HOOK" in joined, "the hook is named as the hook")
     check("beat_index 2 is the MIDDLE BEAT" in joined, "a middle beat is named as one")
     check("beat_index 7 is the PAYOFF" in joined, "the payoff is named as the payoff")
-    check("never the script's conclusion" in joined,
-          "and the hook is told not to become the conclusion")
+
+
+def test_2b_the_contract_takes_the_beat_purpose_from_THIS_treatment():
+    """The first version asserted one house style over all eight treatments.
+
+    It said a hook must open on "the most surprising concrete image". Five of
+    eight treatments deliberately open ORDINARY -- HIDDEN_MECHANISM on "the
+    ordinary, visible thing exactly as everyone already knows it", MYTH_AUTOPSY
+    on "the common belief stated plainly", SCALE_REVEAL on "an ordinary,
+    familiar reference point" -- and VISUAL_EXPERIMENT opens on a question, not
+    an image. A repair prompt asserting the opposite would fight the treatment
+    system and flatten the variety it exists to create.
+    """
+    wo = _script()
+    openings = {}
+    for name in ("HIDDEN_MECHANISM", "MYTH_AUTOPSY", "VISUAL_EXPERIMENT", "SCALE_REVEAL"):
+        line = R.narrative_function_contract(wo, [0], 6, name, W2.TREATMENTS)[0]
+        openings[name] = line
+        expected = W2.TREATMENTS[name]["beats"][0]
+        check(expected[:40] in line,
+              f"{name}: the contract quotes THIS treatment's own opening")
+    check(len(set(openings.values())) == len(openings),
+          "and four treatments get four different opening instructions")
+    joined = "\n".join(openings.values())
+    check("most surprising concrete image" not in joined,
+          "no single house style is asserted over the treatment bank")
+
+    # Fallback when the treatment is unknown must still say something useful.
+    fallback = R.narrative_function_contract(wo, [0], 6, "NOT_A_TREATMENT", W2.TREATMENTS)[0]
+    check("HOOK" in fallback, "an unknown treatment still yields the structural role")
 
 
 # 3 ---------------------------------------------------------------------------
@@ -261,6 +288,7 @@ def test_10_none_of_the_gates_moved():
 if __name__ == "__main__":
     test_1_the_critic_preservation_signal_survives_every_tier()
     test_2_every_targeted_beat_is_told_what_it_is_for()
+    test_2b_the_contract_takes_the_beat_purpose_from_THIS_treatment()
     test_3_a_beat_is_told_not_to_steal_the_payoff()
     test_4_the_payoff_is_not_told_to_both_rewrite_and_preserve_itself()
     test_5_the_licence_to_flatten_is_gone_and_a_better_move_is_named()

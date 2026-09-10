@@ -963,7 +963,8 @@ def derive_must_also_satisfy(validate_err, narration_contract, writer_out=None):
 
 
 def classify_repair(hard_violations, semantic_violations, validate_err, critic_verdict, num_beats,
-                    narration_contract=None, writer_out=None):
+                    narration_contract=None, writer_out=None, treatment_name=None,
+                    treatments=None):
     """Pure decision function -- no network call. Three-tier priority
     (2026-09-04 V2.1 redesign, replacing the old "mechanical always wins"
     rule that treated noisy word-level violations as equal to a real
@@ -1032,7 +1033,7 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
             "diagnosis": diagnosis or "unsupported factual content found",
             "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 1,
             "narrative_contract": narrative_function_contract(
-                writer_out, target_beats, num_beats),
+                writer_out, target_beats, num_beats, treatment_name, treatments),
         }
 
     if validate_err:
@@ -1043,7 +1044,7 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
                     "diagnosis": validate_err, "must_preserve": preserve,
                     "must_also_satisfy": must_also, "tier": 2,
                     "narrative_contract": narrative_function_contract(
-                        writer_out, target_beats, num_beats)}
+                        writer_out, target_beats, num_beats, treatment_name, treatments)}
         return {"repair_type": "NONE", "target_beats": [], "diagnosis": validate_err,
                 "must_preserve": preserve, "must_also_satisfy": must_also, "tier": 2}
 
@@ -1068,7 +1069,7 @@ def classify_repair(hard_violations, semantic_violations, validate_err, critic_v
         "must_also_satisfy": must_also,
         "tier": 3,
         "narrative_contract": narrative_function_contract(
-            writer_out, target_beats, num_beats),
+            writer_out, target_beats, num_beats, treatment_name, treatments),
     }
 
 
@@ -1101,17 +1102,17 @@ def detect_stall(prev_writer_out, new_writer_out, target_beats, num_beats):
               for i in target_beats)
 
 
-BEAT_ROLE_OBLIGATIONS = {
-    "HOOK": "it is the FIRST line the viewer hears. After your rewrite it must still "
-            "open on the most surprising concrete image in the script -- not a summary, "
-            "not a definition, and never the script's conclusion.",
-    "PAYOFF": "it is the LAST line, the idea the whole script has been building toward. "
-              "After your rewrite it must still land as a payoff. A payoff that reads as "
-              "a citation, a date list, or a restatement of an earlier beat is a FAILED "
-              "repair even when every word of it is supported.",
-    "MIDDLE BEAT": "it advances the escalation between the hook and the payoff. After "
-                   "your rewrite it must still move the script FORWARD -- adding something "
-                   "the previous lines had not yet said.",
+# Structural fallback only. The TREATMENT's own beat list is the real source of
+# a beat's purpose and is used whenever it is available -- see
+# narrative_function_contract.
+BEAT_ROLE_FALLBACK = {
+    "HOOK": "it is the FIRST line the viewer hears, and it must still do the job "
+            "this treatment gives its opening.",
+    "PAYOFF": "it is the LAST line, the idea the script has been building toward. "
+              "A payoff that reads as a citation or a date list is a FAILED repair "
+              "even when every word of it is supported.",
+    "MIDDLE BEAT": "it advances the script between the opening and the payoff, and "
+                   "must still add something the previous lines had not yet said.",
 }
 
 
@@ -1124,7 +1125,44 @@ def beat_role(beat_index, num_beats):
     return "MIDDLE BEAT"
 
 
-def narrative_function_contract(writer_out, target_beats, num_beats):
+def beat_purpose(beat_index, num_beats, treatment_name=None, treatments=None):
+    """What THIS treatment says this beat is for, falling back to structure.
+
+    WHY THE TREATMENT AND NOT A FIXED RULE
+
+    The first version of this contract asserted that a hook must open on "the
+    most surprising concrete image". That is one treatment's aesthetic asserted
+    over all of them, and it directly contradicts most of the bank:
+    HIDDEN_MECHANISM opens on "the ordinary, visible thing exactly as everyone
+    already knows it"; MYTH_AUTOPSY on "the common belief stated plainly";
+    SCALE_REVEAL on "an ordinary, familiar reference point"; VISUAL_EXPERIMENT
+    on a question rather than an image. Five of eight treatments deliberately
+    open ORDINARY, because the surprise is what they escalate INTO.
+
+    A repair prompt that pushed every hook toward one house style would fight
+    the treatment system and flatten exactly the variety it exists to produce.
+    So the beat's purpose is read from the treatment actually in use, and the
+    generic role is only the fallback when the treatment has nothing to say
+    about that position.
+    """
+    role = beat_role(beat_index, num_beats)
+    spec = (treatments or {}).get(treatment_name or "") or {}
+    beats_spec = spec.get("beats") or []
+    if beats_spec:
+        # beat_index 0 is the hook, 1..N the middle beats, N+1 the payoff; the
+        # treatment's own list runs opening..close over the same span.
+        if beat_index <= 0:
+            return f"{role} — this treatment opens on: {beats_spec[0]}"
+        if beat_index >= num_beats + 1:
+            return f"{role} — this treatment closes on: {beats_spec[-1]}"
+        inner = beats_spec[1:-1] or beats_spec
+        pos = min(max(beat_index - 1, 0), len(inner) - 1)
+        return f"{role} — this treatment's beat here: {inner[pos]}"
+    return f"{role}: {BEAT_ROLE_FALLBACK[role]}"
+
+
+def narrative_function_contract(writer_out, target_beats, num_beats,
+                                treatment_name=None, treatments=None):
     """What each targeted beat is FOR, and what it must not steal from later beats.
 
     WHY THIS EXISTS (flagship #7, greenland_shark_age, attempt 2)
@@ -1144,13 +1182,20 @@ def narrative_function_contract(writer_out, target_beats, num_beats):
 
     That is evidence gravity: the cheapest way to make a beat "supported" is to
     quote the most quotable claim available, and the most quotable claim is
-    usually the ending. Stating each beat's job, and naming what the later beats
-    still have to land, is what makes a supported rewrite also a survivable one.
+    usually the ending.
+
+    SCOPE, HONESTLY. A 36-pair retrospective rescore of the whole corpus
+    (`reports/flagship_craft_rescore.md`) does NOT show repair systematically
+    degrading craft: among the 24 pairs where repair improved factual/mechanical
+    state, the preregistered deterministic metric scores 10 improved / 5 flat /
+    9 degraded. So this contract is aimed at a demonstrated single-case failure
+    mode, not at a proven epidemic, and it is written to constrain as little as
+    possible.
     """
     lines = []
     for idx in sorted(set(target_beats or [])):
-        role = beat_role(idx, num_beats)
-        lines.append(f"- beat_index {idx} is the {role}: {BEAT_ROLE_OBLIGATIONS[role]}")
+        lines.append(f"- beat_index {idx} is the "
+                     f"{beat_purpose(idx, num_beats, treatment_name, treatments)}")
     payoff_idx = num_beats + 1
     payoff_text = (writer_out or {}).get("payoff") or ""
     # Only warn about stealing the payoff when the payoff is NOT itself being
@@ -1212,7 +1257,8 @@ def build_repair_prompt(writer_out, claim_inventory, treatment_name, plan, treat
     # narrative_function_contract's docstring for the measured case.
     role_lines = plan.get("narrative_contract")
     if role_lines is None:
-        role_lines = narrative_function_contract(writer_out, target_beats, num_beats)
+        role_lines = narrative_function_contract(
+            writer_out, target_beats, num_beats, treatment_name, treatments)
     role_block = ""
     if role_lines:
         role_block = (
