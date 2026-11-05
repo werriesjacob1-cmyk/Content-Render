@@ -118,9 +118,30 @@ def _rank_gemini_models(lst):
     def _is_unstable(n):
         return "preview" in n or "exp" in n
 
+    def _version_key(n):
+        """Numeric version of a model id, newest-first when sorted descending.
+
+        2026-09-10: the tier sort used sorted(..., reverse=True), a STRING sort,
+        while this function's own docstring promises "newest numbered id first".
+        String order is not version order -- 'gemini-10-flash' sorts BELOW
+        'gemini-3.8-flash' because '3' > '1', and 'gemini-omni-1.1-flash' sorts
+        above 'gemini-3.8-flash' because 'o' > '3'. Latent while a '-latest'
+        alias exists to win first, but the moment a key resolves only numbered
+        ids we would silently pick an OLDER model -- the same failure shape as
+        the 2026-08-04 lite-model bug this function was written to fix.
+
+        Ids with no version number sort last among their tier, then by name, so
+        ordering stays deterministic.
+        """
+        nums = re.findall(r"\d+(?:\.\d+)*", n)
+        if not nums:
+            return ()
+        return tuple(int(p) for p in max(nums, key=len).split("."))
+
     def _sort_tier(tier):
         latest = [n for n in tier if "-latest" in n]
-        stable = sorted({n for n in tier if "-latest" not in n}, reverse=True)
+        stable = sorted({n for n in tier if "-latest" not in n},
+                        key=lambda n: (_version_key(n), n), reverse=True)
         return latest + stable
 
     full = [n for n in lst if not _is_lite(n) and not _is_unstable(n)]

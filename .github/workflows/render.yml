@@ -11,6 +11,9 @@ on:
       openrouter_model:
         description: "OPTIONAL one-off OpenRouter writer model override for THIS manual run only"
         default: ""
+      gemini_model:
+        description: "OPTIONAL one-off Gemini writer model for THIS run (e.g. gemini-3.8-flash). Empty = live discovery. Forces the model, skipping discovery."
+        default: ""
       certification_only:
         description: "Run the real pipeline but skip all publish steps; output stays a private Actions artifact"
         type: boolean
@@ -98,6 +101,13 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_GENERATION: "1"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # WRITER ONLY -- deliberately not set on the Render step, whose Gemini
+          # use is the footage/QA judge (JUDGE_GEMINI_MODEL). Swapping both at
+          # once would confound a writer A/B with a judge change.
+          # Empty string leaves discovery untouched (generate.gemini_models only
+          # treats a NON-empty GEMINI_MODEL as an override), so scheduled runs and
+          # any dispatch that omits it behave exactly as before.
+          GEMINI_MODEL: ${{ github.event.inputs.gemini_model || '' }}
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}
