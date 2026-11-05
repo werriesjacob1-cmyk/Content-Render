@@ -16,6 +16,27 @@ channel. A new session should read this file plus the latest
 - **Consistency over cadence:** better to publish NOTHING than a weak video. The
   quality gate is allowed (and expected) to abort a run.
 
+## Keeping the scheduled workflows alive (recurs every 60 idle days)
+
+**GitHub disables every `schedule:` cron after 60 days of repository
+inactivity.** On 2026-11-03 it emailed three warnings — `render-video`,
+`expand-topic-bank`, `fill-script-buffer` — because the last commit to `main`
+was 2026-09-10. **Nothing is deleted by this**: the repo, history, branches and
+PRs are untouched, and `workflow_dispatch` keeps working even on a disabled
+workflow. Only the automatic schedule stops.
+
+Two ways to reset it, both cheap:
+- **any commit pushed to `main`** resets the clock for ALL workflows at once;
+- or Actions tab → the workflow → **Enable workflow** (per workflow).
+
+This will fire again after any 60-day gap. It is routine, not an incident.
+
+Note it changes little in practice right now: scheduled renders have been
+**skipped** since 2026-09-09 anyway, because `render.yml` gates the cron behind
+the repo Variable `LEGACY_SCHEDULED_GENERATION_ENABLED`, which is not set to
+`true`. Manual dispatch is the live path (and is how the 2026-09-10
+banana-radiation video was produced).
+
 ## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
 Downstream machinery is now proven on REAL ffmpeg output, and the proof
 immediately earned its keep by exposing a defect every render had shipped.
