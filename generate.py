@@ -2309,29 +2309,24 @@ UNSAFE = re.compile(r"\b(fire|flame|burn|burning|lit|light a|matches?|lighter|ca
 # rather than trying to enumerate every abstract system instead (the list of
 # abstract systems is unbounded; the list of physical ones stock libraries
 # actually carry good footage for is short and known).
-UNSTOCKABLE_Q = re.compile(r"\b(anatom\w*|organs?|cells?|microscop\w*|diagrams?|x-?ray|molecul\w*|"
-                           r"atoms?|quantum|abstracts?|concept\w*|"
-                           r"(?<!solar )(?<!root )(?<!river )(?<!weather )(?<!mountain )"
-                           r"(?<!cave )(?<!reef )(?<!canyon )systems?|"
-                           # jargon that returns nothing filmable (or a random
-                           # texture the judge then rates a false match — the
-                           # "rhizomorphs -> orange brick wall" miss). Say the
-                           # plain subject instead: "fungus threads underground".
-                           r"rhizomorph\w*|myceli\w*|hyphae?|antisolar)\b", re.I)
+# The visual-intent rule now lives in ONE place, `visual_intent.py` (a leaf
+# module, stdlib only), because `main.py` builds replacement queries and
+# `validate()` judges them while neither module can import the other. Re-exported
+# here so every existing reference keeps working and the validator and the
+# repairer cannot drift apart -- the same anti-drift rule the Writer length
+# contract and the delivery audio contract already follow.
+from visual_intent import (  # noqa: E402
+    UNSTOCKABLE_Q, COSMIC_FILLER_Q_RE, SPACE_CONTEXT_RE,
+    query_defect, repair_scene_queries,
+)
 
-# render-209: the payoff scene was a human-ancestry line, but its search_query
-# was "night sky stars" -- generic cosmic imagery the writer defaults to when
-# it can't think of anything concrete, landing a totally off-topic clip. Only
-# fires when BOTH hold: the query is cosmic/space filler AND this specific
-# scene's own voiceover never mentions anything space-related either (so it's
-# clearly not an intentional space metaphor/comparison) AND the fact's domain
-# isn't actually space/astronomy (where cosmic imagery is exactly right).
-COSMIC_FILLER_Q_RE = re.compile(r"\b(night sky|starry|star field|starfield|milky way|deep space|"
-                                r"outer space|nebula|galaxy|galaxies|constellation|solar system|"
-                                r"cosmos|cosmic|planets? orbit\w*)\b", re.I)
-SPACE_CONTEXT_RE = re.compile(r"\b(stars?|sky|galaxy|galaxies|nebula|cosmic|cosmos|universe|orbit\w*|"
-                              r"planets?|moon|sun|space|asteroids?|comets?|constellation|milky way|"
-                              r"black hole)\b", re.I)
+# validate() error strings that mean ONLY the retrieval metadata is wrong -- the
+# narration, evidence and every content gate already passed. These are the only
+# failures the deterministic visual repair may attempt, so a repair can never be
+# mistaken for a content fix.
+_VISUAL_QUERY_ERR_RE = re.compile(r"uses un-filmable terms|is generic cosmic/space imagery")
+_last_failure_kind = ""   # set when a candidate dies specifically on visual intent
+
 
 # render-215: "a waterfall three times taller than Angel Falls" shipped with the
 # search_query "oceanography deep water ocean" -- never mentioning Angel Falls at
@@ -4187,8 +4182,38 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 print(f"  attempt {attempt+1} invalid: model returned a {type(m).__name__}, not a JSON object")
                 continue
             err = validate(m, job_name, fact=chosen_fact)
+            if err and _VISUAL_QUERY_ERR_RE.search(err):
+                # The narration passed every content gate and only the RETRIEVAL
+                # metadata is wrong. Discarding the whole candidate for that is
+                # what killed the chess_possible_games run: a valid script about
+                # combinatorics carried 'deep space stars moving', validate()
+                # correctly refused it, and nothing tried to fix the one field
+                # that was broken.
+                #
+                # Repair is deterministic, uses only the subject plus each
+                # scene's OWN narration, touches nothing but `search_query`, and
+                # re-runs the SAME validate() afterwards -- so this cannot pass a
+                # script the gates would otherwise reject. If no safe query can
+                # be derived the candidate still fails, honestly.
+                repaired = repair_scene_queries(
+                    m.get("scenes"), (m.get("keyword") or ""),
+                    _domain_family((chosen_fact or {}).get("domain")))
+                if repaired:
+                    for idx, old_q, new_q, code in repaired:
+                        print(f"  [visual-repair] scene {idx} {code}: {old_q!r} -> {new_q!r}")
+                    err = validate(m, job_name, fact=chosen_fact)
+                    if not err:
+                        print(f"  attempt {attempt+1}: visual intent repaired deterministically "
+                              f"({len(repaired)} scene(s)); narration and evidence untouched")
             if err:
                 print(f"  attempt {attempt+1} invalid: {err}")
+                if _VISUAL_QUERY_ERR_RE.search(err):
+                    # Precise failure class. A production controller must be able
+                    # to tell "this candidate's VISUALS are unusable" apart from
+                    # "the provider was down" -- the chess run was reported as a
+                    # likely quota exhaustion while Gemini was working fine.
+                    _last_failure_kind = "visual_intent"
+                    print("  [failure-kind] visual_intent — narration/provider are NOT implicated")
                 # keep it as a backup if it at least has the core pieces
                 if all(k in m for k in ("title", "hook", "script", "scenes", "captions")) and near_miss is None:
                     near_miss = m
