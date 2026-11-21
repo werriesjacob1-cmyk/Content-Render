@@ -40,6 +40,7 @@ class AssetLineageEntry:
     # leaving the reader to assume the original lineage still holds.
     repair_replaced: bool = False
     replaced_output_file: str = ""
+    selected_assets: tuple[Mapping[str, Any], ...] = ()
 
     def validate(self) -> list[str]:
         errors: list[str] = []
@@ -144,6 +145,9 @@ def repaired_lineage(
             entry["replaced_output_file"] = original
             entry["output_file"] = new_file
             entry["repair_replaced"] = True
+            if entry.get("selected_assets"):
+                entry["selected_assets"] = []
+                entry["attributable"] = False
             note = str(entry.get("notes") or "")
             entry["notes"] = (note + "; " if note else "") + (
                 f"asset replaced by bounded repair (was {original or 'unrecorded'})"

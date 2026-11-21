@@ -145,7 +145,8 @@ def _best_svs_movie(page):
     return max(movies, key=rank)
 
 
-def svs_candidates(query: str, used_ids=None, limit: int = 3, timeout: float = 8.0):
+def svs_candidates(query: str, used_ids=None, limit: int = 3, timeout: float = 8.0,
+                   *, strict_rights=False):
     """Return NASA SVS movie candidates in main.py's candidate shape.
 
     Search -> page API -> best practical MP4. IDs are namespaced strings so they
@@ -178,6 +179,8 @@ def svs_candidates(query: str, used_ids=None, limit: int = 3, timeout: float = 8
             try:
                 page = _http_json(f"https://svs.gsfc.nasa.gov/api/{page_id}/", timeout=timeout)
             except Exception:
+                if strict_rights:
+                    raise
                 continue
             movie = _best_svs_movie(page)
             if not movie:
@@ -193,6 +196,13 @@ def svs_candidates(query: str, used_ids=None, limit: int = 3, timeout: float = 8
                 " ".join(str(k) for k in (page.get("keywords") or [])),
             ) if x).strip()
             thumb = page.get("main_image") or {}
+            page_url = page.get("url") or result.get("url")
+            if strict_rights:
+                # The studio allows reuse subject to page-specific exceptions.
+                # Require explicit rights metadata before entering the live selector.
+                rights = str(movie.get("license") or page.get("license") or "").lower().strip()
+                if rights != "public domain" or not page_url or not movie.get("url"):
+                    continue
             out.append({
                 "id": cid,
                 "url": movie.get("url"),
@@ -200,9 +210,15 @@ def svs_candidates(query: str, used_ids=None, limit: int = 3, timeout: float = 8
                 "source": "NASA SVS",
                 "image": thumb.get("url") if isinstance(thumb, dict) else None,
                 "scientific": True,
-                "page_url": page.get("url") or result.get("url"),
+                "page_url": page_url,
+                **({"kind": "video", "license": "Public Domain", "source_url": page_url,
+                    "attribution": "NASA Scientific Visualization Studio",
+                    "duration": movie.get("duration"), "width": movie.get("width"),
+                    "height": movie.get("height")} if strict_rights else {}),
             })
     except Exception:
+        if strict_rights:
+            raise
         return []
     return out
 
