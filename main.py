@@ -33,6 +33,7 @@ from narration import spoken_text
 # that cost this project five flagship runs, in a different shape.
 # The delivery contract, not the QA module. The renderer must not depend on the
 # thing that judges it; both import the same neutral source instead.
+import director
 from delivery_contract import delivery_audio_encode_args
 # The mastering SEQUENCE is shared too, not just its constants. A filter string
 # cannot close a loop around its own result, and loudnorm's single-pass error on
@@ -2772,6 +2773,15 @@ def _footage_intent(scene):
 # scene boundary + word timings, which don't change). Fully env-gated and
 # fail-safe: on ANY error the scene renders exactly as before (one clip).
 SCENE_MULTICLIP = os.getenv("SCENE_MULTICLIP", "1") != "0"
+# DIRECTOR layer (director.py holds the pure logic).
+#   DIRECTOR_SHOTLIST  default OFF -- an LLM shot list (2-3 literal filmable shots per
+#                      line) before footage fetch; stays off until the user has watched
+#                      a render made with it.
+#   SCENE_MOOD / SCENE_PUNCH / SOUND_BED  default ON, all deliberately subtle.
+DIRECTOR_SHOTLIST = os.getenv("DIRECTOR_SHOTLIST", "0").strip().lower() in ("1", "true", "yes", "on")
+SCENE_MOOD = os.getenv("SCENE_MOOD", "1").strip().lower() not in ("0", "false", "no", "off")
+SCENE_PUNCH = os.getenv("SCENE_PUNCH", "1").strip().lower() not in ("0", "false", "no", "off")
+SOUND_BED = os.getenv("SOUND_BED", "1").strip().lower() not in ("0", "false", "no", "off")
 CLIP_SECONDS    = float(os.getenv("CLIP_SECONDS", "1.9"))   # target on-screen time per clip
 MAX_SUBCLIPS    = int(os.getenv("MAX_SUBCLIPS", "6"))        # cap distinct clips per scene
 _MULTICLIP_MOTIONS = ["zoom_in", "pan", "zoom_out"]          # cycled so no two cuts move alike
@@ -2948,7 +2958,10 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
     # Build a pooled, de-duplicated candidate list across the query variants. Stop
     # early once we have plenty to choose from (need*4) to bound network work.
     pool = []
-    for vq in _variant_queries(q):
+    _shots = director.shot_queries(scene)
+    for vq in _shots + [v for v in _variant_queries(q) if v not in _shots]:
+        # a directed shot is gated on ITS OWN subject ("microscope dna"), a variant on the scene's
+        subject = _subject_word(vq) if vq in _shots else _subject_word(q)
         try:
             for c in (_gather_candidates(vq) or []):
                 cid = c.get("id")
@@ -3038,6 +3051,10 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     motion = _motion_filter(scene, frames, zspeed, idx=idx, prev_kind=_last_motion_kind)
     _last_motion_kind = kind
     grade = PROFILE["grade"]
+    if SCENE_MOOD:
+        grade += director.mood_filter(
+            director.scene_mood(idx - 1, scene.get("_n_scenes", idx + 1), scene.get("voiceover", "")))
+    punch = director.punch_in_filter(scene.get("_punch_t")) if SCENE_PUNCH else ""
     stat = _stat_overlay(scene, seg_dur)
 
     if have:
@@ -3108,6 +3125,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                 sv = os.path.join(WORK, f"s{idx}_v.mp4")
                 run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listf, "-c", "copy", sv])
                 run(["ffmpeg", "-y", "-i", sv, "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
+                     *(["-vf", punch.lstrip(",")] if punch else []),
                      "-t", f"{seg_dur:.3f}", "-r", "30", "-pix_fmt", "yuv420p",
                      "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
                 print(f"  multi-clip scene: {len(parts)} cuts across {seg_dur:.1f}s "
@@ -3118,7 +3136,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
 
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
-             "-filter_complex", f"[0:v]{motion}{lift}{grade}{stat},setsar=1[v]",
+             "-filter_complex", f"[0:v]{motion}{lift}{grade}{punch}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
         return out
@@ -3985,6 +4003,71 @@ def _make_cut_whooshes(cut_times, total_dur, dest):
         return None
 
 
+def _run_director(m):
+    """DIRECTOR_SHOTLIST: ask the (free, judge-bucket) LLM for 2-3 literal filmable shots
+    per line and attach them. Fail-safe: any failure leaves the manifest untouched."""
+    try:
+        reply = _groq_chat(director.build_shotlist_prompt(m["scenes"]), max_tokens=1500, temperature=0.3)
+        shots = director.parse_shotlist(reply, len(m["scenes"]))
+        n = director.apply_shotlist(m["scenes"], shots)
+        print(f"[director] shot list applied to {n}/{len(m['scenes'])} scene(s)")
+        for i, sh in sorted(shots.items()):
+            print(f"  scene {i + 1}: " + " | ".join(f"{x['query']} ({x['reason'][:40]})" for x in sh))
+    except Exception as e:  # noqa: BLE001
+        print(f"[director] shot list failed ({e}); keeping the script's own queries")
+
+
+def _set_scene_director_fields(m, segments):
+    """Stamp each scene with its count and the scene-local time of its key word, for the
+    mood grade and punch-in. Needs real word timings; without them, no punch-in."""
+    scenes = m["scenes"]
+    for sc in scenes:
+        sc["_n_scenes"] = len(scenes)
+    if not WORD_TIMINGS:
+        return
+    kt = [w for w in re.findall(r"[A-Za-z0-9']+", m.get("keyword", "")) if len(w) > 2]
+    starts = _prefix_starts([d for _, d in segments])
+    wi = 0
+    for i, sc in enumerate(scenes):
+        n = len(sc["voiceover"].split())
+        base = starts[i] if i < len(starts) else 0.0
+        words = [(w, st - base, en - base) for w, st, en in WORD_TIMINGS[wi:wi + n]]
+        t0 = director.keyword_time(words, kt)
+        if t0 is not None:
+            sc["_punch_t"] = max(0.0, t0)
+        wi += n
+
+
+def _make_sound_bed(total_dur, payoff_start, dest):
+    """A very quiet, license-safe ffmpeg-generated bed (director.sound_plan): room tone
+    under the whole video, a soft riser into the payoff, one low impact on the reveal.
+    Fail-safe: any error returns None and the mix simply has no bed."""
+    try:
+        plan = director.sound_plan(total_dur, payoff_start)
+        inputs, fparts, labels = [], [], []
+        for k, (kind, start, length) in enumerate(plan):
+            ms = int(start * 1000)
+            if kind == "room":
+                inputs += ["-f", "lavfi", "-i", f"anoisesrc=d={length:.2f}:c=pink:a=1:r=44100"]
+                chain = f"lowpass=f=500,volume={director.ROOM_VOL}"
+            elif kind == "riser":
+                inputs += ["-f", "lavfi", "-i", f"anoisesrc=d={length:.2f}:c=pink:a=1:r=44100"]
+                chain = (f"lowpass=f=2500,afade=t=in:d={length:.2f}:curve=exp,"
+                         f"volume={director.RISER_VOL}")
+            else:  # impact
+                inputs += ["-f", "lavfi", "-i", f"sine=f=52:d={length:.2f}:r=44100"]
+                chain = f"afade=t=in:d=0.02,afade=t=out:st=0.05:d={length - 0.05:.2f}:curve=exp,volume={director.IMPACT_VOL}"
+            fparts.append(f"[{k}:a]{chain},adelay={ms}|{ms}[b{k}]")
+            labels.append(f"[b{k}]")
+        fparts.append(f"{''.join(labels)}amix=inputs={len(labels)}:normalize=0[o]")
+        run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(fparts), "-map", "[o]",
+             "-t", f"{float(total_dur):.2f}", dest])
+        return dest if os.path.getsize(dest) > 1000 else None
+    except Exception as e:  # noqa: BLE001
+        print(f"  [sfx] sound bed build failed ({e}) — skipping")
+        return None
+
+
 # ---------- MAIN ----------
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
@@ -4041,6 +4124,9 @@ def main():
     # each scene's on-screen duration == its own spoken segment (no padding)
     segments = split_audio(full_mp3, m["scenes"], WORK)
 
+    if DIRECTOR_SHOTLIST:
+        _run_director(m)
+    _set_scene_director_fields(m, segments)
     _diversify_scene_queries(m["scenes"], subject=(m.get("keyword") or ""))
     _diversify_scene_motions(m["scenes"])
 
@@ -4230,6 +4316,13 @@ def main():
         ff_inputs += ["-i", whoosh_track]
         filt.append(f"[{idx}:a]volume=1.0[wf]")
         labels.append("[wf]"); idx += 1
+    _bed = (_make_sound_bed(padded_dur, cut_times[-1] if cut_times else None,
+                            os.path.join(WORK, "sound_bed.wav")) if SOUND_BED else None)
+    if _bed:
+        print("[sfx] mixing quiet sound bed (room tone + riser into the payoff + low impact)")
+        ff_inputs += ["-i", _bed]
+        filt.append(f"[{idx}:a]volume=1.0[sbed]")
+        labels.append("[sbed]"); idx += 1
     # Final loudness normalization to the social-media standard (-14 LUFS
     # integrated, a true peak with headroom to survive AAC). Without it, output
     # loudness drifts with the voice/music levels, so some videos land quiet and
