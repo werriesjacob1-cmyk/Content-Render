@@ -1,45 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-05_what-actually-happens-to-a-body-in-space",
-      "metaphor": "vacuum boiling effect",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "COMPARISON_COLLISION",
-      "title": "What Actually Happens to a Body in Space?",
-      "fact_id": "human_vacuum",
-      "domain": "space",
-      "hook": "Part 1: A boiling kettle and an astronaut share the exact same nightmare.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "series": {
-        "name": "The Universe You Can't See",
-        "part": 1
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 7.0,
-        "payoff": 7.0,
-        "rewatch": 6.0,
-        "clarity": 8.0,
-        "coherence": 8.0,
-        "overall": 7.14
-      },
-      "final_qa": {
-        "footage_matches_narration": 5,
-        "visual_variety": 8,
-        "caption_legible": 10,
-        "narration_flow": 9,
-        "biggest_issue": "Several stock clips like a child holding a giant rose or kids playing dress-up feel off-topic for a serious space science topic.",
-        "audio_judged": true,
-        "aborted": true
-      }
-    },
-    {
       "video_id": "science_2026-08-07_the-organ-that-grows-back",
       "metaphor": "self repairing human body",
       "viewer_job": "MYTH_BUSTER",
@@ -436,6 +397,33 @@
         "biggest_issue": "Frame 3 is a plain blank background offering zero visual context.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-11-21_the-hidden-giant-under-oregon",
+      "metaphor": "underground forest giant",
+      "viewer_job": "MYTH_BUSTER",
+      "cta_style": "LOOP",
+      "hook_frame": "EVERYDAY_UNSEEN",
+      "title": "The Hidden Giant Under Oregon",
+      "fact_id": "largest_fungus",
+      "domain": "fungi",
+      "hook": "Your boots could be walking across the largest living thing on Earth.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.71
       }
     }
   ]

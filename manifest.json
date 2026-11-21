@@ -1,115 +1,88 @@
 {
-  "title": "The Universe You Can't See: Part 1",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "banana radiation",
-  "metaphor": "kitchen counter physics",
+  "title": "The Hidden Giant Under Oregon",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "largest living thing",
+  "metaphor": "underground forest giant",
   "vibe": "awe",
-  "hook": "Part one: fresh bananas emit real nuclear radiation into your home.",
-  "hook_headline": "ONE MILLION BANANAS",
-  "script": "Part one: fresh bananas emit real nuclear radiation into your home. What would actually happen if you ate a million at once? One banana gives about 0.1 microsieverts of exposure from potassium-40. Massive cargo crates of them regularly trigger nuclear sensors at border checkpoints. Yet radiation is not what harms you. Plain potassium stops your heart first. Your own body fires potassium-40 decays roughly 5,000 times a second. Your kidneys flush the excess, so that internal dose never adds up. Does sharing a bed with a radiating human comfort or unsettle you? Follow so you do not miss part two.",
+  "hook": "Your boots could be walking across the largest living thing on Earth.",
+  "hook_headline": "BIGGER THAN A WHALE",
+  "script": "Your boots could be walking across the largest living thing on Earth. So why does it look like nothing more than ordinary dirt? Most people still think the blue whale holds that undisputed crown. Under an Oregon forest, a single organism called the honey fungus covers four square miles. Almost all of this giant exists underground as a vast web of threads. The entire woods is its meal. You never walked among individual trees, you were standing on one endless predator.",
   "scenes": [
     {
       "id": 1,
-      "duration": 4,
-      "voiceover": "Part one: fresh bananas emit real nuclear radiation into your home.",
-      "on_screen_text": "PART 1: BANANA RADIATION",
-      "search_query": "bananas bunch",
+      "duration": 5,
+      "voiceover": "Your boots could be walking across the largest living thing on Earth.",
+      "on_screen_text": "LARGEST LIVING THING",
+      "search_query": "forest floor moss",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 4,
-      "voiceover": "What would actually happen if you ate a million at once?",
-      "on_screen_text": "A MILLION AT ONCE?",
-      "search_query": "fruit market",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "So why does it look like nothing more than ordinary dirt?",
+      "on_screen_text": "HIDDEN UNDERGROUND",
+      "search_query": "digging forest soil earth",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "One banana gives about 0.1 microsieverts of exposure from potassium-40.",
-      "on_screen_text": "BANANA RADIATION DOSE",
-      "search_query": "banana yellow",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "Most people still think the blue whale holds that undisputed crown.",
+      "on_screen_text": "NOT A WHALE",
+      "search_query": "blue whale swimming ocean",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "Massive cargo crates of them regularly trigger nuclear sensors at border checkpoints.",
-      "on_screen_text": "BORDER ALARMS TRIGGERED",
-      "search_query": "cargo shipping container port",
-      "motion": "static",
+      "duration": 6,
+      "voiceover": "Under an Oregon forest, a single organism called the honey fungus covers four square miles.",
+      "on_screen_text": "SINGLE ORGANISM",
+      "search_query": "mushrooms growing",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 3,
-      "voiceover": "Yet radiation is not what harms you.",
-      "on_screen_text": "NOT THE RADIATION",
-      "search_query": "heart monitor screen",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "Almost all of this giant exists underground as a vast web of threads.",
+      "on_screen_text": "LARGEST LIVING THING",
+      "search_query": "dark forest canopy",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 3,
-      "voiceover": "Plain potassium stops your heart first.",
-      "on_screen_text": "HEART STOPS FIRST",
-      "search_query": "human chest breathing",
+      "voiceover": "The entire woods is its meal.",
+      "on_screen_text": "FEEDING ON TREES",
+      "search_query": "dead fallen tree forest",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 4,
-      "voiceover": "Your own body fires potassium-40 decays roughly 5,000 times a second.",
-      "on_screen_text": "5,000 DECAYS A SECOND",
-      "search_query": "person silhouette glowing",
-      "motion": "static",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 4,
-      "voiceover": "Your kidneys flush the excess, so that internal dose never adds up.",
-      "on_screen_text": "BALANCED FROM WITHIN",
-      "search_query": "drinking glass water",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 9,
-      "duration": 4,
-      "voiceover": "Does sharing a bed with a radiating human comfort or unsettle you?",
-      "on_screen_text": "COMFORT OR UNSETTLE?",
-      "search_query": "couple sleeping in bed",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 10,
-      "duration": 3,
-      "voiceover": "Follow so you do not miss part two.",
-      "on_screen_text": "FOLLOW FOR PART 2",
-      "search_query": "person walking city street",
-      "motion": "zoom_in",
+      "duration": 6,
+      "voiceover": "You never walked among individual trees, you were standing on one endless predator.",
+      "on_screen_text": "ONE ENDLESS BODY",
+      "search_query": "foggy pine forest walking",
+      "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "The Universe You Can't See (Part 1): Banana radiation is real, but you radiate far more. Comforting or creepy?",
-    "Every eight hours in bed with another person exposes you to half a banana of gamma radiation. Would you sleep alone instead?",
-    "Your kidneys flush extra potassium so fast that banana dose never accumulates. Did you expect your own body to be more radioactive than your food?"
+    "Is the largest living thing a blue whale or a fungus? Most people guess wrong.",
+    "Four square miles of a single organism hidden right beneath your feet.",
+    "The strangest giant on the planet is completely invisible from above."
   ],
   "hashtags": [
-    "#physics",
+    "#nature",
     "#science",
+    "#forest",
     "#biology",
-    "#radiation",
-    "#curiosity",
+    "#earth",
     "#learnontiktok"
   ],
   "render": {
@@ -117,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-09-10_the-universe-you-can-t-see-part-1",
-  "cta_style": "COMMENT",
-  "domain": "physics"
+  "video_id": "science_2026-11-21_the-hidden-giant-under-oregon",
+  "cta_style": "LOOP",
+  "domain": "fungi"
 }
