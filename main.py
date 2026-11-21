@@ -7,6 +7,9 @@ hook overlay (first 2s), background music bed, no-repeat footage.
 
 import os, sys, json, subprocess, shutil, wave, struct, re, time, urllib.request, urllib.parse, urllib.error
 import visual_intent as VI
+from footage_sources import FootageSources, asset_record, rcsb_still
+import quality_asset_lineage as QAL
+from scientific_media import svs_candidates
 import random
 
 W, H = 1080, 1920
@@ -533,7 +536,7 @@ def _pexels_candidates(query):
                 if f.get("file_type") == "video/mp4" and (f.get("height") or 0) >= 1280:
                     if best is None or abs((f.get("width") or 0) - W) < abs((best.get("width") or 0) - W):
                         best = f
-            if best:
+            if best and v.get("id") and v.get("url", "").startswith("https://www.pexels.com/"):
                 # Pexels' API has no real description; the page-URL slug is the
                 # closest thing to one, but its trailing numeric id is pure
                 # noise for the Groq matcher below — strip it.
@@ -541,7 +544,11 @@ def _pexels_candidates(query):
                 slug = re.sub(r"-\d+$", "", slug)
                 out.append({"id": v.get("id"), "url": best["link"],
                             "desc": slug.replace("-", " "), "source": "Pexels",
-                            "image": v.get("image")})   # preview thumbnail for the vision judge
+                            "image": v.get("image"), "kind": "video",
+                            "source_url": v["url"], "license": "https://www.pexels.com/license/",
+                            "attribution": (v.get("user") or {}).get("name") or "Pexels",
+                            "duration": v.get("duration"), "width": best.get("width"),
+                            "height": best.get("height")})
     except urllib.error.HTTPError as e:
         print(f"  Pexels HTTP {e.code}: {e.read().decode()[:160]}")
     except Exception as e:
@@ -1376,12 +1383,22 @@ def _coverr_candidates(query):
     return out
 
 
+FOOTAGE_SOURCES = FootageSources(_http_json)
+_downloaded_assets = {}
+_rendered_assets = {}
+
+
 def _gather_candidates(query):
-    return (_pexels_candidates(query)
-            or _nasa_candidates(query)
-            or _wikimedia_candidates(query)   # no key: archival/scientific clips
-            or _archive_candidates(query)     # no key: Internet Archive documentary film
-            or _coverr_candidates(query))     # Coverr dormant unless COVERR_API_KEY set
+    archival = FOOTAGE_SOURCES.search(
+        "svs", query, lambda q: svs_candidates(q, _used_video_ids, limit=2, timeout=3, strict_rights=True),
+        enabled_by_default=False)
+    archival += FOOTAGE_SOURCES.search(
+        "commons", query, lambda q: FOOTAGE_SOURCES.commons(q, _used_video_ids, WIKI_MAX_VIDEO_BYTES))
+    archival += FOOTAGE_SOURCES.search(
+        "congress", query, lambda q: FOOTAGE_SOURCES.congress(q, _used_video_ids),
+        enabled_by_default=False)
+    stock = _pexels_candidates(query)
+    return archival[:5] + stock[:5] if archival and stock else archival or stock
 
 
 RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling.
@@ -1476,6 +1493,7 @@ def _accept(chosen, dest, query, score):
         raise RuntimeError(f"clip too dark (near-black) — skipping for '{query}'")
     _used_video_ids.add(chosen["id"])
     _used_history.append(chosen["id"])
+    _downloaded_assets[dest] = asset_record(chosen)
     tag = (f"judge {score}/10" if isinstance(score, int)
            else "keyword match (no LLM)" if score == KEYWORD_OK
            else "first (no judge key)")
@@ -1861,7 +1879,12 @@ def _openverse_image(query, dest):
             data = json.loads(r.read().decode())
         for res in (data.get("results") or []):
             img = res.get("url") or res.get("thumbnail")
-            if not img:
+            license_code = (res.get("license") or "").lower()
+            source = res.get("foreign_landing_url")
+            credit = res.get("creator")
+            if not img or not source or license_code not in {"cc0", "pdm", "by"}:
+                continue
+            if license_code == "by" and not credit:
                 continue
             try:
                 ireq = urllib.request.Request(img, headers={"User-Agent": "content-render/1.0"})
@@ -1870,6 +1893,11 @@ def _openverse_image(query, dest):
                 if len(blob) > 8000:  # skip tiny/placeholder images
                     with open(dest, "wb") as f:
                         f.write(blob)
+                    _downloaded_assets[dest] = asset_record({
+                        "id": res.get("id"), "source_url": source,
+                        "license": res.get("license_url") or license_code,
+                        "attribution": credit or "",
+                    })
                     return True
             except Exception:
                 continue
@@ -1924,7 +1952,9 @@ def _inaturalist_image(query, dest):
         for res in (data.get("results") or []):
             for p in (res.get("photos") or []):
                 img = _inaturalist_safe_photo_url(p)
-                if not img:
+                credit = p.get("attribution")
+                source = res.get("uri")
+                if not img or not source or not credit:
                     continue
                 try:
                     ireq = urllib.request.Request(img, headers={"User-Agent": WIKI_UA})
@@ -1933,6 +1963,10 @@ def _inaturalist_image(query, dest):
                     if len(blob) > 8000:  # skip tiny/placeholder images
                         with open(dest, "wb") as f:
                             f.write(blob)
+                        _downloaded_assets[dest] = asset_record({
+                            "id": p.get("id"), "source_url": source,
+                            "license": p["license_code"], "attribution": credit,
+                        })
                         return True
                 except Exception:
                     continue
@@ -2598,6 +2632,7 @@ def _fal_video(scene, dest):
     if not subject:
         return False
     body = json.dumps({"prompt": _fal_prompt(scene)}).encode()
+    FAL_VIDEO_SCENES += 1  # Charge the attempt before the HTTP request can fail.
     try:
         req = urllib.request.Request(
             f"https://fal.run/{FAL_VIDEO_MODEL}", data=body,
@@ -2626,7 +2661,6 @@ def _fal_video(scene, dest):
         # already happened — money was spent) so a run of bad generations can't
         # retry past the per-video budget; it just falls back to real stock
         # instead of shipping something broken.
-        FAL_VIDEO_SCENES += 1
         if _clip_too_dark(dest):
             print(f"  [fal] clip for '{subject[:40]}' came back too dark/broken "
                   f"({FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} spent) — falling back to stock")
@@ -2648,6 +2682,10 @@ def _fal_video(scene, dest):
             return False
         print(f"  [fal] AI video clip {FAL_VIDEO_SCENES}/{FAL_MAX_CLIPS} for "
               f"'{subject[:40]}' via {FAL_VIDEO_MODEL}")
+        _downloaded_assets[dest] = asset_record({
+            "id": FAL_VIDEO_MODEL, "source_url": f"https://fal.ai/models/{FAL_VIDEO_MODEL}",
+            "license": "https://fal.ai/terms", "attribution": "Generated with fal.ai",
+        })
         return True
     except Exception as e:  # noqa: BLE001 — best-effort; keep the stock/still fallback
         print(f"  [fal] AI video unavailable ({e}) — falling back")
@@ -2830,6 +2868,7 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
             if _clip_too_dark(p):
                 continue
             _used_video_ids.add(c["id"]); _used_history.append(c["id"])
+            _downloaded_assets[p] = asset_record(c)
             paths.append(p)
         except Exception:  # noqa: BLE001 — skip a bad clip, keep going
             continue
@@ -2949,6 +2988,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                      "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
                 print(f"  multi-clip scene: {len(parts)} cuts across {seg_dur:.1f}s "
                       f"({len(sources)} distinct clip(s))")
+                _rendered_assets[out] = [_downloaded_assets[p] for p in sources if p in _downloaded_assets]
                 return out
             except Exception as e:  # noqa: BLE001 — never break a render
                 print(f"  multi-clip render failed ({e}) — falling back to single clip")
@@ -2958,6 +2998,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
              "-filter_complex", f"[0:v]{motion}{lift}{grade}{stat},setsar=1[v]",
              "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
              "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+        _rendered_assets[out] = [_downloaded_assets[raw]] if raw in _downloaded_assets else []
         return out
 
     # ARCHIVAL STILL fallback (idea 3): stock VIDEO failed for this scene — before
@@ -2982,12 +3023,19 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # microscopy, diagrams, historical photos). Any one gives a documentary
         # look no generic-stock page has.
         still_provider = None
-        if _inaturalist_image(_q, img):
+        structure = FOOTAGE_SOURCES.search("rcsb", _q, rcsb_still)
+        structure = [candidate for candidate in structure if candidate["id"] not in _used_video_ids]
+        if structure:
+            candidate = structure[0]
+            try:
+                _download(candidate["url"], img)
+                still_provider = "RCSB PDB"
+            except (OSError, RuntimeError):
+                print("  [footage] RCSB depiction download failed")
+        if still_provider is None and _inaturalist_image(_q, img):
             still_provider = "iNaturalist"
-        elif _openverse_image(_q, img):
+        elif still_provider is None and _openverse_image(_q, img):
             still_provider = "Openverse"
-        elif _wikimedia_image(_q, img):
-            still_provider = "Wikimedia"
         if still_provider:
             try:
                 run(["ffmpeg", "-y", "-loop", "1", "-i", img, "-i", seg_mp3,
@@ -2996,37 +3044,16 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                      "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
                      "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
                 ARCHIVAL_SCENES += 1
+                if still_provider == "RCSB PDB":
+                    _rendered_assets[out] = [asset_record(candidate)]
+                    _used_video_ids.add(candidate["id"])
+                    _used_history.append(candidate["id"])
+                elif img in _downloaded_assets:
+                    _rendered_assets[out] = [_downloaded_assets[img]]
                 print(f"  archival still scene ({still_provider} CC image + Ken Burns)")
                 return out
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
-
-    # AI ILLUSTRATION: before dropping to a plain text card, generate an EXACT,
-    # on-topic vertical image for this scene and Ken-Burns it — turns the
-    # least-relevant scenes (no real footage) from a boring card into a
-    # matching visual. Counts as real imagery (not a stat card), so it also
-    # relaxes the footage-starvation abort. FREE Pollinations tried first;
-    # paid Imagen only fires if Pollinations is unset/fails/capped. Any
-    # failure of both falls through to the stat card.
-    if AI_IMAGE:
-        ai_img = os.path.join(WORK, f"s{idx}_ai.png")
-        provider = None
-        if _pollinations_image(scene, ai_img):
-            provider = "Pollinations (free)"
-        elif _gemini_image(scene, ai_img):
-            provider = "Imagen (paid)"
-        if provider:
-            try:
-                run(["ffmpeg", "-y", "-loop", "1", "-i", ai_img, "-i", seg_mp3,
-                     "-t", f"{seg_dur:.3f}", "-r", "30",
-                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
-                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
-                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
-                ARCHIVAL_SCENES += 1
-                print(f"  AI-generated illustration scene ({provider} + Ken Burns)")
-                return out
-            except Exception as e:  # noqa: BLE001
-                print(f"  AI image render failed ({e}) — falling back to card")
 
     # No clip cleared RELEVANCE_FLOOR (or there were zero results). Render a
     # designed typographic stat-card scene instead of shipping the least-bad
@@ -3653,6 +3680,42 @@ def _make_cut_whooshes(cut_times, total_dur, dest):
 
 
 # ---------- MAIN ----------
+def _science_plans(manifest_path, manifest):
+    if os.getenv("FOOTAGE_SCIENCE_MOTION_ENABLED", "1") == "0":
+        return {}
+    from pathlib import Path
+    from quality_render_bridge import _require_certification_evidence
+    from quality_science_motion import plan_manifest
+    from writer_story_bridge import manifest_claim_ids
+
+    if not Path(manifest_path).with_name("writer_evidence.json").is_file():
+        return {}
+    try:
+        _require_certification_evidence(manifest_path, manifest)
+        return plan_manifest(manifest, manifest_claim_ids(manifest))
+    except (ValueError, OSError, RuntimeError) as exc:
+        print(f"  [science-motion] evidence unavailable ({type(exc).__name__}); using footage")
+        return {}
+
+
+def _build_with_science(scene, idx, seg_path, seg_dur, plans):
+    from quality_science_motion import _scene_id, render_for_scene
+
+    plan = plans.get(_scene_id(scene, idx))
+    if plan:
+        try:
+            path = render_for_scene(plan, sys.modules[__name__], idx, seg_path, seg_dur)
+            _rendered_assets[path] = [{
+                "id": f"science-motion:{idx}", "source_url": None,
+                "license": "Original Content Render graphic", "attribution": "Content Render",
+                "claim_ids": list(plan.source_claim_ids),
+            }]
+            return path
+        except (ValueError, OSError, RuntimeError, subprocess.SubprocessError) as exc:
+            print(f"  [science-motion] render failed ({type(exc).__name__}); using footage")
+    return build_scene(scene, idx, seg_path, seg_dur)
+
+
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
     with open(mpath) as f:
@@ -3671,6 +3734,10 @@ def main():
     for d in (WORK, OUT):
         shutil.rmtree(d, ignore_errors=True); os.makedirs(d, exist_ok=True)
 
+    FOOTAGE_SOURCES.disabled.clear()
+    _downloaded_assets.clear()
+    _rendered_assets.clear()
+    plans = _science_plans(mpath, m)
     load_used_footage()
     print(f"[footage] {len(_used_video_ids)} clip ids excluded from prior runs")
 
@@ -3714,7 +3781,21 @@ def main():
     scene_files = []
     for i, (sc, (seg_path, seg_dur)) in enumerate(zip(m["scenes"], segments), 1):
         print(f"[scene {i}/{len(m['scenes'])}] {sc['search_query']} (speech {seg_dur:.2f}s)")
-        scene_files.append(build_scene(sc, i, seg_path, seg_dur))
+        scene_files.append(_build_with_science(sc, i, seg_path, seg_dur, plans))
+
+    QAL.write_lineage([
+        QAL.AssetLineageEntry(
+            scene_id=str(scene.get("id") or f"scene-{idx}"), scene_index=idx,
+            visual_intent=_footage_intent(scene), subject_id=str(scene.get("id") or idx),
+            subject=scene["search_query"], renderer_kind="production_scene",
+            output_file=path, duration_s=duration,
+            source_claim_ids=tuple(scene.get("source_claim_ids") or ()),
+            selected_assets=tuple(_rendered_assets.get(path, ())),
+            attributable=bool(_rendered_assets.get(path)) and all(
+                asset["license"] for asset in _rendered_assets[path]),
+        )
+        for idx, (scene, path, (_, duration)) in enumerate(zip(m["scenes"], scene_files, segments), 1)
+    ], os.path.join(OUT, "final_asset_lineage.json"))
 
     if JUDGE_SCORES:
         print(f"[quality] judge scores: min {min(JUDGE_SCORES)}/10, "
