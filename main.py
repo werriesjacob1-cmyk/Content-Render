@@ -2443,6 +2443,31 @@ VIBE_MUSIC_FX = {
 }
 
 
+MUSIC_VOL_MAX = 0.5   # a bed louder than this is never intended; ignore a typo'd override
+
+
+def _music_vol():
+    """The music bed's base volume: the repo Variable MUSIC_VOL if it is a sane
+    number, else the profile's own value.
+
+    Exists so the level can be adjusted from GitHub's Variables page when someone
+    hears the mix too loud or too quiet, without a code change and a PR. A blank,
+    non-numeric, zero/negative or absurdly large value is IGNORED rather than
+    trusted -- a typo must never silence the bed or blast it over the narration.
+    """
+    raw = os.environ.get("MUSIC_VOL", "").strip()
+    if raw:
+        try:
+            v = float(raw)
+            if 0.0 < v <= MUSIC_VOL_MAX:
+                return v
+        except ValueError:
+            pass
+        print(f"  [music] ignoring MUSIC_VOL={raw!r} (need a number in (0, {MUSIC_VOL_MAX}]); "
+              f"using the profile's {PROFILE['music_vol']}")
+    return PROFILE["music_vol"]
+
+
 def _vibe_music_filter():
     """ffmpeg audio-filter fragment (no brackets/labels — caller wraps it) for
     the music bed, scaled by CURRENT_VIBE: chaotic/tense brighten and sit a
@@ -2451,7 +2476,7 @@ def _vibe_music_filter():
     volume-only, functionally identical to the pre-vibe behavior (same value,
     just always explicitly formatted). Pure/testable."""
     fx = VIBE_MUSIC_FX.get(CURRENT_VIBE, VIBE_MUSIC_FX["awe"])
-    parts = [f"volume={PROFILE['music_vol'] * fx['vol_mult']:.4f}"]
+    parts = [f"volume={_music_vol() * fx['vol_mult']:.4f}"]
     if fx["extra"]:
         parts.append(fx["extra"])
     return ",".join(parts)
@@ -3864,8 +3889,10 @@ def main():
             sting = None
 
     # Unified audio mix: voice + (optional music bed) + (optional intro sting),
-    # amix normalize=0 so narration keeps its level (music_vol is pre-tuned to sit
-    # ~18-20 dB under the voice; the sting is short and quiet). Handles any subset.
+    # amix normalize=0 so narration keeps its level. The bed is meant to sit ~16 dB under
+    # the voice; the 2026-11-21 render MEASURED only ~11 dB at music_vol 0.14 (see
+    # profiles.py), so use measure_mix_balance.py on a render before trusting that
+    # number. The sting is short and quiet. Handles any subset.
     final = os.path.join(OUT, "final.mp4")
     # Keep final.mp4 SMALL (~5MB) so Publer's "Upload Media from URL" (Zapier) can
     # fetch it within its ~30-second action timeout. A ~14MB file was timing out
