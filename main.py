@@ -2855,22 +2855,79 @@ def _subclip_plan(seg_dur, target_secs, max_subclips):
 
 def _variant_queries(q):
     """A few FREE query variants of a scene's search query, to widen the distinct-
-    clip pool (more real VIDEO packed into each scene). The full phrase first, then
-    its broader single content words — a broad noun ('turtle') returns many more
-    stock clips than a 3-word phrase ('pond turtle swimming'), so pooling across
-    them multiplies how many distinct clips the multi-clip cutter can find, at zero
-    cost. Pure/testable."""
+    clip pool. The full phrase first, then SHORT PHRASES that keep the scene's
+    SUBJECT word and pair it with one other content word ('honey fungus mushrooms
+    forest' -> 'honey fungus', 'honey mushrooms', 'honey forest').
+
+    NEVER a bare single word. The old variants fell back to the broadest word
+    ('dark', 'tree', 'square'), which returns a huge pool of unrelated stock --
+    the night road / lumberjack / brick wall that appeared mid-scene in the
+    honey-fungus video. A query with no second content word has no variant: the
+    scene holds its one good clip instead. Pure/testable."""
     q = (q or "").strip()
     if not q:
         return []
-    words = list(_relevance_words(q))                    # content words, >2 chars, non-stopword
-    variants = [q] + sorted(words, key=len, reverse=True)  # phrase, then broadest words
+    subject = _subject_word(q)
+    words = [w for w in re.findall(r"[a-z]+", q.lower())
+             if len(w) > 2 and w not in _QUERY_STOPWORDS]
+    variants = [q]
+    if subject:
+        variants += [f"{subject} {w}" for w in words if w != subject]
     seen, out = set(), []
     for v in variants:
         vl = v.lower().strip()
         if vl and vl not in seen:
             seen.add(vl); out.append(v)
     return out[:4]
+
+
+def _extra_clip_on_subject(desc, subject):
+    """Whether an EXTRA sub-clip candidate may be cut into a scene (pure): its own
+    description must name the scene's subject word. With no subject word there is
+    nothing to anchor on, so NO extra clip is allowed -- the old behaviour was 'no
+    subject = no filter', which let any unrelated stock in."""
+    return bool(subject) and subject in _relevance_words(desc)
+
+
+HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
+
+
+def _cut_plan(plan, src_durs, hold_cap=None):
+    """Assign each planned cut (a duration from _subclip_plan) a real piece of
+    footage: [(source_index, offset_s, duration_s)], summing EXACTLY to sum(plan).
+
+    Rules (pure, unit-tested):
+      * a source is used whole-first: every distinct clip gets a cut before any clip
+        is revisited;
+      * a clip is revisited only at a NEW in-point inside footage it really has
+        (offset + duration <= its length) -- never the same frames re-panned, which
+        is the "fake cut" the user complained about;
+      * when no unseen footage is left, the remaining time is HELD on the last shot
+        (fewer cuts) rather than padded with an unrelated or repeated clip. That is
+        the only way a hold can exceed hold_cap, and the caller logs it."""
+    hold_cap = HOLD_CAP_S if hold_cap is None else hold_cap
+    n_src = len(src_durs)
+    if not plan or n_src == 0:
+        return []
+    next_off, used, cuts = [0.0] * n_src, [False] * n_src, []
+    for j, d in enumerate(plan):
+        pick = next((i for i in range(n_src) if not used[i]), None)
+        if pick is None:
+            pick = next((i for i in range(n_src)
+                         if next_off[i] + d <= (src_durs[i] or 0.0) + 0.05), None)
+        if pick is None:
+            tail = round(sum(plan[j:]), 3)
+            si, off, dur = cuts[-1]
+            cuts[-1] = (si, off, round(dur + tail, 3))
+            break
+        cuts.append((pick, round(next_off[pick], 3), round(d, 3)))
+        next_off[pick] += d
+        used[pick] = True
+    return cuts
+
+
+def _longest_hold(cuts):
+    return max((c[2] for c in cuts), default=0.0)
 
 
 def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
@@ -2906,8 +2963,8 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
                 # orange being cut for "octopus close up") because THEY share a
                 # word too, just not the subject. No subject word (rare) = no
                 # filter, same as before.
-                if subject and subject not in _relevance_words(c.get("desc", "")):
-                    continue  # keep sub-clips on-subject
+                if not _extra_clip_on_subject(c.get("desc", ""), subject):
+                    continue  # keep sub-clips on-subject (no subject word = no extras)
                 seen.add(cid)          # provisional: don't pool the same id twice
                 pool.append(c)
         except Exception:  # noqa: BLE001 — a bad query/source, try the next variant
@@ -3008,12 +3065,25 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         except Exception:  # noqa: BLE001 — never let footage gathering break a render
             extra = []
         sources = [raw] + extra
-        if len(plan) > 1 and len(sources) >= 2:
+        # Real cuts only: _cut_plan gives every distinct clip a turn, then NEW
+        # in-points of clips that have unseen footage, and otherwise HOLDS the last
+        # shot -- it never cycles the same clip back in or pads with unrelated stock.
+        cuts = []
+        if len(plan) > 1:
+            try:
+                cuts = _cut_plan(plan, [ffprobe_dur(x) for x in sources])
+            except Exception:  # noqa: BLE001
+                cuts = []
+        _hold = _longest_hold(cuts) if cuts else seg_dur
+        if _hold > HOLD_CAP_S + 0.25:
+            print(f"  [hold] scene {idx}: longest single shot {_hold:.1f}s "
+                  f"(cap {HOLD_CAP_S:.1f}s) — no unseen on-subject footage left to cut to")
+        if len(cuts) > 1:
             try:
                 parts = []
                 _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
-                for j, d in enumerate(plan):
-                    src = sources[j % len(sources)]   # cycle if we got fewer distinct clips
+                for j, (si, off, d) in enumerate(cuts):
+                    src = sources[si]
                     # own brightness lift — reusing the primary's lift left dark
                     # sub-clips (moody/black-background footage) reading as a black
                     # screen mid-scene (the "went black at 10s" bug).
@@ -3026,7 +3096,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                     pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
                                              pf, zspeed, idx=idx + j, prev_kind=None)
                     pstat = stat if j == 0 else ""   # number card once, on the first cut only
-                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", src, "-t", f"{d:.3f}",
+                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-ss", f"{off:.3f}", "-i", src, "-t", f"{d:.3f}",
                          "-filter_complex", f"[0:v]{pmotion}{slift}{grade}{pstat},setsar=1[v]",
                          "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p",
                          "-an", "-c:v", "libx264", part])

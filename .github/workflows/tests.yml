@@ -52,6 +52,7 @@ jobs:
             craft_rules.py tests/test_craft_rules.py \
             tests/test_voice_chain.py \
             tests/test_phrase_captions.py measure_caption_sync.py fixture_render.py \
+            tests/test_footage_cuts.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
@@ -144,6 +145,7 @@ jobs:
           run_check "writer craft rules" env -u GROQ_API_KEY python tests/test_craft_rules.py
           run_check "free voice chain" env -u GROQ_API_KEY python tests/test_voice_chain.py
           run_check "phrase captions + sync contract" env -u GROQ_API_KEY python tests/test_phrase_captions.py
+          run_check "footage cut rules" env -u GROQ_API_KEY python tests/test_footage_cuts.py
           run_check "provider capability gate" python tests/test_provider_capability_gate.py
           run_check "evidence json boundary" env -u GROQ_API_KEY python tests/test_quality_evidence.py
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py

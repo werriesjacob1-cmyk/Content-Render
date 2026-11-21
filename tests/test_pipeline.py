@@ -2251,7 +2251,10 @@ def test_variant_queries():
     section("main._variant_queries: widen the free footage pool (more video/scene)")
     v = M._variant_queries("pond turtle swimming")
     check(v[0] == "pond turtle swimming", "full phrase comes first")
-    check("turtle" in v or "swimming" in v or "pond" in v, "broader single words included")
+    # CHANGED 2026-11 (user complaint: night road / lumberjack / brick wall mid-scene):
+    # variants are short PHRASES that keep the subject word, never a bare single word.
+    check(all(len(x.split()) >= 2 for x in v), "no single-word variant (broad words pull unrelated stock)")
+    check(all("pond" in x.lower() for x in v), "every variant keeps the scene's subject word")
     check(len(v) == len(set(x.lower() for x in v)), "no duplicate variants")
     check(len(v) <= 4, "capped at 4 variants (bounded network work)")
     check(M._variant_queries("") == [], "empty query -> no variants")
