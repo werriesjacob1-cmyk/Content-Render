@@ -1972,12 +1972,23 @@ PROVIDER_COOLDOWN_DEFAULT_S = float(os.getenv("PROVIDER_COOLDOWN_DEFAULT_S", "20
 _PROVIDER_COOLDOWN_UNTIL: dict[tuple, float] = {}
 _PROVIDER_RATE_LIMIT_STREAK: dict[tuple, int] = {}
 _PROVIDER_HEALTH_EVENTS: list = []
+# (provider, model) -> HTTP status that marked it dead THIS RUN. See
+# note_provider_dead() for exactly which failures qualify and why.
+_PROVIDER_DEAD: dict[tuple, int] = {}
+
+# Failures that say the MODEL or ACCOUNT is unusable, not that this one request
+# was unlucky. 429 (own cooldown), 413 (size of THIS request), 5xx, network
+# errors and empty replies are deliberately NOT here: they are transient or
+# request-specific, and treating them as permanent would knock a good writer out
+# for the whole run on a single blip.
+DEAD_MODEL_STATUSES = (400, 401, 402, 403, 404)
 
 
 def _provider_health_reset():
     """Test seam, and the entry point a new certification session would call."""
     _PROVIDER_COOLDOWN_UNTIL.clear()
     _PROVIDER_RATE_LIMIT_STREAK.clear()
+    _PROVIDER_DEAD.clear()
     del _PROVIDER_HEALTH_EVENTS[:]
 
 
@@ -2033,6 +2044,49 @@ def note_provider_rate_limited(prov, model, retry_after_s=None, now=None):
     return wait
 
 
+def note_provider_dead(prov, model, status):
+    """Mark (prov, model) unusable for the REST OF THIS RUN after ONE bad failure.
+
+    Why: a live render tried gemini-omni-1.1-flash and gemini-omni-1.2-flash on
+    every single call -- 8 HTTP 400s each -- plus OpenRouter's three models
+    (HTTP 402, no credit) 8 times each. Every one of those is a round trip that
+    cannot succeed, repeated for the whole run. After the first 400/401/402/403/404
+    the answer will not change.
+
+    Bounded, in the same spirit as the cooldown code above:
+      * session-local; nothing is persisted, so the next run tries it fresh;
+      * only DEAD_MODEL_STATUSES qualify (see the comment there);
+      * a later SUCCESS clears it (note_provider_healthy);
+      * should_skip_dead_provider() ignores the whole list if it would leave no
+        model to try at all, so this can never empty the chain;
+      * every mark and every skip is recorded, so it is never invisible.
+    """
+    key = (prov, model)
+    if status not in DEAD_MODEL_STATUSES or key in _PROVIDER_DEAD:
+        return False
+    _PROVIDER_DEAD[key] = status
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "marked_dead", "provider": prov, "model": model, "http": status})
+    return True
+
+
+def should_skip_dead_provider(prov, model, chain):
+    """True when (prov, model) is dead AND some other entry in `chain` is not.
+
+    The second condition is the safety valve: if every model in the chain has
+    been marked dead we are better off trying them again than failing without a
+    single request, because a 400 can occasionally be about one particular
+    prompt rather than the model."""
+    if (prov, model) not in _PROVIDER_DEAD:
+        return False
+    if all((p, m) in _PROVIDER_DEAD for p, m in chain):
+        return False
+    _PROVIDER_HEALTH_EVENTS.append({
+        "event": "skipped_dead", "provider": prov, "model": model,
+        "http": _PROVIDER_DEAD[(prov, model)]})
+    return True
+
+
 def note_provider_healthy(prov, model):
     """A success clears the cooldown AND the streak -- recovery is automatic.
 
@@ -2048,7 +2102,8 @@ def note_provider_healthy(prov, model):
     key = (prov, model)
     had_cooldown = _PROVIDER_COOLDOWN_UNTIL.pop(key, None) is not None
     had_streak = _PROVIDER_RATE_LIMIT_STREAK.pop(key, None) is not None
-    if had_cooldown or had_streak:
+    had_dead = _PROVIDER_DEAD.pop(key, None) is not None
+    if had_cooldown or had_streak or had_dead:
         _PROVIDER_HEALTH_EVENTS.append({
             "event": "recovered", "provider": prov, "model": model})
 
@@ -2202,6 +2257,10 @@ def call_groq(prompt):
                 print(f"  [model] {prov}:{model} skipped — rate-limited, "
                       f"{remaining:.1f}s of cooldown left")
                 continue
+            if should_skip_dead_provider(prov, model, chain):
+                print(f"  [model] {prov}:{model} skipped — failed HTTP "
+                      f"{_PROVIDER_DEAD[(prov, model)]} earlier this run")
+                continue
             try:
                 if prov == "gemini":
                     out = _call_gemini(model, prompt)
@@ -2252,6 +2311,8 @@ def call_groq(prompt):
                     print(f"  [model] {prov}:{model} failed HTTP {e.code} — falling through"
                           + (f" :: {detail}" if detail else ""))
                     last_err = e
+                    if note_provider_dead(prov, model, e.code):
+                        print(f"  [model] {prov}:{model} will not be retried this run")
                     if e.code == 429:
                         # Authoritative rate-limit evidence from the provider
                         # itself. Recorded regardless of collect_waits, so a

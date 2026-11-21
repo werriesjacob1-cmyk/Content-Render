@@ -1598,6 +1598,102 @@ def test_call_groq_empty_response_falls_through():
         G._call_openrouter, G._call_gemini = _orig_or, _orig_gem
 
 
+def test_dead_models_are_skipped_after_one_failure():
+    section("generate.call_groq: a model that is DEAD is not retried for the rest of the run")
+    # A live render tried gemini-omni-1.1-flash and gemini-omni-1.2-flash on every
+    # call (8 HTTP 400s EACH) and OpenRouter's three models (HTTP 402, no credit)
+    # 8 times each -- dozens of round trips that could never succeed. After the
+    # first 400/401/402/403/404 the answer does not change.
+    import io as _io, contextlib as _ctx, urllib.error as _ue
+    G._provider_health_reset()
+    saved = (G.OPENROUTER_KEY, G.GEMINI_KEY, G.GROQ_KEY, G.OPENROUTER_MODELS, G._GEMINI_MODELS_CACHE,
+             G._WORKING_MODEL, G._CONSEC_EXHAUSTIONS, G._CIRCUIT_OPEN, G._call_gemini, G._call_openrouter,
+             os.environ.get("GEMINI_GENERATION"))
+    calls = []
+
+    def _http(code):
+        return _ue.HTTPError("http://x", code, "err", {}, _io.BytesIO(b'{"error":"x"}'))
+
+    try:
+        G.OPENROUTER_KEY, G.GEMINI_KEY, G.GROQ_KEY = "k", "k", ""
+        G.OPENROUTER_MODELS = ["or/paid-model"]
+        G._GEMINI_MODELS_CACHE = ["gemini-omni-1.1-flash", "gemini-flash-latest"]
+        G._WORKING_MODEL, G._CONSEC_EXHAUSTIONS, G._CIRCUIT_OPEN = None, 0, False
+        # OpenRouter-first ordering, so BOTH dead models are genuinely reached on call one.
+        os.environ["GEMINI_GENERATION"] = "0"
+        good = _json.dumps({"ok": True})
+
+        def gem(model, prompt, ground=False):
+            calls.append(("gemini", model))
+            if model == "gemini-omni-1.1-flash":
+                raise _http(400)
+            return good
+
+        def orr(model, prompt):
+            calls.append(("openrouter", model))
+            raise _http(402)
+
+        G._call_gemini, G._call_openrouter = gem, orr
+        with _ctx.redirect_stdout(_io.StringIO()):
+            check(G.call_groq("one") == good, "first call still succeeds via the working model")
+        first = list(calls)
+        check(("gemini", "gemini-omni-1.1-flash") in first and ("openrouter", "or/paid-model") in first,
+              f"each dead model is tried exactly once on the first call ({first})")
+
+        calls.clear()
+        G._WORKING_MODEL = None          # force a full walk, as a fresh stage would
+        buf = _io.StringIO()
+        with _ctx.redirect_stdout(buf):
+            G.call_groq("two")
+        check(("gemini", "gemini-omni-1.1-flash") not in calls,
+              f"the HTTP-400 model is NOT called again ({calls})")
+        check(("openrouter", "or/paid-model") not in calls,
+              "the HTTP-402 model is NOT called again")
+        check("failed HTTP 400 earlier this run" in buf.getvalue(),
+              "the skip is logged with the real status, not hidden")
+        kinds = [e["event"] for e in G.provider_health_events()]
+        check("marked_dead" in kinds and "skipped_dead" in kinds,
+              "both the mark and the skip are recorded as health events")
+
+        # transient / request-specific failures must NOT kill a model
+        G._provider_health_reset()
+        for code in (413, 429, 500, 503):
+            check(G.note_provider_dead("gemini", "m-%d" % code, code) is False,
+                  f"HTTP {code} does NOT mark a model dead")
+        for code in (400, 401, 402, 403, 404):
+            check(G.note_provider_dead("gemini", "d-%d" % code, code) is True,
+                  f"HTTP {code} does mark it dead")
+        check(G.note_provider_dead("gemini", "d-400", 400) is False, "marking twice is a no-op")
+
+        # a later SUCCESS revives it
+        G.note_provider_healthy("gemini", "d-400")
+        check(("gemini", "d-400") not in G._PROVIDER_DEAD, "a success clears the dead mark")
+
+        # safety valve: if EVERY model is dead, the chain is not emptied
+        G._provider_health_reset()
+        chain = [("gemini", "a"), ("gemini", "b")]
+        G.note_provider_dead("gemini", "a", 404)
+        check(G.should_skip_dead_provider("gemini", "a", chain) is True,
+              "one dead model with a live alternative is skipped")
+        G.note_provider_dead("gemini", "b", 404)
+        check(G.should_skip_dead_provider("gemini", "a", chain) is False
+              and G.should_skip_dead_provider("gemini", "b", chain) is False,
+              "when EVERY model is dead none is skipped, so the chain is never emptied")
+
+        # session-local: reset forgets everything (the next run starts fresh)
+        G._provider_health_reset()
+        check(G._PROVIDER_DEAD == {}, "dead marks live only for the current run")
+    finally:
+        (G.OPENROUTER_KEY, G.GEMINI_KEY, G.GROQ_KEY, G.OPENROUTER_MODELS, G._GEMINI_MODELS_CACHE,
+         G._WORKING_MODEL, G._CONSEC_EXHAUSTIONS, G._CIRCUIT_OPEN, G._call_gemini, G._call_openrouter,
+         _gg) = saved
+        if _gg is None:
+            os.environ.pop("GEMINI_GENERATION", None)
+        else:
+            os.environ["GEMINI_GENERATION"] = _gg
+        G._provider_health_reset()
+
+
 def test_near_miss_repair_revalidates():
     section("generate.py: near-miss repair re-validates before shipping (render-186 bug)")
     # Render 186 shipped "the antisolar point" verbatim even though validate()
@@ -4798,6 +4894,7 @@ def main():
     test_429_wait_and_retry_helpers()
     test_fast_fail_when_throttled()
     test_call_groq_empty_response_falls_through()
+    test_dead_models_are_skipped_after_one_failure()
     test_near_miss_repair_revalidates()
     test_near_miss_injects_missing_curiosity_gap()
     test_writer_v2_treatments()
