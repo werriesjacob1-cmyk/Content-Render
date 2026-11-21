@@ -222,6 +222,76 @@ def _piper_tts(text, out_mp3):
             pass
 
 
+# Local neural TTS (Kokoro, Apache-2.0, 82M params, ONNX): free, offline, no quota,
+# and far more natural than Piper -- the answer to the "choppy robotic narrator"
+# complaint now that ElevenLabs is cancelled. Model files are fetched (and cached)
+# by render.yml into voices/. Like Piper it gives NO word timings, so
+# tts_full clears WORD_TIMINGS and whisper_align recovers them from the audio.
+# Voice/pace are ear-tuned knobs: KOKORO_VOICE (bm_george = British male, matching
+# the channel's en-GB-RyanNeural; am_michael / am_adam = US male) and KOKORO_SPEED.
+KOKORO_MODEL = os.environ.get("KOKORO_MODEL", os.path.join(ROOT, "voices", "kokoro", "kokoro-v1.0.onnx"))
+KOKORO_VOICES = os.environ.get("KOKORO_VOICES", os.path.join(ROOT, "voices", "kokoro", "voices-v1.0.bin"))
+KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "bm_george")
+KOKORO_SPEED = os.environ.get("KOKORO_SPEED", "0.95")
+KOKORO_SENTENCE_SILENCE = os.environ.get("KOKORO_SENTENCE_SILENCE", "0.30")  # beat between sentences (s)
+
+
+def _split_sentences(text):
+    """Split narration into sentences on . ! ? (pure). Kokoro is synthesized one
+    sentence at a time so a deliberate pause can be inserted between them -- the
+    "no beat between sentences" complaint -- instead of trusting the model's own
+    run-on prosody across a whole paragraph."""
+    parts = re.split(r"(?<=[.!?])\s+", (text or "").strip())
+    return [p.strip() for p in parts if p and re.search(r"[A-Za-z0-9]", p)]
+
+
+def _kokoro_tts(text, out_mp3):
+    """Synthesize with Kokoro -> WAV -> MP3. Returns True on success. Fully
+    fail-safe like _piper_tts: a missing package/model or any error returns False
+    so tts_full falls through to edge-tts/Piper and a render never breaks on TTS."""
+    if not (os.path.exists(KOKORO_MODEL) and os.path.exists(KOKORO_VOICES)):
+        return False
+    wav = out_mp3 + ".kokoro.wav"
+    try:
+        import numpy as np
+        import soundfile as sf
+        from kokoro_onnx import Kokoro
+        k = Kokoro(KOKORO_MODEL, KOKORO_VOICES)
+        chunks, sr = [], 24000
+        for sent in _split_sentences(text):
+            samples, sr = k.create(sent, voice=KOKORO_VOICE, speed=float(KOKORO_SPEED), lang="en-us")
+            chunks.append(np.asarray(samples, dtype="float32"))
+            chunks.append(np.zeros(int(sr * float(KOKORO_SENTENCE_SILENCE)), dtype="float32"))
+        if not chunks:
+            return False
+        sf.write(wav, np.concatenate(chunks[:-1]), sr)      # no trailing silence
+        if not (os.path.exists(wav) and os.path.getsize(wav) > 1000):
+            return False
+        run(["ffmpeg", "-y", "-i", wav, "-c:a", "libmp3lame", "-q:a", "3", out_mp3])
+        return os.path.exists(out_mp3) and os.path.getsize(out_mp3) > 1000
+    except Exception as e:  # noqa: BLE001
+        print(f"  Kokoro TTS unavailable/failed ({e}); falling back")
+        return False
+    finally:
+        try:
+            os.remove(wav)
+        except OSError:
+            pass
+
+
+def _voice_order(engine):
+    """Free-voice try order for a VOICE_ENGINE value (pure, unit-tested).
+    auto/kokoro (default) -> Kokoro, edge-tts, Piper;  edge -> edge-tts, Piper
+    (the old default, kept so the edge probe / A-B stays exact);
+    piper -> Piper, edge-tts (the offline proof). Unknown values mean auto."""
+    e = (engine or "auto").strip().lower()
+    if e == "edge":
+        return ["edge", "piper"]
+    if e == "piper":
+        return ["piper", "edge"]
+    return ["kokoro", "edge", "piper"]
+
+
 def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
     el_key = os.environ.get("ELEVENLABS_API_KEY", "")
@@ -317,8 +387,17 @@ def tts_full(full_text, out_mp3, voice, rate):
             return True
         return False
 
-    engine = os.environ.get("VOICE_ENGINE", "edge").strip().lower()
-    free_order = [_try_piper, _try_edge] if engine == "piper" else [_try_edge, _try_piper]
+    def _try_kokoro():
+        # Local neural TTS (Kokoro): free, offline. No native word timings, so
+        # clear WORD_TIMINGS and let whisper_align supply the caption times.
+        if _kokoro_tts(full_text, out_mp3):
+            WORD_TIMINGS[:] = []
+            print(f"  Kokoro SUCCESS (local neural voice {KOKORO_VOICE}, speed {KOKORO_SPEED})")
+            return True
+        return False
+
+    _tries = {"kokoro": _try_kokoro, "edge": _try_edge, "piper": _try_piper}
+    free_order = [_tries[n] for n in _voice_order(os.environ.get("VOICE_ENGINE", "auto"))]
     for _try in free_order:
         if _try():
             return True
