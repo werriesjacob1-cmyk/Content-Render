@@ -100,10 +100,10 @@ FIX_ASTRO = manifest(
         ("On Venus a single day is longer than its whole year.", "VENUS DAY", "venus planet space"),
         ("The planet turns so slowly that one spin takes 243 Earth days.", "243 DAYS", "planet rotation animation"),
         ("But it circles the Sun in only 225 Earth days.", "225 DAYS", "orbit around sun"),
-        ("So the sunrise comes around just twice in one Venus year.", "TWO SUNRISES", "sunrise horizon planet"),
+        ("So how many sunrises fit in one Venus year? Just two.", "TWO SUNRISES", "sunrise horizon planet"),
         ("Stranger still, it spins backwards compared with almost every other planet.", "SPINS BACKWARD", "spinning globe reverse"),
         ("Stand there and the Sun would rise in the west and set in the east.", "WEST TO EAST", "desert sun west"),
-        ("A clock on Venus would make almost no sense to us at all.", "NO NORMAL CLOCK", "old clock face"),
+        ("So what would a clock on Venus even mean for us?", "NO NORMAL CLOCK", "old clock face"),
         ("Even the thick sky there glows a dull orange beneath its heavy clouds.", "ORANGE SKY", "orange cloudy sky"),
     ),
 )
@@ -115,10 +115,10 @@ FIX_BIO = manifest(
         ("A tiny animal called a tardigrade can survive the vacuum of space.", "TARDIGRADE", "water bear tardigrade"),
         ("It is under a millimetre long and lives in moss and puddles.", "UNDER 1 MM", "green moss macro"),
         ("When conditions turn deadly it curls up and dries out completely.", "DRIES OUT", "dry cracked ground"),
-        ("In this state it can shrug off temperatures near minus 272 degrees.", "NEAR MINUS 272", "ice frozen crystals"),
+        ("How cold can it get? In this state it shrugs off near minus 272 degrees.", "NEAR MINUS 272", "ice frozen crystals"),
         ("It can also take radiation that would kill a human many times over.", "HUGE RADIATION", "radiation warning glow"),
         ("Scientists once sent some into orbit and exposed them to raw space.", "SENT TO ORBIT", "satellite earth orbit"),
-        ("They manage this by replacing the water in their cells with a glassy sugar that shields every part.", "GLASS TRICK", "glass crystal macro"),
+        ("How do they manage it? They replace the water in their cells with a glassy sugar that shields every part.", "GLASS TRICK", "glass crystal macro"),
         ("Back on the ground, many woke up and had healthy babies.", "WOKE UP FINE", "baby animals nature"),
     ),
 )
@@ -130,10 +130,10 @@ FIX_GEO = manifest(
         ("Right under your feet is a solid ball of iron the size of the Moon.", "IRON BALL", "molten metal glow"),
         ("It sits about 5000 kilometres down at the centre of the planet.", "5000 KM DOWN", "earth cross section"),
         ("Its surface is roughly as hot as the surface of the Sun.", "SUN-HOT", "sun surface texture"),
-        ("Yet crushing pressure keeps that iron solid instead of molten.", "STAYS SOLID", "deep pressure rock"),
+        ("So why isn't it molten? Crushing pressure keeps that iron solid.", "STAYS SOLID", "deep pressure rock"),
         ("Around it a churning liquid outer core keeps everything moving.", "LIQUID SHELL", "swirling lava flow"),
         ("That motion generates the magnetic field that guides every compass.", "MAKES MAGNETISM", "compass needle north"),
-        ("Strangely, that inner ball is thought to spin a little faster than the rest of the planet does.", "SPINS FASTER", "spinning core animation"),
+        ("And does it spin with the planet? That inner ball is thought to spin a little faster than the rest of it.", "SPINS FASTER", "spinning core animation"),
         ("Without it, the solar wind would slowly strip our air away.", "SHIELDS THE AIR", "aurora night sky"),
     ),
 )
@@ -145,10 +145,10 @@ FIX_PHYS = manifest(
         ("Sometimes hot water freezes faster than cold water in the same freezer.", "HOT WINS", "ice cubes freezer"),
         ("People noticed it for centuries before anyone took it seriously.", "OLD PUZZLE", "old handwriting notes"),
         ("A schoolboy named Mpemba pushed scientists to study it properly.", "MPEMBA EFFECT", "student classroom"),
-        ("Warm water near 90 degrees loses mass to evaporation, so less has to freeze.", "LESS TO FREEZE", "steam rising water"),
+        ("So why does it win? Warm water near 90 degrees loses mass to evaporation, so less has to freeze.", "LESS TO FREEZE", "steam rising water"),
         ("Dissolved gases and currents inside the warm cup also play a part.", "GAS AND FLOW", "bubbles in water"),
         ("The effect is fussy and does not happen every single time.", "NOT ALWAYS", "frost forming glass"),
-        ("Cold water can also supercool below freezing and stubbornly refuse to turn to ice for a while.", "SUPERCOOL", "supercooled water ice"),
+        ("Can it refuse to freeze at all? Cold water can supercool below freezing and stubbornly stay liquid for a while.", "SUPERCOOL", "supercooled water ice"),
         ("It is a reminder that even boiling a kettle still hides mysteries.", "EVERYDAY MYSTERY", "kettle steam kitchen"),
     ),
 )
@@ -160,11 +160,11 @@ FIX_CHEM = manifest(
         ("There is a metal that melts from the warmth of your own hand.", "MELTS IN HAND", "shiny liquid metal"),
         ("It is called gallium and it looks just like solid silver.", "GALLIUM", "silver metal chunk"),
         ("Its melting point is only about 30 degrees Celsius.", "MELTS AT 30 C", "thermometer warm"),
-        ("Hold a piece and it slowly slumps into a mirror-bright puddle.", "TURNS TO PUDDLE", "mercury like droplet"),
+        ("What happens in your palm? It slowly slumps into a mirror-bright puddle.", "TURNS TO PUDDLE", "mercury like droplet"),
         ("Unlike mercury it is barely toxic, so labs handle it freely.", "LOW TOXICITY", "lab gloves beaker"),
         ("People use it for a prank spoon that vanishes into hot tea.", "VANISHING SPOON", "spoon in teacup"),
         ("Cool it back down and it hardens into silver once again.", "HARDENS AGAIN", "cooling metal solid"),
-        ("Yet a solid bar of it holds its shape just fine on a cold winter day.", "SOLID WHEN COLD", "silver bar macro"),
+        ("So when does a bar of it stay solid? Just fine on a cold winter day.", "SOLID WHEN COLD", "silver bar macro"),
     ),
 )
 
@@ -372,7 +372,7 @@ def test_validate_rejections():
     # the fixed, split version (two beats) must be ALLOWED
     m = copy.deepcopy(FIX_PHYS)
     m["scenes"][2]["voiceover"] = "You detect geosmin at five parts per trillion."
-    m["scenes"][3]["voiceover"] = "That is hundreds of times more sensitive than a shark tracking blood."
+    m["scenes"][3]["voiceover"] = "Is that sharper than a shark? It is hundreds of times more sensitive than one tracking blood."
     m["script"] = " ".join(s["voiceover"] for s in m["scenes"])
     check(G.validate(m, "EXPLAIN") is None, "split into two sentences (one beat each) is allowed")
     # an ordinary comma with no comparative clause on the other side must NOT fire
@@ -561,10 +561,10 @@ def test_validate_two_quantity_comparison_not_restated():
         "Venus has one day that outlasts its whole year, and that is genuinely hard to picture.",
         "What if you tried living through one full calendar year on Venus itself?",
         "Venus takes 243 Earth days just to complete a single full rotation.",
-        "Its whole trip around the Sun only takes 225 Earth days to finish.",
+        "And its trip around the Sun? That only takes 225 Earth days to finish.",
         "Venus also spins in retrograde, opposite almost every other planet.",
         "Stand there and the Sun would rise in the west and set in the east.",
-        "If you lived through one entire Venus year, you still wouldn't finish a day.",
+        "So could you live a whole Venus year and still not finish one day?",
         "Venus somehow completes a whole year before one of its own days ends.",
     ]
     m = manifest("Venus Time Paradox", seed_vos[0], scenes(
@@ -1734,12 +1734,21 @@ def test_near_miss_injects_missing_curiosity_gap():
     # and SHIP the result, rather than abandoning an otherwise-clean script.
     import copy as _copy, json as _json
     bad = _copy.deepcopy(FIX_ASTRO)
+    for _s in bad["scenes"]:                       # FIX_ASTRO now carries re-hook questions
+        _s["voiceover"] = _s["voiceover"].replace("?", ".")
+    bad["script"] = " ".join(s["voiceover"] for s in bad["scenes"])
     check("?" not in (bad["hook"] + " ".join(s["voiceover"] for s in bad["scenes"])),
           "sanity: the fixture has no question mark anywhere")
     raw = _json.dumps(bad)
     orig_call, orig_circuit = G.call_groq, G._CIRCUIT_OPEN
     G.call_groq = lambda _p: raw
     G._CIRCUIT_OPEN = False
+    # This test isolates the whatif REPAIR. A script with no '?' in its first
+    # lines can never also have a re-hook question at the ~15s mark, so the
+    # newer craft layer (covered in tests/test_craft_rules.py) is switched off
+    # here only, and restored in the finally below.
+    _orig_craft = G.craft_rules.check_script
+    G.craft_rules.check_script = lambda *a, **k: None
     fact = {"id": "x", "fact": "Venus's day is longer than its year.", "angle": "backwards planet",
             "key_terms": ["243 Earth days", "225 Earth days"],
             "whatif": "Could a planet's day really last longer than its whole year",
@@ -1750,6 +1759,7 @@ def test_near_miss_injects_missing_curiosity_gap():
     finally:
         G.call_groq = orig_call
         G._CIRCUIT_OPEN = orig_circuit
+        G.craft_rules.check_script = _orig_craft
     check(res is not None, "the whatif-only violation is mechanically repaired and SHIPPED, "
                             "not abandoned")
     if res is not None:
