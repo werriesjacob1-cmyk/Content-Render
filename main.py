@@ -3324,6 +3324,168 @@ def _group_function_words(word_times, max_chars=15):
     return out
 
 
+# ---------- PHRASE CAPTIONS (2-3 words, active word highlighted) ----------
+# One word at a time (the old style) reads as a flicker and carries no context;
+# the user wants a film-like caption: a short PHRASE on screen, the word being
+# spoken lit in the accent colour, and the one or two words that carry the
+# meaning drawn larger. CAPTION_STYLE=word restores the old one-word captions.
+CAPTION_STYLE = os.environ.get("CAPTION_STYLE", "phrase").strip().lower()
+CAPTION_SAFE_W = 880              # px: keeps text clear of TikTok's right-hand button column
+CAPTION_MIN_FS = 56
+CAPTION_PHRASE_MAX_WORDS = 3
+CAPTION_PHRASE_MAX_CHARS = 22
+CAPTION_PHRASE_GAP_S = 0.35       # a pause this long always starts a new phrase
+CAPTION_TAIL_S = 0.10             # how long the last word's phrase lingers
+CAPTION_EMPH_SCALE = 118          # % size of an emphasised word
+_PHRASE_BREAK_RE = re.compile(r"[.!?,;:\u2014\u2013]$")
+
+
+def _bare(w):
+    return re.sub(r"[^A-Za-z0-9]", "", w or "")
+
+
+def _phrase_groups(word_times, max_words=None, max_chars=None, gap=None):
+    """Group [(word, start, end)] into short caption PHRASES (pure).
+
+    A phrase breaks at sentence/clause punctuation, at a spoken pause, and at
+    max_words/max_chars. It never ENDS on a lone function word (a trailing "OF"
+    or "THE" reads as a broken line): that word moves to the next phrase when it
+    fits, and a function word left alone is merged into its neighbour. Every word
+    is kept, in order, so coverage stays word-for-word."""
+    max_words = max_words or CAPTION_PHRASE_MAX_WORDS
+    max_chars = max_chars or CAPTION_PHRASE_MAX_CHARS
+    gap = CAPTION_PHRASE_GAP_S if gap is None else gap
+    groups, cur = [], []
+    for w, st, en in word_times:
+        if cur:
+            text_len = len(" ".join(x[0] for x in cur)) + 1 + len(w)
+            pause = st - cur[-1][2] > gap
+            if (len(cur) >= max_words or text_len > max_chars or pause
+                    or _PHRASE_BREAK_RE.search(cur[-1][0])):
+                groups.append(cur)
+                cur = []
+        cur.append((w, st, en))
+    if cur:
+        groups.append(cur)
+
+    def is_fn(w):
+        return _bare(w).lower() in _CAPTION_FUNCTION_WORDS
+
+    # never end a phrase on a function word: push it onto the next phrase
+    for i in range(len(groups) - 1):
+        g, nxt = groups[i], groups[i + 1]
+        while (len(g) > 1 and is_fn(g[-1][0]) and not _PHRASE_BREAK_RE.search(g[-1][0])
+               and len(nxt) < max_words
+               and len(" ".join(x[0] for x in nxt)) + 1 + len(g[-1][0]) <= max_chars):
+            nxt.insert(0, g.pop())
+    # a phrase that is ONLY a function word joins the next phrase
+    out = []
+    for i, g in enumerate(groups):
+        if len(g) == 1 and is_fn(g[0][0]) and out and not _PHRASE_BREAK_RE.search(out[-1][-1][0]) \
+                and len(out[-1]) < max_words:
+            out[-1].append(g[0])
+        else:
+            out.append(g)
+    return [g for g in out if g]
+
+
+def _emphasis_indexes(words, keyword_tokens=None):
+    """Indexes of the 1-2 words in a phrase to draw larger (pure): the video's
+    keyword words first, then numbers, then the longest content word. A phrase of
+    two words or fewer gets at most one."""
+    kt = _KEYWORD_TOKENS if keyword_tokens is None else keyword_tokens
+    cap = 1 if len(words) <= 2 else 2
+    bare = [_bare(w).upper() for w in words]
+    picks = [i for i, b in enumerate(bare) if b and b in kt]
+    picks += [i for i, b in enumerate(bare) if i not in picks and any(c.isdigit() for c in b)]
+    content = [i for i, b in enumerate(bare)
+               if i not in picks and len(b) >= 5 and b.lower() not in _CAPTION_FUNCTION_WORDS]
+    picks += sorted(content, key=lambda i: -len(bare[i]))[:1]
+    return sorted(picks[:cap])
+
+
+def _phrase_font_size(text):
+    """Largest size (<= profile cap_size) at which the phrase fits CAPTION_SAFE_W (pure)."""
+    # 0.36 * fs px per character: measured on a real libass render of the Anton
+    # caption font (an ASS font size is the line HEIGHT, so a glyph is ~0.275 * fs
+    # wide on average); 0.36 keeps ~30% headroom for wide letters (W, M) and the
+    # larger emphasised words. The old one-word estimate (0.64) was ~2x too wide.
+    base = int(PROFILE.get("cap_size", 120))
+    est = 0.36 * max(1, len(text))
+    return max(CAPTION_MIN_FS, min(base, int(CAPTION_SAFE_W / est)))
+
+
+def _colour_tag(c):
+    c = c or ""
+    return f"\\c{c}" if c.endswith("&") else f"\\c{c}&"
+
+
+def _clamp_event_overlaps(lines, gap=0.01):
+    """Trim every Dialogue event so it ends before the next one starts (pure, on ASS
+    text lines in time order). _phrase_events clamps within a scene, but a scene's
+    last phrase lingers CAPTION_TAIL_S past its last word and the next scene's first
+    phrase can start inside that tail -- a brief double caption at the cut."""
+    def secs(t):
+        h, m, sec = t.split(":")
+        return int(h) * 3600 + int(m) * 60 + float(sec)
+
+    out = list(lines)
+    for i in range(len(out) - 1):
+        a = out[i].split(",", 3)
+        b = out[i + 1].split(",", 3)
+        if len(a) < 4 or len(b) < 4:
+            continue
+        st_a, en_a, st_b = secs(a[1]), secs(a[2]), secs(b[1])
+        if en_a > st_b - gap:
+            a[2] = _ass_t(max(st_a + 0.05, st_b - gap))
+            out[i] = ",".join(a)
+    return out
+
+
+def _phrase_events(group, next_start=None, at_zero=False):
+    """The Dialogue lines for ONE phrase: one event per word, abutting exactly, each
+    showing the whole phrase with that word lit in the accent colour. The Name field
+    carries the active word index ("w2") so measure_caption_sync can read it back.
+    at_zero starts the first event at t=0 so the hook is on screen from frame 0."""
+    words = [re.sub(r"[{}\\]", "", w).upper() for w, _, _ in group]
+    fs = _phrase_font_size(" ".join(words))
+    emph = set(_emphasis_indexes(words))
+    accent = PROFILE.get("cap_accent") or ""
+    primary = PROFILE.get("cap_primary") or "&H00FFFFFF"
+    lines = []
+    for k in range(len(group)):
+        st = group[k][1] + CAPTION_DELAY_S
+        if k + 1 < len(group):
+            en = group[k + 1][1] + CAPTION_DELAY_S
+        else:
+            en = group[k][2] + CAPTION_DELAY_S + CAPTION_TAIL_S
+            if next_start is not None:
+                en = min(en, next_start - 0.01)
+        if k == 0 and at_zero and st <= 0.6:
+            st = 0.0
+        en = max(en, st + 0.08)
+        parts, state = [], (primary, 100)          # what libass is currently drawing with
+        for j, w in enumerate(words):
+            want = (accent if (j == k and accent) else primary,
+                    CAPTION_EMPH_SCALE if j in emph else 100)
+            tag = ""
+            if want != state:
+                if want[0] != state[0]:
+                    tag += _colour_tag(want[0])
+                if want[1] != state[1]:
+                    tag += f"\\fscx{want[1]}\\fscy{want[1]}"
+                state = want
+            parts.append(f"{{{tag}}}{w}" if tag else w)
+        # No fade/scale-in for the event that starts at t=0: a fade begins at alpha 0,
+        # which would make frame 0 -- the frame TikTok may use as the cover -- blank.
+        intro = (k == 0 and st > 0.0)
+        pop = "\\fscx92\\fscy92\\t(0,100,\\fscx100\\fscy100)" if intro else ""
+        fad = "\\fad(30,0)" if intro else ""
+        head = f"{{\\pos(540,{PROFILE['cap_y']})\\an5{fad}\\fs{fs}{pop}}}"
+        lines.append(f"Dialogue: 0,{_ass_t(st)},{_ass_t(en)},Pop,w{k},0,0,0,,{head}{' '.join(parts)}")
+    return lines
+
+
 # Captions are nudged a touch LATER than the word's raw onset. ElevenLabs' word
 # "start" marks the phoneme onset, which lands a hair BEFORE the ear registers
 # the word — so word-perfect timing still reads as "the subtitle is ahead of the
@@ -3381,8 +3543,14 @@ def build_ass(scenes, segments, actual_durs, path, headline=""):
     # show in the merged frame), so coverage stays word-for-word and tightly
     # synced while the lone-function-word frames are gone.
     def _emit(word_times):
-        for w, st, en in _group_function_words(word_times):
-            events.append(_event(st + CAPTION_DELAY_S, en + CAPTION_DELAY_S, w))
+        if CAPTION_STYLE == "word":
+            for w, st, en in _group_function_words(word_times):
+                events.append(_event(st + CAPTION_DELAY_S, en + CAPTION_DELAY_S, w))
+            return
+        groups = _phrase_groups(word_times)
+        for gi, g in enumerate(groups):
+            nxt = groups[gi + 1][0][1] + CAPTION_DELAY_S if gi + 1 < len(groups) else None
+            events.extend(_phrase_events(g, nxt, at_zero=(not events and gi == 0)))
 
     if WORD_TIMINGS:
         # exact: drive captions from ElevenLabs word timings, per-scene shift
@@ -3422,6 +3590,8 @@ def build_ass(scenes, segments, actual_durs, path, headline=""):
                 wt.append((w, clock, clock + wd)); clock += wd
             _emit(wt)
     # Prepend the top-of-frame hook headline (first few seconds) if one was written.
+    if CAPTION_STYLE != "word":
+        events = _clamp_event_overlaps(events)
     hl = _headline_event(headline)
     if hl:
         events.insert(0, hl)
