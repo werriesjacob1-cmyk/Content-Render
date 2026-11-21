@@ -37,6 +37,10 @@ class FootageTests(TestCase):
         by = "https://creativecommons.org/licenses/by/4.0/"
         self.assertEqual(list(fs.commons_rows(commons_fixture(by, ""))), [])
         self.assertEqual(list(fs.commons_rows(commons_fixture(by), used_ids={4})), [])
+        audit = []
+        list(fs.commons_rows(commons_fixture(by), audit=audit))
+        list(fs.commons_rows(commons_fixture(""), audit=audit))
+        self.assertEqual(audit, [True, False])
 
     def test_attribution_round_trips_into_lineage(self):
         url = "https://creativecommons.org/licenses/by/4.0/"
@@ -81,6 +85,19 @@ class FootageTests(TestCase):
         self.assertEqual(fs.congress_row(payload, "https://www.loc.gov/item/example/")["id"], "loc:example")
         payload["item"]["rights_advisory"].append("Editorial use only")
         self.assertIsNone(fs.congress_row(payload, "https://www.loc.gov/item/example/"))
+
+    def test_structure_still_requires_an_explicit_accession(self):
+        entry = SimpleNamespace(pdb_id="1CRN", title="Crambin",
+                                primary_citation_authors=("Depositor",),
+                                structure_url="https://www.rcsb.org/structure/1CRN")
+        with patch("molecular_media.fetch_entry", return_value=entry) as fetch:
+            self.assertEqual(fs.rcsb_still("protein molecule"), [])
+            fetch.assert_not_called()
+            candidate, = fs.rcsb_still("protein structure PDB 1CRN")
+            fetch.assert_called_once_with("1CRN")
+        self.assertEqual(candidate["id"], "pdb:1crn")
+        self.assertEqual(candidate["source_url"], entry.structure_url)
+        self.assertEqual(candidate["attribution"], "Depositor, RCSB PDB")
 
     def test_successful_graphic_bypasses_stock_and_preserves_scene(self):
         for subject in ("microscopic organism", "ancient road", "geometric proof"):

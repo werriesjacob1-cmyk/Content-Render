@@ -18,7 +18,24 @@ def _text(value):
     return " ".join(unescape(re.sub(r"<[^>]+>", " ", str(value or ""))).split())
 
 
-def commons_rows(payload, used_ids=(), max_bytes=45 * 1024 * 1024):
+def commons_rights(info):
+    """Return the explicit output license and credit, or no reusable rights."""
+    metadata = info.get("extmetadata") or {}
+
+    def field(name):
+        return (metadata.get(name) or {}).get("value", "")
+
+    license_url = str(field("LicenseUrl")).strip()
+    short_name = str(field("LicenseShortName")).strip().casefold()
+    attribution = _text(field("Attribution") or field("Artist"))
+    if (not LICENSE_URI.fullmatch(license_url) or field("Restrictions")
+            or re.search(r"\b(?:nc|nd|sa|editorial|noncommercial)\b", short_name)
+            or ("/licenses/by/" in license_url.lower() and not attribution)):
+        return None
+    return license_url, attribution
+
+
+def commons_rows(payload, used_ids=(), max_bytes=45 * 1024 * 1024, *, audit=None):
     if "error" in payload:
         code = payload["error"].get("code", "unknown")
         raise ValueError("Commons API " + (code if code in {"maxlag", "ratelimited"} else "error"))
@@ -26,27 +43,20 @@ def commons_rows(payload, used_ids=(), max_bytes=45 * 1024 * 1024):
     for page in sorted(pages.values(), key=lambda row: row.get("index", 0)):
         cid = page.get("pageid")
         info = (page.get("imageinfo") or [{}])[0]
-        metadata = info.get("extmetadata") or {}
-
-        def field(name):
-            return (metadata.get(name) or {}).get("value", "")
-
         url, source_url = info.get("url", ""), info.get("descriptionurl", "")
-        license_url = str(field("LicenseUrl")).strip()
-        short_name = str(field("LicenseShortName")).strip().casefold()
         size = info.get("size")
         if (not cid or cid in used_ids or not isinstance(size, int) or not 0 < size <= max_bytes
                 or not info.get("mime", "").startswith(("video/", "application/ogg"))
                 or urlsplit(url).netloc != "upload.wikimedia.org"
                 or urlsplit(source_url).netloc != "commons.wikimedia.org"
-                or not url.startswith("https://") or not source_url.startswith("https://")
-                or not LICENSE_URI.fullmatch(license_url)
-                or re.search(r"\b(?:nc|nd|sa|editorial|noncommercial)\b", short_name)
-                or field("Restrictions")):
+                or not url.startswith("https://") or not source_url.startswith("https://")):
             continue
-        attribution = _text(field("Attribution") or field("Artist"))
-        if "/licenses/by/" in license_url.lower() and not attribution:
+        rights = commons_rights(info)
+        if audit is not None:
+            audit.append(rights is not None)
+        if rights is None:
             continue
+        license_url, attribution = rights
         yield {
             "id": cid, "url": url, "source": "Wikimedia", "kind": "video",
             "source_url": source_url, "license": license_url,
@@ -79,7 +89,7 @@ class FootageSources:
         self.log(f"  [footage] {name}: {reason}; circuit open for this render")
         return []
 
-    def commons(self, query, used_ids=(), max_bytes=45 * 1024 * 1024):
+    def commons(self, query, used_ids=(), max_bytes=45 * 1024 * 1024, *, audit=None):
         params = {
             "action": "query", "format": "json", "generator": "search",
             "gsrsearch": f"{query.strip()[:100]} filetype:video", "gsrnamespace": 6,
@@ -87,7 +97,7 @@ class FootageSources:
             "iiurlwidth": 320, "maxlag": 5,
         }
         data = self.get_json(f"{COMMONS_API}?{urlencode(params)}", {"User-Agent": USER_AGENT}, timeout=5)
-        return list(commons_rows(data, used_ids, max_bytes))
+        return list(commons_rows(data, used_ids, max_bytes, audit=audit))
 
     def congress(self, query, used_ids=()):
         root = "https://www.loc.gov"

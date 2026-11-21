@@ -10,7 +10,7 @@ from urllib.error import HTTPError
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import main
-from footage_sources import FootageSources
+from footage_sources import FootageSources, rcsb_still
 from scientific_media import svs_candidates
 
 
@@ -20,7 +20,7 @@ def fixtures():
         manifest = json.loads(path.read_text(encoding="utf-8"))
         yield from (scene["search_query"] for scene in manifest["scenes"])
     yield from ("chess game tree branching", "ancient Roman harbor excavation",
-                "deep sea hydrothermal vent", "microscopic tardigrade")
+                "deep sea hydrothermal vent", "microscopic tardigrade", "protein structure PDB 1CRN")
 
 
 def run_source(name, lookup, queries):
@@ -59,10 +59,12 @@ def run_source(name, lookup, queries):
 
 def cli():
     sources = FootageSources(main._http_json)
+    commons_rights = []
     lookups = {
-        "commons": sources.commons, "congress": sources.congress,
+        "commons": lambda query: sources.commons(query, audit=commons_rights),
+        "congress": sources.congress,
         "svs": lambda query: svs_candidates(query, limit=2, timeout=4, strict_rights=True),
-        "pexels": main._pexels_candidates,
+        "pexels": main._pexels_candidates, "rcsb": rcsb_still,
     }
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", choices=lookups, action="append")
@@ -71,10 +73,19 @@ def cli():
     queries = list(dict.fromkeys(fixtures()))[:args.limit]
     if not queries:
         parser.error("no queries selected")
-    names = args.source or ["commons", "congress", "svs"]
+    names = args.source or ["commons", "congress", "svs", "rcsb"]
     if "pexels" in names and not main.PEXELS_KEY:
         parser.error("Pexels evaluation requires an existing Pexels key")
-    print(json.dumps([run_source(name, lookups[name], queries) for name in names], indent=2))
+    reports = []
+    for name in dict.fromkeys(names):
+        report = run_source(name, lookups[name], queries)
+        if name == "commons":
+            report["rights_checked_assets"] = len(commons_rights)
+            report["license_pass_rate_before_filter"] = (
+                sum(commons_rights) / len(commons_rights) if commons_rights else None
+            )
+        reports.append(report)
+    print(json.dumps(reports, indent=2))
 
 
 if __name__ == "__main__":
