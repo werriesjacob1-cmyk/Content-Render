@@ -1,110 +1,101 @@
 {
- "title": "The Animal That Regrows Its Limbs",
+ "title": "Twins Do Not Share Fingerprints",
  "viewer_job": "REFRAME",
- "keyword": "axolotl",
- "metaphor": "limb regeneration",
- "vibe": "awe",
- "hook": "A lost limb can grow back, if you are an axolotl.",
- "hook_headline": "IT GROWS BACK",
- "script": "A lost limb can grow back, if you are an axolotl. An axolotl regrows a whole missing leg in 40 to 50 days. Bone, muscle and nerves all return, without scarring. So why can't a person do this? We seal wounds with scars. It rebuilds the missing part instead. It can even repair its spinal cord, and parts of its heart and brain. Has anyone made a human limb regrow yet? Not once. Is it a hard limit for mammals, or a switch nobody has found yet?",
+ "keyword": "fingerprints",
+ "metaphor": "twin fingerprints",
+ "vibe": "visceral",
+ "hook": "Identical twins do not have identical fingerprints.",
+ "hook_headline": "DIFFERENT PRINTS",
+ "script": "Identical twins do not have identical fingerprints. Police have never found two people whose prints match. So the code they share is not the whole story. So what actually decides them? They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers. Every baby meets its own pressure and its own fluid flow, even next to a twin. Is the mark police trust most really just chance? Yes. It is mostly randomness, because fingerprints are not in your genes.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A lost limb can grow back, if you are an axolotl.",
-   "on_screen_text": "IT GROWS BACK",
-   "search_query": "axolotl swimming",
+   "voiceover": "Identical twins do not have identical fingerprints.",
+   "on_screen_text": "DIFFERENT PRINTS",
+   "search_query": "fingerprint close up",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "An axolotl regrows a whole missing leg in 40 to 50 days.",
-   "on_screen_text": "40 TO 50 DAYS",
-   "search_query": "axolotl white swimming",
-   "motion": "zoom_out",
-   "visual": {
-    "type": "gauge",
-    "label": "Time to regrow a leg",
-    "start": 0,
-    "end": 50,
-    "unit": "days",
-    "before": "Leg lost",
-    "after": "Leg regrown"
-   }
+   "voiceover": "Police have never found two people whose prints match.",
+   "on_screen_text": "NEVER A MATCH",
+   "search_query": "police fingerprint powder",
+   "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Bone, muscle and nerves all return, without scarring.",
-   "on_screen_text": "NO SCARRING",
-   "search_query": "axolotl aquarium",
+   "voiceover": "So the code they share is not the whole story.",
+   "on_screen_text": "NOT THE WHOLE STORY",
+   "search_query": "fingertip pressed glass",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why can't a person do this?",
-   "on_screen_text": "WHY NOT US?",
-   "search_query": "doctor bandage arm",
+   "voiceover": "So what actually decides them?",
+   "on_screen_text": "WHAT DECIDES?",
+   "search_query": "newborn baby hand",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "We seal wounds with scars. It rebuilds the missing part instead.",
-   "on_screen_text": "CELLS RESET",
-   "search_query": "axolotl underwater",
+   "voiceover": "They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers.",
+   "on_screen_text": "FORMED IN THE WOMB",
+   "search_query": "pregnant woman belly",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "It can even repair its spinal cord, and parts of its heart and brain.",
-   "on_screen_text": "SPINE, HEART, BRAIN",
-   "search_query": "axolotl pink gills",
+   "voiceover": "Every baby meets its own pressure and its own fluid flow, even next to a twin.",
+   "on_screen_text": "NEVER THE SAME",
+   "search_query": "hand ridges macro",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Has anyone made a human limb regrow yet? Not once.",
-   "on_screen_text": "NOT YET",
-   "search_query": "axolotl face",
+   "voiceover": "Is the mark police trust most really just chance?",
+   "on_screen_text": "JUST CHANCE?",
+   "search_query": "police detective evidence",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Is it a hard limit for mammals, or a switch nobody has found yet?",
-   "on_screen_text": "LIMIT OR SWITCH?",
-   "search_query": "axolotl tank",
+   "voiceover": "Yes. It is mostly randomness, because fingerprints are not in your genes.",
+   "on_screen_text": "RANDOMNESS",
+   "search_query": "fingerprint scanner",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "An axolotl regrows a whole leg in 40 to 50 days, no scar.",
-  "Why can't we? Scientists still do not know if it is a limit or a switch.",
-  "The animal that grows its limbs back."
+  "Identical twins have the same DNA but different fingerprints.",
+  "Your fingerprints are decided by chance in the womb.",
+  "The mark police trust most is mostly randomness."
  ],
  "hashtags": [
-  "#axolotl",
-  "#animals",
+  "#twins",
+  "#fingerprints",
   "#science",
-  "#regeneration",
-  "#nature",
+  "#body",
+  "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_the-animal-that-regrows-limbs",
- "cta_style": "COMMENT",
- "domain": "animals",
+ "video_id": "science_2026-11-22_twins-fingerprints",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "axolotl_regeneration",
- "kokoro_voice": "af_nicole",
+ "fact_id": "twin_fingerprints",
+ "kokoro_voice": "am_adam",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
