@@ -1,118 +1,118 @@
 {
- "title": "The Food That Never Goes Bad",
+ "title": "The Animal That Regrows Its Limbs",
  "viewer_job": "REFRAME",
- "keyword": "honey",
- "metaphor": "honey preservation",
+ "keyword": "axolotl",
+ "metaphor": "limb regeneration",
  "vibe": "awe",
- "hook": "Some food never spoils, no matter how long you wait.",
- "hook_headline": "NEVER SPOILS",
- "script": "Some food never spoils, no matter how long you wait. Honey from a 3,000-year-old Egyptian tomb was still edible. Nobody had touched those jars since the time of the pharaohs. So what stops bacteria from growing in it? Honey has so little water that bacteria dry out and die. Why can't other microbes live there? It is acidic, and most cannot survive that. Then bees add an enzyme that slowly makes hydrogen peroxide. And what is that for? It is a natural preservative, made inside the jar. So the jar in your cupboard is a food built never to rot.",
+ "hook": "A lost limb can grow back, if you are an axolotl.",
+ "hook_headline": "IT GROWS BACK",
+ "script": "A lost limb can grow back, if you are an axolotl. An axolotl regrows a whole missing leg in 40 to 50 days. Bone, muscle and nerves all return, without scarring. So why can't a person do this? A human wound seals with scar tissue, but its cells reset and rebuild the missing part. It can even repair its spinal cord, and parts of its heart and brain. That is why labs around the world keep colonies of them alive. Has anyone made a human limb regrow yet? Not once. Is the inability of mammals to regrow limbs a hard biological limit, or a switch nobody has found yet?",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Some food never spoils, no matter how long you wait.",
-   "on_screen_text": "NEVER SPOILS",
-   "search_query": "honey dripping spoon",
+   "voiceover": "A lost limb can grow back, if you are an axolotl.",
+   "on_screen_text": "IT GROWS BACK",
+   "search_query": "axolotl swimming",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Honey from a 3,000-year-old Egyptian tomb was still edible.",
-   "on_screen_text": "STILL EDIBLE",
-   "search_query": "egyptian tomb hieroglyphs",
-   "motion": "zoom_out"
+   "voiceover": "An axolotl regrows a whole missing leg in 40 to 50 days.",
+   "on_screen_text": "40 TO 50 DAYS",
+   "search_query": "pink axolotl closeup",
+   "motion": "zoom_out",
+   "visual": {
+    "type": "gauge",
+    "label": "Time to regrow a leg",
+    "start": 0,
+    "end": 50,
+    "unit": "days",
+    "before": "Leg lost",
+    "after": "Leg regrown"
+   }
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Nobody had touched those jars since the time of the pharaohs.",
-   "on_screen_text": "UNTOUCHED",
-   "search_query": "honey jar golden",
-   "motion": "pan_left",
-   "visual": {
-    "type": "gauge",
-    "label": "Age of the honey",
-    "start": 0,
-    "end": 3000,
-    "unit": "years",
-    "before": "Freshly made",
-    "after": "Still edible"
-   }
+   "voiceover": "Bone, muscle and nerves all return, without scarring.",
+   "on_screen_text": "NO SCARRING",
+   "search_query": "salamander water",
+   "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what stops bacteria from growing in it?",
-   "on_screen_text": "WHAT STOPS IT?",
-   "search_query": "petri dish bacteria",
+   "voiceover": "So why can't a person do this?",
+   "on_screen_text": "WHY NOT US?",
+   "search_query": "doctor bandage arm",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Honey has so little water that bacteria dry out and die.",
-   "on_screen_text": "TOO DRY",
-   "search_query": "honeycomb bees",
+   "voiceover": "A human wound seals with scar tissue, but its cells reset and rebuild the missing part.",
+   "on_screen_text": "CELLS RESET",
+   "search_query": "newt pond",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Why can't other microbes live there? It is acidic, and most cannot survive that.",
-   "on_screen_text": "TOO ACIDIC",
-   "search_query": "lemon slice closeup",
+   "voiceover": "It can even repair its spinal cord, and parts of its heart and brain.",
+   "on_screen_text": "SPINE, HEART, BRAIN",
+   "search_query": "aquarium fish tank",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Then bees add an enzyme that slowly makes hydrogen peroxide.",
-   "on_screen_text": "BEE ENZYME",
-   "search_query": "bee flower pollen",
+   "voiceover": "That is why labs around the world keep colonies of them alive.",
+   "on_screen_text": "LAB COLONIES",
+   "search_query": "laboratory glassware",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "And what is that for? It is a natural preservative, made inside the jar.",
-   "on_screen_text": "NATURAL PRESERVATIVE",
-   "search_query": "honey pouring jar",
+   "voiceover": "Has anyone made a human limb regrow yet? Not once.",
+   "on_screen_text": "NOT YET",
+   "search_query": "hospital corridor",
    "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "So the jar in your cupboard is a food built never to rot.",
-   "on_screen_text": "BUILT NEVER TO ROT",
-   "search_query": "honey dipper wooden",
+   "voiceover": "Is the inability of mammals to regrow limbs a hard biological limit, or a switch nobody has found yet?",
+   "on_screen_text": "LIMIT OR SWITCH?",
+   "search_query": "axolotl face",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "Honey from a 3,000-year-old tomb was still edible. Here is why it never rots.",
-  "Too dry, too acidic, and the bees add a preservative of their own.",
-  "The one food built never to spoil."
+  "An axolotl regrows a whole leg in 40 to 50 days, no scar.",
+  "Why can't we? Scientists still do not know if it is a limit or a switch.",
+  "The animal that grows its limbs back."
  ],
  "hashtags": [
-  "#honey",
-  "#food",
+  "#axolotl",
+  "#animals",
   "#science",
-  "#history",
-  "#facts",
+  "#regeneration",
+  "#nature",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_the-food-that-never-goes-bad",
- "cta_style": "SAVE_WORTHY",
- "domain": "body",
+ "video_id": "science_2026-11-22_the-animal-that-regrows-limbs",
+ "cta_style": "COMMENT",
+ "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "honey_never_spoils",
- "kokoro_voice": "am_michael",
+ "fact_id": "axolotl_regeneration",
+ "kokoro_voice": "af_nicole",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
