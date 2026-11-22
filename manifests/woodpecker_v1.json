@@ -1,0 +1,118 @@
+{
+ "title": "Why Woodpeckers Never Get Concussions",
+ "viewer_job": "REFRAME",
+ "keyword": "woodpecker",
+ "metaphor": "woodpecker head impact",
+ "vibe": "visceral",
+ "hook": "A woodpecker does not give itself concussions.",
+ "hook_headline": "NO CONCUSSION",
+ "script": "A woodpecker does not give itself concussions. It can hammer its head into wood at 20 pecks per second. Every single peck hits with 1,000 times the force of gravity. That is far harder than a hit that would knock a person out. So why is its brain fine? Its brain is tiny and light, too small for that force to cause damage. Does its skull work like a cushion, as people said for years? A 2022 study put that idea to the test. It found the skull acts more like a stiff hammer than a cushion. So does a woodpecker's skull really work as a shock absorber?",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "A woodpecker does not give itself concussions.",
+   "on_screen_text": "NO CONCUSSION",
+   "search_query": "woodpecker pecking tree",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "It can hammer its head into wood at 20 pecks per second.",
+   "on_screen_text": "20 PER SECOND",
+   "search_query": "woodpecker tree trunk",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Every single peck hits with 1,000 times the force of gravity.",
+   "on_screen_text": "1,000 G",
+   "search_query": "bird forest closeup",
+   "motion": "pan_left",
+   "visual": {
+    "type": "gauge",
+    "label": "Force on the head",
+    "start": 1,
+    "end": 1000,
+    "unit": "g",
+    "before": "Standing still",
+    "after": "One peck"
+   }
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "That is far harder than a hit that would knock a person out. So why is its brain fine?",
+   "on_screen_text": "WHY NO DAMAGE?",
+   "search_query": "woodpecker bird",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Its brain is tiny and light, too small for that force to cause damage.",
+   "on_screen_text": "TINY BRAIN",
+   "search_query": "woodpecker head closeup",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Does its skull work like a cushion, as people said for years?",
+   "on_screen_text": "A CUSHION?",
+   "search_query": "bird nest tree hole",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "A 2022 study put that idea to the test.",
+   "on_screen_text": "2022 TEST",
+   "search_query": "woodpecker slow motion",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "It found the skull acts more like a stiff hammer than a cushion.",
+   "on_screen_text": "STIFF HAMMER",
+   "search_query": "hammer hitting wood",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "So does a woodpecker's skull really work as a shock absorber?",
+   "on_screen_text": "SHOCK ABSORBER?",
+   "search_query": "woodpecker pecking tree",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "A woodpecker hits a tree at 1,000 g and walks away fine.",
+  "Why woodpeckers do not get concussions, and the question scientists still argue about.",
+  "20 pecks a second. 1,000 times gravity. No concussion."
+ ],
+ "hashtags": [
+  "#woodpecker",
+  "#animals",
+  "#science",
+  "#nature",
+  "#birds",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_woodpecker-no-concussion",
+ "cta_style": "COMMENT",
+ "domain": "animals",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "woodpecker_skull",
+ "kokoro_voice": "bm_fable",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
