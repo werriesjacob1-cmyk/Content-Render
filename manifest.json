@@ -13,7 +13,7 @@
    "duration": 4,
    "voiceover": "Saturn is a giant planet, and it is lighter than water.",
    "on_screen_text": "LIGHTER THAN WATER",
-   "search_query": "saturn planet rings",
+   "search_query": "saturn rings cassini",
    "motion": "zoom_in"
   },
   {
@@ -46,7 +46,7 @@
    "duration": 4,
    "voiceover": "So why is a planet that big so light?",
    "on_screen_text": "WHY SO LIGHT?",
-   "search_query": "saturn clouds storm",
+   "search_query": "saturn storm cassini",
    "motion": "zoom_in"
   },
   {
@@ -54,7 +54,7 @@
    "duration": 4,
    "voiceover": "Because it is mostly hydrogen and helium, the lightest gases there are.",
    "on_screen_text": "LIGHTEST GASES",
-   "search_query": "hydrogen balloon helium",
+   "search_query": "nebula gas cloud space",
    "motion": "zoom_out"
   },
   {
@@ -70,7 +70,7 @@
    "duration": 4,
    "voiceover": "Just gas, getting thicker and hotter the deeper you go.",
    "on_screen_text": "THICKER, HOTTER",
-   "search_query": "jupiter storm clouds",
+   "search_query": "jupiter great red spot",
    "motion": "zoom_in"
   },
   {
@@ -78,7 +78,7 @@
    "duration": 4,
    "voiceover": "Is there anything to float in? You would need a bathtub bigger than the planet.",
    "on_screen_text": "BATHTUB?",
-   "search_query": "bathtub water floating",
+   "search_query": "calm ocean surface water",
    "motion": "zoom_out"
   },
   {
