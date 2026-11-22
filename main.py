@@ -879,15 +879,33 @@ def _groq_judge_model():
     return picked or None
 
 
+def _is_reasoning_model(model):
+    m = (model or "").lower()
+    return "gpt-oss" in m
+
+
+def _chat_payload(model, prompt, max_tokens, temperature):
+    """Request body for one judge call. Reasoning models (Groq's gpt-oss-120b is
+    what discovery ranks first) spend max_tokens on hidden reasoning BEFORE the
+    answer, so the judge's usual max_tokens=20 left an empty/truncated reply:
+    renders 480 (banana) and 485 (octopus) logged 'judge: unparseable/empty reply'
+    on most scenes, scored good Pexels footage as below the floor, and fell back
+    to junk archival stills (final QA footage 4/10, abort). Give them a low
+    reasoning effort and room to finish. Pure, so it is unit-tested."""
+    body = {"model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temperature, "max_tokens": max_tokens}
+    if _is_reasoning_model(model):
+        body["reasoning_effort"] = "low"
+        body["max_tokens"] = max(int(max_tokens), 600)
+    return body
+
+
 def _openai_compat_chat(url, key, model, prompt, max_tokens, temperature):
     """One judge call to any OpenAI-compatible chat endpoint (Groq, Cerebras).
     Returns the message content string. Raises on transport failure so the
     caller can fall through to the next provider."""
-    body = json.dumps({
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": temperature, "max_tokens": max_tokens
-    }).encode()
+    body = json.dumps(_chat_payload(model, prompt, max_tokens, temperature)).encode()
     req = urllib.request.Request(url, data=body,
                                  headers={"Authorization": f"Bearer {key}",
                                           "Content-Type": "application/json",
