@@ -14,8 +14,7 @@
    "voiceover": "Your body would not explode in space.",
    "on_screen_text": "NO EXPLOSION",
    "search_query": "astronaut helmet space",
-   "motion": "zoom_in",
-   "footage_mode": "ai"
+   "motion": "zoom_in"
   },
   {
    "id": 2,
@@ -79,8 +78,7 @@
    "voiceover": "So the real danger of a vacuum is how little time you have, not an explosion.",
    "on_screen_text": "LITTLE TIME",
    "search_query": "earth from space horizon",
-   "motion": "zoom_in",
-   "footage_mode": "ai"
+   "motion": "zoom_in"
   }
  ],
  "captions": [
