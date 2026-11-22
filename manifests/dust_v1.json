@@ -1,0 +1,109 @@
+{
+ "title": "What House Dust Is Really Made Of",
+ "viewer_job": "REFRAME",
+ "keyword": "dust",
+ "metaphor": "house dust skin cells",
+ "vibe": "visceral",
+ "hook": "The dust in your house is not dirt from outside.",
+ "hook_headline": "NOT FROM OUTSIDE",
+ "script": "The dust in your house is not dirt from outside. A lot of it is dead skin cells, and you shed tens of thousands every minute. And it never stops, not even while you sleep. So where do all those cells go? They drift off your skin and settle on shelves, floors and sofas. You replace your entire outer layer of skin every two to four weeks. Over a year, that adds up to about a pound of skin. So when you wipe a shelf, what are you wiping up? A little bit of yourself, and your house is slowly filling up with you.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "The dust in your house is not dirt from outside.",
+   "on_screen_text": "NOT FROM OUTSIDE",
+   "search_query": "dust light beam",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "A lot of it is dead skin cells, and you shed tens of thousands every minute.",
+   "on_screen_text": "TENS OF THOUSANDS",
+   "search_query": "sunlight dust particles",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "And it never stops, not even while you sleep.",
+   "on_screen_text": "NEVER STOPS",
+   "search_query": "woman brushing hair",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So where do all those cells go?",
+   "on_screen_text": "WHERE DO THEY GO?",
+   "search_query": "bedroom morning light",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "They drift off your skin and settle on shelves, floors and sofas.",
+   "on_screen_text": "SETTLES EVERYWHERE",
+   "search_query": "sofa living room",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
+   "on_screen_text": "NEW SKIN",
+   "search_query": "skin closeup",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Over a year, that adds up to about a pound of skin.",
+   "on_screen_text": "A POUND A YEAR",
+   "search_query": "kitchen scale weighing",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "So when you wipe a shelf, what are you wiping up?",
+   "on_screen_text": "WHAT IS IT?",
+   "search_query": "cloth wiping shelf",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "A little bit of yourself, and your house is slowly filling up with you.",
+   "on_screen_text": "SLOWLY FILLING UP",
+   "search_query": "dust floating window",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "Most house dust is not dirt from outside. It is you.",
+  "You shed tens of thousands of skin cells every minute.",
+  "What the dust on your shelf is really made of."
+ ],
+ "hashtags": [
+  "#science",
+  "#body",
+  "#facts",
+  "#skin",
+  "#home",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_what-house-dust-is-made-of",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "skin_cells",
+ "kokoro_voice": "af_bella",
+ "kokoro_speed": 0.97,
+ "voice_engine": "kokoro"
+}
