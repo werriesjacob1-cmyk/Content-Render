@@ -1,0 +1,101 @@
+{
+ "title": "The World's Biggest Desert Is Ice",
+ "viewer_job": "REFRAME",
+ "keyword": "desert",
+ "metaphor": "frozen desert",
+ "vibe": "awe",
+ "hook": "The largest desert on Earth is not the Sahara, it is covered in ice.",
+ "hook_headline": "NOT THE SAHARA",
+ "script": "The largest desert on Earth is not the Sahara, it is covered in ice. It is Antarctica, a polar desert about 14 million square kilometres across. That is about one and a half times the size of the Sahara. So how dry can a frozen place really be? In parts of its Dry Valleys, it may not have rained for around two million years. Very little new snow arrives, so the ice there is ancient. What keeps storm clouds away from a continent that cold? The air is so cold that it holds almost no moisture to drop.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "The largest desert on Earth is not the Sahara, it is covered in ice.",
+   "on_screen_text": "NOT THE SAHARA",
+   "search_query": "antarctica ice landscape",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "It is Antarctica, a polar desert about 14 million square kilometres across.",
+   "on_screen_text": "ANTARCTICA",
+   "search_query": "polar ice sheet aerial",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "That is about one and a half times the size of the Sahara.",
+   "on_screen_text": "1.5X THE SAHARA",
+   "search_query": "sahara desert dunes",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how dry can a frozen place really be?",
+   "on_screen_text": "HOW DRY?",
+   "search_query": "snow plain wind",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "In parts of its Dry Valleys, it may not have rained for around two million years.",
+   "on_screen_text": "2 MILLION YEARS",
+   "search_query": "glacier ice close",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Very little new snow arrives, so the ice there is ancient.",
+   "on_screen_text": "ANCIENT ICE",
+   "search_query": "penguins ice walking",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "What keeps storm clouds away from a continent that cold?",
+   "on_screen_text": "WHERE ARE THE CLOUDS?",
+   "search_query": "frozen landscape snow storm",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "The air is so cold that it holds almost no moisture to drop.",
+   "on_screen_text": "TOO COLD TO SNOW",
+   "search_query": "iceberg arctic",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "The largest desert on Earth is not the Sahara.",
+  "Why Antarctica counts as a desert.",
+  "A place that has not seen rain for two million years."
+ ],
+ "hashtags": [
+  "#science",
+  "#antarctica",
+  "#desert",
+  "#earth",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_antarctica-largest-desert",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "earth",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "antarctica_largest_desert",
+ "kokoro_voice": "af_river",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
