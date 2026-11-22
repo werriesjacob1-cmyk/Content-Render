@@ -1,113 +1,109 @@
 {
- "title": "What Space Really Does to Your Body",
+ "title": "The Planet That Would Float",
  "viewer_job": "REFRAME",
- "keyword": "outer space",
- "metaphor": "human vacuum survival",
- "vibe": "visceral",
- "hook": "Your body would not explode in space.",
- "hook_headline": "YOU WOULDN'T EXPLODE",
- "script": "Your body would not explode in space. It would not freeze solid either, whatever the movies show. You would stay awake for about 15 seconds. So why does that last so long, with nothing to breathe out there? Because the oxygen already in your blood keeps your brain running until it drains away through your lungs. And what happens to the water in your body? It starts to boil, even at normal body temperature. NASA once tested this on a person in a vacuum chamber. He felt the saliva on his tongue start to bubble. Then he blacked out, and the chamber was repressurised.",
+ "keyword": "saturn planet",
+ "metaphor": "saturn density",
+ "vibe": "awe",
+ "hook": "Saturn is a giant planet, and it is lighter than water.",
+ "hook_headline": "LIGHTER THAN WATER",
+ "script": "Saturn is a giant planet, and it is lighter than water. It weighs ninety-five times more than Earth, yet it would float. Its average density is only 0.687 grams per cubic centimetre. So why is a planet that big so light? Because it is mostly hydrogen and helium, the lightest gases there are. Under the clouds there is no solid ground at all. Just gas, getting thicker and hotter the deeper you go. Is there anything to float in? You would need a bathtub bigger than the planet. Even its rings are mostly water ice, which is denser than the planet they circle.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Your body would not explode in space.",
-   "on_screen_text": "NO EXPLOSION",
-   "search_query": "astronaut helmet space",
+   "voiceover": "Saturn is a giant planet, and it is lighter than water.",
+   "on_screen_text": "LIGHTER THAN WATER",
+   "search_query": "saturn planet rings",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "It would not freeze solid either, whatever the movies show.",
-   "on_screen_text": "NOT FROZEN",
-   "search_query": "ice crystals frozen",
+   "voiceover": "It weighs ninety-five times more than Earth, yet it would float.",
+   "on_screen_text": "STILL FLOATS",
+   "search_query": "earth planet blue marble",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "You would stay awake for about 15 seconds.",
-   "on_screen_text": "15 SECONDS",
-   "search_query": "stopwatch clock ticking",
+   "voiceover": "Its average density is only 0.687 grams per cubic centimetre.",
+   "on_screen_text": "0.687",
+   "search_query": "water drop ripple",
    "motion": "pan_left",
    "visual": {
-    "type": "timer",
-    "seconds": 15
+    "type": "gauge",
+    "label": "Density",
+    "start": 1.0,
+    "end": 0.687,
+    "unit": "g/cm3",
+    "before": "Water",
+    "after": "Saturn"
    }
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does that last so long, with nothing to breathe out there?",
-   "on_screen_text": "WHY SO LONG",
-   "search_query": "space stars",
-   "motion": "pan_right"
+   "voiceover": "So why is a planet that big so light?",
+   "on_screen_text": "WHY SO LIGHT?",
+   "search_query": "saturn clouds storm",
+   "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Because the oxygen already in your blood keeps your brain running until it drains away through your lungs.",
-   "on_screen_text": "OXYGEN DRAINS",
-   "search_query": "lungs breathing",
-   "motion": "zoom_in"
+   "voiceover": "Because it is mostly hydrogen and helium, the lightest gases there are.",
+   "on_screen_text": "LIGHTEST GASES",
+   "search_query": "hydrogen balloon helium",
+   "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "And what happens to the water in your body? It starts to boil, even at normal body temperature.",
-   "on_screen_text": "WATER BOILS",
-   "search_query": "boiling water bubbles",
-   "motion": "zoom_out",
-   "visual": {
-    "type": "gauge",
-    "label": "Boiling point of water",
-    "start": 100,
-    "end": 37,
-    "unit": "deg C",
-    "before": "Normal air pressure",
-    "after": "No air pressure"
-   }
+   "voiceover": "Under the clouds there is no solid ground at all.",
+   "on_screen_text": "NO GROUND",
+   "search_query": "cloud layer aerial",
+   "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "NASA once tested this on a person in a vacuum chamber.",
-   "on_screen_text": "NASA TEST",
-   "search_query": "nasa test chamber",
-   "motion": "pan_left"
+   "voiceover": "Just gas, getting thicker and hotter the deeper you go.",
+   "on_screen_text": "THICKER, HOTTER",
+   "search_query": "jupiter storm clouds",
+   "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "He felt the saliva on his tongue start to bubble.",
-   "on_screen_text": "SALIVA BUBBLED",
-   "search_query": "vacuum chamber window",
-   "motion": "pan_right"
+   "voiceover": "Is there anything to float in? You would need a bathtub bigger than the planet.",
+   "on_screen_text": "BATHTUB?",
+   "search_query": "bathtub water floating",
+   "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "Then he blacked out, and the chamber was repressurised.",
-   "on_screen_text": "LIGHTS OUT",
-   "search_query": "nasa test chamber",
+   "voiceover": "Even its rings are mostly water ice, which is denser than the planet they circle.",
+   "on_screen_text": "RINGS OF ICE",
+   "search_query": "ice crystals closeup",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "Your body would not explode in space. What actually happens in the first 15 seconds is stranger.",
-  "Forget the movies: here is what a vacuum really does to a person.",
-  "15 seconds of consciousness, and a NASA test subject who felt his own saliva boil."
+  "A planet that weighs 95 Earths would still float in a bathtub.",
+  "Saturn is lighter than water. Here is how.",
+  "The giant planet with no ground, and rings denser than itself."
  ],
  "hashtags": [
   "#space",
+  "#saturn",
   "#science",
-  "#biology",
-  "#astronaut",
+  "#astronomy",
   "#nasa",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_what-space-really-does-to-your-body",
+ "video_id": "science_2026-11-22_the-planet-that-would-float",
  "cta_style": "SAVE_WORTHY",
  "domain": "space",
  "render": {
@@ -115,5 +111,8 @@
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "human_vacuum"
+ "fact_id": "saturn_floats",
+ "kokoro_voice": "am_onyx",
+ "kokoro_speed": 0.93,
+ "voice_engine": "kokoro"
 }
