@@ -209,6 +209,8 @@ jobs:
       - name: Commit memory + manifest
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         continue-on-error: true
+        env:
+          OPERATOR_MANIFEST: ${{ github.event.inputs.use_manifest }}
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
@@ -221,6 +223,12 @@ jobs:
             # (a plain rebase conflict left a detached HEAD and killed runs 470/474); abort if it still fails.
             git push && break || { echo "push retry $a"; git pull --rebase -X theirs origin "$BR" 2>/dev/null || git rebase --abort 2>/dev/null || true; }
           done
+          # A rebase can merge a concurrent run's manifest.json into this one line by line (run 477 rendered
+          # an ice script with a dust scene). The operator's file is the source of truth: restore it.
+          if [ -n "$OPERATOR_MANIFEST" ] && [ -s "$OPERATOR_MANIFEST" ]; then
+            cp "$OPERATOR_MANIFEST" manifest.json
+            echo "manifest.json restored from $OPERATOR_MANIFEST ($(wc -c < manifest.json) bytes)"
+          fi
 
       - name: Upload generated script (generate_only)
         if: ${{ github.event.inputs.generate_only == 'true' }}
