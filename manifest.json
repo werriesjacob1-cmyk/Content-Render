@@ -1,118 +1,109 @@
 {
- "title": "The Animal That Regrows Its Limbs",
+ "title": "What House Dust Is Really Made Of",
  "viewer_job": "REFRAME",
- "keyword": "axolotl",
- "metaphor": "limb regeneration",
- "vibe": "awe",
- "hook": "A lost limb can grow back, if you are an axolotl.",
- "hook_headline": "IT GROWS BACK",
- "script": "A lost limb can grow back, if you are an axolotl. An axolotl regrows a whole missing leg in 40 to 50 days. Bone, muscle and nerves all return, without scarring. So why can't a person do this? A human wound seals with scar tissue, but its cells reset and rebuild the missing part. It can even repair its spinal cord, and parts of its heart and brain. That is why labs around the world keep colonies of them alive. Has anyone made a human limb regrow yet? Not once. Is the inability of mammals to regrow limbs a hard biological limit, or a switch nobody has found yet?",
+ "keyword": "dust",
+ "metaphor": "house dust skin cells",
+ "vibe": "visceral",
+ "hook": "The dust in your house is not dirt from outside.",
+ "hook_headline": "NOT FROM OUTSIDE",
+ "script": "The dust in your house is not dirt from outside. A lot of it is dead skin cells, and you shed tens of thousands every minute. And it never stops, not even while you sleep. So where do all those cells go? They drift off your skin and settle on shelves, floors and sofas. You replace your entire outer layer of skin every two to four weeks. Over a year, that adds up to about a pound of skin. So when you wipe a shelf, what are you wiping up? A little bit of yourself, and your house is slowly filling up with you.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A lost limb can grow back, if you are an axolotl.",
-   "on_screen_text": "IT GROWS BACK",
-   "search_query": "axolotl swimming",
+   "voiceover": "The dust in your house is not dirt from outside.",
+   "on_screen_text": "NOT FROM OUTSIDE",
+   "search_query": "dust light beam",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "An axolotl regrows a whole missing leg in 40 to 50 days.",
-   "on_screen_text": "40 TO 50 DAYS",
-   "search_query": "pink axolotl closeup",
-   "motion": "zoom_out",
-   "visual": {
-    "type": "gauge",
-    "label": "Time to regrow a leg",
-    "start": 0,
-    "end": 50,
-    "unit": "days",
-    "before": "Leg lost",
-    "after": "Leg regrown"
-   }
+   "voiceover": "A lot of it is dead skin cells, and you shed tens of thousands every minute.",
+   "on_screen_text": "TENS OF THOUSANDS",
+   "search_query": "sunlight dust particles",
+   "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Bone, muscle and nerves all return, without scarring.",
-   "on_screen_text": "NO SCARRING",
-   "search_query": "salamander water",
+   "voiceover": "And it never stops, not even while you sleep.",
+   "on_screen_text": "NEVER STOPS",
+   "search_query": "woman brushing hair",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why can't a person do this?",
-   "on_screen_text": "WHY NOT US?",
-   "search_query": "doctor bandage arm",
+   "voiceover": "So where do all those cells go?",
+   "on_screen_text": "WHERE DO THEY GO?",
+   "search_query": "bedroom morning light",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "A human wound seals with scar tissue, but its cells reset and rebuild the missing part.",
-   "on_screen_text": "CELLS RESET",
-   "search_query": "newt pond",
+   "voiceover": "They drift off your skin and settle on shelves, floors and sofas.",
+   "on_screen_text": "SETTLES EVERYWHERE",
+   "search_query": "sofa living room",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "It can even repair its spinal cord, and parts of its heart and brain.",
-   "on_screen_text": "SPINE, HEART, BRAIN",
-   "search_query": "aquarium fish tank",
+   "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
+   "on_screen_text": "NEW SKIN",
+   "search_query": "skin closeup",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "That is why labs around the world keep colonies of them alive.",
-   "on_screen_text": "LAB COLONIES",
-   "search_query": "laboratory glassware",
+   "voiceover": "Over a year, that adds up to about a pound of skin.",
+   "on_screen_text": "A POUND A YEAR",
+   "search_query": "kitchen scale weighing",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Has anyone made a human limb regrow yet? Not once.",
-   "on_screen_text": "NOT YET",
-   "search_query": "hospital corridor",
+   "voiceover": "So when you wipe a shelf, what are you wiping up?",
+   "on_screen_text": "WHAT IS IT?",
+   "search_query": "cloth wiping shelf",
    "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "Is the inability of mammals to regrow limbs a hard biological limit, or a switch nobody has found yet?",
-   "on_screen_text": "LIMIT OR SWITCH?",
-   "search_query": "axolotl face",
+   "voiceover": "A little bit of yourself, and your house is slowly filling up with you.",
+   "on_screen_text": "SLOWLY FILLING UP",
+   "search_query": "dust floating window",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "An axolotl regrows a whole leg in 40 to 50 days, no scar.",
-  "Why can't we? Scientists still do not know if it is a limit or a switch.",
-  "The animal that grows its limbs back."
+  "Most house dust is not dirt from outside. It is you.",
+  "You shed tens of thousands of skin cells every minute.",
+  "What the dust on your shelf is really made of."
  ],
  "hashtags": [
-  "#axolotl",
-  "#animals",
   "#science",
-  "#regeneration",
-  "#nature",
+  "#body",
+  "#facts",
+  "#skin",
+  "#home",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_the-animal-that-regrows-limbs",
- "cta_style": "COMMENT",
- "domain": "animals",
+ "video_id": "science_2026-11-22_what-house-dust-is-made-of",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "axolotl_regeneration",
- "kokoro_voice": "af_nicole",
- "kokoro_speed": 0.95,
+ "fact_id": "skin_cells",
+ "kokoro_voice": "af_bella",
+ "kokoro_speed": 0.97,
  "voice_engine": "kokoro"
 }
