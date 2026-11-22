@@ -34,6 +34,7 @@ from narration import spoken_text
 # The delivery contract, not the QA module. The renderer must not depend on the
 # thing that judges it; both import the same neutral source instead.
 import director
+import video_audit
 from delivery_contract import delivery_audio_encode_args
 # The mastering SEQUENCE is shared too, not just its constants. A filter string
 # cannot close a loop around its own result, and loudnorm's single-pass error on
@@ -4390,6 +4391,27 @@ def main():
     cover_src = scene_files[0] if scene_files else body
     if not make_cover(cover_src, m, os.path.join(OUT, "cover.jpg")) and cover_src is not body:
         make_cover(body, m, os.path.join(OUT, "cover.jpg"))
+    # DETERMINISTIC AUDIT (video_audit.py): measures what 8 sampled frames cannot --
+    # effective hold length, near-black runs. Always written + printed; it only STOPS the
+    # run when AUDIT_ENFORCE=1 (render.yml sets that for non-certification runs).
+    try:
+        _audit = video_audit.audit_video(final)
+        with open(os.path.join(OUT, "video_audit.json"), "w") as _af:
+            json.dump(_audit, _af, indent=1)
+        print(f"[audit] {'PASS' if _audit['pass'] else 'FAIL'} longest hold {_audit['longest_hold_s']}s "
+              f"@ {_audit['longest_hold_at_s']}s, {_audit['effective_shots']} shots, "
+              f"{_audit['long_shot_fraction'] * 100:.0f}% in long shots, black {_audit['black_max_s']}s, "
+              f"dim {_audit['dim_max_s']}s")
+        for _w in _audit["fails"] + _audit["warns"]:
+            print(f"  [audit] {_w}")
+        if not _audit["pass"] and os.environ.get("AUDIT_ENFORCE", "0").strip() == "1":
+            print("ERROR: video audit failed — not releasing a video with a measurable hold/black defect; "
+                  "consistency over cadence.")
+            sys.exit(3)
+    except SystemExit:
+        raise
+    except Exception as _e:  # noqa: BLE001 — the audit must never break a render
+        print(f"  [audit] could not run ({_e}); continuing")
     qa_report = _final_qa_check(final, m)
     _persist_qa_to_memory(m.get("video_id", ""), qa_report)
     if _qa_should_abort(qa_report):

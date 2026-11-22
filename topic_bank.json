@@ -7,8 +7,7 @@
       "angle": "reframes something everyone thinks they know",
       "key_terms": [
         "full circle",
-        "42 degrees",
-        "antisolar point"
+        "42 degrees"
       ],
       "whatif": "What if you could get high enough off the ground? From a plane or a mountaintop you'd see the rainbow as a complete 360-degree circle, glowing at a fixed 42 degrees around the point opposite the Sun.",
       "wow": "A rainbow isn't an object with a location, it's an angle, so every person is looking at their own private rainbow made by different raindrops.",
@@ -16,6 +15,9 @@
         "rainbow sky",
         "airplane window clouds",
         "double rainbow field"
+      ],
+      "optional_terms": [
+        "antisolar point"
       ]
     },
     {
@@ -24,7 +26,6 @@
       "fact": "Your stomach lining rebuilds itself every few days, because the hydrochloric acid inside is strong enough that the stomach would otherwise digest itself.",
       "angle": "your own body is doing something alarming right now",
       "key_terms": [
-        "hydrochloric acid",
         "pH of 1.5",
         "every 3 to 4 days"
       ],
@@ -34,6 +35,9 @@
         "bubbling green liquid",
         "pouring chemical beaker",
         "person eating burger"
+      ],
+      "optional_terms": [
+        "hydrochloric acid"
       ]
     },
     {
@@ -52,7 +56,9 @@
         "person stretching morning",
         "measuring tape closeup",
         "waking up bed"
-      ]
+      ],
+      "misconception": "Your height stays the same all day.",
+      "open_question": null
     },
     {
       "id": "neutron_star_spoon",
@@ -106,7 +112,9 @@
         "planet saturn rings",
         "saturn space",
         "gas giant planet"
-      ]
+      ],
+      "misconception": "Saturn, a giant planet, must be far heavier than water.",
+      "open_question": null
     },
     {
       "id": "eclipse_coincidence",
@@ -124,7 +132,9 @@
         "solar eclipse",
         "moon sky",
         "sun corona eclipse"
-      ]
+      ],
+      "misconception": "The Sun and Moon look the same size in the sky because they are the same size.",
+      "open_question": null
     },
     {
       "id": "diamond_rain",
@@ -214,7 +224,9 @@
         "clock ticking closeup",
         "skyscraper looking up",
         "earth from space"
-      ]
+      ],
+      "misconception": "Time passes at exactly the same rate for your head and your feet.",
+      "open_question": null
     },
     {
       "id": "tardigrade",
@@ -224,8 +236,7 @@
       "key_terms": [
         "tardigrade",
         "vacuum of space",
-        "1,000 times",
-        "cryptobiosis"
+        "1,000 times"
       ],
       "whatif": "What if you left a tardigrade in the open vacuum of space? It would survive by entering cryptobiosis, shrugging off radiation 1,000 times what would kill you and temperatures near absolute zero.",
       "wow": "It pulls in its legs and dries into a glass-like husk called a tun, dropping its metabolism to almost zero and waiting, sometimes for decades, for water to return.",
@@ -233,6 +244,9 @@
         "moss macro dew",
         "water droplet macro",
         "frozen ice crystals"
+      ],
+      "optional_terms": [
+        "cryptobiosis"
       ]
     },
     {
@@ -242,7 +256,6 @@
       "angle": "a tiny animal breaks physics",
       "key_terms": [
         "mantis shrimp",
-        "cavitation bubble",
         "20,000 degrees"
       ],
       "whatif": "What if the mantis shrimp's punch actually misses its target? It barely matters, because the collapsing cavitation bubble left behind strikes a second time, flashing to nearly 20,000 degrees.",
@@ -251,6 +264,9 @@
         "mantis shrimp colorful",
         "underwater shrimp",
         "ocean reef creature"
+      ],
+      "optional_terms": [
+        "cavitation bubble"
       ]
     },
     {
@@ -269,7 +285,9 @@
         "honey jar golden",
         "honeycomb bees",
         "honey dripping"
-      ]
+      ],
+      "misconception": "All food spoils eventually, even sealed honey.",
+      "open_question": null
     },
     {
       "id": "blood_vessels_length",
@@ -359,7 +377,9 @@
         "sun bright sky",
         "sunlight rays",
         "sunrise horizon"
-      ]
+      ],
+      "misconception": "You see the Sun as it is right now.",
+      "open_question": null
     },
     {
       "id": "star_sand",
@@ -385,7 +405,6 @@
       "fact": "Glass is not a slow-moving liquid; old windows are thicker at the bottom because of how they were made, not because glass flows.",
       "angle": "busts a famous myth",
       "key_terms": [
-        "amorphous solid",
         "not a liquid",
         "old windows"
       ],
@@ -395,7 +414,12 @@
         "old window glass",
         "stained glass",
         "glass texture light"
-      ]
+      ],
+      "optional_terms": [
+        "amorphous solid"
+      ],
+      "misconception": "Glass is a very slow liquid, which is why old windows are thicker at the bottom.",
+      "open_question": null
     },
     {
       "id": "whale_heart",
@@ -467,7 +491,9 @@
         "dust light beam",
         "skin macro",
         "sunlight dust particles"
-      ]
+      ],
+      "misconception": "The dust in your home is just dirt blown in from outside.",
+      "open_question": null
     },
     {
       "id": "lightning_strikes_earth",
@@ -548,8 +574,8 @@
       "angle": "the movies got it completely wrong",
       "key_terms": [
         "15 seconds",
-        "ebullism",
-        "vacuum"
+        "vacuum",
+        "space"
       ],
       "whatif": "What if an airlock burst open and flung you into space? You wouldn't pop like a balloon; you'd have about 15 conscious seconds before a lack of oxygen knocks you out.",
       "wow": "The vacuum causes ebullism, where the water in your body starts to boil at your own temperature, and a NASA test subject in 1966 felt the saliva bubbling on his tongue before he blacked out.",
@@ -557,7 +583,12 @@
         "astronaut spacewalk",
         "outer space stars",
         "space helmet reflection"
-      ]
+      ],
+      "optional_terms": [
+        "ebullism"
+      ],
+      "misconception": "Your body would explode or freeze solid in space.",
+      "open_question": null
     },
     {
       "id": "immortal_jellyfish",
@@ -566,8 +597,7 @@
       "angle": "an animal that cheats death",
       "key_terms": [
         "Turritopsis dohrnii",
-        "transdifferentiation",
-        "biologically immortal"
+        "jellyfish"
       ],
       "whatif": "What if aging had a reset button? This jellyfish has one; facing death, Turritopsis dohrnii transforms its own cells back into a baby polyp and begins its entire life again.",
       "wow": "It does this through transdifferentiation, essentially a butterfly turning back into a caterpillar, which makes it the only animal known to be biologically immortal.",
@@ -575,6 +605,10 @@
         "jellyfish glowing ocean",
         "jellyfish swimming dark",
         "translucent jellyfish underwater"
+      ],
+      "optional_terms": [
+        "transdifferentiation",
+        "biologically immortal"
       ]
     },
     {
@@ -611,7 +645,9 @@
         "andromeda galaxy night",
         "milky way night sky",
         "stargazing telescope"
-      ]
+      ],
+      "misconception": "Looking at the Andromeda galaxy shows you the galaxy as it is today.",
+      "open_question": null
     },
     {
       "id": "mariana_pressure",
@@ -647,7 +683,9 @@
         "hourglass sand falling",
         "time lapse city people",
         "old photographs fading"
-      ]
+      ],
+      "misconception": "Your body replaces every cell every seven years.",
+      "open_question": null
     },
     {
       "id": "dna_length",
@@ -665,7 +703,9 @@
         "twisted rope closeup",
         "spiral staircase looking up",
         "tangled threads macro"
-      ]
+      ],
+      "misconception": "The DNA in your cells is too tiny to add up to any real distance.",
+      "open_question": null
     },
     {
       "id": "giant_squid_eye",
@@ -728,8 +768,7 @@
       "angle": "relativity proving itself over your head right now",
       "key_terms": [
         "2.2 microseconds",
-        "muons",
-        "time dilation"
+        "muons"
       ],
       "whatif": "What if a clock ticking near light speed actually ran slower? A muon's does; born 15 kilometres up with only 2.2 microseconds to live, it should decay long before reaching the ground, but relativistic time dilation stretches that lifespan just enough for it to survive the fall.",
       "wow": "About one of these muons passes through every square centimetre of ground every minute, meaning a real proof of Einstein's relativity is quietly raining down on you right now.",
@@ -737,7 +776,12 @@
         "mountain peak sunrise",
         "night sky stars timelapse",
         "scientist laboratory equipment"
-      ]
+      ],
+      "optional_terms": [
+        "time dilation"
+      ],
+      "misconception": "Muons live far too briefly to reach the ground from the upper atmosphere.",
+      "open_question": null
     },
     {
       "id": "liver_regrows",
@@ -764,8 +808,7 @@
       "angle": "you glow like a firefly, just too dimly to see",
       "key_terms": [
         "1,000 times",
-        "biophotons",
-        "circadian rhythm"
+        "glow"
       ],
       "whatif": "What if your body glowed like a firefly, just too dimly to notice? It does; a 2009 study used a camera cooled to nearly minus 120 degrees Celsius to catch the light and found it's about 1,000 times too faint for the naked eye to ever see.",
       "wow": "The glow isn't constant either; these biophotons brighten and dim across the day in step with your circadian rhythm, peaking in the afternoon around your cheeks and forehead.",
@@ -773,6 +816,10 @@
         "person silhouette dark room",
         "night photography long exposure",
         "glowing light particles"
+      ],
+      "optional_terms": [
+        "biophotons",
+        "circadian rhythm"
       ]
     },
     {
@@ -791,7 +838,9 @@
         "axolotl aquarium",
         "salamander water",
         "pink axolotl swimming"
-      ]
+      ],
+      "misconception": "A lost limb never grows back.",
+      "open_question": "Is the inability of mammals to regrow limbs a hard biological limit, or a switch nobody has found yet?"
     },
     {
       "id": "naked_mole_rat",
@@ -809,7 +858,9 @@
         "mole rat underground",
         "burrow tunnel dark",
         "rodent close up"
-      ]
+      ],
+      "misconception": "Any animal dies within minutes without oxygen.",
+      "open_question": null
     },
     {
       "id": "woodpecker_skull",
@@ -827,7 +878,9 @@
         "woodpecker pecking tree",
         "woodpecker tree trunk",
         "bird forest closeup"
-      ]
+      ],
+      "misconception": "A woodpecker hammering its head all day must be giving itself concussions.",
+      "open_question": "Does a woodpecker's skull really work as a shock absorber? Recent research says maybe not, and the question is still open."
     },
     {
       "id": "aerogel_frozen_smoke",
@@ -863,7 +916,9 @@
         "erupting volcano lava",
         "molten rock glowing",
         "earth from space rotating"
-      ]
+      ],
+      "misconception": "The hottest part of the Earth, its core, must be liquid.",
+      "open_question": null
     },
     {
       "id": "gold_neutron_origin",
@@ -899,7 +954,9 @@
         "ice floating water",
         "frozen lake surface",
         "cracked ice macro"
-      ]
+      ],
+      "misconception": "Everything gets denser and sinks when it freezes.",
+      "open_question": null
     },
     {
       "id": "petrichor_rain_smell",
@@ -979,7 +1036,6 @@
       "fact": "Trees quietly trade sugar and send warning signals to each other through an underground network of fungi that scientists nicknamed the wood wide web.",
       "angle": "a hidden social life beneath a silent forest",
       "key_terms": [
-        "mycorrhizal network",
         "fungi",
         "warning signals"
       ],
@@ -989,6 +1045,9 @@
         "forest tree roots",
         "sunlight through trees",
         "forest floor closeup"
+      ],
+      "optional_terms": [
+        "mycorrhizal network"
       ]
     },
     {
@@ -1007,7 +1066,9 @@
         "bananas bunch",
         "strawberries closeup",
         "fruit market stall"
-      ]
+      ],
+      "misconception": "A strawberry is a berry and a banana is not.",
+      "open_question": null
     },
     {
       "id": "bamboo_growth",
@@ -1223,7 +1284,9 @@
         "antarctica ice landscape",
         "vast snow plain",
         "polar ice sheet aerial"
-      ]
+      ],
+      "misconception": "Deserts are hot and sandy, so the largest desert must be the Sahara.",
+      "open_question": null
     },
     {
       "id": "hawaii_moving_japan",
@@ -1249,9 +1312,8 @@
       "fact": "The Sun's core is actually too cool for fusion. It only shines because of a quantum loophole.",
       "angle": "reframes why the Sun works at all",
       "key_terms": [
-        "quantum tunnelling",
         "15 million degrees",
-        "Coulomb barrier"
+        "Sun"
       ],
       "whatif": "What if the rules were strictly classical? At about 15 million degrees the Sun's protons lack the energy to smash together over the Coulomb barrier, but quantum tunnelling lets them slip through occasionally, and that is why the Sun burns.",
       "wow": "Without a strange effect that lets particles cheat through walls, the stars, and we, would not exist.",
@@ -1259,7 +1321,13 @@
         "sun surface plasma",
         "solar flare closeup",
         "glowing star space"
-      ]
+      ],
+      "optional_terms": [
+        "quantum tunnelling",
+        "Coulomb barrier"
+      ],
+      "misconception": "The Sun is hot enough for fusion all by itself.",
+      "open_question": null
     },
     {
       "id": "flavor_is_mostly_smell",
@@ -1303,9 +1371,8 @@
       "fact": "At least half of the oxygen you breathe comes from the ocean, not from forests.",
       "angle": "reframes where our air really comes from",
       "key_terms": [
-        "phytoplankton",
-        "Prochlorococcus",
-        "half"
+        "half",
+        "oxygen"
       ],
       "whatif": "What if forests were not the main source of our air? Tiny drifting phytoplankton in the sea make at least half of Earth's oxygen, and one kind, Prochlorococcus, may be the most abundant photosynthetic living thing on the planet.",
       "wow": "Roughly every second breath you take comes from microscopic sea life most people have never heard of.",
@@ -1313,6 +1380,10 @@
         "ocean surface sunlight",
         "plankton microscope",
         "underwater light rays"
+      ],
+      "optional_terms": [
+        "phytoplankton",
+        "Prochlorococcus"
       ]
     },
     {
@@ -1340,8 +1411,7 @@
       "angle": "a tiny animal doing something physically absurd",
       "key_terms": [
         "pistol shrimp",
-        "4,700 degrees",
-        "cavitation bubble"
+        "4,700 degrees"
       ],
       "whatif": "What if an animal could punch water hard enough to make it glow? The pistol shrimp does. Its claw snaps so fast it rips open a cavitation bubble that collapses at nearly 4,700 degrees, briefly close to the sun's surface, with a snap of light and sound.",
       "wow": "The shockwave alone can stun or kill its prey, and the collective snapping of these shrimp is loud enough to interfere with submarine sonar.",
@@ -1349,6 +1419,9 @@
         "pistol shrimp reef",
         "underwater bubbles macro",
         "coral reef shrimp"
+      ],
+      "optional_terms": [
+        "cavitation bubble"
       ]
     },
     {
@@ -1495,7 +1568,9 @@
         "colorful coral reef",
         "peacock mantis shrimp",
         "tropical reef macro"
-      ]
+      ],
+      "misconception": "A mantis shrimp, with 16 color receptors, must see colors far better than we do.",
+      "open_question": "Why would an eye with 16 receptor types be worse at telling similar colors apart? Scientists still disagree about how the animal actually uses them."
     },
     {
       "id": "chess_possible_games",
@@ -1555,7 +1630,9 @@
         "candle flame in the dark",
         "pupil close up",
         "dark forest at night"
-      ]
+      ],
+      "misconception": "Your eyes need a lot of light to see anything at all.",
+      "open_question": null
     },
     {
       "id": "cold_welding_space",
@@ -1595,7 +1672,9 @@
         "fingertip pressed on glass",
         "newborn baby hand",
         "hand ridges macro"
-      ]
+      ],
+      "misconception": "Identical twins have identical fingerprints because they share the same DNA.",
+      "open_question": null
     },
     {
       "id": "gallium_melts_hand",
@@ -1695,7 +1774,9 @@
         "helium balloons floating",
         "bright sun flare",
         "glowing sun corona"
-      ]
+      ],
+      "misconception": "Helium was first found on Earth.",
+      "open_question": null
     },
     {
       "id": "shortest_war",
@@ -1853,7 +1934,9 @@
         "wood frog",
         "frog in snow",
         "frog close up"
-      ]
+      ],
+      "misconception": "An animal frozen solid is a dead animal.",
+      "open_question": null
     },
     {
       "id": "stomach_self_digest",
@@ -1871,7 +1954,9 @@
         "acid bubbling beaker",
         "human anatomy stomach",
         "corrosion metal"
-      ]
+      ],
+      "misconception": "Your stomach is simply tough enough to resist its own acid.",
+      "open_question": null
     },
     {
       "id": "wombat_cube_poop",
@@ -2041,7 +2126,6 @@
       "angle": "real-life horror biology",
       "fact": "A fungus can hijack an ant's body, march it to the perfect spot, and force it to bite down before killing it and sprouting from its head.",
       "key_terms": [
-        "Ophiocordyceps",
         "zombie ant",
         "fungus"
       ],
@@ -2051,6 +2135,9 @@
         "ant macro",
         "fungus growing",
         "rainforest insects"
+      ],
+      "optional_terms": [
+        "Ophiocordyceps"
       ]
     },
     {
@@ -2087,7 +2174,9 @@
         "diamond close up",
         "pencil writing",
         "carbon crystal"
-      ]
+      ],
+      "misconception": "A diamond and a pencil's graphite are completely different materials.",
+      "open_question": null
     },
     {
       "id": "slow_light_lab",
@@ -2294,7 +2383,6 @@
       "angle": "immortality",
       "key_terms": [
         "jellyfish",
-        "transdifferentiation",
         "immortal"
       ],
       "whatif": "What if humans could also transform their bodies to bypass aging and death? Would we still experience the same emotions and connections with others?",
@@ -2303,6 +2391,9 @@
         "jellyfish transdifferentiation",
         "immortal animals",
         "biological immortality"
+      ],
+      "optional_terms": [
+        "transdifferentiation"
       ]
     },
     {
@@ -2365,7 +2456,6 @@
       "fact": "All living organisms, from bacteria to humans, have electrical impulses that control their behavior and physiology. These electrical signals are a fundamental aspect of life.",
       "angle": "biology",
       "key_terms": [
-        "biological electricity",
         "electrical impulses",
         "physiology"
       ],
@@ -2375,6 +2465,9 @@
         "biological electricity",
         "electrical impulses",
         "neuroscience"
+      ],
+      "optional_terms": [
+        "biological electricity"
       ]
     },
     {
@@ -2383,7 +2476,6 @@
       "fact": "Certain species of fungi can be used to clean up environmental pollutants, such as heavy metals and pesticides, through a process called mycoremediation. These fungi can break down toxic substances into harmless compounds.",
       "angle": "Fungal Clean-up",
       "key_terms": [
-        "mycoremediation",
         "fungi",
         "pollutants"
       ],
@@ -2393,6 +2485,9 @@
         "mycoremediation",
         "fungal remediation",
         "environmental cleanup"
+      ],
+      "optional_terms": [
+        "mycoremediation"
       ]
     },
     {
@@ -2438,8 +2533,7 @@
       "angle": "light_magic",
       "key_terms": [
         "light",
-        "refraction",
-        "diffraction"
+        "refraction"
       ],
       "whatif": "What if we could harness the power of light bending to create new technologies, such as advanced optical devices or even invisibility cloaks?",
       "wow": "Some materials can bend light in such a way that they become effectively invisible, due to a phenomenon known as total internal reflection.",
@@ -2447,6 +2541,9 @@
         "light bending experiments",
         "refraction and diffraction",
         "optical illusions"
+      ],
+      "optional_terms": [
+        "diffraction"
       ]
     },
     {
@@ -2798,7 +2895,6 @@
       "angle": "Cosmic Dance",
       "key_terms": [
         "starlings",
-        "mururations",
         "astronomy"
       ],
       "whatif": "What if we could use the patterns of starling murmurations to better understand the movement of celestial bodies?",
@@ -2807,6 +2903,9 @@
         "starling murmurations from space",
         "bird patterns in astronomy",
         "cosmic dance of starlings"
+      ],
+      "optional_terms": [
+        "mururations"
       ]
     },
     {
@@ -2923,7 +3022,6 @@
       "fact": "Certain materials can conduct electricity with zero resistance when cooled to extremely low temperatures. These superconducting materials have the potential to revolutionize energy transmission.",
       "angle": "Technology",
       "key_terms": [
-        "superconductors",
         "materials",
         "energy"
       ],
@@ -2933,6 +3031,9 @@
         "superconducting materials",
         "energy efficiency",
         "superconductor experiments"
+      ],
+      "optional_terms": [
+        "superconductors"
       ]
     },
     {
@@ -2941,7 +3042,6 @@
       "fact": "Materials at the nanoscale can exhibit properties that are significantly different from their bulk counterparts, leading to potential breakthroughs in various fields.",
       "angle": "Technology",
       "key_terms": [
-        "nanomaterials",
         "properties",
         "innovation"
       ],
@@ -2951,6 +3051,9 @@
         "nanomaterial properties",
         "nanotechnology",
         "nanoscale materials"
+      ],
+      "optional_terms": [
+        "nanomaterials"
       ]
     },
     {
@@ -2977,7 +3080,6 @@
       "fact": "At extremely low temperatures, certain materials can become superfluid, exhibiting zero viscosity and the ability to flow without resistance. This property has fascinating implications for quantum mechanics.",
       "angle": "Physics",
       "key_terms": [
-        "superfluids",
         "quantum mechanics",
         "temperature"
       ],
@@ -2987,6 +3089,9 @@
         "superfluid properties",
         "quantum physics",
         "low temperature experiments"
+      ],
+      "optional_terms": [
+        "superfluids"
       ]
     },
     {
@@ -3104,7 +3209,6 @@
       "angle": "No Brain, Full Organ Regrowth",
       "key_terms": [
         "sea cucumber",
-        "evisceration",
         "regeneration"
       ],
       "whatif": "What if humans could regrow entire organs the way a sea cucumber regrows its guts?",
@@ -3113,6 +3217,9 @@
         "sea cucumber evisceration",
         "sea cucumber regeneration",
         "sea cucumber nervous system"
+      ],
+      "optional_terms": [
+        "evisceration"
       ]
     },
     {
@@ -3121,7 +3228,6 @@
       "fact": "Our brains have a unique ability to reorganize themselves in response to new experiences, a process known as neuroplasticity. This allows us to learn and adapt throughout our lives.",
       "angle": "Brain",
       "key_terms": [
-        "neuroplasticity",
         "brain",
         "learning"
       ],
@@ -3131,6 +3237,9 @@
         "brain scan",
         "neuroplasticity experiment",
         "London taxi driver navigation"
+      ],
+      "optional_terms": [
+        "neuroplasticity"
       ]
     },
     {
@@ -3175,7 +3284,6 @@
       "fact": "Neural rejuvenation is the process by which the brain regenerates and reorganizes itself in response to injury or disease. This process can involve the growth of new neurons, the formation of new connections between neurons, and the improvement of cognitive function.",
       "angle": "Brain",
       "key_terms": [
-        "neural rejuvenation",
         "brain regeneration",
         "cognitive function"
       ],
@@ -3185,6 +3293,9 @@
         "neural rejuvenation techniques",
         "brain regeneration exercises",
         "cognitive function improvement"
+      ],
+      "optional_terms": [
+        "neural rejuvenation"
       ]
     },
     {
@@ -3193,9 +3304,8 @@
       "fact": "Electroreception is the ability of certain animals, like sharks and rays, to detect and navigate through the electromagnetic fields that surround all living creatures. This ability is made possible by specialized electroreceptors called ampullae of Lorenzini.",
       "angle": "Ocean",
       "key_terms": [
-        "electroreception",
         "ampullae of Lorenzini",
-        "electromagnetic fields"
+        "sharks"
       ],
       "whatif": "What if humans could develop electroreception abilities, allowing us to navigate and interact with the world in new and innovative ways? Could electroreception be used to improve our sense of spatial awareness or balance?",
       "wow": "Some animals can detect the electromagnetic fields of other animals, allowing them to track prey or avoid predators with remarkable accuracy.",
@@ -3203,6 +3313,10 @@
         "electroreception demo",
         "ampullae of Lorenzini",
         "electromagnetic field navigation"
+      ],
+      "optional_terms": [
+        "electroreception",
+        "electromagnetic fields"
       ]
     },
     {
@@ -3230,7 +3344,6 @@
       "angle": "mindblowing",
       "key_terms": [
         "brain",
-        "neuroplasticity",
         "rewire"
       ],
       "whatif": "What if our brains could adapt to new situations at any age?",
@@ -3239,6 +3352,9 @@
         "brain rewire",
         "neuroplasticity examples",
         "rewire brain"
+      ],
+      "optional_terms": [
+        "neuroplasticity"
       ]
     },
     {
@@ -3680,7 +3796,6 @@
       "angle": "Extremophiles",
       "key_terms": [
         "deep sea vents",
-        "chemosynthesis",
         "giant tube worms"
       ],
       "whatif": "What if these deep-sea vent ecosystems hold the key to understanding how life could exist on other planets? Could similar ecosystems be found on other celestial bodies?",
@@ -3689,6 +3804,9 @@
         "deep sea vent footage",
         "giant tube worms documentary",
         "hydrothermal vent ecosystems"
+      ],
+      "optional_terms": [
+        "chemosynthesis"
       ]
     },
     {
@@ -3698,7 +3816,6 @@
       "angle": "Bioluminescence",
       "key_terms": [
         "bioluminescent bays",
-        "dinoflagellates",
         "marine bioluminescence"
       ],
       "whatif": "What if these bioluminescent organisms could be harnessed to create sustainable lighting solutions for coastal communities? Could they also be used to monitor water quality?",
@@ -3707,6 +3824,9 @@
         "bioluminescent bay footage",
         "dinoflagellates documentary",
         "bioluminescent organisms in nature"
+      ],
+      "optional_terms": [
+        "dinoflagellates"
       ]
     },
     {
@@ -4021,7 +4141,6 @@
       "fact": "Atmospheric rivers are long, narrow channels of moisture that flow through the air, bringing heavy rainfall to certain areas. They can have a significant impact on local ecosystems and weather patterns.",
       "angle": "Weather Extreme",
       "key_terms": [
-        "atmospheric rivers",
         "moisture channels",
         "heavy rainfall"
       ],
@@ -4031,6 +4150,9 @@
         "atmospheric river footage",
         "moisture channels in atmosphere",
         "heavy rainfall events"
+      ],
+      "optional_terms": [
+        "atmospheric rivers"
       ]
     },
     {
@@ -4075,7 +4197,6 @@
       "fact": "Some species of clams have formed symbiotic relationships with algae that live inside their tissues, providing them with nutrients in exchange for protection. This partnership is essential for the clam's survival.",
       "angle": "Ocean Partnership",
       "key_terms": [
-        "symbiotic relationships",
         "clams",
         "algae"
       ],
@@ -4085,6 +4206,9 @@
         "clam algae symbiosis",
         "symbiotic relationships in ocean",
         "marine biology partnerships"
+      ],
+      "optional_terms": [
+        "symbiotic relationships"
       ]
     },
     {
@@ -4094,7 +4218,6 @@
       "angle": "Weather Wonder",
       "key_terms": [
         "morning glory clouds",
-        "atmospheric phenomena",
         "tubular clouds"
       ],
       "whatif": "What if we could better understand the conditions that create these rare atmospheric phenomena and use that knowledge to improve our weather forecasting and climate modeling? It could help us better predict and prepare for extreme weather events.",
@@ -4103,6 +4226,9 @@
         "morning glory cloud footage",
         "atmospheric phenomena examples",
         "tubular cloud formation"
+      ],
+      "optional_terms": [
+        "atmospheric phenomena"
       ]
     },
     {
@@ -4742,7 +4868,6 @@
       "angle": "sustainability",
       "key_terms": [
         "microbes",
-        "symbiotic degradation",
         "recycling"
       ],
       "whatif": "What if humans could harness the power of microbial cooperation to develop new technologies for cleaning up environmental pollutants and reducing waste? This could potentially have a significant impact on the health of our planet and the well-being of future generations.",
@@ -4751,6 +4876,9 @@
         "microbial degradation",
         "symbiotic relationships",
         "environmental cleanup"
+      ],
+      "optional_terms": [
+        "symbiotic degradation"
       ]
     },
     {
@@ -4778,7 +4906,6 @@
       "angle": "ecosystem",
       "key_terms": [
         "fungal networks",
-        "mycorrhizal",
         "ecosystem"
       ],
       "whatif": "What if humans could develop a similar ability to connect and communicate with other organisms, fostering a deeper understanding and appreciation of the natural world? This could potentially lead to new insights and innovations in fields such as ecology and conservation.",
@@ -4787,6 +4914,9 @@
         "fungal networks",
         "mycorrhizal relationships",
         "ecosystem health"
+      ],
+      "optional_terms": [
+        "mycorrhizal"
       ]
     },
     {
@@ -4867,7 +4997,6 @@
       "fact": "Our brains can rewire themselves to learn a new language in just a few months, even if we're adults. This process can change the structure of our brain.",
       "angle": "Neuroplasticity",
       "key_terms": [
-        "neuroplasticity",
         "language learning",
         "brain structure"
       ],
@@ -4877,6 +5006,9 @@
         "brain plasticity footage",
         "language learning before and after",
         "neuroplasticity experiments"
+      ],
+      "optional_terms": [
+        "neuroplasticity"
       ]
     },
     {
@@ -4957,7 +5089,6 @@
       "fact": "Our brains can reboot and reorganize themselves after a stroke or injury. This process can even help people regain lost skills.",
       "angle": "resilience",
       "key_terms": [
-        "neuroplasticity",
         "recovery",
         "brain"
       ],
@@ -4967,6 +5098,9 @@
         "brain injury recovery",
         "neuroplasticity examples",
         "stroke rehabilitation"
+      ],
+      "optional_terms": [
+        "neuroplasticity"
       ]
     },
     {
@@ -4994,8 +5128,7 @@
       "angle": "wellness",
       "key_terms": [
         "gut brain connection",
-        "vagus nerve",
-        "neuroscience research"
+        "vagus nerve"
       ],
       "whatif": "What if we could harness this connection to improve our mental and physical health? Could we use this knowledge to develop new treatments for neurological disorders?",
       "wow": "Some studies have shown that the gut microbiome can even produce neurotransmitters that influence our mood and behavior.",
@@ -5003,6 +5136,9 @@
         "gut brain connection research",
         "vagus nerve examples",
         "neuroscience innovations"
+      ],
+      "optional_terms": [
+        "neuroscience research"
       ]
     },
     {
@@ -5047,7 +5183,6 @@
       "fact": "Neurorejuvenation is the process by which the brain regenerates and restores itself, leading to improved cognitive function and overall brain health.",
       "angle": "brain",
       "key_terms": [
-        "neurorejuvenation",
         "brain regeneration",
         "cognitive function"
       ],
@@ -5057,6 +5192,9 @@
         "neurorejuvenation",
         "brain regeneration",
         "cognitive function"
+      ],
+      "optional_terms": [
+        "neurorejuvenation"
       ]
     },
     {
@@ -5065,7 +5203,6 @@
       "fact": "Neural synchronization refers to the process by which brain waves become synchronized between individuals, allowing for enhanced communication and cooperation.",
       "angle": "brain",
       "key_terms": [
-        "neural synchronization",
         "brain waves",
         "communication"
       ],
@@ -5075,6 +5212,9 @@
         "neural synchronization",
         "brain waves",
         "communication"
+      ],
+      "optional_terms": [
+        "neural synchronization"
       ]
     },
     {
@@ -5174,8 +5314,7 @@
       "angle": "Formation",
       "key_terms": [
         "geological formations",
-        "erosion",
-        "sedimentation"
+        "erosion"
       ],
       "whatif": "What if we could use geological formations to create new forms of sustainable resource extraction or even planetary exploration?",
       "wow": "Some geological formations can be dated back billions of years, providing a window into the Earth's ancient past.",
@@ -5183,6 +5322,9 @@
         "geological formation processes",
         "erosion patterns",
         "sedimentation techniques"
+      ],
+      "optional_terms": [
+        "sedimentation"
       ]
     },
     {
@@ -5228,7 +5370,6 @@
       "angle": "optics",
       "key_terms": [
         "sun dog",
-        "atmospheric optics",
         "refraction"
       ],
       "whatif": "What if we could harness this phenomenon to create new forms of optical communication?",
@@ -5237,6 +5378,9 @@
         "sun dog phenomenon",
         "atmospheric optics",
         "ice crystal refraction"
+      ],
+      "optional_terms": [
+        "atmospheric optics"
       ]
     },
     {
@@ -5263,7 +5407,6 @@
       "fact": "Certain mathematical patterns can be found in nature, such as the Fibonacci sequence in the arrangement of leaves on a stem. This is known as 'biomathematics'.",
       "angle": "patterns",
       "key_terms": [
-        "biomathematics",
         "Fibonacci sequence",
         "natural patterns"
       ],
@@ -5273,6 +5416,9 @@
         "biomathematics",
         "Fibonacci sequence",
         "natural patterns"
+      ],
+      "optional_terms": [
+        "biomathematics"
       ]
     },
     {
@@ -5281,7 +5427,6 @@
       "fact": "The Earth's geological history can be read in the layers of rock that make up the planet's crust. This is known as 'geological stratigraphy'.",
       "angle": "history",
       "key_terms": [
-        "geological stratigraphy",
         "Earth's history",
         "rock layers"
       ],
@@ -5291,6 +5436,9 @@
         "geological stratigraphy",
         "Earth's history",
         "rock layers"
+      ],
+      "optional_terms": [
+        "geological stratigraphy"
       ]
     },
     {
@@ -5318,14 +5466,16 @@
       "angle": "perception",
       "key_terms": [
         "sensory perception",
-        "animal senses",
-        "multispectral vision"
+        "animal senses"
       ],
       "whatif": "What if we could develop technology that could mimic these sensory capabilities to create more efficient sensing systems?",
       "wow": "Some animals can even perceive the Earth's magnetic field, making them one of the most sensitive organisms on the planet!",
       "queries": [
         "sensory perception",
         "animal senses",
+        "multispectral vision"
+      ],
+      "optional_terms": [
         "multispectral vision"
       ]
     },
@@ -5498,8 +5648,7 @@
       "angle": "electricity",
       "key_terms": [
         "electricity",
-        "ants",
-        "biological electricity"
+        "ants"
       ],
       "whatif": "What if we could harness this property to create new types of sustainable energy sources? Could we use this to create more efficient ways of generating electricity?",
       "wow": "The electric ants can generate enough electricity to power small devices, and can even use this to communicate with other ants over long distances.",
@@ -5507,6 +5656,9 @@
         "electric ants",
         "biological electricity",
         "ant communication"
+      ],
+      "optional_terms": [
+        "biological electricity"
       ]
     },
     {
@@ -5552,14 +5704,16 @@
       "angle": "Geometry",
       "key_terms": [
         "mathematical clouds",
-        "geometric patterns",
-        "atmospheric geometry"
+        "geometric patterns"
       ],
       "whatif": "What if we could use mathematical clouds to better understand and predict weather patterns? Could we develop new methods for forecasting and climate modeling?",
       "wow": "Some mathematical clouds can even create intricate and complex patterns, almost like a natural work of art.",
       "queries": [
         "mathematical clouds",
         "geometric cloud patterns",
+        "atmospheric geometry"
+      ],
+      "optional_terms": [
         "atmospheric geometry"
       ]
     },
@@ -5749,7 +5903,6 @@
       "fact": "Certain materials can be made to produce sound when exposed to specific frequencies of light. This phenomenon is known as photoacoustics and has potential applications in fields such as medicine and materials testing.",
       "angle": "acoustics",
       "key_terms": [
-        "photoacoustics",
         "materials",
         "sound"
       ],
@@ -5759,6 +5912,9 @@
         "photoacoustic effect in materials",
         "sound waves in solids",
         "laser induced sound"
+      ],
+      "optional_terms": [
+        "photoacoustics"
       ]
     },
     {
@@ -5893,7 +6049,6 @@
       "fact": "Metamaterials have properties that are not found in nature, such as negative refractive index or perfect absorption. This makes them useful for applications such as optics, acoustics, and electromagnetics.",
       "angle": "innovation",
       "key_terms": [
-        "metamaterials",
         "negative refractive index",
         "perfect absorption"
       ],
@@ -5903,6 +6058,9 @@
         "metamaterials in optics",
         "negative refractive index",
         "perfect absorption materials"
+      ],
+      "optional_terms": [
+        "metamaterials"
       ]
     },
     {
@@ -5911,7 +6069,6 @@
       "fact": "Some animals can perceive their environment through chemical senses, allowing them to detect subtle changes in their surroundings. This is known as chemosensation.",
       "angle": "smell",
       "key_terms": [
-        "chemosensation",
         "smell",
         "taste"
       ],
@@ -5921,6 +6078,9 @@
         "chemosensation",
         "smell",
         "taste"
+      ],
+      "optional_terms": [
+        "chemosensation"
       ]
     },
     {
@@ -6073,7 +6233,6 @@
       "fact": "The atmosphere can hold massive amounts of water vapor, which can be extracted and used as a source of clean drinking water. This technology has the potential to alleviate global water shortages.",
       "angle": "Sustainability",
       "key_terms": [
-        "atmospheric water",
         "water vapor",
         "sustainability"
       ],
@@ -6083,6 +6242,9 @@
         "atmospheric water harvesting",
         "water vapor extraction",
         "sustainable water solutions"
+      ],
+      "optional_terms": [
+        "atmospheric water"
       ]
     },
     {
@@ -6145,7 +6307,6 @@
       "fact": "Certain sedimentary rocks retain the exact scent of the ancient forests that once grew on them, detectable after millions of years.",
       "angle": "rock_scent",
       "key_terms": [
-        "sedimentary",
         "scent",
         "ancient forest"
       ],
@@ -6155,6 +6316,9 @@
         "scent in rocks",
         "ancient forest smell rock",
         "terpenes fossil rock"
+      ],
+      "optional_terms": [
+        "sedimentary"
       ]
     },
     {

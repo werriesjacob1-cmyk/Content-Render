@@ -211,6 +211,9 @@ jobs:
           FAL_VIDEO_MODEL: ${{ vars.FAL_VIDEO_MODEL }}
           FAL_MAX_CLIPS: ${{ vars.FAL_MAX_CLIPS }}
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+          # video_audit.py always runs and reports; it only STOPS a release run. A
+          # certification (private) run keeps its artifact either way.
+          AUDIT_ENFORCE: ${{ github.event.inputs.certification_only == 'true' && '0' || '1' }}
         run: python main.py manifest.json
 
       - name: Commit footage dedup history
