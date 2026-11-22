@@ -1,0 +1,101 @@
+{
+ "title": "Twins Do Not Share Fingerprints",
+ "viewer_job": "REFRAME",
+ "keyword": "fingerprints",
+ "metaphor": "twin fingerprints",
+ "vibe": "visceral",
+ "hook": "Identical twins do not have identical fingerprints.",
+ "hook_headline": "DIFFERENT PRINTS",
+ "script": "Identical twins do not have identical fingerprints. Police have never found two people whose prints match. So the code they share is not the whole story. So what actually decides them? They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers. Every baby meets its own pressure and its own fluid flow, even next to a twin. Is the mark police trust most really just chance? Yes. It is mostly randomness, because fingerprints are not in your genes.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Identical twins do not have identical fingerprints.",
+   "on_screen_text": "DIFFERENT PRINTS",
+   "search_query": "fingerprint close up",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Police have never found two people whose prints match.",
+   "on_screen_text": "NEVER A MATCH",
+   "search_query": "police fingerprint powder",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "So the code they share is not the whole story.",
+   "on_screen_text": "NOT THE WHOLE STORY",
+   "search_query": "fingertip pressed glass",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So what actually decides them?",
+   "on_screen_text": "WHAT DECIDES?",
+   "search_query": "newborn baby hand",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers.",
+   "on_screen_text": "FORMED IN THE WOMB",
+   "search_query": "pregnant woman belly",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Every baby meets its own pressure and its own fluid flow, even next to a twin.",
+   "on_screen_text": "NEVER THE SAME",
+   "search_query": "hand ridges macro",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Is the mark police trust most really just chance?",
+   "on_screen_text": "JUST CHANCE?",
+   "search_query": "police detective evidence",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Yes. It is mostly randomness, because fingerprints are not in your genes.",
+   "on_screen_text": "RANDOMNESS",
+   "search_query": "fingerprint scanner",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Identical twins have the same DNA but different fingerprints.",
+  "Your fingerprints are decided by chance in the womb.",
+  "The mark police trust most is mostly randomness."
+ ],
+ "hashtags": [
+  "#twins",
+  "#fingerprints",
+  "#science",
+  "#body",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_twins-fingerprints",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "twin_fingerprints",
+ "kokoro_voice": "am_adam",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
