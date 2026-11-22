@@ -1,118 +1,118 @@
 {
- "title": "The Frog That Comes Back From Frozen",
+ "title": "Why Woodpeckers Never Get Concussions",
  "viewer_job": "REFRAME",
- "keyword": "wood frog",
- "metaphor": "frog freezes and revives",
+ "keyword": "woodpecker",
+ "metaphor": "woodpecker head impact",
  "vibe": "visceral",
- "hook": "A frog frozen solid is not a dead frog.",
- "hook_headline": "FROZEN, NOT DEAD",
- "script": "A frog frozen solid is not a dead frog. In winter, the wood frog's heart stops and it stops breathing. Up to two-thirds of the water in its body turns to ice. So how does anything survive that? Its cells fill with glucose, a sugar that stops ice from tearing them apart. For weeks, by any normal definition, it is dead. Then spring arrives. What happens when the ice melts? Its heart restarts on its own, with nothing to jump-start it. Within hours the frog is breathing, and soon it hops away alive.",
+ "hook": "A woodpecker does not give itself concussions.",
+ "hook_headline": "NO CONCUSSION",
+ "script": "A woodpecker does not give itself concussions. It can hammer its head into wood at 20 pecks per second. Every single peck hits with 1,000 times the force of gravity. That is far harder than a hit that would knock a person out. So why is its brain fine? Its brain is tiny and light, too small for that force to cause damage. Does its skull work like a cushion, as people said for years? A 2022 study put that idea to the test. It found the skull acts more like a stiff hammer than a cushion. So does a woodpecker's skull really work as a shock absorber?",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A frog frozen solid is not a dead frog.",
-   "on_screen_text": "NOT DEAD",
-   "search_query": "wood frog",
+   "voiceover": "A woodpecker does not give itself concussions.",
+   "on_screen_text": "NO CONCUSSION",
+   "search_query": "woodpecker pecking tree",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "In winter, the wood frog's heart stops and it stops breathing.",
-   "on_screen_text": "HEART STOPS",
-   "search_query": "frog in snow",
+   "voiceover": "It can hammer its head into wood at 20 pecks per second.",
+   "on_screen_text": "20 PER SECOND",
+   "search_query": "woodpecker tree trunk",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Up to two-thirds of the water in its body turns to ice.",
-   "on_screen_text": "2/3 ICE",
-   "search_query": "ice crystals closeup",
+   "voiceover": "Every single peck hits with 1,000 times the force of gravity.",
+   "on_screen_text": "1,000 G",
+   "search_query": "bird forest closeup",
    "motion": "pan_left",
    "visual": {
     "type": "gauge",
-    "label": "Body water frozen",
-    "start": 0,
-    "end": 66,
-    "unit": "%",
-    "before": "Autumn",
-    "after": "Deep winter"
+    "label": "Force on the head",
+    "start": 1,
+    "end": 1000,
+    "unit": "g",
+    "before": "Standing still",
+    "after": "One peck"
    }
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how does anything survive that?",
-   "on_screen_text": "HOW?",
-   "search_query": "frozen pond winter",
+   "voiceover": "That is far harder than a hit that would knock a person out. So why is its brain fine?",
+   "on_screen_text": "WHY NO DAMAGE?",
+   "search_query": "woodpecker bird",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Its cells fill with glucose, a sugar that stops ice from tearing them apart.",
-   "on_screen_text": "SUGAR SHIELD",
-   "search_query": "glucose sugar crystals",
+   "voiceover": "Its brain is tiny and light, too small for that force to cause damage.",
+   "on_screen_text": "TINY BRAIN",
+   "search_query": "woodpecker head closeup",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "For weeks, by any normal definition, it is dead.",
-   "on_screen_text": "DEAD FOR WEEKS",
-   "search_query": "snow forest silent",
+   "voiceover": "Does its skull work like a cushion, as people said for years?",
+   "on_screen_text": "A CUSHION?",
+   "search_query": "bird nest tree hole",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Then spring arrives. What happens when the ice melts?",
-   "on_screen_text": "THAW",
-   "search_query": "melting ice drops",
+   "voiceover": "A 2022 study put that idea to the test.",
+   "on_screen_text": "2022 TEST",
+   "search_query": "woodpecker slow motion",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Its heart restarts on its own, with nothing to jump-start it.",
-   "on_screen_text": "HEART RESTARTS",
-   "search_query": "heartbeat monitor",
+   "voiceover": "It found the skull acts more like a stiff hammer than a cushion.",
+   "on_screen_text": "STIFF HAMMER",
+   "search_query": "hammer hitting wood",
    "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "Within hours the frog is breathing, and soon it hops away alive.",
-   "on_screen_text": "HOPS AWAY",
-   "search_query": "frog jumping leaves",
+   "voiceover": "So does a woodpecker's skull really work as a shock absorber?",
+   "on_screen_text": "SHOCK ABSORBER?",
+   "search_query": "woodpecker pecking tree",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "This frog freezes solid every winter and walks away in spring.",
-  "Heart stopped, breathing stopped, two-thirds ice. Alive.",
-  "How a sugar shield brings a frozen frog back."
+  "A woodpecker hits a tree at 1,000 g and walks away fine.",
+  "Why woodpeckers do not get concussions, and the question scientists still argue about.",
+  "20 pecks a second. 1,000 times gravity. No concussion."
  ],
  "hashtags": [
-  "#frog",
+  "#woodpecker",
   "#animals",
   "#science",
   "#nature",
-  "#wildlife",
+  "#birds",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_the-frog-that-comes-back",
- "cta_style": "SAVE_WORTHY",
+ "video_id": "science_2026-11-22_woodpecker-no-concussion",
+ "cta_style": "COMMENT",
  "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "wood_frog_freeze",
- "kokoro_voice": "af_heart",
+ "fact_id": "woodpecker_skull",
+ "kokoro_voice": "bm_fable",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
