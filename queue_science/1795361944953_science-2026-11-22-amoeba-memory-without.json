@@ -1,0 +1,112 @@
+{
+  "title": "Amoeba Memory Without a Brain",
+  "viewer_job": "REFRAME",
+  "keyword": "amoeba memory",
+  "metaphor": "single celled intelligence",
+  "vibe": "awe",
+  "hook": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals.",
+  "hook_headline": "MEMORY WITHOUT BRAIN",
+  "script": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals. How can a single cell recall a past food location? Touching food triggers a chemical that permanently widens its microscopic veins. This carves a physical hydraulic highway straight to the nutrition. Its memory is its shape. The altered path persists for up to 72 hours despite constant outside changes. Tear the organism into pieces, and the reconnected fragments still remember where to go. Follow so you do not miss part two.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals.",
+      "on_screen_text": "Part 1: Your Body",
+      "search_query": "amoeba moving petri dish",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "How can a single cell recall a past food location?",
+      "on_screen_text": "Amoeba Memory?",
+      "search_query": "amoeba memory food",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 4,
+      "voiceover": "Touching food triggers a chemical that permanently widens its microscopic veins.",
+      "on_screen_text": "Internal Highways",
+      "search_query": "liquid flowing through tube",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "This carves a physical hydraulic highway straight to the nutrition.",
+      "on_screen_text": "Hydraulic Memory",
+      "search_query": "amoeba navigation experiment",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 3,
+      "voiceover": "Its memory is its shape.",
+      "on_screen_text": "Memory Is Shape",
+      "search_query": "slime mold spreading time lapse",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "The altered path persists for up to 72 hours despite constant outside changes.",
+      "on_screen_text": "Lasts 72 Hours",
+      "search_query": "slime mold forest floor",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "Tear the organism into pieces, and the reconnected fragments still remember where to go.",
+      "on_screen_text": "Rebuilding The Map",
+      "search_query": "slime mold fusing together",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 8,
+      "duration": 3,
+      "voiceover": "Follow so you do not miss part two.",
+      "on_screen_text": "Follow For Part 2",
+      "search_query": "slime mold branching pattern",
+      "motion": "pan",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "Part 1: Things Happening In Your Body Right Now. Could amoeba memory prove intelligence doesn't need a brain, or is it pure physics?",
+    "A single-celled organism retains a food location for three days with zero neurons.",
+    "Follow for part two of the hidden biology series."
+  ],
+  "hashtags": [
+    "#science",
+    "#biology",
+    "#nature",
+    "#stem",
+    "#microbiology",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-11-22_amoeba-memory-without-a-brain",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "biology",
+  "_factory_contract": {
+    "schema": "content-render-queue-contract-v1",
+    "writer_version": "legacy_v1",
+    "certification_version": "legacy_generation",
+    "source": "buffer",
+    "created_at": "2026-11-22T15:51:23Z"
+  }
+}

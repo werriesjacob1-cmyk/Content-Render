@@ -1,33 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-07_the-organ-that-grows-back",
-      "metaphor": "self repairing human body",
-      "viewer_job": "MYTH_BUSTER",
-      "cta_style": "LOOP",
-      "hook_frame": "DIRECT_QUESTION",
-      "title": "The Organ That Grows Back",
-      "fact_id": "liver_regrows",
-      "domain": "body",
-      "hook": "Your liver is the only solid organ that can literally grow itself back.",
-      "vibe": "visceral",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": null,
-      "final_qa": {
-        "footage_matches_narration": 8,
-        "visual_variety": 8,
-        "caption_legible": 10,
-        "narration_flow": 9,
-        "biggest_issue": "none",
-        "audio_judged": true,
-        "aborted": false
-      }
-    },
-    {
       "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
       "metaphor": "pitch drop experiment",
       "viewer_job": "REFRAME",
@@ -433,6 +406,36 @@
         "biggest_issue": "none",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-11-22_amoeba-memory-without-a-brain",
+      "metaphor": "single celled intelligence",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "COMPARISON_COLLISION",
+      "title": "Amoeba Memory Without a Brain",
+      "fact_id": "memory_of_amoeba",
+      "domain": "biology",
+      "hook": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "Things Happening In Your Body Right Now",
+        "part": 1
+      },
+      "quality": {
+        "hook": 6.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 8.0,
+        "rewatch": 1.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 6.86
       }
     }
   ]
