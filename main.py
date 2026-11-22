@@ -3046,7 +3046,7 @@ def _extra_clip_on_subject(desc, subject, query=None):
 HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
 
 
-HOLD_SLACK_S = 2.0     # a shot may run this much over the cap rather than cut to a dark filler card (QA kept scoring those cards 4-6; audit only warns past 4.5s, fails past 7s)
+HOLD_SLACK_S = 3.0     # a shot may run this much over the cap rather than cut to a dark filler card (QA kept scoring those cards 4-6; audit only warns past 4.5s, fails past 7s)
 CARD_MAX_S = 5.0       # longest a filler card may run (one card, not two identical ones back to back)
 
 

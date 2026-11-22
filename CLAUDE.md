@@ -96,7 +96,7 @@ banana-radiation video was produced).
 
 - **Filler cards (night 2026-11-22/23 #3).** Four of eight spiders scenes (run 495) ended in a dark text card:
   a scene with ONE distinct clip got `HOLD_CAP_S`=3.0 s of video, then a card for the rest, and QA scored the
-  cards (footage 6, variety 5). `HOLD_SLACK_S` 1.2 -> 2.0 s, and the extra time is now spread evenly over the
+  cards (footage 6, variety 5). `HOLD_SLACK_S` 1.2 -> 2.0 s (later 3.0 s after banana 503 showed 5.0-5.7 s single-clip scenes still got cards; max hold = cap + slack = 6 s, audit fails at 7 s), and the extra time is now spread evenly over the
   clips (`_cut_plan`), so a 4.7-5.0 s single-clip scene stays on footage (<=5 s; audit warns past 4.5 s, fails
   past 7 s). **Render-verified (run 497 spiders, same manifest as 495): filler cards 4 -> 1, QA footage 6 -> 7,
   audit PASS, longest hold 5.0 s, 25% in long shots.** If long_shot_fraction warnings appear, lower the slack.
