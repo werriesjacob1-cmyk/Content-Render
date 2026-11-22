@@ -6,7 +6,7 @@
  "vibe": "awe",
  "hook": "Some food never spoils, no matter how long you wait.",
  "hook_headline": "NEVER SPOILS",
- "script": "Some food never spoils, no matter how long you wait. Honey from a 3,000-year-old Egyptian tomb was still edible. Nobody had touched those jars since the time of the pharaohs. So what stops bacteria from growing in it? Honey has so little water that bacteria dry out and die. Why can't other microbes live there? It is acidic, and most cannot survive that. Then bees add an enzyme that slowly makes hydrogen peroxide. And what is that for? It is a natural preservative, made inside the jar. So the jar in your cupboard is a food built never to rot.",
+ "script": "Some food never spoils, no matter how long you wait. Honey from a 3,000-year-old Egyptian tomb was still edible. Nobody had touched those jars since the time of the pharaohs. So what stops bacteria from growing in it? Honey has so little water that bacteria dry out and die. Why can't other microbes grow there? It is acidic, and most cannot survive that. Then bees add an enzyme that slowly makes hydrogen peroxide. And what is that for? It is a natural preservative, made inside the jar. So the jar in your cupboard is a food built never to rot.",
  "scenes": [
   {
    "id": 1,
@@ -60,7 +60,7 @@
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Why can't other microbes live there? It is acidic, and most cannot survive that.",
+   "voiceover": "Why can't other microbes grow there? It is acidic, and most cannot survive that.",
    "on_screen_text": "TOO ACIDIC",
    "search_query": "lemon slice closeup",
    "motion": "pan_left"
