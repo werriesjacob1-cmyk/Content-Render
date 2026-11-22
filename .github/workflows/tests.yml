@@ -100,6 +100,7 @@ jobs:
           run_check "story shape + first 8s" python tests/test_writer_v21_story_shape.py
           run_check "hook surfaces + payoff proof" python tests/test_writer_v21_hook_payoff.py
           run_check "visual feasibility" python tests/test_writer_v21_visual_feasibility.py
+          run_check "music level" python tests/test_music_level.py
           run_check "quality proof harness" python tests/test_writer_v21_quality_bakeoff.py
           run_check "symmetric factual audit" python tests/test_writer_v21_factual_audit.py
           run_check "provider comparability" python tests/test_writer_v21_provider_guardrail.py

@@ -42,8 +42,14 @@ PROFILES = {
         "motion_graphics": False,     # animated number card when a scene has a stat
         # audio
         "music": "music_science.mp3",
-        "music_vol": 0.14,   # a touch more present (POP) — still well under the voice;
-                              # see MUSIC_CREDITS.md for source + license + mix table
+        # 2026-11-21: 0.14 -> 0.08 after user feedback "music was too loud". MEASURED on
+        # the 2026-11-21 render (science, vibe 'awe', multiplier 1.0): loudest windows
+        # (speech) -11.4 dBFS vs quietest windows (music-only gaps) -22.4 dBFS = only
+        # ~11 dB of separation, against a documented design of 18-20 dB. 0.14 was a July
+        # bump from 0.10 ("a touch more present"); ~16 dB under the voice is the target,
+        # which needs ~5 dB less. Tunable without a code change: repo Variable MUSIC_VOL.
+        # See MUSIC_CREDITS.md for source + license + mix table.
+        "music_vol": 0.08,
         # posting
         "post_window": "evening (7-10pm) — reflective, lean-back learning",
         "hashtags_base": ["#science", "#learnontiktok", "#stem"],
