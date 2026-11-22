@@ -1,109 +1,101 @@
 {
- "title": "A Banana Is a Berry. A Strawberry Is Not.",
+ "title": "The Heart That Never Rests",
  "viewer_job": "REFRAME",
- "keyword": "banana",
- "metaphor": "berry botany",
+ "keyword": "hummingbird",
+ "metaphor": "racing heart",
  "vibe": "awe",
- "hook": "A banana is a berry, and a strawberry is not.",
- "hook_headline": "BANANA = BERRY",
- "script": "A banana is a berry, and a strawberry is not. That is not a joke, it is how botany sorts fruit. A berry grows from one flower, has soft flesh, and keeps its seeds inside. So why does a strawberry fail the test? Its seeds sit on the outside, stuck to the skin. The red flesh grows from the base of the flower, not from the part that holds the seeds. So what else counts as a berry? Grapes, tomatoes and avocados. Raspberries and blackberries fail too, because each one is a cluster of tiny fruits. In the supermarket, the name on the label and the botany rarely agree.",
+ "hook": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
+ "hook_headline": "1,200 BEATS A MINUTE",
+ "script": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards. Your own heart beats about seventy times in that same minute. Its wings keep pace, beating up to eighty times every second. So how does a body that small keep up? It drinks nectar almost nonstop, and burns it as fast as it arrives. Its wings trace a figure eight, which holds it still in midair. What happens when the flowers run out at night? It slows its heart to a crawl and sleeps in a deep, cold trance.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A banana is a berry, and a strawberry is not.",
-   "on_screen_text": "BANANA = BERRY",
-   "search_query": "bananas bunch",
+   "voiceover": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
+   "on_screen_text": "1,200 BEATS A MINUTE",
+   "search_query": "hummingbird flying",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "That is not a joke, it is how botany sorts fruit.",
-   "on_screen_text": "IT'S BOTANY",
-   "search_query": "fruit market stall",
+   "voiceover": "Your own heart beats about seventy times in that same minute.",
+   "on_screen_text": "YOURS: 70",
+   "search_query": "hand wrist pulse",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "A berry grows from one flower, has soft flesh, and keeps its seeds inside.",
-   "on_screen_text": "WHAT IS A BERRY?",
-   "search_query": "flower blossom",
+   "voiceover": "Its wings keep pace, beating up to eighty times every second.",
+   "on_screen_text": "80 FLAPS A SECOND",
+   "search_query": "hummingbird wings slow motion",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does a strawberry fail the test?",
-   "on_screen_text": "WHY NOT?",
-   "search_query": "strawberries closeup",
+   "voiceover": "So how does a body that small keep up?",
+   "on_screen_text": "HOW?",
+   "search_query": "hummingbird flower",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Its seeds sit on the outside, stuck to the skin.",
-   "on_screen_text": "SEEDS OUTSIDE",
-   "search_query": "strawberry plant garden",
+   "voiceover": "It drinks nectar almost nonstop, and burns it as fast as it arrives.",
+   "on_screen_text": "NONSTOP FUEL",
+   "search_query": "hummingbird feeder drinking",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "The red flesh grows from the base of the flower, not from the part that holds the seeds.",
-   "on_screen_text": "WRONG PART",
-   "search_query": "hand picking strawberry",
+   "voiceover": "Its wings trace a figure eight, which holds it still in midair.",
+   "on_screen_text": "HOVERING",
+   "search_query": "hummingbird hovering",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "So what else counts as a berry? Grapes, tomatoes and avocados.",
-   "on_screen_text": "GRAPES, TOMATOES",
-   "search_query": "grapes vine",
+   "voiceover": "What happens when the flowers run out at night?",
+   "on_screen_text": "AT NIGHT?",
+   "search_query": "hummingbird branch perched",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Raspberries and blackberries fail too, because each one is a cluster of tiny fruits.",
-   "on_screen_text": "TINY FRUITS",
-   "search_query": "raspberries bowl",
+   "voiceover": "It slows its heart to a crawl and sleeps in a deep, cold trance.",
+   "on_screen_text": "DEEP SLEEP",
+   "search_query": "hummingbird nest",
    "motion": "zoom_out"
-  },
-  {
-   "id": 9,
-   "duration": 4,
-   "voiceover": "In the supermarket, the name on the label and the botany rarely agree.",
-   "on_screen_text": "LABEL VS BOTANY",
-   "search_query": "tomatoes basket",
-   "motion": "zoom_in"
   }
  ],
  "captions": [
-  "A banana is a berry. A strawberry is not. Here is the botany.",
-  "Grapes, tomatoes and avocados are berries too.",
-  "The fruit labels at the supermarket are mostly wrong."
+  "A hummingbird's heart beats over 1,200 times per minute.",
+  "How a bird that small survives the night.",
+  "The only bird that can fly backwards."
  ],
  "hashtags": [
-  "#fruit",
-  "#botany",
   "#science",
+  "#hummingbird",
+  "#birds",
+  "#animals",
   "#facts",
-  "#food",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_banana-is-a-berry",
+ "video_id": "science_2026-11-22_hummingbird-heart",
  "cta_style": "SAVE_WORTHY",
- "domain": "plants",
+ "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "banana_berry",
- "kokoro_voice": "bm_lewis",
- "kokoro_speed": 0.96,
+ "fact_id": "hummingbird_heart",
+ "kokoro_voice": "bm_daniel",
+ "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
