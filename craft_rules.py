@@ -221,6 +221,8 @@ def prompt_block(fact=None):
         + f"- BANNED PURPLE WORDS (any form): {purple}. Say it the way a person talking would.\n"
         f"- BANNED CRUTCH PHRASES: {crutch}. Just state the next real fact.\n"
         f"- BANNED JARGON: {jargon}. Explain the thing in plain words; never name it.\n"
+        "- SEARCH QUERIES LEAD WITH THE SUBJECT NOUN: 'space stars', 'lungs breathing' -- never an "
+        f"adjective first ({', '.join(sorted(GENERIC_QUERY_MODIFIERS)[:8])}, ...).\n"
         f"- THE PAYOFF ADDS A NEW IDEA. The final line may reuse at most {int(PAYOFF_MAX_HOOK_OVERLAP * 100)}% "
         "of its meaningful words from the hook; if you are circling back to the opening claim, "
         "you have not written a payoff yet. BAD (restates the hook): hook \"This fungus is one "
@@ -293,4 +295,23 @@ def check_script(hook, voiceovers, fact=None):
                 return (f"no question near the ~15s/~30s re-hook mark (scenes {idxs[0]}-{idxs[-1]} "
                         f"cover it) — re-hook the viewer there with a fresh question (a new open "
                         f"loop), not a recap")
+    return None
+
+
+# --- 6. Search queries must LEAD with the subject noun -----------------------
+# The footage code treats a query's first content word as its SUBJECT and gates extra clips on
+# it. Run 457's "empty space stars" and "human lungs breathing" led with an adjective, so the
+# gate matched an empty parking structure and a tortoise. One set, used by the validator and
+# by main._subject_word, so the two can never disagree.
+GENERIC_QUERY_MODIFIERS = frozenset({
+    "empty", "human", "real", "whole", "entire", "single", "outer", "inner", "typical", "generic",
+    "abstract", "natural",
+})
+
+
+def leading_modifier(query):
+    """The first content word of a search query if it is a generic modifier, else None."""
+    for w in re.findall(r"[a-z]+", (query or "").lower()):
+        if len(w) > 2 and w not in _STOP:
+            return w if w in GENERIC_QUERY_MODIFIERS else None
     return None

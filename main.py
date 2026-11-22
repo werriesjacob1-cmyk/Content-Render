@@ -33,6 +33,7 @@ from narration import spoken_text
 # that cost this project five flagship runs, in a different shape.
 # The delivery contract, not the QA module. The renderer must not depend on the
 # thing that judges it; both import the same neutral source instead.
+import craft_rules
 import director
 import video_audit
 from delivery_contract import delivery_audio_encode_args
@@ -1580,7 +1581,7 @@ def _subject_word(query):
     one animal/object/place the clip actually needs to show. Returns '' if the
     query has no content word at all."""
     for w in re.findall(r"[a-z]+", (query or "").lower()):
-        if len(w) > 2 and w not in _QUERY_STOPWORDS:
+        if len(w) > 2 and w not in _QUERY_STOPWORDS and w not in craft_rules.GENERIC_QUERY_MODIFIERS:
             return w
     return ""
 
@@ -1877,6 +1878,22 @@ def _stat_card_safe_zone():
     return center, max_h
 
 
+def _card_text_filters(lines, fontsize, center_y, line_h, txt_paths):
+    """One drawtext per LINE (pure). The card used to put every line in ONE textfile joined by
+    newlines; on the CI ffmpeg build that drew a missing-glyph box where the newline was
+    ("OXYGEN▯ DRAINS", run 457) though the local build rendered it fine. No newline character
+    is ever handed to drawtext now."""
+    block_h = line_h * len(lines)
+    out = []
+    for k, path in enumerate(txt_paths):
+        y = f"({center_y:.1f})-({block_h / 2:.1f})+{k * line_h:.1f}"
+        out.append(
+            f"drawtext=textfile='{path}':fontfile='{FONT}':fontsize={fontsize}:"
+            f"fontcolor=white:borderw=10:bordercolor=black@0.75:"
+            f"x=(w-tw)/2:y={y}:alpha='if(lt(t,0.3),t/0.3,1)'")
+    return out
+
+
 def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
     """Render one typographic stat-card scene. Raises on any ffmpeg failure
     so the caller can fall back to a plain color card -- this must never be
@@ -1885,9 +1902,12 @@ def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
     max_w = int(W * 0.86)
     center_y, max_h = _stat_card_safe_zone()
     fontsize, lines = _fit_text_block(text, max_w, max_h)
-    txt_path = os.path.join(WORK, f"s{idx}_card.txt")
-    with open(txt_path, "w") as f:
-        f.write("\n".join(lines))
+    txt_paths = []
+    for k, ln in enumerate(lines):
+        pth = os.path.join(WORK, f"s{idx}_card_{k}.txt")
+        with open(pth, "w") as f:
+            f.write(ln.strip())          # no trailing newline, no newline anywhere
+        txt_paths.append(pth)
 
     c0, c1 = STAT_CARD_PALETTES[(idx - 1) % len(STAT_CARD_PALETTES)]
     line_h = fontsize * 1.28
@@ -1897,9 +1917,7 @@ def _build_stat_card(scene, idx, seg_mp3, seg_dur, out_path, motion):
     vf = (
         f"{motion}"
         f"vignette=PI/5.2,"
-        f"drawtext=textfile='{txt_path}':fontfile='{FONT}':fontsize={fontsize}:"
-        f"fontcolor=white:borderw=10:bordercolor=black@0.75:line_spacing=18:"
-        f"x=(w-tw)/2:y=({center_y:.1f})-(th/2):alpha='if(lt(t,0.3),t/0.3,1)',"
+        + ",".join(_card_text_filters(lines, fontsize, center_y, line_h, txt_paths)) + ","
         f"drawbox=x=(iw-140)/2:y='{accent_y}':w=140:h=6:color=white@0.8:t=fill,"
         f"setsar=1"
     )
@@ -2902,12 +2920,21 @@ def _variant_queries(q):
     return out[:4]
 
 
-def _extra_clip_on_subject(desc, subject):
+def _extra_clip_on_subject(desc, subject, query=None):
     """Whether an EXTRA sub-clip candidate may be cut into a scene (pure): its own
-    description must name the scene's subject word. With no subject word there is
-    nothing to anchor on, so NO extra clip is allowed -- the old behaviour was 'no
-    subject = no filter', which let any unrelated stock in."""
-    return bool(subject) and subject in _relevance_words(desc)
+    description must name the scene's subject word -- and, when the query has two or more
+    content words, at least two of them (run 457: a tortoise shell matched on a single
+    shared word). With no subject word there is nothing to anchor on, so NO extra clip is
+    allowed -- the old behaviour was 'no subject = no filter', which let any unrelated
+    stock in."""
+    dw = _relevance_words(desc)
+    if not subject or subject not in dw:
+        return False
+    if query:
+        qw = _relevance_words(query) - craft_rules.GENERIC_QUERY_MODIFIERS
+        if len(qw) >= 2 and len(qw & dw) < 2:
+            return False
+    return True
 
 
 HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
@@ -3035,7 +3062,7 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
                 # orange being cut for "octopus close up") because THEY share a
                 # word too, just not the subject. No subject word (rare) = no
                 # filter, same as before.
-                if not _extra_clip_on_subject(c.get("desc", ""), subject):
+                if not _extra_clip_on_subject(c.get("desc", ""), subject, vq):
                     continue  # keep sub-clips on-subject (no subject word = no extras)
                 seen.add(cid)          # provisional: don't pool the same id twice
                 pool.append(c)
@@ -4368,6 +4395,10 @@ def main():
     # (user feedback — the exact "double caption" complaint). The hook_headline now
     # lives ONLY on the cover thumbnail (make_cover), where it belongs.
     build_ass(m["scenes"], segments, actual_durs, ass, headline="")
+    try:
+        shutil.copy(ass, os.path.join(OUT, "captions.ass"))     # shipped with the evidence so sync can be measured
+    except Exception:  # noqa: BLE001
+        pass
     body_dur = ffprobe_dur(body)
     # ENDING HOLD (2026-08-03 craft-audit finding): the fade-out used to start
     # 0.3s before the LAST WORD's own audio ended — the payoff line got zero

@@ -2819,6 +2819,12 @@ def validate(m, job_name, fact=None):
         # the belly-button-as-stomach incident came from 'human stomach anatomy'
         if UNSTOCKABLE_Q.search(s["search_query"]):
             return f"scene {i} query '{s['search_query']}' uses un-filmable terms"
+        _lm = craft_rules.leading_modifier(s["search_query"])
+        if _lm:
+            return (f"scene {i} query '{s['search_query']}' starts with the generic modifier {_lm!r} — "
+                    f"lead with the SUBJECT noun (e.g. 'space stars', 'lungs breathing'): the footage "
+                    f"filter treats the first word as the subject and 'empty'/'human' pulled in a "
+                    f"parking structure and a tortoise (run 457)")
         if (fact and _domain_family(fact.get("domain")) != "space"
                 and COSMIC_FILLER_Q_RE.search(s["search_query"])
                 and not SPACE_CONTEXT_RE.search(s["voiceover"])):
@@ -4262,6 +4268,33 @@ def deterministic_mechanical_trim(writer_out, validate_err, num_beats):
     return None
 
 
+_REJECTIONS = []
+
+
+def _note_rejection(err):
+    """Remember WHY an attempt was rejected, as a short family label, so a failed run can say
+    what actually killed it (run 456 needed log archaeology to learn 8 of 10 were one rule)."""
+    e = (err or "").lower()
+    for key, label in (("whatif payoff", "whatif payoff"), ("whatif curiosity", "whatif curiosity gap"),
+                       ("mandatory key terms", "key terms"), ("re-hook", "re-hook question"),
+                       ("misconception", "hook vs misconception"), ("purple", "purple word"),
+                       ("jargon", "jargon"), ("crutch", "crutch phrase"), ("restates the hook", "payoff restates hook"),
+                       ("questions in the narration", "too many questions"), ("open question", "ending question"),
+                       ("adds almost nothing new", "claim novelty"), ("contradicts", "fact check"),
+                       ("generic modifier", "query modifier"), ("un-filmable", "query un-filmable"),
+                       ("word count", "word count"), ("too long", "scene too long"),
+                       ("repetition", "repetition"), ("restated", "fact restated")):
+        if key in e:
+            _REJECTIONS.append(label); return
+    _REJECTIONS.append("other: " + e[:40])
+
+
+def rejection_summary():
+    from collections import Counter
+    c = Counter(_REJECTIONS)
+    return ", ".join(f"{n}x {k}" for k, n in c.most_common()) or "none"
+
+
 def verify_claims(m, fact, dossier):
     """One LLM call (fact_verifier.py): does the verified SOURCE support what the script says?
     Returns an error string to reject the attempt, or None. FACT_VERIFY=0 disables it. Fails
@@ -4340,7 +4373,14 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 # (of only 2) attempt on a blank response.
                 print(f"  attempt {attempt+1}: empty model response — one immediate retry")
                 raw = call_groq(_bp)
-            m = json.loads(raw)
+            try:
+                m = json.loads(raw)
+            except ValueError as _je:
+                # Gemini sometimes truncates/garbles the JSON (2 of 10 attempts in run 456). One
+                # immediate re-call recovers it instead of burning a whole attempt.
+                print(f"  attempt {attempt+1}: unparseable JSON ({_je}) — one immediate retry")
+                raw = call_groq(_bp)
+                m = json.loads(raw)
             if not isinstance(m, dict):
                 # some models (esp. gemma) occasionally return a bare JSON array
                 # or string; validate()/m.get() would then raise
@@ -4350,6 +4390,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 continue
             err = validate(m, job_name, fact=chosen_fact)
             if err:
+                _note_rejection(err)
                 print(f"  attempt {attempt+1} invalid: {err}")
                 # keep it as a backup if it at least has the core pieces
                 if all(k in m for k in ("title", "hook", "script", "scenes", "captions")) and near_miss is None:
@@ -4366,6 +4407,7 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                 print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
             _vfy = verify_claims(m, chosen_fact, dossier)
             if _vfy:
+                _note_rejection(_vfy)
                 print(f"  attempt {attempt+1} invalid: {_vfy}")
                 continue            # a factual error is never kept as a near-miss
             # ONE call does the redundancy gate AND the rubric score (was two
@@ -4891,6 +4933,7 @@ def main():
         # non-zero exit into "no render, no release", so a quota-starved run
         # publishes NOTHING rather than a thin, repetitive fallback video. The
         # daily cron simply tries again once the free quotas reset.
+        print(f"[writer] rejection summary: {rejection_summary()}")
         print("ERROR: could not generate a valid manifest — no clean script this run "
               "(likely LLM quota exhausted). Aborting so no degraded video is published.")
         sys.exit(1)
@@ -4967,6 +5010,7 @@ def main():
         "quality": best_quality,
     })
     _dest = f"buffer ({QUEUE_DIR})" if GEN_MODE == "enqueue" else OUT_MANIFEST
+    print(f"[writer] rejections before this script: {rejection_summary()}")
     print(f"[generate] wrote {manifest['title']!r} ({job_name}, cta={cta_style}) -> "
           f"{_dest} [video_id={video_id}]")
 

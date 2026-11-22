@@ -51,8 +51,15 @@ def test_verifier_parse_and_decide():
     two_u = dict(v); two_u[2] = (FV.UNSUPPORTED, "x")
     check(FV.decide(two_u, LINES)[0] is None, "two unsupported lines are logged, not rejected")
     three = dict(v); three[2] = (FV.UNSUPPORTED, "no 15 s in source"); three[1] = (FV.UNSUPPORTED, "x")
-    err, _ = FV.decide(three, LINES)
-    check(err and "3 lines" in err, "three unsupported lines reject the script")
+    err, notes3 = FV.decide(three, LINES)
+    check(err is None and len(notes3) == 3, "unsupported lines are ADVISORY by default (logged, not rejected)")
+    saved = FV.UNSUPPORTED_REJECT_AT
+    FV.UNSUPPORTED_REJECT_AT = 3
+    try:
+        err, _ = FV.decide(three, LINES)
+        check(err and "3 lines" in err, "with enforcement on, three unsupported lines reject the script")
+    finally:
+        FV.UNSUPPORTED_REJECT_AT = saved
     con = dict(v); con[1] = (FV.CONTRADICTED, "source says it would not explode")
     err, _ = FV.decide(con, LINES)
     check(err and "contradicts" in err and "line 1" in err, "a contradicted line rejects at once")

@@ -17,7 +17,16 @@ import json
 import re
 
 SUPPORTED, UNSUPPORTED, CONTRADICTED, NOT_A_CLAIM = "SUPPORTED", "UNSUPPORTED", "CONTRADICTED", "NOT_A_CLAIM"
-UNSUPPORTED_REJECT_AT = 3     # one or two unsupported lines are logged; three reject the script
+import os
+
+# Unsupported lines are ADVISORY by default (logged, never rejecting) until the checker has been
+# validated on real runs: run 456's checker flagged 4 lines of a script, including a true
+# statement about skin that simply was not in the source. Contradicted lines always reject.
+# Set FACT_VERIFY_UNSUPPORTED_REJECT=3 (or 2) to enforce.
+try:
+    UNSUPPORTED_REJECT_AT = int(os.environ.get("FACT_VERIFY_UNSUPPORTED_REJECT", "0"))
+except ValueError:
+    UNSUPPORTED_REJECT_AT = 0
 
 
 def build_prompt(source, lines):
@@ -65,7 +74,7 @@ def decide(verdicts, lines):
         n, why = bad[0]
         return (f"line {n} ({lines[n - 1]!r}) contradicts the verified source: {why}"), []
     uns = [(n, w) for n, (v, w) in sorted(verdicts.items()) if v == UNSUPPORTED]
-    if len(uns) >= UNSUPPORTED_REJECT_AT:
+    if UNSUPPORTED_REJECT_AT > 0 and len(uns) >= UNSUPPORTED_REJECT_AT:
         shown = "; ".join(f"line {n} ({lines[n - 1]!r}): {w}" for n, w in uns[:3])
         return (f"{len(uns)} lines make claims the verified source does not support — {shown}. "
                 f"Say only what the source supports"), []

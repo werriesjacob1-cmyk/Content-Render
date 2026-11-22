@@ -37,7 +37,7 @@
    "duration": 4,
    "voiceover": "So why does that last so long, with nothing to breathe out there?",
    "on_screen_text": "WHY SO LONG",
-   "search_query": "empty space stars",
+   "search_query": "space stars",
    "motion": "pan_right"
   },
   {
@@ -45,7 +45,7 @@
    "duration": 4,
    "voiceover": "Because the oxygen already in your blood keeps your brain running until it drains away through your lungs.",
    "on_screen_text": "OXYGEN DRAINS",
-   "search_query": "human lungs breathing",
+   "search_query": "lungs breathing",
    "motion": "zoom_in"
   },
   {

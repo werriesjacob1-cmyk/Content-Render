@@ -14,6 +14,10 @@ on:
       gemini_model:
         description: "OPTIONAL one-off Gemini writer model for THIS run (e.g. gemini-3.8-flash). Empty = live discovery. Forces the model, skipping discovery."
         default: ""
+      generate_only:
+        description: "Run script generation ONLY (no render): uploads manifest.json as an artifact so the writer can be tested without spending a render. Default false."
+        type: boolean
+        default: false
       use_manifest:
         description: "OPTIONAL: path to a committed manifest under manifests/ to render INSTEAD of generating a script (e.g. manifests/human_vacuum_v2.json). Empty = generate normally."
         default: ""
@@ -214,7 +218,16 @@ jobs:
             git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
           done
 
+      - name: Upload generated script (generate_only)
+        if: ${{ github.event.inputs.generate_only == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-script-${{ github.run_number }}
+          path: manifest.json
+          retention-days: 3
+
       - name: Render
+        if: ${{ github.event.inputs.generate_only != 'true' }}
         env:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
@@ -245,6 +258,7 @@ jobs:
           done
 
       - name: Prove output
+        if: ${{ github.event.inputs.generate_only != 'true' }}
         run: |
           echo "=== SIZE & HASH ==="
           ls -la out/final.mp4
@@ -258,6 +272,7 @@ jobs:
           ls -la out/proof_frame.png
 
       - name: Repackage for all platforms
+        if: ${{ github.event.inputs.generate_only != 'true' }}
         env:
           BIO_LINK: ${{ vars.BIO_LINK }}
           CHANNEL_HANDLE: ${{ vars.CHANNEL_HANDLE }}
@@ -265,6 +280,7 @@ jobs:
         run: python repackage.py out/final.mp4
 
       - name: Upload TikTok cut + review evidence
+        if: ${{ github.event.inputs.generate_only != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: final-video-${{ github.run_number }}
@@ -286,10 +302,13 @@ jobs:
             out/platform_text.json
             out/funnel.json
             out/qa_report.json
+            out/video_audit.json
+            out/captions.ass
             out/proof_frame.png
           retention-days: 7
 
       - name: Report publishing switch
+        if: ${{ github.event.inputs.generate_only != 'true' }}
         run: |
           if [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
             echo "PUBLISHING ENABLED — AUTO_PUBLISH_ENABLED is exactly 'true'; publish steps may run only if all other guards pass"
