@@ -1,92 +1,92 @@
 {
- "title": "The Desert That Feeds the Jungle",
+ "title": "The World's Biggest Desert Is Ice",
  "viewer_job": "REFRAME",
- "keyword": "Sahara",
- "metaphor": "dust feeds jungle",
+ "keyword": "desert",
+ "metaphor": "frozen desert",
  "vibe": "awe",
- "hook": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon.",
- "hook_headline": "SAHARA FEEDS THE AMAZON",
- "script": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon. Rainforest soil is poor, because heavy rain washes its nutrients away. The missing ingredient is phosphorus, and the dust carries it. So where does all that dust come from? Much of it comes from one dried lake bed in Chad. Once full of life, it is now feeding a jungle an ocean away. Could a desert and a jungle really depend on each other? They do, and a quiet wind links two of the most different places on Earth.",
+ "hook": "The largest desert on Earth is not the Sahara, it is covered in ice.",
+ "hook_headline": "NOT THE SAHARA",
+ "script": "The largest desert on Earth is not the Sahara, it is covered in ice. It is Antarctica, a polar desert about 14 million square kilometres across. That is about one and a half times the size of the Sahara. So how dry can a frozen place really be? In parts of its Dry Valleys, it may not have rained for around two million years. Very little new snow arrives, so the ice there is ancient. What keeps storm clouds away from a continent that cold? The air is so cold that it holds almost no moisture to drop.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon.",
-   "on_screen_text": "SAHARA FEEDS THE AMAZON",
-   "search_query": "sahara desert dunes",
+   "voiceover": "The largest desert on Earth is not the Sahara, it is covered in ice.",
+   "on_screen_text": "NOT THE SAHARA",
+   "search_query": "antarctica ice landscape",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Rainforest soil is poor, because heavy rain washes its nutrients away.",
-   "on_screen_text": "POOR SOIL",
-   "search_query": "amazon rainforest aerial",
+   "voiceover": "It is Antarctica, a polar desert about 14 million square kilometres across.",
+   "on_screen_text": "ANTARCTICA",
+   "search_query": "polar ice sheet aerial",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "The missing ingredient is phosphorus, and the dust carries it.",
-   "on_screen_text": "THE MISSING INGREDIENT",
-   "search_query": "rain forest rain",
+   "voiceover": "That is about one and a half times the size of the Sahara.",
+   "on_screen_text": "1.5X THE SAHARA",
+   "search_query": "sahara desert dunes",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So where does all that dust come from?",
-   "on_screen_text": "WHERE FROM?",
-   "search_query": "desert sand wind",
+   "voiceover": "So how dry can a frozen place really be?",
+   "on_screen_text": "HOW DRY?",
+   "search_query": "snow plain wind",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Much of it comes from one dried lake bed in Chad.",
-   "on_screen_text": "ONE DRIED LAKE",
-   "search_query": "dry lake bed cracked",
+   "voiceover": "In parts of its Dry Valleys, it may not have rained for around two million years.",
+   "on_screen_text": "2 MILLION YEARS",
+   "search_query": "glacier ice close",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Once full of life, it is now feeding a jungle an ocean away.",
-   "on_screen_text": "FEEDING A JUNGLE",
-   "search_query": "jungle trees canopy",
+   "voiceover": "Very little new snow arrives, so the ice there is ancient.",
+   "on_screen_text": "ANCIENT ICE",
+   "search_query": "penguins ice walking",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Could a desert and a jungle really depend on each other?",
-   "on_screen_text": "DEPEND ON EACH OTHER?",
-   "search_query": "sand dunes desert",
+   "voiceover": "What keeps storm clouds away from a continent that cold?",
+   "on_screen_text": "WHERE ARE THE CLOUDS?",
+   "search_query": "frozen landscape snow storm",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "They do, and a quiet wind links two of the most different places on Earth.",
-   "on_screen_text": "A QUIET WIND",
-   "search_query": "clouds over ocean",
+   "voiceover": "The air is so cold that it holds almost no moisture to drop.",
+   "on_screen_text": "TOO COLD TO SNOW",
+   "search_query": "iceberg arctic",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "The Sahara feeds the Amazon rainforest.",
-  "27 million tonnes of dust cross the Atlantic every year.",
-  "The dried lake bed that feeds a jungle."
+  "The largest desert on Earth is not the Sahara.",
+  "Why Antarctica counts as a desert.",
+  "A place that has not seen rain for two million years."
  ],
  "hashtags": [
   "#science",
-  "#sahara",
-  "#amazon",
+  "#antarctica",
+  "#desert",
   "#earth",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_sahara-feeds-amazon",
+ "video_id": "science_2026-11-22_antarctica-largest-desert",
  "cta_style": "SAVE_WORTHY",
  "domain": "earth",
  "render": {
@@ -94,8 +94,8 @@
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "sahara_feeds_amazon",
- "kokoro_voice": "af_kore",
+ "fact_id": "antarctica_largest_desert",
+ "kokoro_voice": "af_river",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
