@@ -1,0 +1,101 @@
+{
+ "title": "The Hunters Hiding in Your Corners",
+ "viewer_job": "REFRAME",
+ "keyword": "spiders",
+ "metaphor": "invisible appetite",
+ "vibe": "awe",
+ "hook": "Spiders eat 400 to 800 million tons of prey a year, more than all humans.",
+ "hook_headline": "SPIDERS OUT-EAT HUMANITY",
+ "script": "Spiders eat 400 to 800 million tons of prey a year, more than all humans. Mostly insects, from flies in your kitchen to beetles in the grass. They catch it with silk spun from liquid, thread for thread tougher than steel. So how can something so small eat so much? There are so many of them that you are rarely more than a few feet from one. Their combined weight is around 25 million tons, and all of it is hunting. What would happen if every spider disappeared tomorrow? Insect numbers would likely explode, and crops and people would feel it fast.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Spiders eat 400 to 800 million tons of prey a year, more than all humans.",
+   "on_screen_text": "MORE THAN ALL HUMANS",
+   "search_query": "spider spinning web",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Mostly insects, from flies in your kitchen to beetles in the grass.",
+   "on_screen_text": "MOSTLY INSECTS",
+   "search_query": "spider catching fly",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "They catch it with silk spun from liquid, thread for thread tougher than steel.",
+   "on_screen_text": "SILK TOUGHER THAN STEEL",
+   "search_query": "spider web closeup silk",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how can something so small eat so much?",
+   "on_screen_text": "HOW?",
+   "search_query": "orb weaver spider",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "There are so many of them that you are rarely more than a few feet from one.",
+   "on_screen_text": "NEVER FAR AWAY",
+   "search_query": "dew on spider web",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Their combined weight is around 25 million tons, and all of it is hunting.",
+   "on_screen_text": "ALL HUNTING",
+   "search_query": "spider in web garden",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "What would happen if every spider disappeared tomorrow?",
+   "on_screen_text": "IF THEY VANISHED?",
+   "search_query": "spider web sunrise",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Insect numbers would likely explode, and crops and people would feel it fast.",
+   "on_screen_text": "INSECTS EXPLODE",
+   "search_query": "insects swarm field",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Spiders eat more meat than all humans combined.",
+  "400 to 800 million tons of prey a year.",
+  "What if they all vanished?"
+ ],
+ "hashtags": [
+  "#science",
+  "#spiders",
+  "#nature",
+  "#animals",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_spiders-out-eat-humans",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "biology",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "spider_biomass",
+ "kokoro_voice": "af_alloy",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
