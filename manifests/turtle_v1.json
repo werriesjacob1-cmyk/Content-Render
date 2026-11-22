@@ -1,0 +1,101 @@
+{
+ "title": "The Turtle That Breathes Backwards",
+ "viewer_job": "REFRAME",
+ "keyword": "turtles",
+ "metaphor": "rear breathing",
+ "vibe": "awe",
+ "hook": "Some turtles can breathe through their rear ends.",
+ "hook_headline": "BREATHING BACKWARDS",
+ "script": "Some turtles can breathe through their rear ends. Cold ponds can freeze over, trapping a turtle under the ice for months. With no air to reach, it pulls oxygen straight out of the water. So how does water get into its body? Through an opening called the cloaca, lined with tiny blood vessels. Its body slows almost to a stop, so it needs very little oxygen to get through the winter. What happens when the ice finally melts? It surfaces in spring, and the whole winter passed without a single breath.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Some turtles can breathe through their rear ends.",
+   "on_screen_text": "BREATHING BACKWARDS",
+   "search_query": "turtle swimming underwater",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Cold ponds can freeze over, trapping a turtle under the ice for months.",
+   "on_screen_text": "TRAPPED UNDER ICE",
+   "search_query": "frozen pond ice winter",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "With no air to reach, it pulls oxygen straight out of the water.",
+   "on_screen_text": "OXYGEN FROM WATER",
+   "search_query": "pond turtle swimming",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how does water get into its body?",
+   "on_screen_text": "HOW?",
+   "search_query": "turtle underwater close up",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Through an opening called the cloaca, lined with tiny blood vessels.",
+   "on_screen_text": "THE CLOACA",
+   "search_query": "sea turtle swimming",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Its body slows almost to a stop, so it needs very little oxygen to get through the winter.",
+   "on_screen_text": "SLOW MOTION",
+   "search_query": "turtle on log pond",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "What happens when the ice finally melts?",
+   "on_screen_text": "WHEN IT MELTS?",
+   "search_query": "ice melting pond spring",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "It surfaces in spring, and the whole winter passed without a single breath.",
+   "on_screen_text": "NOT ONE BREATH",
+   "search_query": "turtle surfacing water",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Some turtles can breathe through their rear ends.",
+  "How a turtle survives a winter under the ice.",
+  "A whole winter without a single breath."
+ ],
+ "hashtags": [
+  "#science",
+  "#turtle",
+  "#animals",
+  "#nature",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_turtle-rear-breathing",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "animals",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "turtle_breathing",
+ "kokoro_voice": "bf_alice",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
