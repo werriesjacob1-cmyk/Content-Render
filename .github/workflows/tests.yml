@@ -52,6 +52,7 @@ jobs:
             craft_rules.py tests/test_craft_rules.py \
             curiosity_gate.py tests/test_curiosity_gate.py \
             tests/test_voice_chain.py \
+            tests/test_alt_sources.py \
             tests/test_phrase_captions.py measure_caption_sync.py fixture_render.py \
             tests/test_footage_cuts.py \
             director.py tests/test_director.py \
@@ -151,6 +152,7 @@ jobs:
           run_check "writer craft rules" env -u GROQ_API_KEY python tests/test_craft_rules.py
           run_check "curiosity gate + fact pin" env -u GROQ_API_KEY python tests/test_curiosity_gate.py
           run_check "free voice chain" env -u GROQ_API_KEY python tests/test_voice_chain.py
+          run_check "alt footage sources on weak primary" env GROQ_API_KEY=x python tests/test_alt_sources.py
           run_check "phrase captions + sync contract" env -u GROQ_API_KEY python tests/test_phrase_captions.py
           run_check "footage cut rules" env -u GROQ_API_KEY python tests/test_footage_cuts.py
           run_check "director layer" env -u GROQ_API_KEY python tests/test_director.py

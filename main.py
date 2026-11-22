@@ -1483,6 +1483,15 @@ def _gather_candidates(query):
             or _coverr_candidates(query))     # Coverr dormant unless COVERR_API_KEY set
 
 
+def _alt_candidates(query):
+    """Archival/agency sources, asked only when the primary source's best clip was judged
+    weak. _gather_candidates falls through to NASA only when Pexels returns NOTHING, so a
+    planet query that got generic stock never reached NASA's real mission footage (run 459:
+    Saturn scenes were 2-3/10 while NASA holds Cassini video)."""
+    return (_nasa_candidates(query) or _wikimedia_candidates(query)
+            or _archive_candidates(query) or [])
+
+
 RELEVANCE_FLOOR = 4  # judge score below this = try a better query before settling.
                       # Was briefly 5, but combined with the stat-card fallback that
                       # made the judge reject SO much footage that whole videos
@@ -1706,6 +1715,25 @@ def fetch_clip(query, dest, intent=None, accept_best=False):
                 print(f"  judge unresolved for '{q}' — trying a better query")
             else:
                 print(f"  weak match ({score}/10) for '{q}' — trying a better query")
+                if os.environ.get("ALT_SOURCES_ON_WEAK", "1") != "0":
+                    alt = [c for c in _alt_candidates(q) if c.get("id") not in {x.get("id") for x in cands}]
+                    if alt:
+                        print(f"  [alt-source] {len(alt)} NASA/archive candidate(s) for '{q}'")
+                        ai = _best_keyword_match(q, alt)
+                        a_score = KEYWORD_OK if ai is not None else None
+                        if ai is None:
+                            _av = _gemini_vision_pick(intent, alt)
+                            ai, a_score = _av if _av is not None else _groq_judge(intent, alt)
+                        a_ok = a_score in (KEYWORD_OK,) or (isinstance(a_score, int) and a_score >= RELEVANCE_FLOOR)
+                        if isinstance(a_score, int) and a_score != KEYWORD_OK and (best_score is None or a_score > best_score):
+                            best_score, best_cand, best_q = a_score, alt[ai], q
+                        if a_ok:
+                            try:
+                                _accept(alt[ai], dest, q, a_score)
+                                JUDGE_SCORES.append(best_score if best_score is not None else 0)
+                                return True, best_score
+                            except Exception as e:  # noqa: BLE001
+                                print("  alt-source download failed:", e)
         else:
             print(f"  no results for '{q}'")
         # rescue rounds: ask for stock-native rewrites, up to twice (after the
