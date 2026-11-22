@@ -1,0 +1,101 @@
+{
+ "title": "Trees Are Made of Air",
+ "viewer_job": "REFRAME",
+ "keyword": "tree",
+ "metaphor": "built from air",
+ "vibe": "awe",
+ "hook": "A giant tree is built from air, not from soil.",
+ "hook_headline": "TREES ARE MADE OF AIR",
+ "script": "A giant tree is built from air, not from soil. Plant a seed in a pot of soil, and the soil barely loses any weight. The missing mass came out of the sky, as carbon dioxide. So how does a tree turn gas into wood? Leaves catch sunlight and use it to stitch carbon atoms into sugar. Those sugars are stacked into the long fibres that make up the trunk. What happens to all that carbon when a tree burns? It goes straight back up, so a forest is sky turned solid, for a while.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "A giant tree is built from air, not from soil.",
+   "on_screen_text": "BUILT FROM AIR",
+   "search_query": "giant tree trunk",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Plant a seed in a pot of soil, and the soil barely loses any weight.",
+   "on_screen_text": "THE SOIL STAYS",
+   "search_query": "seedling in soil pot",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "The missing mass came out of the sky, as carbon dioxide.",
+   "on_screen_text": "IT CAME FROM THE SKY",
+   "search_query": "forest canopy sunlight",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how does a tree turn gas into wood?",
+   "on_screen_text": "HOW?",
+   "search_query": "tall redwood trees",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Leaves catch sunlight and use it to stitch carbon atoms into sugar.",
+   "on_screen_text": "LEAVES AT WORK",
+   "search_query": "green leaves sunlight",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Those sugars are stacked into the long fibres that make up the trunk.",
+   "on_screen_text": "STACKED INTO WOOD",
+   "search_query": "tree trunk bark closeup",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "What happens to all that carbon when a tree burns?",
+   "on_screen_text": "WHEN IT BURNS?",
+   "search_query": "forest fire burning trees",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "It goes straight back up, so a forest is sky turned solid, for a while.",
+   "on_screen_text": "SKY, TURNED SOLID",
+   "search_query": "old growth forest",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "A giant tree is built from air, not from soil.",
+  "Where the mass of a 100-ton tree really comes from.",
+  "A forest is sky turned solid."
+ ],
+ "hashtags": [
+  "#science",
+  "#trees",
+  "#plants",
+  "#nature",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_trees-built-from-air",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "plants",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "trees_made_of_air",
+ "kokoro_voice": "am_echo",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
