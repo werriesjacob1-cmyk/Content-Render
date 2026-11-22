@@ -1,0 +1,101 @@
+{
+ "title": "The Plant You Can Watch Grow",
+ "viewer_job": "REFRAME",
+ "keyword": "bamboo",
+ "metaphor": "fast growing",
+ "vibe": "awe",
+ "hook": "Some bamboo grows a meter a day, so fast you can watch it.",
+ "hook_headline": "A METER A DAY",
+ "script": "Some bamboo grows a meter a day, so fast you can watch it. That makes it the fastest growing plant on the planet, and it is not even a tree. Bamboo is a giant grass, closer to your lawn than to an oak. So how does a plant climb that fast? Its stalk is built from segments that all stretch at once, like a telescope. It borrows stored energy from a huge web of roots underground. What happens to a bamboo forest when it finally flowers? Many kinds flower once in a century, and then every plant dies together.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Some bamboo grows a meter a day, so fast you can watch it.",
+   "on_screen_text": "A METER A DAY",
+   "search_query": "bamboo forest",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "That makes it the fastest growing plant on the planet, and it is not even a tree.",
+   "on_screen_text": "NOT A TREE",
+   "search_query": "green bamboo stalks",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Bamboo is a giant grass, closer to your lawn than to an oak.",
+   "on_screen_text": "A GIANT GRASS",
+   "search_query": "bamboo shoots growing ground",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how does a plant climb that fast?",
+   "on_screen_text": "HOW?",
+   "search_query": "bamboo grove sunlight",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Its stalk is built from segments that all stretch at once, like a telescope.",
+   "on_screen_text": "LIKE A TELESCOPE",
+   "search_query": "bamboo stalk closeup",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "It borrows stored energy from a huge web of roots underground.",
+   "on_screen_text": "BORROWED ENERGY",
+   "search_query": "bamboo forest path",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "What happens to a bamboo forest when it finally flowers?",
+   "on_screen_text": "WHEN IT FLOWERS?",
+   "search_query": "bamboo leaves wind",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Many kinds flower once in a century, and then every plant dies together.",
+   "on_screen_text": "ALL DIE TOGETHER",
+   "search_query": "tall bamboo sky looking up",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Some bamboo grows a meter a day.",
+  "Why it is not a tree at all.",
+  "What happens when a whole forest flowers."
+ ],
+ "hashtags": [
+  "#science",
+  "#bamboo",
+  "#plants",
+  "#nature",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_bamboo-meter-a-day",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "plants",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "bamboo_growth",
+ "kokoro_voice": "bf_isabella",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
