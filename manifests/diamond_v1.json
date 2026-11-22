@@ -4,14 +4,14 @@
  "keyword": "diamond",
  "metaphor": "same carbon",
  "vibe": "awe",
- "hook": "A diamond and your pencil lead are made of the same thing: carbon.",
+ "hook": "A diamond and the graphite in your pencil are made of the same thing: carbon.",
  "hook_headline": "DIAMOND = PENCIL?",
- "script": "A diamond and your pencil lead are made of the same thing: carbon. One is the hardest natural material, and the other is soft enough to smear. Diamonds form deep underground, squeezed for ages under crushing pressure. So what makes the two behave so differently? In a diamond, every atom grips four neighbours in a rigid cage. In graphite, atoms sit in flat sheets that slide over each other. Could a pencil mark ever become a diamond? With enough heat and pressure, yes, and that is how labs grow diamonds.",
+ "script": "A diamond and the graphite in your pencil are made of the same thing: carbon. One is the hardest natural material, and the other is soft enough to smear. Diamonds form deep underground, squeezed for ages under crushing pressure. So what makes the two behave so differently? In a diamond, every atom grips four neighbours in a rigid cage. In graphite, atoms sit in flat sheets that slide over each other. Could a pencil mark ever become a diamond? With enough heat and pressure, yes, and that is how labs grow diamonds.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A diamond and your pencil lead are made of the same thing: carbon.",
+   "voiceover": "A diamond and the graphite in your pencil are made of the same thing: carbon.",
    "on_screen_text": "SAME STUFF",
    "search_query": "diamond close up",
    "motion": "zoom_in"
@@ -74,7 +74,7 @@
   }
  ],
  "captions": [
-  "A diamond and your pencil lead are the same thing.",
+  "A diamond and your pencil's graphite are the same thing.",
   "Why one is the hardest material and the other smears.",
   "Could a pencil mark become a diamond?"
  ],
