@@ -1476,7 +1476,7 @@ MAX_STAT_CARDS = 2   # a designed text card is a fine RARE accent, but a wall of
                       # reads as cheap/broken. Once this many scenes have carded,
                       # every remaining weak scene takes its BEST-available real clip
                       # (fetch_clip accept_best=True) instead of carding again.
-SOFT_VIDEO_FLOOR = 3  # "more VIDEO, fewer photos" (user ask): a MOVING clip that is at
+SOFT_VIDEO_FLOOR = int(os.getenv("SOFT_VIDEO_FLOOR", "5"))  # was 3 -- run 455 shipped 2-3/10 clips. "more VIDEO, fewer photos" (user ask): a MOVING clip that is at
                       # least roughly on-topic (judge >= this, just under RELEVANCE_FLOOR)
                       # beats a STATIC archival photo or a text card for a fast-paced feed.
                       # build_scene now prefers the best real video down to this score and
@@ -1920,7 +1920,7 @@ STAT_CARD_SCENES = 0  # count of scenes rendered as typographic cards this rende
 ARCHIVAL_SCENES = 0  # scenes rendered from an Openverse archival still this render
 
 
-def _openverse_image(query, dest):
+def _openverse_image(query, dest, skip=None):
     """Fetch a Creative-Commons / public-domain STILL from Openverse (Hubble,
     NASA, microscopy, archival photography) for a scene where stock VIDEO failed.
     A real archival image with Ken Burns motion beats a gradient text card AND
@@ -1941,8 +1941,12 @@ def _openverse_image(query, dest):
             data = json.loads(r.read().decode())
         for res in (data.get("results") or []):
             img = res.get("url") or res.get("thumbnail")
-            if not img:
+            if not img or (skip is not None and img in skip):
                 continue
+            label = " ".join([str(res.get("title") or "")] +
+                             [str(t.get("name", "")) for t in (res.get("tags") or []) if isinstance(t, dict)])
+            if not _still_matches_query(label, query):
+                continue            # the first keyword hit is often unrelated (a lecture for a spacewalk)
             try:
                 ireq = urllib.request.Request(img, headers={"User-Agent": "content-render/1.0"})
                 with urllib.request.urlopen(ireq, timeout=20) as ir:
@@ -1950,6 +1954,8 @@ def _openverse_image(query, dest):
                 if len(blob) > 8000:  # skip tiny/placeholder images
                     with open(dest, "wb") as f:
                         f.write(blob)
+                    if skip is not None:
+                        skip.add(img)
                     return True
             except Exception:
                 continue
@@ -2028,7 +2034,7 @@ WIKI_MAX_VIDEO_BYTES = 60 * 1024 * 1024  # skip full-length archival films; we o
                                          # need a few loopable seconds per scene
 
 
-def _wikimedia_image(query, dest):
+def _wikimedia_image(query, dest, skip=None):
     """Second archival-STILL source alongside Openverse. Wikimedia Commons is the
     largest free/public-domain media library there is — real Hubble frames,
     microscopy, scientific diagrams, historical photographs — exactly the kind of
@@ -2046,7 +2052,9 @@ def _wikimedia_image(query, dest):
             info = (page.get("imageinfo") or [{}])[0]
             mime = info.get("mime", "")
             img = info.get("thumburl") or (info.get("url") if mime in ("image/jpeg", "image/png") else None)
-            if not img:
+            if not img or (skip is not None and img in skip):
+                continue
+            if not _still_matches_query(str(page.get("title") or ""), query):
                 continue
             try:
                 ireq = urllib.request.Request(img, headers={"User-Agent": WIKI_UA})
@@ -2055,6 +2063,8 @@ def _wikimedia_image(query, dest):
                 if len(blob) > 8000:  # skip tiny/placeholder images
                     with open(dest, "wb") as f:
                         f.write(blob)
+                    if skip is not None:
+                        skip.add(img)
                     return True
             except Exception:
                 continue
@@ -2903,38 +2913,86 @@ def _extra_clip_on_subject(desc, subject):
 HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
 
 
+HOLD_SLACK_S = 1.2     # a shot may run this much over the cap rather than cut to a card for a sliver
+CARD_MAX_S = 4.0       # longest a filler card may run
+
+
 def _cut_plan(plan, src_durs, hold_cap=None):
-    """Assign each planned cut (a duration from _subclip_plan) a real piece of
-    footage: [(source_index, offset_s, duration_s)], summing EXACTLY to sum(plan).
+    """Turn the planned cut lengths into real shots: [(source_index | None, offset_s,
+    duration_s)], summing EXACTLY to sum(plan). source_index None = a filler CARD.
 
     Rules (pure, unit-tested):
-      * a source is used whole-first: every distinct clip gets a cut before any clip
-        is revisited;
-      * a clip is revisited only at a NEW in-point inside footage it really has
-        (offset + duration <= its length) -- never the same frames re-panned, which
-        is the "fake cut" the user complained about;
-      * when no unseen footage is left, the remaining time is HELD on the last shot
-        (fewer cuts) rather than padded with an unrelated or repeated clip. That is
-        the only way a hold can exceed hold_cap, and the caller logs it."""
-    hold_cap = HOLD_CAP_S if hold_cap is None else hold_cap
-    n_src = len(src_durs)
-    if not plan or n_src == 0:
+      * each distinct source is used ONCE, whole-first: the same clip is never
+        revisited at a new in-point. Run 455's "cuts" between windows of one star-trail /
+        clock clip looked like a single 11 s shot, so they were not cuts at all;
+      * with at least as many sources as planned cuts, the planned (fast) pace is kept;
+      * with fewer, the time is shared out so no shot exceeds the hold cap (plus a small
+        slack) -- and when the sources cannot cover the scene even at the cap, the
+        REMAINDER becomes filler cards (each <= CARD_MAX_S), never a longer hold and never
+        unrelated stock. Stills and AI shots obey the same rule."""
+    cap = HOLD_CAP_S if hold_cap is None else hold_cap
+    plan = [float(d) for d in plan]
+    if not plan:
         return []
-    next_off, used, cuts = [0.0] * n_src, [False] * n_src, []
-    for j, d in enumerate(plan):
-        pick = next((i for i in range(n_src) if not used[i]), None)
-        if pick is None:
-            pick = next((i for i in range(n_src)
-                         if next_off[i] + d <= (src_durs[i] or 0.0) + 0.05), None)
-        if pick is None:
-            tail = round(sum(plan[j:]), 3)
-            si, off, dur = cuts[-1]
-            cuts[-1] = (si, off, round(dur + tail, 3))
-            break
-        cuts.append((pick, round(next_off[pick], 3), round(d, 3)))
-        next_off[pick] += d
-        used[pick] = True
-    return cuts
+    total = round(sum(plan), 3)
+    n_src = len(src_durs)
+
+    def cards(r):
+        if r <= 0.04:
+            return []
+        k = max(1, int(-(-r // CARD_MAX_S)))
+        each = round(r / k, 3)
+        out = [(None, 0.0, each)] * (k - 1)
+        return list(out) + [(None, 0.0, round(r - each * (k - 1), 3))]
+
+    if n_src == 0:
+        return cards(total)
+    if n_src >= len(plan):
+        return [(i, 0.0, round(d, 3)) for i, d in enumerate(plan)]
+    per = total / n_src
+    if per <= cap + 1e-9:
+        d = round(per, 3)
+        durs = [d] * (n_src - 1) + [round(total - d * (n_src - 1), 3)]
+        return [(i, 0.0, x) for i, x in enumerate(durs)]
+    durs = [cap] * n_src
+    rem = round(total - cap * n_src, 3)
+    if rem <= HOLD_SLACK_S:
+        durs[-1] = round(durs[-1] + rem, 3)
+        rem = 0.0
+    return [(i, 0.0, round(x, 3)) for i, x in enumerate(durs)] + cards(rem)
+
+
+def _safe_window(series, fps, start, dur, floor=15.0):
+    """Earliest start >= `start` where every frame of [start, start+dur) is brighter than
+    `floor`, or None if the clip has no such window (pure; `series` = mean grey per frame
+    at `fps`). Stops a near-black head/stretch of a source from ever reaching the screen."""
+    n = len(series)
+    if n == 0:
+        return start
+    length = n / fps
+    if length <= dur + 0.05:                     # short clip: it loops, judge it as a whole
+        return start if sum(1 for v in series if v >= floor) / n >= 0.8 else None
+    t = max(0.0, start)
+    while t + dur <= length + 1e-9:
+        a, b = int(t * fps), min(n, int(-(-(t + dur) * fps // 1)))
+        if all(v >= floor for v in series[a:b]):
+            return round(t, 3)
+        t += 0.25
+    return None
+
+
+STILL_MIN_LUMA = 20.0   # a still darker than this is not shown
+
+
+def _still_matches_query(label, query):
+    """Whether a still's own title/tags name the scene's subject (pure). Openverse /
+    Wikimedia were taking the FIRST result of a keyword search: 'astronaut spacewalk'
+    returned a woman lecturing on a stage. A query of 2+ content words needs 2 of them
+    in the image's label; a single-word query needs that word."""
+    qw = _relevance_words(query)
+    if not qw:
+        return True
+    return len(qw & _relevance_words(label)) >= min(2, len(qw))
 
 
 def _longest_hold(cuts):
@@ -2998,6 +3056,101 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
         except Exception:  # noqa: BLE001 — skip a bad clip, keep going
             continue
     return paths
+
+
+def _card_part(scene, idx, j, d, part):
+    """A silent filler CARD shot of d seconds (the scene's stat-card text over the animated
+    gradient): the visual that fills time no on-subject footage can, instead of a longer
+    hold or unrelated stock."""
+    silent = os.path.join(WORK, f"s{idx}_p{j}_silent.wav")
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{d:.3f}", silent])
+    tmp = part + ".card.mp4"
+    motion = _motion_filter(scene, max(1, round(d * 30)), PROFILE["zoom_speed"], idx=idx + j, prev_kind=None)
+    _build_stat_card(scene, idx, silent, d, tmp, motion)
+    run(["ffmpeg", "-y", "-i", tmp, "-an", "-c:v", "copy", part])
+
+
+def _assemble_scene(parts, seg_mp3, seg_dur, out, punch, idx):
+    """Concat the silent shot files, lay the scene's narration under them, apply the key-word
+    punch-in. Returns out."""
+    listf = os.path.join(WORK, f"s{idx}_concat.txt")
+    with open(listf, "w") as f:
+        for p_ in parts:
+            f.write(f"file '{os.path.abspath(p_)}'\n")
+    sv = os.path.join(WORK, f"s{idx}_v.mp4")
+    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listf, "-c", "copy", sv])
+    run(["ffmpeg", "-y", "-i", sv, "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
+         *(["-vf", punch.lstrip(",")] if punch else []),
+         "-t", f"{seg_dur:.3f}", "-r", "30", "-pix_fmt", "yuv420p",
+         "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+    return out
+
+
+def _render_cuts(scene, idx, cuts, sources, seg_mp3, seg_dur, out, grade, stat, punch):
+    """Render a _cut_plan over `sources` (mp4 clips or still images) and assemble the scene.
+    A video window that would show a near-black stretch is moved to a bright window; if it
+    has none, that cut becomes a filler card. Returns (out, n_cards)."""
+    zspeed = PROFILE["zoom_speed"]
+    parts, n_cards, series_cache, lift_cache = [], 0, {}, {}
+    for j, (si, off, d) in enumerate(cuts):
+        part = os.path.join(WORK, f"s{idx}_p{j}.mp4")
+        pf = max(1, round(d * 30))
+        pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
+                                 pf, zspeed, idx=idx + j, prev_kind=None)
+        pstat = stat if j == 0 else ""      # number card once, on the first cut only
+        src = sources[si] if si is not None else None
+        is_img = bool(src) and src.lower().endswith((".jpg", ".jpeg", ".png"))
+        inargs, slift = None, ""
+        if src and is_img:
+            inargs = ["-loop", "1", "-i", src]
+        elif src:
+            if src not in series_cache:
+                try:
+                    series_cache[src] = video_audit.extract_series(src)[0]
+                except Exception:  # noqa: BLE001
+                    series_cache[src] = []
+            off2 = _safe_window(series_cache[src], video_audit.FPS, off, d)
+            if off2 is not None:
+                inargs = ["-stream_loop", "-1", "-ss", f"{off2:.3f}", "-i", src]
+                if src not in lift_cache:
+                    _a, _ = _clip_luma(src)
+                    lift_cache[src] = _shadow_lift_filter(_a)
+                slift = lift_cache[src]
+        if inargs is None:                  # filler card (planned, or a source with no bright window)
+            _card_part(scene, idx, j, d, part)
+            n_cards += 1
+        else:
+            run(["ffmpeg", "-y", *inargs, "-t", f"{d:.3f}",
+                 "-filter_complex", f"[0:v]{pmotion}{slift}{grade}{pstat},setsar=1[v]",
+                 "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p", "-an", "-c:v", "libx264", part])
+        parts.append(part)
+    return _assemble_scene(parts, seg_mp3, seg_dur, out, punch, idx), n_cards
+
+
+def _gather_stills(q, n, prefix):
+    """Up to n DISTINCT, on-subject stills for one scene. Titles must name the subject
+    (_still_matches_query), the same image is never taken twice, and a near-black image is
+    refused. Returns (paths, providers)."""
+    paths, provs, skip = [], [], set()
+    queries = [q] + [v for v in _variant_queries(q) if v != q]
+    for qq in queries:
+        if len(paths) >= n:
+            break
+        dest = f"{prefix}_{len(paths)}.jpg"
+        got = None
+        if not paths and _inaturalist_image(qq, dest):
+            got = "iNaturalist"
+        elif _openverse_image(qq, dest, skip):
+            got = "Openverse"
+        elif _wikimedia_image(qq, dest, skip):
+            got = "Wikimedia"
+        if not got:
+            continue
+        y, _sat = _frame_stats(dest)
+        if y is not None and y < STILL_MIN_LUMA:
+            continue
+        paths.append(dest); provs.append(got)
+    return paths, provs
 
 
 def build_scene(scene, idx, seg_mp3, seg_dur):
@@ -3071,7 +3224,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # of holding one (the "more clips / constant flashing" note). Wrapped so
         # ANY failure falls straight through to the single-clip render below — a
         # render can never break because of this.
-        plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if (SCENE_MULTICLIP and not fal_filled) else [seg_dur]
+        plan = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS) if SCENE_MULTICLIP else [seg_dur]
         # Gather the DISTINCT extra clips first. Multi-cut ONLY if we actually got a
         # second distinct clip — cutting between sub-clips of the SAME source is just
         # the one photo panned three different ways (user: "at 25s it pans left, zooms
@@ -3083,57 +3236,26 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         except Exception:  # noqa: BLE001 — never let footage gathering break a render
             extra = []
         sources = [raw] + extra
-        # Real cuts only: _cut_plan gives every distinct clip a turn, then NEW
-        # in-points of clips that have unseen footage, and otherwise HOLDS the last
-        # shot -- it never cycles the same clip back in or pads with unrelated stock.
+        # Real cuts only (see _cut_plan): every distinct clip gets one turn, the time is shared so
+        # no shot passes the hold cap, and what the footage cannot cover becomes filler cards --
+        # never a clip revisited at a new in-point, never unrelated stock.
         cuts = []
         if len(plan) > 1:
             try:
                 cuts = _cut_plan(plan, [ffprobe_dur(x) for x in sources])
             except Exception:  # noqa: BLE001
                 cuts = []
-        _hold = _longest_hold(cuts) if cuts else seg_dur
-        if _hold > HOLD_CAP_S + 0.25:
-            print(f"  [hold] scene {idx}: longest single shot {_hold:.1f}s "
-                  f"(cap {HOLD_CAP_S:.1f}s) — no unseen on-subject footage left to cut to")
-        if len(cuts) > 1:
+        if len(cuts) > 1 or any(c[0] is None for c in cuts):
             try:
-                parts = []
-                _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
-                for j, (si, off, d) in enumerate(cuts):
-                    src = sources[si]
-                    # own brightness lift — reusing the primary's lift left dark
-                    # sub-clips (moody/black-background footage) reading as a black
-                    # screen mid-scene (the "went black at 10s" bug).
-                    if src not in _lift_cache:
-                        _savg, _ = _clip_luma(src)
-                        _lift_cache[src] = _shadow_lift_filter(_savg)
-                    slift = _lift_cache[src]
-                    part = os.path.join(WORK, f"s{idx}_p{j}.mp4")
-                    pf = max(1, round(d * 30))
-                    pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
-                                             pf, zspeed, idx=idx + j, prev_kind=None)
-                    pstat = stat if j == 0 else ""   # number card once, on the first cut only
-                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-ss", f"{off:.3f}", "-i", src, "-t", f"{d:.3f}",
-                         "-filter_complex", f"[0:v]{pmotion}{slift}{grade}{pstat},setsar=1[v]",
-                         "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p",
-                         "-an", "-c:v", "libx264", part])
-                    parts.append(part)
-                listf = os.path.join(WORK, f"s{idx}_concat.txt")
-                with open(listf, "w") as f:
-                    for p in parts:
-                        f.write(f"file '{os.path.abspath(p)}'\n")
-                sv = os.path.join(WORK, f"s{idx}_v.mp4")
-                run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listf, "-c", "copy", sv])
-                run(["ffmpeg", "-y", "-i", sv, "-i", seg_mp3, "-map", "0:v", "-map", "1:a",
-                     *(["-vf", punch.lstrip(",")] if punch else []),
-                     "-t", f"{seg_dur:.3f}", "-r", "30", "-pix_fmt", "yuv420p",
-                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
-                print(f"  multi-clip scene: {len(parts)} cuts across {seg_dur:.1f}s "
-                      f"({len(sources)} distinct clip(s))")
-                return out
+                _o, _nc = _render_cuts(scene, idx, cuts, sources, seg_mp3, seg_dur, out, grade, stat, punch)
+                print(f"  multi-clip scene: {len(cuts)} shots across {seg_dur:.1f}s "
+                      f"({len(sources)} distinct clip(s), {_nc} filler card(s), longest "
+                      f"{_longest_hold(cuts):.1f}s)")
+                return _o
             except Exception as e:  # noqa: BLE001 — never break a render
                 print(f"  multi-clip render failed ({e}) — falling back to single clip")
+        elif seg_dur > HOLD_CAP_S + HOLD_SLACK_S:
+            print(f"  [hold] scene {idx}: {seg_dur:.1f}s on ONE clip (cap {HOLD_CAP_S:.1f}s)")
 
         run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", raw, "-i", seg_mp3,
              "-t", f"{seg_dur:.3f}",
@@ -3163,23 +3285,17 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # Commons (the largest public-domain science library — Hubble,
         # microscopy, diagrams, historical photos). Any one gives a documentary
         # look no generic-stock page has.
-        still_provider = None
-        if _inaturalist_image(_q, img):
-            still_provider = "iNaturalist"
-        elif _openverse_image(_q, img):
-            still_provider = "Openverse"
-        elif _wikimedia_image(_q, img):
-            still_provider = "Wikimedia"
-        if still_provider:
+        n_still = max(1, min(4, int(-(-seg_dur // HOLD_CAP_S))))
+        stills, provs = _gather_stills(_q, n_still, os.path.join(WORK, f"s{idx}_img"))
+        if stills:
             try:
-                run(["ffmpeg", "-y", "-loop", "1", "-i", img, "-i", seg_mp3,
-                     "-t", f"{seg_dur:.3f}", "-r", "30",
-                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
-                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
-                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                plan_s = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS)
+                cuts_s = _cut_plan(plan_s, [999.0] * len(stills))
+                _o, _nc = _render_cuts(scene, idx, cuts_s, stills, seg_mp3, seg_dur, out, grade, stat, punch)
                 ARCHIVAL_SCENES += 1
-                print(f"  archival still scene ({still_provider} CC image + Ken Burns)")
-                return out
+                print(f"  archival still scene ({'+'.join(sorted(set(provs)))} CC image(s) x{len(stills)} "
+                      f"+ {_nc} filler card(s); longest {_longest_hold(cuts_s):.1f}s)")
+                return _o
             except Exception as e:
                 print(f"  archival still render failed ({e}) — falling back to card")
 
@@ -3199,14 +3315,12 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
             provider = "Imagen (paid)"
         if provider:
             try:
-                run(["ffmpeg", "-y", "-loop", "1", "-i", ai_img, "-i", seg_mp3,
-                     "-t", f"{seg_dur:.3f}", "-r", "30",
-                     "-filter_complex", f"[0:v]{motion}{grade}{stat},setsar=1[v]",
-                     "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
-                     "-c:v", "libx264", "-c:a", "aac", "-shortest", out])
+                plan_a = _subclip_plan(seg_dur, CLIP_SECONDS, MAX_SUBCLIPS)
+                cuts_a = _cut_plan(plan_a, [999.0])
+                _o, _nc = _render_cuts(scene, idx, cuts_a, [ai_img], seg_mp3, seg_dur, out, grade, stat, punch)
                 ARCHIVAL_SCENES += 1
-                print(f"  AI-generated illustration scene ({provider} + Ken Burns)")
-                return out
+                print(f"  AI-generated illustration scene ({provider} + Ken Burns, {_nc} filler card(s))")
+                return _o
             except Exception as e:  # noqa: BLE001
                 print(f"  AI image render failed ({e}) — falling back to card")
 

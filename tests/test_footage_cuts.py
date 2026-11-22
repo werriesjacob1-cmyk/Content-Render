@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("GROQ_API_KEY", "x")
@@ -69,39 +70,113 @@ def _sum(cuts):
 
 def test_cut_plan_covers_the_scene_exactly():
     for plan, srcs in (([1.75] * 4, [8.0, 6.0]), ([2.0, 2.0, 2.0], [12.0]), ([1.9] * 3, [1.0]),
-                       ([3.5, 3.5], [20.0, 20.0, 20.0]), ([1.9], [5.0])):
+                       ([3.5, 3.5], [20.0, 20.0, 20.0]), ([1.9], [5.0]), ([1.9] * 4, []), ([2.0] * 5, [9.0] * 5)):
         cuts = M._cut_plan(plan, srcs)
         check(_sum(cuts) == round(sum(plan), 3), f"plan {plan} over {srcs}: cuts sum to the scene length")
 
 
-def test_cut_plan_every_clip_gets_a_turn_then_new_inpoints_only():
-    cuts = M._cut_plan([2.0] * 4, [10.0, 10.0])
-    check([c[0] for c in cuts[:2]] == [0, 1], "each distinct clip is used before any is revisited")
-    seen = {}
-    for si, off, d in cuts:
-        for (o2, d2) in seen.get(si, []):
-            check(off >= o2 + d2 - 1e-6, f"clip {si}: window {off}-{off + d} does not re-show {o2}-{o2 + d2}")
-        seen.setdefault(si, []).append((off, d))
-    check(all(off + d <= 10.05 for _, off, d in cuts), "every window lies inside real footage")
+def test_a_clip_is_never_revisited_and_pace_is_kept_when_footage_allows():
+    cuts = M._cut_plan([1.9] * 4, [10.0, 10.0, 10.0, 10.0])
+    check([c[0] for c in cuts] == [0, 1, 2, 3] and all(c[1] == 0.0 for c in cuts),
+          "enough clips -> the fast planned pace, each clip once, always from its start")
+    for plan, srcs in (([1.9] * 4, [30.0]), ([1.9] * 4, [10.0, 10.0]), ([2.0] * 3, [12.0])):
+        used = [c[0] for c in M._cut_plan(plan, srcs) if c[0] is not None]
+        check(len(used) == len(set(used)), f"{srcs}: no source appears twice (no same-clip 'cuts')")
 
 
-def test_cut_plan_holds_instead_of_padding_when_footage_runs_out():
-    cuts = M._cut_plan([1.9] * 4, [2.0])                     # one 2 s clip for a 7.6 s scene
-    check(len(cuts) == 1 and cuts[0][0] == 0 and cuts[0][1] == 0.0, f"one clip, one hold ({cuts})")
-    check(_sum(cuts) == 7.6, "the hold still covers the whole scene (audio sync preserved)")
-    cuts = M._cut_plan([1.9] * 4, [2.0, 2.0])
-    check(len(cuts) == 2 and {c[0] for c in cuts} == {0, 1}, f"two clips -> two cuts, never a cycled repeat ({cuts})")
-    check(all(c[0] in (0, 1) for c in cuts), "only real source indexes are ever used")
+def test_hold_cap_and_cards_replace_long_holds():
+    one = M._cut_plan(M._subclip_plan(7.0, 1.9, 6), [10.0])            # run-455 scene 7 shape: one 8 s still
+    check(one[0][0] == 0 and one[0][2] == M.HOLD_CAP_S, f"the single source is held only to the cap ({one})")
+    check(all(c[0] is None for c in one[1:]) and one[1:], "the rest of the scene is filler cards, not a longer hold")
+    check(M._longest_hold(one) <= M.CARD_MAX_S, f"nothing passes {M.CARD_MAX_S}s ({M._longest_hold(one)}s)")
+    check(_sum(one) == 7.0, "the scene is still covered exactly (audio sync preserved)")
+    sliver = M._cut_plan([1.9, 1.9], [10.0])                           # 3.8 s: a sliver over the cap is not worth a card
+    check(len(sliver) == 1 and sliver[0][2] == 3.8, f"a 3.8 s scene on one clip just runs ({sliver})")
+    two = M._cut_plan([1.9] * 4, [5.0, 5.0])
+    check(all(c[2] <= M.HOLD_CAP_S + 1e-9 for c in two), f"two clips for 7.6 s share the time under the cap ({two})")
+    check(M._cut_plan([1.9] * 4, []) and all(c[0] is None for c in M._cut_plan([1.9] * 4, [])),
+          "no footage at all -> cards only")
 
 
-def test_hold_cap_met_when_footage_exists_and_reported_when_not():
-    ok = M._cut_plan([1.9] * 4, [30.0])                      # a long clip: new in-points, short holds
-    check(M._longest_hold(ok) <= M.HOLD_CAP_S, f"longest hold {M._longest_hold(ok)}s <= cap {M.HOLD_CAP_S}s")
-    check(len(ok) == 4, "a long single clip is cut at new in-points, not held")
-    starved = M._cut_plan([1.9] * 4, [1.5])
-    check(M._longest_hold(starved) > M.HOLD_CAP_S, "a starved scene is the ONLY case allowed over the cap (and is logged)")
-    final = M._cut_plan(M._subclip_plan(7.0, 1.9, 6), [9.0, 9.0])   # a 7 s final scene
-    check(M._longest_hold(final) <= M.HOLD_CAP_S, f"a 7 s final scene is cut, not held ({final})")
+def test_safe_window_avoids_black():
+    fps = 4
+    series = [5.0] * 8 + [80.0] * 40                      # 2 s black head, then bright
+    check(M._safe_window(series, fps, 0.0, 3.0) == 2.0, "a black head is skipped")
+    check(M._safe_window([5.0] * 40, fps, 0.0, 3.0) is None, "an all-black clip has no safe window")
+    check(M._safe_window([80.0] * 40, fps, 0.0, 3.0) == 0.0, "a bright clip starts where asked")
+    check(M._safe_window([], fps, 1.0, 3.0) == 1.0, "no series (probe failed) -> do not block the shot")
+    mid = [80.0] * 12 + [5.0] * 8 + [80.0] * 40
+    off = M._safe_window(mid, fps, 0.0, 4.0)
+    check(off is not None and off >= 5.0, f"a black stretch in the middle is stepped over ({off})")
+    check(M._safe_window([80.0] * 6, fps, 0.0, 3.0) == 0.0 and M._safe_window([5.0] * 6, fps, 0.0, 3.0) is None,
+          "a short clip that loops is judged as a whole")
+
+
+def test_still_must_name_the_subject():
+    check(M._still_matches_query("File:Astronaut spacewalk ISS.jpg", "astronaut spacewalk"), "a matching title is accepted")
+    check(not M._still_matches_query("Nicole Stott speaks to an audience astronaut lecture", "astronaut spacewalk"),
+          "run 455: an astronaut LECTURE is not an 'astronaut spacewalk'")
+    check(M._still_matches_query("octopus", "octopus"), "a one-word query needs that word")
+    check(not M._still_matches_query("a beach", "octopus"), "and rejects a label without it")
+    check(M._still_matches_query("anything", ""), "no query words -> no filter")
+
+
+def test_gather_stills_distinct_and_titled():
+    saved = (M._inaturalist_image, M._openverse_image, M._wikimedia_image, M._frame_stats)
+    calls = []
+    imgs = iter(["a.jpg", "b.jpg", "c.jpg"])
+    M._inaturalist_image = lambda q, dest: False
+    def ov(q, dest, skip=None):
+        calls.append(q); u = next(imgs, None)
+        if u is None: return False
+        skip.add(u); open(dest, "wb").write(b"x"); return True
+    M._openverse_image = ov
+    M._wikimedia_image = lambda q, dest, skip=None: False
+    M._frame_stats = lambda p: (80.0, 50.0)
+    try:
+        d = tempfile.mkdtemp()
+        paths, provs = M._gather_stills("honey fungus mushrooms forest", 3, os.path.join(d, "s"))
+    finally:
+        M._inaturalist_image, M._openverse_image, M._wikimedia_image, M._frame_stats = saved
+    check(len(paths) == 3 and len(set(paths)) == 3, "three distinct stills are gathered")
+    check(all(len(q.split()) >= 2 for q in calls), f"searched with subject phrases, never a bare word ({calls})")
+    M._frame_stats = lambda p: (5.0, 50.0)
+    M._openverse_image = ov; imgs = iter(["a.jpg"])
+    try:
+        paths2, _ = M._gather_stills("honey fungus", 1, os.path.join(d, "t"))
+    finally:
+        M._frame_stats = saved[3]
+    check(paths2 == [], "a near-black still is refused")
+
+
+def test_scene_renders_with_real_ffmpeg():
+    import shutil, subprocess
+    if not shutil.which("ffmpeg"):
+        print("SKIP ffmpeg not available"); return
+    import video_audit
+    W = tempfile.mkdtemp()
+    M.WORK = M.OUT = W
+    ins = []
+    for c in ("red", "green", "blue", "yellow", "white"):
+        ins += ["-f", "lavfi", "-i", f"color=c={c}:s=540x960:d=2:r=30"]
+    subprocess.run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", "[0][1][2][3][4]concat=n=5:v=1:a=0",
+                    "-pix_fmt", "yuv420p", f"{W}/A.mp4"], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "7.0",
+                    "-q:a", "5", f"{W}/seg.mp3"], check=True)
+    saved = (M.fetch_clip, M._extra_scene_clips, M._clip_luma)
+    M.fetch_clip = lambda q, dest, **k: (shutil.copy(f"{W}/A.mp4", dest), (True, 9))[1]
+    M._extra_scene_clips = lambda scene, need, ex, prefix: []
+    M._clip_luma = lambda p: (120, 20)
+    try:
+        sc = {"voiceover": "It takes 15 seconds.", "search_query": "honey fungus mushrooms", "motion": "zoom_in",
+              "_n_scenes": 8, "on_screen_text": "15 SECONDS"}
+        out = M.build_scene(sc, 3, f"{W}/seg.mp3", 7.0)
+    finally:
+        M.fetch_clip, M._extra_scene_clips, M._clip_luma = saved
+    check(abs(M.ffprobe_dur(out) - 7.0) < 0.15, f"the scene is exactly its narration length ({M.ffprobe_dur(out):.2f}s)")
+    r = video_audit.audit_video(out)
+    check(r["longest_hold_s"] <= M.CARD_MAX_S + 0.3, f"a one-clip 7 s scene no longer sits on one shot ({r['longest_hold_s']}s)")
+    check(r["effective_shots"] >= 2, "the picture really changes (clip, then card)")
 
 
 if __name__ == "__main__":
