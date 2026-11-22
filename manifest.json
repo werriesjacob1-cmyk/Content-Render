@@ -1,101 +1,101 @@
 {
- "title": "The Internet Under the Forest",
+ "title": "Diamond and Pencil: Same Stuff",
  "viewer_job": "REFRAME",
- "keyword": "trees",
- "metaphor": "wood wide web",
+ "keyword": "diamond",
+ "metaphor": "same carbon",
  "vibe": "awe",
- "hook": "Trees in a forest send warning signals through fungi underground.",
- "hook_headline": "TREES TALK",
- "script": "Trees in a forest send warning signals through fungi underground. Thin white threads wrap around their roots and link tree to tree. Through those threads, trees trade sugar, like a slow underground market. So what does a tree do when it is dying? It can pump its leftover sugar to its neighbours before the end. When insects attack one tree, the trees around it may switch on their defences. So is a forest a thousand trees, or one living community? Scientists still argue about how far the sharing really goes.",
+ "hook": "A diamond and your pencil lead are made of the same thing: carbon.",
+ "hook_headline": "DIAMOND = PENCIL?",
+ "script": "A diamond and your pencil lead are made of the same thing: carbon. One is the hardest natural material, and the other is soft enough to smear. Diamonds form deep underground, squeezed for ages under crushing pressure. So what makes the two behave so differently? In a diamond, every atom grips four neighbours in a rigid cage. In graphite, atoms sit in flat sheets that slide over each other. Could a pencil mark ever become a diamond? With enough heat and pressure, yes, and that is how labs grow diamonds.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Trees in a forest send warning signals through fungi underground.",
-   "on_screen_text": "TREES TALK",
-   "search_query": "forest tree roots",
+   "voiceover": "A diamond and your pencil lead are made of the same thing: carbon.",
+   "on_screen_text": "SAME STUFF",
+   "search_query": "diamond close up",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Thin white threads wrap around their roots and link tree to tree.",
-   "on_screen_text": "ROOT THREADS",
-   "search_query": "mushrooms forest floor",
+   "voiceover": "One is the hardest natural material, and the other is soft enough to smear.",
+   "on_screen_text": "HARD VS SOFT",
+   "search_query": "hand writing pencil notebook",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Through those threads, trees trade sugar, like a slow underground market.",
-   "on_screen_text": "SUGAR TRADING",
-   "search_query": "sunlight through trees",
+   "voiceover": "Diamonds form deep underground, squeezed for ages under crushing pressure.",
+   "on_screen_text": "CRUSHING PRESSURE",
+   "search_query": "diamond sparkle gemstone",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what does a tree do when it is dying?",
-   "on_screen_text": "WHEN IT DIES?",
-   "search_query": "dead tree forest",
+   "voiceover": "So what makes the two behave so differently?",
+   "on_screen_text": "WHY SO DIFFERENT?",
+   "search_query": "pencil drawing paper",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "It can pump its leftover sugar to its neighbours before the end.",
-   "on_screen_text": "SHARES ITS SUGAR",
-   "search_query": "forest floor closeup",
+   "voiceover": "In a diamond, every atom grips four neighbours in a rigid cage.",
+   "on_screen_text": "A RIGID CAGE",
+   "search_query": "diamond cutting gemstone",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "When insects attack one tree, the trees around it may switch on their defences.",
-   "on_screen_text": "PASSING THE ALARM",
-   "search_query": "caterpillar on leaf",
+   "voiceover": "In graphite, atoms sit in flat sheets that slide over each other.",
+   "on_screen_text": "SLIDING SHEETS",
+   "search_query": "pencil shavings desk",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "So is a forest a thousand trees, or one living community?",
-   "on_screen_text": "ONE COMMUNITY?",
-   "search_query": "forest aerial",
+   "voiceover": "Could a pencil mark ever become a diamond?",
+   "on_screen_text": "COULD IT?",
+   "search_query": "sharpened pencil",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Scientists still argue about how far the sharing really goes.",
-   "on_screen_text": "STILL DEBATED",
-   "search_query": "old forest fog",
+   "voiceover": "With enough heat and pressure, yes, and that is how labs grow diamonds.",
+   "on_screen_text": "HEAT AND PRESSURE",
+   "search_query": "jeweller examining diamond",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Trees send warning signals through fungi underground.",
-  "What a dying tree does for its neighbours.",
-  "The wood wide web."
+  "A diamond and your pencil lead are the same thing.",
+  "Why one is the hardest material and the other smears.",
+  "Could a pencil mark become a diamond?"
  ],
  "hashtags": [
   "#science",
-  "#trees",
-  "#forest",
-  "#nature",
+  "#diamond",
+  "#chemistry",
+  "#carbon",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_wood-wide-web",
+ "video_id": "science_2026-11-22_diamond-pencil-carbon",
  "cta_style": "SAVE_WORTHY",
- "domain": "plants",
+ "domain": "chemistry",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "wood_wide_web",
- "kokoro_voice": "am_puck",
+ "fact_id": "diamond_graphite_carbon",
+ "kokoro_voice": "bf_lily",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
