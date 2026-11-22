@@ -1,118 +1,118 @@
 {
- "title": "Why Woodpeckers Never Get Concussions",
+ "title": "The Food That Never Goes Bad",
  "viewer_job": "REFRAME",
- "keyword": "woodpecker",
- "metaphor": "woodpecker head impact",
- "vibe": "visceral",
- "hook": "A woodpecker does not give itself concussions.",
- "hook_headline": "NO CONCUSSION",
- "script": "A woodpecker does not give itself concussions. It can hammer its head into wood at 20 pecks per second. Every single peck hits with 1,000 times the force of gravity. That is far harder than a hit that would knock a person out. So why is its brain fine? Its brain is tiny and light, too small for that force to cause damage. Does its skull work like a cushion, as people said for years? A 2022 study put that idea to the test. It found the skull acts more like a stiff hammer than a cushion. So does a woodpecker's skull really work as a shock absorber?",
+ "keyword": "honey",
+ "metaphor": "honey preservation",
+ "vibe": "awe",
+ "hook": "Some food never spoils, no matter how long you wait.",
+ "hook_headline": "NEVER SPOILS",
+ "script": "Some food never spoils, no matter how long you wait. Honey from a 3,000-year-old Egyptian tomb was still edible. Nobody had touched those jars since the time of the pharaohs. So what stops bacteria from growing in it? Honey has so little water that bacteria dry out and die. Why can't other microbes live there? It is acidic, and most cannot survive that. Then bees add an enzyme that slowly makes hydrogen peroxide. And what is that for? It is a natural preservative, made inside the jar. So the jar in your cupboard is a food built never to rot.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A woodpecker does not give itself concussions.",
-   "on_screen_text": "NO CONCUSSION",
-   "search_query": "woodpecker pecking tree",
+   "voiceover": "Some food never spoils, no matter how long you wait.",
+   "on_screen_text": "NEVER SPOILS",
+   "search_query": "honey dripping spoon",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "It can hammer its head into wood at 20 pecks per second.",
-   "on_screen_text": "20 PER SECOND",
-   "search_query": "woodpecker tree trunk",
+   "voiceover": "Honey from a 3,000-year-old Egyptian tomb was still edible.",
+   "on_screen_text": "STILL EDIBLE",
+   "search_query": "egyptian tomb hieroglyphs",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Every single peck hits with 1,000 times the force of gravity.",
-   "on_screen_text": "1,000 G",
-   "search_query": "bird forest closeup",
+   "voiceover": "Nobody had touched those jars since the time of the pharaohs.",
+   "on_screen_text": "UNTOUCHED",
+   "search_query": "honey jar golden",
    "motion": "pan_left",
    "visual": {
     "type": "gauge",
-    "label": "Force on the head",
-    "start": 1,
-    "end": 1000,
-    "unit": "g",
-    "before": "Standing still",
-    "after": "One peck"
+    "label": "Age of the honey",
+    "start": 0,
+    "end": 3000,
+    "unit": "years",
+    "before": "Freshly made",
+    "after": "Still edible"
    }
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "That is far harder than a hit that would knock a person out. So why is its brain fine?",
-   "on_screen_text": "WHY NO DAMAGE?",
-   "search_query": "woodpecker bird",
+   "voiceover": "So what stops bacteria from growing in it?",
+   "on_screen_text": "WHAT STOPS IT?",
+   "search_query": "petri dish bacteria",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Its brain is tiny and light, too small for that force to cause damage.",
-   "on_screen_text": "TINY BRAIN",
-   "search_query": "woodpecker head closeup",
+   "voiceover": "Honey has so little water that bacteria dry out and die.",
+   "on_screen_text": "TOO DRY",
+   "search_query": "honeycomb bees",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Does its skull work like a cushion, as people said for years?",
-   "on_screen_text": "A CUSHION?",
-   "search_query": "bird nest tree hole",
+   "voiceover": "Why can't other microbes live there? It is acidic, and most cannot survive that.",
+   "on_screen_text": "TOO ACIDIC",
+   "search_query": "lemon slice closeup",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "A 2022 study put that idea to the test.",
-   "on_screen_text": "2022 TEST",
-   "search_query": "woodpecker slow motion",
+   "voiceover": "Then bees add an enzyme that slowly makes hydrogen peroxide.",
+   "on_screen_text": "BEE ENZYME",
+   "search_query": "bee flower pollen",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "It found the skull acts more like a stiff hammer than a cushion.",
-   "on_screen_text": "STIFF HAMMER",
-   "search_query": "hammer hitting wood",
+   "voiceover": "And what is that for? It is a natural preservative, made inside the jar.",
+   "on_screen_text": "NATURAL PRESERVATIVE",
+   "search_query": "honey pouring jar",
    "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "So does a woodpecker's skull really work as a shock absorber?",
-   "on_screen_text": "SHOCK ABSORBER?",
-   "search_query": "woodpecker pecking tree",
+   "voiceover": "So the jar in your cupboard is a food built never to rot.",
+   "on_screen_text": "BUILT NEVER TO ROT",
+   "search_query": "honey dipper wooden",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "A woodpecker hits a tree at 1,000 g and walks away fine.",
-  "Why woodpeckers do not get concussions, and the question scientists still argue about.",
-  "20 pecks a second. 1,000 times gravity. No concussion."
+  "Honey from a 3,000-year-old tomb was still edible. Here is why it never rots.",
+  "Too dry, too acidic, and the bees add a preservative of their own.",
+  "The one food built never to spoil."
  ],
  "hashtags": [
-  "#woodpecker",
-  "#animals",
+  "#honey",
+  "#food",
   "#science",
-  "#nature",
-  "#birds",
+  "#history",
+  "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_woodpecker-no-concussion",
- "cta_style": "COMMENT",
- "domain": "animals",
+ "video_id": "science_2026-11-22_the-food-that-never-goes-bad",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "woodpecker_skull",
- "kokoro_voice": "bm_fable",
+ "fact_id": "honey_never_spoils",
+ "kokoro_voice": "am_michael",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
