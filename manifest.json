@@ -1,75 +1,75 @@
 {
- "title": "What House Dust Is Really Made Of",
+ "title": "Why Ice Floats",
  "viewer_job": "REFRAME",
- "keyword": "dust",
- "metaphor": "house dust skin cells",
- "vibe": "visceral",
- "hook": "The dust in your house is not dirt from outside.",
- "hook_headline": "NOT FROM OUTSIDE",
- "script": "The dust in your house is not dirt from outside. A lot of it is dead skin cells, and you shed tens of thousands every minute. And it never stops, not even while you sleep. So where do all those cells go? They drift off your skin and settle on shelves, floors and sofas. You replace your entire outer layer of skin every two to four weeks. Over a year, that adds up to about a pound of skin. So when you wipe a shelf, what are you wiping up? A little bit of yourself, and your house is slowly filling up with you.",
+ "keyword": "ice",
+ "metaphor": "ice expands",
+ "vibe": "awe",
+ "hook": "Almost everything sinks when it freezes, but ice floats.",
+ "hook_headline": "ICE SHOULD SINK",
+ "script": "Almost everything sinks when it freezes, but ice floats. Water is one of the only things that expands when it freezes. That makes ice less dense than the water it came from. So what happens to a bottle of water in your freezer? It bursts, because the ice has nowhere to go. And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart. Every winter, that splits boulders and tears up roads. Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "The dust in your house is not dirt from outside.",
-   "on_screen_text": "NOT FROM OUTSIDE",
-   "search_query": "feather duster furniture",
+   "voiceover": "Almost everything sinks when it freezes, but ice floats.",
+   "on_screen_text": "ICE FLOATS",
+   "search_query": "ice floating water",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "A lot of it is dead skin cells, and you shed tens of thousands every minute.",
-   "on_screen_text": "TENS OF THOUSANDS",
-   "search_query": "sunbeam window room",
+   "voiceover": "Water is one of the only things that expands when it freezes.",
+   "on_screen_text": "IT EXPANDS",
+   "search_query": "ice cubes glass",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "And it never stops, not even while you sleep.",
-   "on_screen_text": "NEVER STOPS",
-   "search_query": "sleeping person bed",
+   "voiceover": "That makes ice less dense than the water it came from.",
+   "on_screen_text": "LESS DENSE",
+   "search_query": "frozen lake surface",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So where do all those cells go?",
-   "on_screen_text": "WHERE DO THEY GO?",
-   "search_query": "dust motes air",
+   "voiceover": "So what happens to a bottle of water in your freezer?",
+   "on_screen_text": "IN YOUR FREEZER?",
+   "search_query": "water bottle frost",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "They drift off your skin and settle on shelves, floors and sofas.",
-   "on_screen_text": "SETTLES EVERYWHERE",
-   "search_query": "dust on furniture",
+   "voiceover": "It bursts, because the ice has nowhere to go.",
+   "on_screen_text": "IT BURSTS",
+   "search_query": "cracked ice macro",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
-   "on_screen_text": "NEW SKIN",
-   "search_query": "hand skin closeup",
+   "voiceover": "And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart.",
+   "on_screen_text": "BREAKS ROCK",
+   "search_query": "boulder rock crack",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Over a year, that adds up to about a pound of skin.",
-   "on_screen_text": "A POUND A YEAR",
-   "search_query": "kitchen scale weighing",
+   "voiceover": "Every winter, that splits boulders and tears up roads.",
+   "on_screen_text": "POTHOLES",
+   "search_query": "pothole road winter",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "So when you wipe a shelf, what are you wiping up?",
-   "on_screen_text": "WHAT IS IT?",
-   "search_query": "dusting shelf cloth",
+   "voiceover": "Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
+   "on_screen_text": "LAKES WOULD DIE",
+   "search_query": "frozen lake winter",
    "motion": "zoom_out"
   },
   {
@@ -82,28 +82,28 @@
   }
  ],
  "captions": [
-  "Most house dust is not dirt from outside. It is you.",
-  "You shed tens of thousands of skin cells every minute.",
-  "What the dust on your shelf is really made of."
+  "Almost everything sinks when it freezes. Ice floats, and that saves every lake.",
+  "Why a bottle bursts in your freezer and potholes appear every spring.",
+  "The one quirk that keeps fish alive."
  ],
  "hashtags": [
   "#science",
-  "#body",
+  "#ice",
+  "#chemistry",
   "#facts",
-  "#skin",
-  "#home",
+  "#winter",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_what-house-dust-is-made-of",
+ "video_id": "science_2026-11-22_why-ice-floats",
  "cta_style": "SAVE_WORTHY",
- "domain": "body",
+ "domain": "chemistry",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "skin_cells",
- "kokoro_voice": "af_bella",
- "kokoro_speed": 0.97,
+ "fact_id": "water_expands_ice",
+ "kokoro_voice": "bm_george",
+ "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
