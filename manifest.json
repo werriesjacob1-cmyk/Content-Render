@@ -1,101 +1,101 @@
 {
- "title": "The Animal With Three Hearts",
+ "title": "The Plant You Can Watch Grow",
  "viewer_job": "REFRAME",
- "keyword": "octopus",
- "metaphor": "blue blood",
+ "keyword": "bamboo",
+ "metaphor": "fast growing",
  "vibe": "awe",
- "hook": "An octopus has three hearts, and its blood is blue.",
- "hook_headline": "THREE HEARTS",
- "script": "An octopus has three hearts, and its blood is blue. Its blue blood carries oxygen with copper, where ours uses iron. Thick blood like that is hard to pump, so the work is split up. So what happens when an octopus swims? The main heart stops beating, so it would rather crawl. Swimming tires it out fast, which is why octopuses rest in dens between hunts. Why would any animal have blue blood at all? Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
+ "hook": "Some bamboo grows a meter a day, so fast you can watch it.",
+ "hook_headline": "A METER A DAY",
+ "script": "Some bamboo grows a meter a day, so fast you can watch it. That makes it the fastest growing plant on the planet, and it is not even a tree. Bamboo is a giant grass, closer to your lawn than to an oak. So how does a plant climb that fast? Its stalk is built from segments that all stretch at once, like a telescope. It borrows stored energy from a huge web of roots underground. What happens to a bamboo forest when it finally flowers? Many kinds flower once in a century, and then every plant dies together.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "An octopus has three hearts, and its blood is blue.",
-   "on_screen_text": "THREE HEARTS",
-   "search_query": "octopus swimming ocean",
+   "voiceover": "Some bamboo grows a meter a day, so fast you can watch it.",
+   "on_screen_text": "A METER A DAY",
+   "search_query": "bamboo forest",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Its blue blood carries oxygen with copper, where ours uses iron.",
-   "on_screen_text": "COPPER BLOOD",
-   "search_query": "octopus close up",
+   "voiceover": "That makes it the fastest growing plant on the planet, and it is not even a tree.",
+   "on_screen_text": "NOT A TREE",
+   "search_query": "green bamboo stalks",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Thick blood like that is hard to pump, so the work is split up.",
-   "on_screen_text": "SPLIT THE WORK",
-   "search_query": "octopus tentacles rock",
+   "voiceover": "Bamboo is a giant grass, closer to your lawn than to an oak.",
+   "on_screen_text": "A GIANT GRASS",
+   "search_query": "bamboo shoots growing ground",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what happens when an octopus swims?",
-   "on_screen_text": "WHEN IT SWIMS?",
-   "search_query": "octopus crawling seabed",
+   "voiceover": "So how does a plant climb that fast?",
+   "on_screen_text": "HOW?",
+   "search_query": "bamboo grove sunlight",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "The main heart stops beating, so it would rather crawl.",
-   "on_screen_text": "IT STOPS",
-   "search_query": "octopus coral reef",
+   "voiceover": "Its stalk is built from segments that all stretch at once, like a telescope.",
+   "on_screen_text": "LIKE A TELESCOPE",
+   "search_query": "bamboo stalk closeup",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Swimming tires it out fast, which is why octopuses rest in dens between hunts.",
-   "on_screen_text": "TIRING",
-   "search_query": "octopus den hiding",
+   "voiceover": "It borrows stored energy from a huge web of roots underground.",
+   "on_screen_text": "BORROWED ENERGY",
+   "search_query": "bamboo forest path",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Why would any animal have blue blood at all?",
-   "on_screen_text": "WHY BLUE?",
-   "search_query": "octopus hunting crab",
+   "voiceover": "What happens to a bamboo forest when it finally flowers?",
+   "on_screen_text": "WHEN IT FLOWERS?",
+   "search_query": "bamboo leaves wind",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
-   "on_screen_text": "COLD DARK WATER",
-   "search_query": "deep sea octopus",
+   "voiceover": "Many kinds flower once in a century, and then every plant dies together.",
+   "on_screen_text": "ALL DIE TOGETHER",
+   "search_query": "tall bamboo sky looking up",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "An octopus has three hearts and blue blood.",
-  "Why one heart stops whenever it swims.",
-  "The reason its blood is blue."
+  "Some bamboo grows a meter a day.",
+  "Why it is not a tree at all.",
+  "What happens when a whole forest flowers."
  ],
  "hashtags": [
   "#science",
-  "#octopus",
-  "#ocean",
-  "#animals",
+  "#bamboo",
+  "#plants",
+  "#nature",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_octopus-three-hearts",
+ "video_id": "science_2026-11-22_bamboo-meter-a-day",
  "cta_style": "SAVE_WORTHY",
- "domain": "animals",
+ "domain": "plants",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "octopus_three_hearts",
- "kokoro_voice": "bf_emma",
+ "fact_id": "bamboo_growth",
+ "kokoro_voice": "bf_isabella",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
