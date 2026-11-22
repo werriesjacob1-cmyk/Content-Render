@@ -112,6 +112,12 @@ banana-radiation video was produced).
   every pass: scenes need MOVING, literal camera subjects (forest, bamboo, hummingbird, fruit being cut). Static
   product shots and abstract mechanisms fail.** New Kokoro misreads found and linted: "live", "lead" (->"laid"),
   "midair" (->"madeira"); extend `KOKORO_MISREAD` whenever QA flags a mispronunciation.
+- **More results.** Sent: turtle 510 (B+), sahara 513 (A-, QA 8/9/9/9), antarctica 515 (A-, QA 9/9/9/9, a
+  misconception-first hook "largest desert is not the Sahara"). Held: raindrop 511/512 (audit black run, then QA
+  footage 4: a droplet SHAPE cannot be filmed; mechanisms that need a diagram need a procedural visual we do not
+  have yet). More Kokoro misreads linted: "cloaca" (->"cloaker"), "valleys" (->"val-us"). Every manifest failure
+  this half of the night that was NOT stock-related was a TTS misread or one dark/static query: read the log's
+  `[audit]` and final-QA issue line first, they name the exact scene.
 - **Scheduled cron is live.** A scheduled render-video (run 505, event=schedule on main) rendered a buffered
   script on 2026-11-22 16:46 UTC and cancelled a pending manual dispatch (shared concurrency group). Its
   publish steps were skipped (AUTO_PUBLISH_ENABLED not true), so nothing was posted.
