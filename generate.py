@@ -4339,7 +4339,11 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
             if _hits_banned_concept(m.get("metaphor", ""), m.get("title", "")):
                 print(f"  attempt {attempt+1} hits a banned concept "
                       f"(flocking/emergence/etc), retrying"); continue
-            if _metaphor_too_similar(m.get("metaphor", ""), history):
+            # An operator-pinned re-run of a fact (FORCE_FACT_ID) is similar to that fact's own earlier
+            # video BY DEFINITION -- compare it against every OTHER topic, not against itself.
+            _sim_hist = ([h for h in history if h.get("fact_id") != (chosen_fact or {}).get("id")]
+                         if os.environ.get("FORCE_FACT_ID", "").strip() else history)
+            if _metaphor_too_similar(m.get("metaphor", ""), _sim_hist):
                 print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
             _vfy = verify_claims(m, chosen_fact, dossier)
             if _vfy:
