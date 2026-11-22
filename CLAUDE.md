@@ -62,6 +62,13 @@ banana-radiation video was produced).
 - Operator-manifest authoring lessons (each cost a test run): `validate()` rejects restating the fact in 2
   scenes (reveal ONCE, then escalate), formal connectors ("however"), modifier-first queries, "microscope/
   cells/system" queries, duplicate queries (new test), and needs a '?' in scenes overlapping ~15s AND ~30s.
+- **Final QA judge flakiness fixed**: run 466 aborted a clean video (audit PASS) because Gemini's FIRST
+  reply part was prose and the JSON sat in a later part. `main._extract_qa_verdict` reads every non-thought
+  part and asks for `responseMimeType: application/json` (tests/test_final_qa_parse.py).
+- **Query lessons from real renders**: "dust light beam" returned a space NEBULA (cosmic dust) as the hook;
+  queries need room-scale words ("feather duster furniture"). A gauge scene whose stock query returns nothing
+  becomes gauge + dark filler card = 8 s static hold (audit FAIL, run 468): give every `visual` scene a query
+  that definitely has footage (e.g. "axolotl white swimming"). Review every hook frame, not just QA scores.
 - Manifests: `saturn_floats_v1` (am_onyx, shelved), `wood_frog_v1` (af_heart), `woodpecker_v1` (bm_fable),
   `honey_v1` (am_michael), `axolotl_v1` (af_nicole), `dust_v1` (af_bella). Voice default NOT changed: the
   agent cannot hear; QA narration_flow was 9 for both michael and fable. User picks by ear.
