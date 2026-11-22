@@ -1,109 +1,101 @@
 {
- "title": "A Banana Is a Berry. A Strawberry Is Not.",
+ "title": "Why Ice Floats",
  "viewer_job": "REFRAME",
- "keyword": "banana",
- "metaphor": "berry botany",
+ "keyword": "ice",
+ "metaphor": "ice expands",
  "vibe": "awe",
- "hook": "A banana is a berry, and a strawberry is not.",
- "hook_headline": "BANANA = BERRY",
- "script": "A banana is a berry, and a strawberry is not. That is not a joke, it is how botany sorts fruit. A berry grows from one flower, has soft flesh, and keeps its seeds inside. So why does a strawberry fail the test? Its seeds sit on the outside, stuck to the skin. The red flesh grows from the base of the flower, not from the part that holds the seeds. So what else counts as a berry? Grapes, tomatoes and avocados. Raspberries and blackberries fail too, because each one is a cluster of tiny fruits. In the supermarket, the name on the label and the botany rarely agree.",
+ "hook": "Almost everything sinks when it freezes, but ice floats.",
+ "hook_headline": "ICE SHOULD SINK",
+ "script": "Almost everything sinks when it freezes, but ice floats. Water is one of the only things that expands when it freezes. That makes ice less dense than the water it came from. So what happens to a bottle of water in your freezer? It bursts, because the ice has nowhere to go. And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart. Every winter, that splits boulders and tears up roads. Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A banana is a berry, and a strawberry is not.",
-   "on_screen_text": "BANANA = BERRY",
-   "search_query": "bananas bunch",
+   "voiceover": "Almost everything sinks when it freezes, but ice floats.",
+   "on_screen_text": "ICE FLOATS",
+   "search_query": "ice floating water",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "That is not a joke, it is how botany sorts fruit.",
-   "on_screen_text": "IT'S BOTANY",
-   "search_query": "fruit market stall",
+   "voiceover": "Water is one of the only things that expands when it freezes.",
+   "on_screen_text": "IT EXPANDS",
+   "search_query": "ice cubes glass",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "A berry grows from one flower, has soft flesh, and keeps its seeds inside.",
-   "on_screen_text": "WHAT IS A BERRY?",
-   "search_query": "flower blossom",
+   "voiceover": "That makes ice less dense than the water it came from.",
+   "on_screen_text": "LESS DENSE",
+   "search_query": "frozen lake surface",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does a strawberry fail the test?",
-   "on_screen_text": "WHY NOT?",
-   "search_query": "strawberries closeup",
+   "voiceover": "So what happens to a bottle of water in your freezer?",
+   "on_screen_text": "IN YOUR FREEZER?",
+   "search_query": "water bottle frost",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Its seeds sit on the outside, stuck to the skin.",
-   "on_screen_text": "SEEDS OUTSIDE",
-   "search_query": "strawberry plant garden",
+   "voiceover": "It bursts, because the ice has nowhere to go.",
+   "on_screen_text": "IT BURSTS",
+   "search_query": "ice cubes tray freezer",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "The red flesh grows from the base of the flower, not from the part that holds the seeds.",
-   "on_screen_text": "WRONG PART",
-   "search_query": "hand picking strawberry",
+   "voiceover": "And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart.",
+   "on_screen_text": "BREAKS ROCK",
+   "search_query": "boulder rock crack",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "So what else counts as a berry? Grapes, tomatoes and avocados.",
-   "on_screen_text": "GRAPES, TOMATOES",
-   "search_query": "grapes vine",
+   "voiceover": "Every winter, that splits boulders and tears up roads.",
+   "on_screen_text": "POTHOLES",
+   "search_query": "pothole road winter",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Raspberries and blackberries fail too, because each one is a cluster of tiny fruits.",
-   "on_screen_text": "TINY FRUITS",
-   "search_query": "raspberries bowl",
+   "voiceover": "Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
+   "on_screen_text": "LAKES WOULD DIE",
+   "search_query": "frozen lake winter",
    "motion": "zoom_out"
-  },
-  {
-   "id": 9,
-   "duration": 4,
-   "voiceover": "In the supermarket, the name on the label and the botany rarely agree.",
-   "on_screen_text": "LABEL VS BOTANY",
-   "search_query": "tomatoes basket",
-   "motion": "zoom_in"
   }
  ],
  "captions": [
-  "A banana is a berry. A strawberry is not. Here is the botany.",
-  "Grapes, tomatoes and avocados are berries too.",
-  "The fruit labels at the supermarket are mostly wrong."
+  "Almost everything sinks when it freezes. Ice floats, and that saves every lake.",
+  "Why a bottle bursts in your freezer and potholes appear every spring.",
+  "The one quirk that keeps fish alive."
  ],
  "hashtags": [
-  "#fruit",
-  "#botany",
   "#science",
+  "#ice",
+  "#chemistry",
   "#facts",
-  "#food",
+  "#winter",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_banana-is-a-berry",
+ "video_id": "science_2026-11-22_why-ice-floats",
  "cta_style": "SAVE_WORTHY",
- "domain": "plants",
+ "domain": "chemistry",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "banana_berry",
- "kokoro_voice": "bm_lewis",
- "kokoro_speed": 0.96,
+ "fact_id": "water_expands_ice",
+ "kokoro_voice": "bm_george",
+ "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
