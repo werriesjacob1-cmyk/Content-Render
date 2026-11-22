@@ -1,0 +1,118 @@
+{
+ "title": "The Frog That Comes Back From Frozen",
+ "viewer_job": "REFRAME",
+ "keyword": "wood frog",
+ "metaphor": "frog freezes and revives",
+ "vibe": "visceral",
+ "hook": "A frog frozen solid is not a dead frog.",
+ "hook_headline": "FROZEN, NOT DEAD",
+ "script": "A frog frozen solid is not a dead frog. In winter, the wood frog's heart stops and it stops breathing. Up to two-thirds of the water in its body turns to ice. So how does anything survive that? Its cells fill with glucose, a sugar that stops ice from tearing them apart. For weeks, by any normal definition, it is dead. Then spring arrives. What happens when the ice melts? Its heart restarts on its own, with nothing to jump-start it. Within hours the frog is breathing, and soon it hops away alive.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "A frog frozen solid is not a dead frog.",
+   "on_screen_text": "NOT DEAD",
+   "search_query": "wood frog",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "In winter, the wood frog's heart stops and it stops breathing.",
+   "on_screen_text": "HEART STOPS",
+   "search_query": "frog in snow",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Up to two-thirds of the water in its body turns to ice.",
+   "on_screen_text": "2/3 ICE",
+   "search_query": "ice crystals closeup",
+   "motion": "pan_left",
+   "visual": {
+    "type": "gauge",
+    "label": "Body water frozen",
+    "start": 0,
+    "end": 66,
+    "unit": "%",
+    "before": "Autumn",
+    "after": "Deep winter"
+   }
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So how does anything survive that?",
+   "on_screen_text": "HOW?",
+   "search_query": "frozen pond winter",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Its cells fill with glucose, a sugar that stops ice from tearing them apart.",
+   "on_screen_text": "SUGAR SHIELD",
+   "search_query": "glucose sugar crystals",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "For weeks, by any normal definition, it is dead.",
+   "on_screen_text": "DEAD FOR WEEKS",
+   "search_query": "snow forest silent",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Then spring arrives. What happens when the ice melts?",
+   "on_screen_text": "THAW",
+   "search_query": "melting ice drops",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Its heart restarts on its own, with nothing to jump-start it.",
+   "on_screen_text": "HEART RESTARTS",
+   "search_query": "heartbeat monitor",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "Within hours the frog is breathing, and soon it hops away alive.",
+   "on_screen_text": "HOPS AWAY",
+   "search_query": "frog jumping leaves",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "This frog freezes solid every winter and walks away in spring.",
+  "Heart stopped, breathing stopped, two-thirds ice. Alive.",
+  "How a sugar shield brings a frozen frog back."
+ ],
+ "hashtags": [
+  "#frog",
+  "#animals",
+  "#science",
+  "#nature",
+  "#wildlife",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_the-frog-that-comes-back",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "animals",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "wood_frog_freeze",
+ "kokoro_voice": "af_heart",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
