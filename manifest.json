@@ -1,101 +1,101 @@
 {
- "title": "Sharks Are Older Than Trees",
+ "title": "Glass Is Not a Slow Liquid",
  "viewer_job": "REFRAME",
- "keyword": "sharks",
- "metaphor": "older than trees",
+ "keyword": "glass",
+ "metaphor": "myth busted",
  "vibe": "awe",
- "hook": "Sharks have been swimming for 450 million years, longer than trees have existed.",
- "hook_headline": "OLDER THAN TREES",
- "script": "Sharks have been swimming for 450 million years, longer than trees have existed. Back then, nothing on land stood taller than a shrub. A shark grows and sheds thousands of teeth in its lifetime. So what were sharks doing back then? They have survived all five mass extinctions, events that wiped out most life on Earth. They outlived the dinosaurs, which came and vanished long after the first sharks. How does an animal survive that long? Scientists think it is their efficient design, which has barely changed in a very long time.",
+ "hook": "Old windows are thicker at the bottom, but glass is not a liquid.",
+ "hook_headline": "GLASS ISN'T A LIQUID",
+ "script": "Old windows are thicker at the bottom, but glass is not a liquid. The popular story says glass slowly creeps downward over the centuries. If that were true, ancient Roman glass would be badly drooped by now. So why are old windows uneven? Panes were made by hand, spinning molten glass into a flat disc. The disc came out thicker at the edge, and builders often set that heavy edge at the bottom. So what is glass, if it is not a liquid? It is a solid whose atoms froze in a jumbled pattern, never lining up into crystals.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Sharks have been swimming for 450 million years, longer than trees have existed.",
-   "on_screen_text": "OLDER THAN TREES",
-   "search_query": "shark swimming underwater",
+   "voiceover": "Old windows are thicker at the bottom, but glass is not a liquid.",
+   "on_screen_text": "GLASS IS NOT A LIQUID",
+   "search_query": "old window glass",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Back then, nothing on land stood taller than a shrub.",
-   "on_screen_text": "NOTHING TALLER THAN A SHRUB",
-   "search_query": "ancient forest trees",
+   "voiceover": "The popular story says glass slowly creeps downward over the centuries.",
+   "on_screen_text": "THE POPULAR STORY",
+   "search_query": "stained glass cathedral",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "A shark grows and sheds thousands of teeth in its lifetime.",
-   "on_screen_text": "THOUSANDS OF TEETH",
-   "search_query": "shark school swimming",
+   "voiceover": "If that were true, ancient Roman glass would be badly drooped by now.",
+   "on_screen_text": "IT WOULD DROOP",
+   "search_query": "ancient roman glass museum",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what were sharks doing back then?",
-   "on_screen_text": "WHAT WERE THEY DOING?",
-   "search_query": "deep ocean blue",
+   "voiceover": "So why are old windows uneven?",
+   "on_screen_text": "WHY UNEVEN?",
+   "search_query": "old building windows",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "They have survived all five mass extinctions, events that wiped out most life on Earth.",
-   "on_screen_text": "FIVE EXTINCTIONS",
-   "search_query": "shark underwater blue ocean",
+   "voiceover": "Panes were made by hand, spinning molten glass into a flat disc.",
+   "on_screen_text": "SPUN BY HAND",
+   "search_query": "glassblower spinning molten",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "They outlived the dinosaurs, which came and vanished long after the first sharks.",
-   "on_screen_text": "OUTLIVED DINOSAURS",
-   "search_query": "dinosaur fossil museum",
+   "voiceover": "The disc came out thicker at the edge, and builders often set that heavy edge at the bottom.",
+   "on_screen_text": "HEAVY SIDE DOWN",
+   "search_query": "glass blowing furnace",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "How does an animal survive that long?",
-   "on_screen_text": "HOW?",
-   "search_query": "shark fin ocean surface",
+   "voiceover": "So what is glass, if it is not a liquid?",
+   "on_screen_text": "WHAT IS IT?",
+   "search_query": "glass cup close",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Scientists think it is their efficient design, which has barely changed in a very long time.",
-   "on_screen_text": "BARELY CHANGED",
-   "search_query": "great white shark",
+   "voiceover": "It is a solid whose atoms froze in a jumbled pattern, never lining up into crystals.",
+   "on_screen_text": "FROZEN IN DISORDER",
+   "search_query": "glass texture light",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Sharks are older than trees.",
-  "450 million years of swimming.",
-  "The animal that outlived five mass extinctions."
+  "Old windows are thicker at the bottom, but glass is not a liquid.",
+  "The real reason old windows look uneven.",
+  "What glass actually is."
  ],
  "hashtags": [
   "#science",
-  "#sharks",
-  "#deeptime",
-  "#ocean",
+  "#glass",
+  "#physics",
+  "#mythbusting",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_sharks-older-than-trees",
+ "video_id": "science_2026-11-22_glass-not-a-liquid",
  "cta_style": "SAVE_WORTHY",
- "domain": "deep_time",
+ "domain": "physics",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "sharks_older_than_trees",
- "kokoro_voice": "bm_lewis",
+ "fact_id": "glass_solid",
+ "kokoro_voice": "af_aoede",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
