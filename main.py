@@ -3178,6 +3178,19 @@ def _build_timer_card(scene, idx, seg_mp3, seg_dur, out_path, n):
          "-c:v", "libx264", "-c:a", "aac", "-shortest", out_path])
 
 
+def _gauge_bar_filters(T, segments=20, bar_w=800, bar_h=44):
+    """A progress bar under the state label that fills over T seconds, so the lower half of a
+    gauge card is not empty. drawbox cannot animate its width, so the fill is `segments` boxes that
+    switch on one after another. Returns drawbox filters (pure string building)."""
+    x0, y = (W - bar_w) // 2, int(H * 0.68)
+    seg = bar_w // segments
+    out = [f"drawbox=x={x0}:y={y}:w={seg * segments}:h={bar_h}:color=white@0.18:t=fill"]
+    for k in range(segments):
+        out.append(f"drawbox=x={x0 + k * seg}:y={y}:w={seg}:h={bar_h}:color=0xFFD400@0.95:t=fill:"
+                   f"enable='gte(t\\,{T * (k + 1) / segments:.3f})'")
+    return out
+
+
 def _build_gauge_card(scene, idx, seg_mp3, seg_dur, out_path, spec):
     """An explanatory two-state gauge: a label, a big number that slides from spec['start'] to
     spec['end'] (unit underneath), and the situation changing from spec['before'] to spec['after']
@@ -3210,6 +3223,7 @@ def _build_gauge_card(scene, idx, seg_mp3, seg_dur, out_path, spec):
         dt(unit, 96, "h*0.12+330"),
         dt(before, 72, "h*0.56", f":enable='lt(t\\,{half:.3f})'"),
         dt(after, 72, "h*0.56", f":enable='gte(t\\,{half:.3f})':fontcolor=0xFFD400"),
+    ] + _gauge_bar_filters(T) + [
         "setsar=1",
     ])
     run(["ffmpeg", "-y", "-f", "lavfi", "-i",
