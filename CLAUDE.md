@@ -94,6 +94,12 @@ banana-radiation video was produced).
   poor Pexels coverage; ice/water/frog/bird-on-tree style topics with a literal camera subject work.**
 - Open: plain dark text cards still the main variety weakness; automated writer vs new rules still unproven.
 
+- **Filler cards (night 2026-11-22/23 #3).** Four of eight spiders scenes (run 495) ended in a dark text card:
+  a scene with ONE distinct clip got `HOLD_CAP_S`=3.0 s of video, then a card for the rest, and QA scored the
+  cards (footage 6, variety 5). `HOLD_SLACK_S` 1.2 -> 2.0 s, and the extra time is now spread evenly over the
+  clips (`_cut_plan`), so a 4.7-5.0 s single-clip scene stays on footage (<=5 s; audit warns past 4.5 s, fails
+  past 7 s). NOT yet render-verified; if long_shot_fraction warnings appear, lower the slack.
+
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
 script + new footage logic, B-). **Read this before trusting any "it passed" claim.**

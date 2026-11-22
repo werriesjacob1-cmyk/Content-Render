@@ -3046,7 +3046,7 @@ def _extra_clip_on_subject(desc, subject, query=None):
 HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
 
 
-HOLD_SLACK_S = 1.2     # a shot may run this much over the cap rather than cut to a card for a sliver
+HOLD_SLACK_S = 2.0     # a shot may run this much over the cap rather than cut to a dark filler card (QA kept scoring those cards 4-6; audit only warns past 4.5s, fails past 7s)
 CARD_MAX_S = 5.0       # longest a filler card may run (one card, not two identical ones back to back)
 
 
@@ -3090,7 +3090,11 @@ def _cut_plan(plan, src_durs, hold_cap=None):
     durs = [cap] * n_src
     rem = round(total - cap * n_src, 3)
     if rem <= HOLD_SLACK_S:
-        durs[-1] = round(durs[-1] + rem, 3)
+        # Spread the extra time over EVERY clip (not just the last) so no single shot grows by
+        # the whole remainder: 2 clips for 7.6 s -> 3.8 s each, not 3.0 + 4.6.
+        extra = round(rem / n_src, 3)
+        durs = [round(x + extra, 3) for x in durs]
+        durs[-1] = round(durs[-1] + (rem - extra * n_src), 3)
         rem = 0.0
     return [(i, 0.0, round(x, 3)) for i, x in enumerate(durs)] + cards(rem)
 

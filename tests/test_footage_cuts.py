@@ -93,7 +93,10 @@ def test_hold_cap_and_cards_replace_long_holds():
     sliver = M._cut_plan([1.9, 1.9], [10.0])                           # 3.8 s: a sliver over the cap is not worth a card
     check(len(sliver) == 1 and sliver[0][2] == 3.8, f"a 3.8 s scene on one clip just runs ({sliver})")
     two = M._cut_plan([1.9] * 4, [5.0, 5.0])
-    check(all(c[2] <= M.HOLD_CAP_S + 1e-9 for c in two), f"two clips for 7.6 s share the time under the cap ({two})")
+    check(all(c[2] <= M.HOLD_CAP_S + M.HOLD_SLACK_S + 1e-9 for c in two) and _sum(two) == 7.6
+          and not any(c[0] is None for c in two),
+          f"two clips for 7.6 s share the time, within cap + slack, with no filler card ({two})")
+    check(abs(two[0][2] - two[1][2]) < 0.05, f"the extra time is spread evenly, not dumped on the last clip ({two})")
     check(M._cut_plan([1.9] * 4, []) and all(c[0] is None for c in M._cut_plan([1.9] * 4, [])),
           "no footage at all -> cards only")
 
