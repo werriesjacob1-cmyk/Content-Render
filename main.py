@@ -64,6 +64,12 @@ _used_history = []        # ordered record, written back to disk so dedup surviv
 
 
 def load_used_footage():
+    # Operator-manifest re-renders of the SAME topic must be allowed to reuse its clips: with the
+    # prior-run history loaded, each retry saw a thinner stock pool (run 471: axolotl 8/10 -> 3/10).
+    # In-run dedup (_used_video_ids as scenes are chosen) is unaffected.
+    if os.environ.get("FOOTAGE_DEDUP", "1") == "0":
+        print("[footage] FOOTAGE_DEDUP=0 — prior-run clip history ignored for this render")
+        return
     try:
         with open(USED_FOOTAGE_PATH) as f:
             ids = json.load(f).get("ids", [])

@@ -35,3 +35,23 @@ if __name__ == "__main__":
     test_weak_primary_falls_to_alt_source()
     test_alt_sources_can_be_disabled()
     print("ALL PASS")
+
+
+def test_footage_dedup_can_be_disabled():
+    import json, tempfile
+    d = tempfile.mkdtemp(); path = os.path.join(d, "used.json")
+    json.dump({"ids": ["a", "b"]}, open(path, "w"))
+    M.USED_FOOTAGE_PATH = path
+    M._used_video_ids.clear(); M._used_history.clear()
+    os.environ["FOOTAGE_DEDUP"] = "0"
+    M.load_used_footage()
+    assert not M._used_video_ids, "history must be ignored when FOOTAGE_DEDUP=0"
+    os.environ.pop("FOOTAGE_DEDUP")
+    M.load_used_footage()
+    assert M._used_video_ids == {"a", "b"}, "default behaviour loads the history"
+    M._used_video_ids.clear(); M._used_history.clear()
+    print("PASS FOOTAGE_DEDUP=0 ignores prior-run clip history; default loads it")
+
+
+if __name__ == "__main__":
+    test_footage_dedup_can_be_disabled()
