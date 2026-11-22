@@ -6,7 +6,7 @@
  "vibe": "awe",
  "hook": "Some turtles can breathe through their rear ends.",
  "hook_headline": "BREATHING BACKWARDS",
- "script": "Some turtles can breathe through their rear ends. Cold ponds can freeze over, trapping a turtle under the ice for months. With no air to reach, it pulls oxygen straight out of the water. So how does water get into its body? Through an opening called the cloaca, lined with tiny blood vessels. Its body slows almost to a stop, so it needs very little oxygen to get through the winter. What happens when the ice finally melts? It surfaces in spring, and the whole winter passed without a single breath.",
+ "script": "Some turtles can breathe through their rear ends. Cold ponds can freeze over, trapping a turtle under the ice for months. With no air to reach, it pulls oxygen straight out of the water. So how does water get into its body? Through a small opening at the base of its tail, lined with tiny blood vessels. Its body slows almost to a stop, so it needs very little oxygen to get through the winter. What happens when the ice finally melts? It surfaces in spring, and the whole winter passed without a single breath.",
  "scenes": [
   {
    "id": 1,
@@ -43,8 +43,8 @@
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Through an opening called the cloaca, lined with tiny blood vessels.",
-   "on_screen_text": "THE CLOACA",
+   "voiceover": "Through a small opening at the base of its tail, lined with tiny blood vessels.",
+   "on_screen_text": "A TINY OPENING",
    "search_query": "sea turtle swimming",
    "motion": "zoom_out"
   },
