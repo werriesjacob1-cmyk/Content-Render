@@ -29,7 +29,7 @@
    "duration": 4,
    "voiceover": "And it never stops, not even while you sleep.",
    "on_screen_text": "NEVER STOPS",
-   "search_query": "woman brushing hair",
+   "search_query": "sleeping person bed",
    "motion": "pan_left"
   },
   {
@@ -37,7 +37,7 @@
    "duration": 4,
    "voiceover": "So where do all those cells go?",
    "on_screen_text": "WHERE DO THEY GO?",
-   "search_query": "bedroom morning light",
+   "search_query": "dust motes air",
    "motion": "zoom_in"
   },
   {
@@ -45,7 +45,7 @@
    "duration": 4,
    "voiceover": "They drift off your skin and settle on shelves, floors and sofas.",
    "on_screen_text": "SETTLES EVERYWHERE",
-   "search_query": "sofa living room",
+   "search_query": "dust on furniture",
    "motion": "zoom_out"
   },
   {
@@ -53,7 +53,7 @@
    "duration": 4,
    "voiceover": "You replace your entire outer layer of skin every two to four weeks.",
    "on_screen_text": "NEW SKIN",
-   "search_query": "skin closeup",
+   "search_query": "hand skin closeup",
    "motion": "pan_left"
   },
   {
@@ -69,7 +69,7 @@
    "duration": 4,
    "voiceover": "So when you wipe a shelf, what are you wiping up?",
    "on_screen_text": "WHAT IS IT?",
-   "search_query": "cloth wiping shelf",
+   "search_query": "dusting shelf cloth",
    "motion": "zoom_out"
   },
   {
@@ -77,7 +77,7 @@
    "duration": 4,
    "voiceover": "A little bit of yourself, and your house is slowly filling up with you.",
    "on_screen_text": "SLOWLY FILLING UP",
-   "search_query": "dust floating window",
+   "search_query": "vacuum cleaner carpet",
    "motion": "zoom_in"
   }
  ],
