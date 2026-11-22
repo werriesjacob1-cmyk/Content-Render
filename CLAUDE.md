@@ -98,7 +98,12 @@ banana-radiation video was produced).
   a scene with ONE distinct clip got `HOLD_CAP_S`=3.0 s of video, then a card for the rest, and QA scored the
   cards (footage 6, variety 5). `HOLD_SLACK_S` 1.2 -> 2.0 s, and the extra time is now spread evenly over the
   clips (`_cut_plan`), so a 4.7-5.0 s single-clip scene stays on footage (<=5 s; audit warns past 4.5 s, fails
-  past 7 s). NOT yet render-verified; if long_shot_fraction warnings appear, lower the slack.
+  past 7 s). **Render-verified (run 497 spiders, same manifest as 495): filler cards 4 -> 1, QA footage 6 -> 7,
+  audit PASS, longest hold 5.0 s, 25% in long shots.** If long_shot_fraction warnings appear, lower the slack.
+- **buffer.yml shares the `render-video` concurrency group with render.yml.** A scheduled `fill-script-buffer`
+  run (cron 07:20 UTC plus the 15:24 UTC firing seen on 2026-11-22, which means `LEGACY_SCHEDULED_GENERATION_ENABLED`
+  is now `true`, contrary to the notes above) held the group for ~30 min (its timeout) and my manual render sat
+  "pending" with no jobs. Not a bug in the render: check for a running fill-script-buffer before assuming a stall.
 
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
