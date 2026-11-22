@@ -1,101 +1,101 @@
 {
- "title": "The Fruit That Bites Back",
+ "title": "Trees Are Made of Air",
  "viewer_job": "REFRAME",
- "keyword": "pineapple",
- "metaphor": "digesting you back",
+ "keyword": "tree",
+ "metaphor": "built from air",
  "vibe": "awe",
- "hook": "When you eat fresh pineapple, it is digesting you back.",
- "hook_headline": "IT DIGESTS YOU BACK",
- "script": "When you eat fresh pineapple, it is digesting you back. The culprit is an enzyme called bromelain, which works like tiny scissors. That is why your mouth tingles, and your tongue can feel raw after a big bowl. So why does it not eat your whole mouth? Your cells are replaced so fast that you never notice the damage, and it heals within hours. Heat destroys the enzyme, so canned pineapple never does it. Why would a fruit evolve to bite back? Probably to stop animals from eating it before its seeds are ready to spread.",
+ "hook": "A giant tree is built from air, not from soil.",
+ "hook_headline": "TREES ARE MADE OF AIR",
+ "script": "A giant tree is built from air, not from soil. Plant a seed in a pot of soil, and the soil barely loses any weight. The missing mass came out of the sky, as carbon dioxide. So how does a tree turn gas into wood? Leaves catch sunlight and use it to stitch carbon atoms into sugar. Those sugars are stacked into the long fibres that make up the trunk. What happens to all that carbon when a tree burns? It goes straight back up, so a forest is sky turned solid, for a while.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "When you eat fresh pineapple, it is digesting you back.",
-   "on_screen_text": "IT DIGESTS YOU BACK",
-   "search_query": "fresh pineapple slices",
+   "voiceover": "A giant tree is built from air, not from soil.",
+   "on_screen_text": "BUILT FROM AIR",
+   "search_query": "giant tree trunk",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "The culprit is an enzyme called bromelain, which works like tiny scissors.",
-   "on_screen_text": "BROMELAIN",
-   "search_query": "cutting pineapple open",
+   "voiceover": "Plant a seed in a pot of soil, and the soil barely loses any weight.",
+   "on_screen_text": "THE SOIL STAYS",
+   "search_query": "seedling in soil pot",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "That is why your mouth tingles, and your tongue can feel raw after a big bowl.",
-   "on_screen_text": "THE STING",
-   "search_query": "woman eating pineapple",
+   "voiceover": "The missing mass came out of the sky, as carbon dioxide.",
+   "on_screen_text": "IT CAME FROM THE SKY",
+   "search_query": "forest canopy sunlight",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does it not eat your whole mouth?",
-   "on_screen_text": "WHY NOT?",
-   "search_query": "juicy pineapple close up",
+   "voiceover": "So how does a tree turn gas into wood?",
+   "on_screen_text": "HOW?",
+   "search_query": "tall redwood trees",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Your cells are replaced so fast that you never notice the damage, and it heals within hours.",
-   "on_screen_text": "FAST REPAIR",
-   "search_query": "tropical pineapple fruit",
+   "voiceover": "Leaves catch sunlight and use it to stitch carbon atoms into sugar.",
+   "on_screen_text": "LEAVES AT WORK",
+   "search_query": "green leaves sunlight",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Heat destroys the enzyme, so canned pineapple never does it.",
-   "on_screen_text": "CANNED IS SAFE",
-   "search_query": "canned pineapple rings",
+   "voiceover": "Those sugars are stacked into the long fibres that make up the trunk.",
+   "on_screen_text": "STACKED INTO WOOD",
+   "search_query": "tree trunk bark closeup",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Why would a fruit evolve to bite back?",
-   "on_screen_text": "WHY BITE BACK?",
-   "search_query": "pineapple plant field",
+   "voiceover": "What happens to all that carbon when a tree burns?",
+   "on_screen_text": "WHEN IT BURNS?",
+   "search_query": "forest fire burning trees",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Probably to stop animals from eating it before its seeds are ready to spread.",
-   "on_screen_text": "DEFENSE",
-   "search_query": "pineapple market stall",
+   "voiceover": "It goes straight back up, so a forest is sky turned solid, for a while.",
+   "on_screen_text": "SKY, TURNED SOLID",
+   "search_query": "old growth forest",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Fresh pineapple is digesting you back.",
-  "Why your tongue stings when you eat it.",
-  "The fruit that bites back."
+  "A giant tree is built from air, not from soil.",
+  "Where the mass of a 100-ton tree really comes from.",
+  "A forest is sky turned solid."
  ],
  "hashtags": [
   "#science",
-  "#pineapple",
-  "#food",
-  "#chemistry",
+  "#trees",
+  "#plants",
+  "#nature",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_pineapple-bites-back",
+ "video_id": "science_2026-11-22_trees-built-from-air",
  "cta_style": "SAVE_WORTHY",
- "domain": "chemistry",
+ "domain": "plants",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "pineapple_bromelain",
- "kokoro_voice": "af_jessica",
+ "fact_id": "trees_made_of_air",
+ "kokoro_voice": "am_echo",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
