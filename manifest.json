@@ -1,101 +1,101 @@
 {
- "title": "The Fruit That Bites Back",
+ "title": "The Plant You Can Watch Grow",
  "viewer_job": "REFRAME",
- "keyword": "pineapple",
- "metaphor": "digesting you back",
+ "keyword": "bamboo",
+ "metaphor": "fast growing",
  "vibe": "awe",
- "hook": "When you eat fresh pineapple, it is digesting you back.",
- "hook_headline": "IT DIGESTS YOU BACK",
- "script": "When you eat fresh pineapple, it is digesting you back. The culprit is an enzyme called bromelain, which works like tiny scissors. That is why your mouth tingles, and your tongue can feel raw after a big bowl. So why does it not eat your whole mouth? Your cells are replaced so fast that you never notice the damage, and it heals within hours. Heat destroys the enzyme, so canned pineapple never does it. Why would a fruit evolve to bite back? Probably to stop animals from eating it before its seeds are ready to spread.",
+ "hook": "Some bamboo grows a meter a day, so fast you can watch it.",
+ "hook_headline": "A METER A DAY",
+ "script": "Some bamboo grows a meter a day, so fast you can watch it. That makes it the fastest growing plant on the planet, and it is not even a tree. Bamboo is a giant grass, closer to your lawn than to an oak. So how does a plant climb that fast? Its stalk is built from segments that all stretch at once, like a telescope. It borrows stored energy from a huge web of roots underground. What happens to a bamboo forest when it finally flowers? Many kinds flower once in a century, and then every plant dies together.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "When you eat fresh pineapple, it is digesting you back.",
-   "on_screen_text": "IT DIGESTS YOU BACK",
-   "search_query": "fresh pineapple slices",
+   "voiceover": "Some bamboo grows a meter a day, so fast you can watch it.",
+   "on_screen_text": "A METER A DAY",
+   "search_query": "bamboo forest",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "The culprit is an enzyme called bromelain, which works like tiny scissors.",
-   "on_screen_text": "BROMELAIN",
-   "search_query": "cutting pineapple open",
+   "voiceover": "That makes it the fastest growing plant on the planet, and it is not even a tree.",
+   "on_screen_text": "NOT A TREE",
+   "search_query": "green bamboo stalks",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "That is why your mouth tingles, and your tongue can feel raw after a big bowl.",
-   "on_screen_text": "THE STING",
-   "search_query": "woman eating pineapple",
+   "voiceover": "Bamboo is a giant grass, closer to your lawn than to an oak.",
+   "on_screen_text": "A GIANT GRASS",
+   "search_query": "bamboo shoots growing ground",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does it not eat your whole mouth?",
-   "on_screen_text": "WHY NOT?",
-   "search_query": "juicy pineapple close up",
+   "voiceover": "So how does a plant climb that fast?",
+   "on_screen_text": "HOW?",
+   "search_query": "bamboo grove sunlight",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Your cells are replaced so fast that you never notice the damage, and it heals within hours.",
-   "on_screen_text": "FAST REPAIR",
-   "search_query": "tropical pineapple fruit",
+   "voiceover": "Its stalk is built from segments that all stretch at once, like a telescope.",
+   "on_screen_text": "LIKE A TELESCOPE",
+   "search_query": "bamboo stalk closeup",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Heat destroys the enzyme, so canned pineapple never does it.",
-   "on_screen_text": "CANNED IS SAFE",
-   "search_query": "canned pineapple rings",
+   "voiceover": "It borrows stored energy from a huge web of roots underground.",
+   "on_screen_text": "BORROWED ENERGY",
+   "search_query": "bamboo forest path",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Why would a fruit evolve to bite back?",
-   "on_screen_text": "WHY BITE BACK?",
-   "search_query": "pineapple plant field",
+   "voiceover": "What happens to a bamboo forest when it finally flowers?",
+   "on_screen_text": "WHEN IT FLOWERS?",
+   "search_query": "bamboo leaves wind",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Probably to stop animals from eating it before its seeds are ready to spread.",
-   "on_screen_text": "DEFENSE",
-   "search_query": "pineapple on cutting board",
+   "voiceover": "Many kinds flower once in a century, and then every plant dies together.",
+   "on_screen_text": "ALL DIE TOGETHER",
+   "search_query": "tall bamboo sky looking up",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Fresh pineapple is digesting you back.",
-  "Why your tongue stings when you eat it.",
-  "The fruit that bites back."
+  "Some bamboo grows a meter a day.",
+  "Why it is not a tree at all.",
+  "What happens when a whole forest flowers."
  ],
  "hashtags": [
   "#science",
-  "#pineapple",
-  "#food",
-  "#chemistry",
+  "#bamboo",
+  "#plants",
+  "#nature",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_pineapple-bites-back",
+ "video_id": "science_2026-11-22_bamboo-meter-a-day",
  "cta_style": "SAVE_WORTHY",
- "domain": "chemistry",
+ "domain": "plants",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "pineapple_bromelain",
- "kokoro_voice": "af_jessica",
+ "fact_id": "bamboo_growth",
+ "kokoro_voice": "bf_isabella",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
