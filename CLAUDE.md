@@ -37,6 +37,49 @@ the repo Variable `LEGACY_SCHEDULED_GENERATION_ENABLED`, which is not set to
 `true`. Manual dispatch is the live path (and is how the 2026-09-10
 banana-radiation video was produced).
 
+## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
+Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
+script + new footage logic, B-). **Read this before trusting any "it passed" claim.**
+
+**The ruler:** `video_audit.py` measures a finished mp4 with NO LLM (effective shot length — near
+identical clips count as one hold —, near-black runs, share of runtime in long shots). It FAILS run 455
+(11.0s hold, 1.75s black, 71% in long shots; ChatGPT independently measured 71%) and PASSES 457 (21
+shots, longest 4.0s). `AUDIT_ENFORCE=1` (set by render.yml for non-certification runs) stops a release
+run on a hard failure. Thresholds rest on ONE real video. Final QA (LLM, 8 frames) scored 455 as 8/10 —
+do not trust it alone.
+**`rehearsal.py`** runs the real `main()` offline (real Kokoro voice, whisper, ffmpeg, captions, cuts,
+cards, audit, mix) with only footage providers stubbed: ~3.5 min vs ~25 min of CI. Use it before every
+paid render. Needs KOKORO_MODEL/KOKORO_VOICES exported **in the same shell command**.
+
+**Root causes found (not guessed):**
+- Jargon came from the DATA: bank `key_terms` are mandatory, so `human_vacuum` forced "ebullism". 51
+  facts moved their jargon to `optional_terms`; 28 curated facts have `misconception` (the hook must
+  contradict it) and, only where science is truly open, `open_question`.
+- Run 456 died (14.5 min) on 8/10 attempts at "whatif payoff never answered ['15 seconds']":
+  `_key_term_present` matched digits only, rejecting "fifteen seconds". Fixed (spelled numbers).
+- Wrong stock (parking lot, tortoise): my queries led with adjectives ("empty space stars") so the
+  subject gate took "empty". `craft_rules.GENERIC_QUERY_MODIFIERS` is one set for validate + footage.
+- Card glyph box ("OXYGEN[] DRAINS"): newline inside one drawtext textfile on the CI ffmpeg; now one
+  drawtext per line.
+- Holds: stills/AI shots escaped the cap, and "cuts" between windows of ONE clip did not change the
+  picture. `_cut_plan` v2: each source once, <=3s, remainder = filler cards, never a revisit.
+
+**Shipped (all tested, zero-network):** writer rules in `craft_rules.py` (misconception-first hook,
+fact-driven endings, jargon/purple/crutch lists, <=3 questions, re-hook windows), claim-novelty lint,
+`fact_verifier` (ADVISORY for unsupported lines by default; contradicted rejects; fails open;
+unvalidated), stopwatch + two-state gauge procedural visuals (`scene.visual`), safe-window black
+avoidance, title-matched stills, `use_manifest` (operator script, validated on every push) and
+`generate_only` (writer test without a render) dispatch inputs, `[writer] rejection summary` line.
+**Measured caption sync on run 457 (from the video, rough):** 111/113 words matched, median -0.02s,
+11 captions >150ms early, none >300ms late. `captions.ass` + `video_audit.json` now ship in the artifact.
+
+**NOT proven:** the automated WRITER against the new rules (run 457 used my script; the first
+`generate_only` run is the real test — check the `[writer] rejection summary` line); the fact verifier;
+Kokoro in CI (ElevenLabs answered both real renders); procedural visuals on real footage; relevance of
+stock beyond the title/subject gates (no vision check on extra clips). Remaining weak spot per both
+critiques: visuals are retrieved by keyword, not by what the claim needs the viewer to SEE —
+the real fix is a visual-job per claim with procedural graphics (only timer/gauge exist).
+
 ## Session 2026-11-21 — craft layer, Phase A (branch `claude/phase-a-craft-20261121`)
 Driven by "videos feel flat, almost no comments." Nothing here was render-verified;
 read "What to check on the first real render" before trusting any of it.

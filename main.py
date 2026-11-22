@@ -3119,6 +3119,71 @@ def _build_timer_card(scene, idx, seg_mp3, seg_dur, out_path, n):
          "-c:v", "libx264", "-c:a", "aac", "-shortest", out_path])
 
 
+def _build_gauge_card(scene, idx, seg_mp3, seg_dur, out_path, spec):
+    """An explanatory two-state gauge: a label, a big number that slides from spec['start'] to
+    spec['end'] (unit underneath), and the situation changing from spec['before'] to spec['after']
+    half-way. Procedural, license-free, and it SHOWS the relationship the narration states (e.g.
+    water's boiling point falling as air pressure disappears) instead of decorating it. No newline,
+    no ':' or quote in any text (drawtext-safe)."""
+    def clean(t):
+        return re.sub(r"[^A-Z0-9 .,\-%]", "", str(t or "").upper()).strip()
+    label, unit = clean(spec.get("label")), clean(spec.get("unit"))
+    before, after = clean(spec.get("before")), clean(spec.get("after"))
+    a, b = float(spec.get("start", 0)), float(spec.get("end", 0))
+    T = max(0.8, seg_dur * 0.75)
+    c0, c1 = STAT_CARD_PALETTES[(idx - 1) % len(STAT_CARD_PALETTES)]
+    num = f"%{{eif\\:trunc({a:.1f}+({b - a:.1f})*min(1\\,t/{T:.3f}))\\:d}}"
+    half = T * 0.5
+
+    def dt(text, size, y, extra=""):
+        return (f"drawtext=text='{text}':fontfile='{FONT}':fontsize={size}:fontcolor=white:borderw=8:"
+                f"bordercolor=black@0.75:x=(w-tw)/2:y={y}{extra}")
+
+    vf = ",".join([
+        "vignette=PI/5.2",
+        dt(label, 78, "h*0.27"),
+        dt(num, 400, "h*0.36"),
+        dt(unit, 100, "h*0.36+420"),
+        dt(before, 70, "h*0.68", f":enable='lt(t\\,{half:.3f})'"),
+        dt(after, 70, "h*0.68", f":enable='gte(t\\,{half:.3f})':fontcolor=0xFFD400"),
+        "setsar=1",
+    ])
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i",
+         f"gradients=s={W}x{H}:d={seg_dur:.3f}:r=30:c0={c0}:c1={c1}:type=radial:speed=0.006:seed={1000 + idx}",
+         "-i", seg_mp3, "-t", f"{seg_dur:.3f}", "-filter_complex", f"[0:v]{vf}[v]",
+         "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+         "-c:v", "libx264", "-c:a", "aac", "-shortest", out_path])
+
+
+VISUAL_MAX_S = 4.0     # an explanatory visual runs at most this long before stock takes over
+VISUAL_TYPES = ("gauge", "timer")
+
+
+def _visual_cuts(seg_dur, src_durs, max_v=None):
+    """Cut list for a scene that carries a procedural `visual` (pure): the visual first (<= max_v
+    seconds), then ordinary shots (_cut_plan) for the remainder; a sliver left over is absorbed
+    into the visual. The "V" source index means 'render the scene's procedural visual'."""
+    max_v = VISUAL_MAX_S if max_v is None else max_v
+    v = min(seg_dur, max_v)
+    rest = round(seg_dur - v, 3)
+    if rest <= 0.4:
+        return [("V", 0.0, round(seg_dur, 3))]
+    return [("V", 0.0, round(v, 3))] + _cut_plan(_subclip_plan(rest, CLIP_SECONDS, MAX_SUBCLIPS), src_durs)
+
+
+def _procedural_part(scene, idx, j, d, part):
+    """Render the scene's procedural visual (gauge / timer) as a silent shot of d seconds."""
+    spec = scene.get("visual") or {}
+    silent = os.path.join(WORK, f"s{idx}_p{j}_vsilent.wav")
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{d:.3f}", silent])
+    tmp = part + ".vis.mp4"
+    if spec.get("type") == "timer":
+        _build_timer_card(scene, idx, silent, d, tmp, int(spec.get("seconds", 15)))
+    else:
+        _build_gauge_card(scene, idx, silent, d, tmp, spec)
+    run(["ffmpeg", "-y", "-i", tmp, "-an", "-c:v", "copy", part])
+
+
 def _card_part(scene, idx, j, d, part):
     """A silent filler CARD shot of d seconds (the scene's stat-card text over the animated
     gradient): the visual that fills time no on-subject footage can, instead of a longer
@@ -3167,6 +3232,10 @@ def _render_cuts(scene, idx, cuts, sources, seg_mp3, seg_dur, out, grade, stat, 
         pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
                                  pf, zspeed, idx=idx + j, prev_kind=None)
         pstat = stat if j == 0 else ""      # number card once, on the first cut only
+        if si == "V":                       # the scene's procedural explanatory visual
+            _procedural_part(scene, idx, j, d, part)
+            parts.append(part)
+            continue
         src = sources[si] if si is not None else None
         is_img = bool(src) and src.lower().endswith((".jpg", ".jpeg", ".png"))
         inargs, slift = None, ""
@@ -3309,12 +3378,18 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         # no shot passes the hold cap, and what the footage cannot cover becomes filler cards --
         # never a clip revisited at a new in-point, never unrelated stock.
         cuts = []
-        if len(plan) > 1:
+        _vis = scene.get("visual")
+        if isinstance(_vis, dict) and _vis.get("type") in VISUAL_TYPES:
+            try:
+                cuts = _visual_cuts(seg_dur, [ffprobe_dur(x) for x in sources])
+            except Exception:  # noqa: BLE001
+                cuts = []
+        elif len(plan) > 1:
             try:
                 cuts = _cut_plan(plan, [ffprobe_dur(x) for x in sources])
             except Exception:  # noqa: BLE001
                 cuts = []
-        if len(cuts) > 1 or any(c[0] is None for c in cuts):
+        if len(cuts) > 1 or any(c[0] is None or c[0] == "V" for c in cuts):
             try:
                 _o, _nc = _render_cuts(scene, idx, cuts, sources, seg_mp3, seg_dur, out, grade, stat, punch)
                 print(f"  multi-clip scene: {len(cuts)} shots across {seg_dur:.1f}s "
@@ -3340,6 +3415,17 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
     # Pexels-video outage no longer forces the all-text-card failure mode. These
     # do NOT count as stat cards (they're real imagery), so they don't trip the
     # footage-starvation abort.
+    # A scene that carries a procedural visual still gets it when no stock clip was found: the
+    # explanatory visual first, then filler cards for the rest -- never a still of something else.
+    _vis0 = scene.get("visual")
+    if isinstance(_vis0, dict) and _vis0.get("type") in VISUAL_TYPES:
+        try:
+            _o, _nc = _render_cuts(scene, idx, _visual_cuts(seg_dur, []), [], seg_mp3, seg_dur, out, grade, stat, punch)
+            print(f"  procedural-visual scene ({_vis0.get('type')} + {_nc} filler card(s))")
+            return _o
+        except Exception as e:  # noqa: BLE001
+            print(f"  procedural visual failed ({e}) — falling back")
+
     if PROFILE.get("archival_stills", True):
         img = os.path.join(WORK, f"s{idx}_img.jpg")
         # Search the still sources on the scene's literal SUBJECT (search_query),

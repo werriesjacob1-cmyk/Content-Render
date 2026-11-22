@@ -121,6 +121,41 @@ def test_workflow_evidence_and_generate_only():
           "the publish gates are untouched")
 
 
+def test_visual_led_scenes():
+    c = M._visual_cuts(7.2, [8.0])
+    check(c[0][0] == "V" and c[0][2] == M.VISUAL_MAX_S and c[1][0] == 0, f"visual first (<= {M.VISUAL_MAX_S}s), then stock ({c})")
+    check(round(sum(x[2] for x in c), 3) == 7.2, "covers the scene exactly")
+    check(M._visual_cuts(3.5, [8.0]) == [("V", 0.0, 3.5)], "a short scene is all visual")
+    sliver = M._visual_cuts(4.3, [8.0])
+    check(sliver == [("V", 0.0, 4.3)], "a sliver after the visual is absorbed, not given its own shot")
+    nocut = M._visual_cuts(7.0, [])
+    check(nocut[0][0] == "V" and all(x[0] is None for x in nocut[1:]) and nocut[1:], "no stock: visual then filler cards")
+
+
+def test_gauge_and_timer_render():
+    import shutil, subprocess
+    if not shutil.which("ffmpeg"):
+        print("SKIP ffmpeg not available"); return
+    d = tempfile.mkdtemp()
+    M.WORK = d
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "4", f"{d}/s.wav"], check=True)
+    spec = {"type": "gauge", "label": "Boiling point of water", "start": 100, "end": 37, "unit": "deg C",
+            "before": "Normal air pressure", "after": "No air pressure"}
+    M._build_gauge_card({"voiceover": "x"}, 6, f"{d}/s.wav", 4.0, f"{d}/g.mp4", spec)
+
+    def fr(t):
+        return subprocess.check_output(["ffmpeg", "-v", "error", "-ss", str(t), "-i", f"{d}/g.mp4", "-frames:v", "1",
+                                        "-vf", "scale=54:96,format=gray", "-f", "rawvideo", "-"])
+    dif = lambda x, y: sum(abs(p - q) for p, q in zip(x, y)) / len(x)
+    check(dif(fr(0.2), fr(1.5)) > 0.3 and dif(fr(1.5), fr(3.6)) > 0.3, "the gauge number and state label change over time")
+    check(abs(M.ffprobe_dur(f"{d}/g.mp4") - 4.0) < 0.15, "and it is exactly the requested length")
+    # a visual-led scene end to end through the real renderer
+    sc = {"voiceover": "x", "visual": spec, "on_screen_text": "BOIL"}
+    out = f"{d}/o.mp4"
+    o, ncards = M._render_cuts(sc, 6, M._visual_cuts(4.0, []), [], f"{d}/s.wav", 4.0, out, "", "", "")
+    check(os.path.exists(o) and abs(M.ffprobe_dur(o) - 4.0) < 0.2, "a visual-only scene renders at its narration length")
+
+
 if __name__ == "__main__":
     for n, f in list(globals().items()):
         if n.startswith("test_") and callable(f):

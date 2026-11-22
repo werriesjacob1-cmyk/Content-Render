@@ -43,6 +43,18 @@ def test_every_committed_manifest_clears_the_live_rules():
         check(C.check_script(m["hook"], [s["voiceover"] for s in m["scenes"]], fact) is None,
               f"{os.path.basename(p)} passes the craft rules")
         check(m["hook"] == m["scenes"][0]["voiceover"], "the hook is the first spoken line")
+        import main as MM
+        for s in m["scenes"]:
+            v = s.get("visual")
+            if v is None:
+                continue
+            check(isinstance(v, dict) and v.get("type") in MM.VISUAL_TYPES, f"scene visual type is one of {MM.VISUAL_TYPES}")
+            if v["type"] == "gauge":
+                check(all(k in v for k in ("label", "start", "end", "unit", "before", "after")), "a gauge names its label, range, unit and both states")
+                check(isinstance(v["start"], (int, float)) and isinstance(v["end"], (int, float)), "gauge numbers are numeric")
+            if v["type"] == "timer":
+                check(3 <= int(v["seconds"]) <= 60, "timer seconds in range")
+                check(str(int(v["seconds"])) in s["voiceover"], "the timer shows a duration the narration actually states")
 
 
 def test_spelled_out_numbers_satisfy_a_numeric_key_term():

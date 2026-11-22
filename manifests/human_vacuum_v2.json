@@ -6,7 +6,7 @@
  "vibe": "visceral",
  "hook": "Your body would not explode in space.",
  "hook_headline": "YOU WOULDN'T EXPLODE",
- "script": "Your body would not explode in space. It would not freeze solid either, whatever the movies show. You would stay awake for about 15 seconds. So why does that last so long, with nothing to breathe out there? Because the oxygen already in your blood keeps your brain running until it drains away through your lungs. And what happens to the water in your body? It starts to boil, even at normal body temperature. A NASA test subject once felt the saliva bubbling on his tongue before he blacked out. He recovered once the chamber was repressurised. So the real danger of a vacuum is how little time you have, not an explosion.",
+ "script": "Your body would not explode in space. It would not freeze solid either, whatever the movies show. You would stay awake for about 15 seconds. So why does that last so long, with nothing to breathe out there? Because the oxygen already in your blood keeps your brain running until it drains away through your lungs. And what happens to the water in your body? It starts to boil, even at normal body temperature. NASA once tested this on a person in a vacuum chamber. He felt the saliva on his tongue start to bubble. Then he blacked out, and the chamber was repressurised.",
  "scenes": [
   {
    "id": 1,
@@ -30,7 +30,11 @@
    "voiceover": "You would stay awake for about 15 seconds.",
    "on_screen_text": "15 SECONDS",
    "search_query": "stopwatch clock ticking",
-   "motion": "pan_left"
+   "motion": "pan_left",
+   "visual": {
+    "type": "timer",
+    "seconds": 15
+   }
   },
   {
    "id": 4,
@@ -54,30 +58,39 @@
    "voiceover": "And what happens to the water in your body? It starts to boil, even at normal body temperature.",
    "on_screen_text": "WATER BOILS",
    "search_query": "boiling water bubbles",
-   "motion": "zoom_out"
+   "motion": "zoom_out",
+   "visual": {
+    "type": "gauge",
+    "label": "Boiling point of water",
+    "start": 100,
+    "end": 37,
+    "unit": "deg C",
+    "before": "Normal air pressure",
+    "after": "No air pressure"
+   }
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "A NASA test subject once felt the saliva bubbling on his tongue before he blacked out.",
-   "on_screen_text": "SALIVA BOILED",
+   "voiceover": "NASA once tested this on a person in a vacuum chamber.",
+   "on_screen_text": "NASA TEST",
    "search_query": "nasa test chamber",
    "motion": "pan_left"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "He recovered once the chamber was repressurised.",
-   "on_screen_text": "HE RECOVERED",
+   "voiceover": "He felt the saliva on his tongue start to bubble.",
+   "on_screen_text": "SALIVA BUBBLED",
    "search_query": "vacuum chamber window",
    "motion": "pan_right"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "So the real danger of a vacuum is how little time you have, not an explosion.",
-   "on_screen_text": "LITTLE TIME",
-   "search_query": "earth from space horizon",
+   "voiceover": "Then he blacked out, and the chamber was repressurised.",
+   "on_screen_text": "LIGHTS OUT",
+   "search_query": "nasa test chamber",
    "motion": "zoom_in"
   }
  ],
