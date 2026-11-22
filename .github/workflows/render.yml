@@ -208,14 +208,18 @@ jobs:
 
       - name: Commit memory + manifest
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+        continue-on-error: true
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A memory_*.json manifest.json dossier_cache_*.json 2>/dev/null || true
           git add -A queue_* 2>/dev/null || true
           git commit -m "auto: $PAGE video manifest" 2>/dev/null || echo "nothing to commit"
+          BR="$(git branch --show-current)"
           for a in 1 2 3; do
-            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+            # -X theirs keeps THIS run's manifest/memory when a concurrent bot commit touched the same file
+            # (a plain rebase conflict left a detached HEAD and killed runs 470/474); abort if it still fails.
+            git push && break || { echo "push retry $a"; git pull --rebase -X theirs origin "$BR" 2>/dev/null || git rebase --abort 2>/dev/null || true; }
           done
 
       - name: Upload generated script (generate_only)
@@ -257,8 +261,11 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add used_footage_*.json memory_*.json 2>/dev/null || true
           git commit -m "auto: update footage dedup + QA history ($PAGE)" 2>/dev/null || echo "nothing to commit"
+          BR="$(git branch --show-current)"
           for a in 1 2 3; do
-            git push && break || { echo "push retry $a"; git pull --rebase origin "$(git branch --show-current)" 2>/dev/null || true; }
+            # -X theirs keeps THIS run's manifest/memory when a concurrent bot commit touched the same file
+            # (a plain rebase conflict left a detached HEAD and killed runs 470/474); abort if it still fails.
+            git push && break || { echo "push retry $a"; git pull --rebase -X theirs origin "$BR" 2>/dev/null || git rebase --abort 2>/dev/null || true; }
           done
 
       - name: Prove output
