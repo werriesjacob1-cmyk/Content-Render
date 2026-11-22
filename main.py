@@ -159,6 +159,30 @@ def _xfade_offsets(durs, xf):
     return offs
 
 
+def _xfade_aligned_offsets(durs, xf):
+    """Offsets for a dissolve that keeps EVERY scene boundary on the audio timeline.
+
+    The classic chained xfade (above) lets scene k+1 start (k * xf) early, so by scene 8 the
+    picture runs ~1.4 s ahead of the narration. Here scene k+1 is padded with xf of its own first
+    frame and the blend runs INSIDE the last xf of scene k: offset_k = (end of scene k) - xf, and the
+    padded scene is fully visible exactly at the audio boundary. N-1 offsets; the output is as long
+    as the audio. Pure arithmetic, unit-tested without ffmpeg."""
+    offs, acc = [], 0.0
+    for k in range(len(durs) - 1):
+        acc += durs[k]
+        offs.append(round(acc - xf, 3))
+    return offs
+
+
+def manifest_xfade(m):
+    """Dissolve length (s) a manifest asks for via "xfade" (0.1-0.6), else 0. Pure."""
+    try:
+        v = float((m or {}).get("xfade"))
+    except (TypeError, ValueError):
+        return 0.0
+    return round(v, 3) if 0.1 <= v <= 0.6 else 0.0
+
+
 def _edge_tts_with_timings(text, voice, rate, out_mp3):
     """Synthesize with edge-tts via its Python API AND capture real per-word
     timing from WordBoundary events. Writes the mp3 to out_mp3 and returns
@@ -4105,15 +4129,15 @@ def build_body_concat(scene_files, out_path):
 
 
 def build_body_xfade(scene_files, out_path, xf=None, style=None):
-    """OPT-IN smoother join (SCENE_XFADE>0): cross-dissolve the VIDEO between
-    scenes while the AUDIO is a plain hard-cut concat (never overlapped, so no
-    spoken word is ever clipped — the failure that retired the old acrossfade).
+    """OPT-IN smoother join (xf>0): cross-dissolve the VIDEO between scenes while the AUDIO is a
+    plain hard-cut concat (never overlapped, so no spoken word is ever clipped -- the failure that
+    retired the old acrossfade).
 
-    The xfade chain shortens the video by (N-1)*xf vs the audio, so the held
-    final frame is padded back out (tpad) to keep the video at least as long as
-    the audio; ffmpeg's -shortest then trims to the audio. On ANY failure this
-    raises, and main() falls back to build_body_concat — this can never break a
-    render. Returns nothing; writes out_path."""
+    Timing: every scene boundary stays EXACTLY where the audio puts it. Scene k+1 is padded with xf
+    of its first frame (tpad clone) and dissolves in during the last xf of scene k, so captions and
+    narration stay in sync and the output is as long as the audio (_xfade_aligned_offsets). The old
+    version let the picture drift ahead by (N-1)*xf. On ANY failure this raises, and main() falls
+    back to build_body_concat -- this can never break a render. Writes out_path."""
     xf = SCENE_XFADE if xf is None else xf
     style = SCENE_XFADE_STYLE if style is None else style
     n = len(scene_files)
@@ -4123,19 +4147,18 @@ def build_body_xfade(scene_files, out_path, xf=None, style=None):
     # every clip must be longer than the dissolve or the offsets go negative
     if any(d <= xf + 0.05 for d in durs):
         raise RuntimeError(f"a scene is too short for a {xf}s dissolve ({durs})")
-    offs = _xfade_offsets(durs, xf)
+    offs = _xfade_aligned_offsets(durs, xf)
     inputs = []
     for f in scene_files:
         inputs += ["-i", f]
-    # video: chained xfade;  audio: hard-cut concat of every scene's own segment
-    vfilters, prev = [], "[0:v]"
+    vfilters = [f"[{k}:v]tpad=start_mode=clone:start_duration={xf}[p{k}]" for k in range(1, n)]
+    prev = "[0:v]"
     for k in range(1, n):
         label = f"[vx{k}]"
-        vfilters.append(f"{prev}[{k}:v]xfade=transition={style}:duration={xf}:"
+        vfilters.append(f"{prev}[p{k}]xfade=transition={style}:duration={xf}:"
                         f"offset={offs[k-1]}{label}")
         prev = label
-    pad = round((n - 1) * xf + 0.1, 3)  # restore length lost to the overlaps
-    vfilters.append(f"{prev}tpad=stop_mode=clone:stop_duration={pad}[vout]")
+    vfilters.append(f"{prev}tpad=stop_mode=clone:stop_duration=0.1[vout]")   # safety only
     aconcat = "".join(f"[{i}:a]" for i in range(n)) + f"concat=n={n}:v=0:a=1[aout]"
     filtergraph = ";".join(vfilters + [aconcat])
     run(["ffmpeg", "-y", *inputs, "-filter_complex", filtergraph,
@@ -4580,11 +4603,12 @@ def main():
     # crossfaded/clipped at a scene change (the old acrossfade overlapped and
     # cut off the end of each sentence).
     body = os.path.join(WORK, "body.mp4")
-    if SCENE_XFADE > 0:
+    _xf = manifest_xfade(m) or SCENE_XFADE
+    if _xf > 0:
         try:
-            build_body_xfade(scene_files, body)
+            build_body_xfade(scene_files, body, xf=_xf)
             print(f"[concat] xfade join OK ({len(scene_files)} scenes, "
-                  f"{SCENE_XFADE}s video dissolve, audio hard-cut)")
+                  f"{_xf}s video dissolve aligned to the audio, audio hard-cut)")
         except Exception as e:  # noqa: BLE001 - never let a transition break a render
             print(f"[concat] xfade failed ({e}); falling back to hard-cut concat")
             build_body_concat(scene_files, body)

@@ -1,0 +1,118 @@
+{
+ "title": "The Journey of One Speck of Dust",
+ "viewer_job": "REFRAME",
+ "keyword": "dust",
+ "metaphor": "a journey across the ocean",
+ "vibe": "awe",
+ "hook": "This speck of dust is about to cross an ocean and feed a rainforest.",
+ "hook_headline": "ONE SPECK CROSSES AN OCEAN",
+ "script": "This speck of dust is about to cross an ocean and feed a rainforest. It begins as mud on a lake bed in Chad that vanished long ago. Then the wind lifts it high above the Sahara. So where do 27 million tonnes of dust go every year? West, for about a week, over nothing but open Atlantic. A week later, a storm gathers over the Amazon. And the rain drags it down onto the canopy. So what does one speck of dust give a forest? The soil there has almost no phosphorus, and this speck is exactly what the trees were missing. One speck at a time, a desert feeds a forest.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "This speck of dust is about to cross an ocean and feed a rainforest.",
+   "on_screen_text": "ONE SPECK OF DUST",
+   "search_query": "sand dunes wind blowing",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "It begins as mud on a lake bed in Chad that vanished long ago.",
+   "on_screen_text": "A LAKE THAT VANISHED",
+   "search_query": "dry cracked earth desert",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Then the wind lifts it high above the Sahara.",
+   "on_screen_text": "THE WIND LIFTS IT",
+   "search_query": "sandstorm desert",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So where do 27 million tonnes of dust go every year?",
+   "on_screen_text": "WHERE DOES IT GO?",
+   "search_query": "dust storm desert",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "West, for about a week, over nothing but open Atlantic.",
+   "on_screen_text": "WEST, FOR A WEEK",
+   "search_query": "clouds over ocean aerial",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "A week later, a storm gathers over the Amazon.",
+   "on_screen_text": "A STORM GATHERS",
+   "search_query": "rain clouds sky timelapse",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "And the rain drags it down onto the canopy.",
+   "on_screen_text": "THE RAIN BRINGS IT DOWN",
+   "search_query": "rain over rainforest",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "So what does one speck of dust give a forest?",
+   "on_screen_text": "WHAT DOES IT GIVE?",
+   "search_query": "tall rainforest trees looking up",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "The soil there has almost no phosphorus, and this speck is exactly what the trees were missing.",
+   "on_screen_text": "WHAT THE TREES NEEDED",
+   "search_query": "amazon rainforest aerial",
+   "motion": "pan_left"
+  },
+  {
+   "id": 10,
+   "duration": 4,
+   "voiceover": "One speck at a time, a desert feeds a forest.",
+   "on_screen_text": "A DESERT FEEDS A FOREST",
+   "search_query": "rainforest leaves rain drops",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "Follow one speck of dust from the Sahara to the Amazon.",
+  "27 million tonnes of dust cross the Atlantic every year.",
+  "How a desert feeds a rainforest."
+ ],
+ "hashtags": [
+  "#science",
+  "#sahara",
+  "#amazon",
+  "#earth",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_dust-journey-sahara-amazon",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "earth",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "sahara_feeds_amazon",
+ "kokoro_voice": "am_onyx",
+ "kokoro_speed": 0.93,
+ "voice_engine": "kokoro",
+ "xfade": 0.25
+}
