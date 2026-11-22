@@ -1,101 +1,101 @@
 {
- "title": "The Heart That Never Rests",
+ "title": "The Fruit That Bites Back",
  "viewer_job": "REFRAME",
- "keyword": "hummingbird",
- "metaphor": "racing heart",
+ "keyword": "pineapple",
+ "metaphor": "digesting you back",
  "vibe": "awe",
- "hook": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
- "hook_headline": "1,200 BEATS A MINUTE",
- "script": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards. Your own heart beats about seventy times in that same minute. Its wings keep pace, beating up to eighty times every second. So how does a body that small keep up? It drinks nectar almost nonstop, and burns it as fast as it arrives. Its wings trace a figure eight, which holds it still in the air. What happens when the flowers run out at night? It slows its heart to a crawl and sleeps in a deep, cold trance.",
+ "hook": "When you eat fresh pineapple, it is digesting you back.",
+ "hook_headline": "IT DIGESTS YOU BACK",
+ "script": "When you eat fresh pineapple, it is digesting you back. The culprit is an enzyme called bromelain, which works like tiny scissors. That is why your mouth tingles, and your tongue can feel raw after a big bowl. So why does it not eat your whole mouth? Your cells are replaced so fast that you never notice the damage, and it heals within hours. Heat destroys the enzyme, so canned pineapple never does it. Why would a fruit evolve to bite back? Probably to stop animals from eating it before its seeds are ready to spread.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
-   "on_screen_text": "1,200 BEATS A MINUTE",
-   "search_query": "hummingbird flying",
+   "voiceover": "When you eat fresh pineapple, it is digesting you back.",
+   "on_screen_text": "IT DIGESTS YOU BACK",
+   "search_query": "fresh pineapple slices",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Your own heart beats about seventy times in that same minute.",
-   "on_screen_text": "YOURS: 70",
-   "search_query": "hand wrist pulse",
+   "voiceover": "The culprit is an enzyme called bromelain, which works like tiny scissors.",
+   "on_screen_text": "BROMELAIN",
+   "search_query": "cutting pineapple open",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Its wings keep pace, beating up to eighty times every second.",
-   "on_screen_text": "80 FLAPS A SECOND",
-   "search_query": "hummingbird wings slow motion",
+   "voiceover": "That is why your mouth tingles, and your tongue can feel raw after a big bowl.",
+   "on_screen_text": "THE STING",
+   "search_query": "woman eating pineapple",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how does a body that small keep up?",
-   "on_screen_text": "HOW?",
-   "search_query": "hummingbird flower",
+   "voiceover": "So why does it not eat your whole mouth?",
+   "on_screen_text": "WHY NOT?",
+   "search_query": "juicy pineapple close up",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "It drinks nectar almost nonstop, and burns it as fast as it arrives.",
-   "on_screen_text": "NONSTOP FUEL",
-   "search_query": "hummingbird feeder drinking",
+   "voiceover": "Your cells are replaced so fast that you never notice the damage, and it heals within hours.",
+   "on_screen_text": "FAST REPAIR",
+   "search_query": "tropical pineapple fruit",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Its wings trace a figure eight, which holds it still in the air.",
-   "on_screen_text": "HOVERING",
-   "search_query": "hummingbird hovering",
+   "voiceover": "Heat destroys the enzyme, so canned pineapple never does it.",
+   "on_screen_text": "CANNED IS SAFE",
+   "search_query": "canned pineapple rings",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "What happens when the flowers run out at night?",
-   "on_screen_text": "AT NIGHT?",
-   "search_query": "hummingbird branch perched",
+   "voiceover": "Why would a fruit evolve to bite back?",
+   "on_screen_text": "WHY BITE BACK?",
+   "search_query": "pineapple plant field",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "It slows its heart to a crawl and sleeps in a deep, cold trance.",
-   "on_screen_text": "DEEP SLEEP",
-   "search_query": "hummingbird nest",
+   "voiceover": "Probably to stop animals from eating it before its seeds are ready to spread.",
+   "on_screen_text": "DEFENSE",
+   "search_query": "pineapple market stall",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "A hummingbird's heart beats over 1,200 times per minute.",
-  "How a bird that small survives the night.",
-  "The only bird that can fly backwards."
+  "Fresh pineapple is digesting you back.",
+  "Why your tongue stings when you eat it.",
+  "The fruit that bites back."
  ],
  "hashtags": [
   "#science",
-  "#hummingbird",
-  "#birds",
-  "#animals",
+  "#pineapple",
+  "#food",
+  "#chemistry",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_hummingbird-heart",
+ "video_id": "science_2026-11-22_pineapple-bites-back",
  "cta_style": "SAVE_WORTHY",
- "domain": "animals",
+ "domain": "chemistry",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "hummingbird_heart",
- "kokoro_voice": "bm_daniel",
+ "fact_id": "pineapple_bromelain",
+ "kokoro_voice": "af_jessica",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
