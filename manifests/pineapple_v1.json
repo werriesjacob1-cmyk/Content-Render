@@ -1,0 +1,101 @@
+{
+ "title": "The Fruit That Bites Back",
+ "viewer_job": "REFRAME",
+ "keyword": "pineapple",
+ "metaphor": "digesting you back",
+ "vibe": "awe",
+ "hook": "When you eat fresh pineapple, it is digesting you back.",
+ "hook_headline": "IT DIGESTS YOU BACK",
+ "script": "When you eat fresh pineapple, it is digesting you back. The culprit is an enzyme called bromelain, which works like tiny scissors. That is why your mouth tingles, and your tongue can feel raw after a big bowl. So why does it not eat your whole mouth? Your cells are replaced so fast that you never notice the damage, and it heals within hours. Heat destroys the enzyme, so canned pineapple never does it. Why would a fruit evolve to bite back? Probably to stop animals from eating it before its seeds are ready to spread.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "When you eat fresh pineapple, it is digesting you back.",
+   "on_screen_text": "IT DIGESTS YOU BACK",
+   "search_query": "fresh pineapple slices",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "The culprit is an enzyme called bromelain, which works like tiny scissors.",
+   "on_screen_text": "BROMELAIN",
+   "search_query": "cutting pineapple open",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "That is why your mouth tingles, and your tongue can feel raw after a big bowl.",
+   "on_screen_text": "THE STING",
+   "search_query": "woman eating pineapple",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So why does it not eat your whole mouth?",
+   "on_screen_text": "WHY NOT?",
+   "search_query": "juicy pineapple close up",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Your cells are replaced so fast that you never notice the damage, and it heals within hours.",
+   "on_screen_text": "FAST REPAIR",
+   "search_query": "tropical pineapple fruit",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Heat destroys the enzyme, so canned pineapple never does it.",
+   "on_screen_text": "CANNED IS SAFE",
+   "search_query": "canned pineapple rings",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Why would a fruit evolve to bite back?",
+   "on_screen_text": "WHY BITE BACK?",
+   "search_query": "pineapple plant field",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Probably to stop animals from eating it before its seeds are ready to spread.",
+   "on_screen_text": "DEFENSE",
+   "search_query": "pineapple on cutting board",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Fresh pineapple is digesting you back.",
+  "Why your tongue stings when you eat it.",
+  "The fruit that bites back."
+ ],
+ "hashtags": [
+  "#science",
+  "#pineapple",
+  "#food",
+  "#chemistry",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_pineapple-bites-back",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "chemistry",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "pineapple_bromelain",
+ "kokoro_voice": "af_jessica",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
