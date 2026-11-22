@@ -73,6 +73,27 @@ banana-radiation video was produced).
   `honey_v1` (am_michael), `axolotl_v1` (af_nicole), `dust_v1` (af_bella). Voice default NOT changed: the
   agent cannot hear; QA narration_flow was 9 for both michael and fable. User picks by ear.
 
+## Night session 2026-11-22/23, part 2 — judge bug, serial dispatch, results (same branch)
+- **Footage judge was silently broken (fixed, run 487 proves it).** Groq discovery ranks `openai/gpt-oss-120b`
+  first; it is a REASONING model, and the judge's `max_tokens=20` was spent on hidden reasoning, so replies came
+  back empty ("judge: unparseable/empty reply" on most scenes of runs 480/485), good Pexels clips scored below
+  the floor and fell to junk archival stills. `main._chat_payload` now gives gpt-oss `reasoning_effort=low` and
+  >=600 tokens (tests/test_judge_payload.py). After the fix run 487's log has zero unparseable replies and real
+  scores (3-8). If the judge log shows "unparseable" again, check this first.
+- **`FOOTAGE_DEDUP=0` for manifest runs** (render.yml): re-rendering a topic otherwise loses its own clips
+  (axolotl 3/10). **Hybrid-manifest bug**: `-X theirs` rebase in the memory-commit step mixed two manifests
+  (run 477 rendered a dust scene inside the ice video); the step now re-copies the operator manifest after the
+  push loop and is `continue-on-error`. **Dispatch serially**: concurrency keeps ONE running + ONE pending, a
+  third dispatch cancels the pending one. Instagram Reels caption no longer ends on a command line.
+- **Results (all private cert renders, none posted).** Sent: frog 461 (B), woodpecker 462 (B+), honey 464
+  (B+/A-), axolotl 475 (B+), dust 476 (B+/A-), **ice 481 (A-, QA 9/9/9/10, voice bm_george)**, **twins 482
+  (B+, QA 8/9/9/9, am_adam; Samsung logo in one stock clip + plain blue end card)**. Not sent (gate or weak):
+  saturn, banana 480 (fruit queries, judge bug), taller 483 (QA 6/6, vintage stereo card, text cards), photon
+  484 (camping/dark stock), octopus 485/487 (Pexels "octopus" is mostly people/sea cucumbers), hummingbird 488
+  (QA 6/6, one feeder clip repeated). **Lesson: abstract/anatomical topics and several animals (octopus) have
+  poor Pexels coverage; ice/water/frog/bird-on-tree style topics with a literal camera subject work.**
+- Open: plain dark text cards still the main variety weakness; automated writer vs new rules still unproven.
+
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
 script + new footage logic, B-). **Read this before trusting any "it passed" claim.**
