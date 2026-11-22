@@ -14,6 +14,9 @@ on:
       gemini_model:
         description: "OPTIONAL one-off Gemini writer model for THIS run (e.g. gemini-3.8-flash). Empty = live discovery. Forces the model, skipping discovery."
         default: ""
+      use_manifest:
+        description: "OPTIONAL: path to a committed manifest under manifests/ to render INSTEAD of generating a script (e.g. manifests/human_vacuum_v2.json). Empty = generate normally."
+        default: ""
       fact_id:
         description: "OPTIONAL: pin the topic-bank fact id for THIS manual run (e.g. human_vacuum). Empty = normal selection."
         default: ""
@@ -121,8 +124,22 @@ jobs:
           fi
           ls -la voices/kokoro/ || true
 
+      - name: Use operator-supplied manifest (skips script generation)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.use_manifest != '' }}
+        env:
+          MANIFEST_SRC: ${{ github.event.inputs.use_manifest }}
+        run: |
+          case "$MANIFEST_SRC" in
+            manifests/*.json) ;;
+            *) echo "::error::use_manifest must be a manifests/*.json path"; exit 1 ;;
+          esac
+          case "$MANIFEST_SRC" in *..*) echo "::error::path traversal"; exit 1 ;; esac
+          test -s "$MANIFEST_SRC"
+          cp "$MANIFEST_SRC" manifest.json
+          echo "using $MANIFEST_SRC ($(wc -c < manifest.json) bytes) — no script generation this run"
+
       - name: Auto-generate a fresh video idea
-        if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.use_manifest == '') || github.event_name == 'schedule' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_GENERATION: "1"

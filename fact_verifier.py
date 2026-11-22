@@ -17,7 +17,7 @@ import json
 import re
 
 SUPPORTED, UNSUPPORTED, CONTRADICTED, NOT_A_CLAIM = "SUPPORTED", "UNSUPPORTED", "CONTRADICTED", "NOT_A_CLAIM"
-UNSUPPORTED_REJECT_AT = 2     # one unsupported line is logged; two reject the script
+UNSUPPORTED_REJECT_AT = 3     # one or two unsupported lines are logged; three reject the script
 
 
 def build_prompt(source, lines):

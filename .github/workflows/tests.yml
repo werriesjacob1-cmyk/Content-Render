@@ -57,6 +57,7 @@ jobs:
             director.py tests/test_director.py \
             video_audit.py tests/test_video_audit.py \
             claim_ledger.py fact_verifier.py tests/test_claim_checks.py \
+            tests/test_operator_manifest.py rehearsal.py \
             asset_gateway.py capability_preflight.py final_video_qa.py \
             generated_media_controller.py image_to_video_bakeoff.py molecular_media.py \
             quality_runtime.py quality_session.py quality_stack.py quality_stack_cli.py \
@@ -154,6 +155,7 @@ jobs:
           run_check "director layer" env -u GROQ_API_KEY python tests/test_director.py
           run_check "video audit" env -u GROQ_API_KEY python tests/test_video_audit.py
           run_check "claim ledger + verifier + timer card" env -u GROQ_API_KEY python tests/test_claim_checks.py
+          run_check "operator manifests + key-term numbers" env -u GROQ_API_KEY python tests/test_operator_manifest.py
           run_check "provider capability gate" python tests/test_provider_capability_gate.py
           run_check "evidence json boundary" env -u GROQ_API_KEY python tests/test_quality_evidence.py
           run_check "delivery audio contract" env -u GROQ_API_KEY python tests/test_delivery_audio_contract.py

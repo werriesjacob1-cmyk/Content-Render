@@ -2542,6 +2542,25 @@ def _key_term_present(term, text):
             d_norm = d.rstrip(".").replace(",", "")
             if d_norm and d_norm in norm_text:
                 return True
+        # SPELLED-OUT numbers: "fifteen seconds" IS "15 seconds". Run 456 died on 8 of 10
+        # attempts at "whatif payoff never answered ... ['15 seconds']"; the digit-only match
+        # rejects a script that says "fifteen seconds", which the prose "plain spoken English"
+        # rule actively encourages.
+        want = {int(d.rstrip(".").replace(",", "")) for d in digits
+                if d.rstrip(".").replace(",", "").isdigit()}
+        toks = re.findall(r"[a-z]+(?:-[a-z]+)*", text.lower())
+        i = 0
+        while i < len(toks):
+            v = _NUM_WORDS.get(toks[i])
+            parts = toks[i].split("-")
+            if v is None and len(parts) == 2 and all(p in _NUM_WORDS for p in parts):
+                v = _NUM_WORDS[parts[0]] + _NUM_WORDS[parts[1]]            # "twenty-five"
+            elif (v in (20, 30, 40, 50, 60, 70, 80, 90) and i + 1 < len(toks)
+                  and _NUM_WORDS.get(toks[i + 1], 99) < 10):
+                v += _NUM_WORDS[toks[i + 1]]                               # "twenty five"
+            if v is not None and v in want:
+                return True
+            i += 1
     return False
 
 _NUM_WORDS = {
