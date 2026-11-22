@@ -1,101 +1,101 @@
 {
- "title": "Raindrops Are Not Teardrops",
+ "title": "The Desert That Feeds the Jungle",
  "viewer_job": "REFRAME",
- "keyword": "raindrops",
- "metaphor": "hamburger bun",
+ "keyword": "Sahara",
+ "metaphor": "dust feeds jungle",
  "vibe": "awe",
- "hook": "Raindrops are not shaped like teardrops, even though everyone draws them that way.",
- "hook_headline": "NOT A TEARDROP",
- "script": "Raindrops are not shaped like teardrops, even though everyone draws them that way. Small drops are very nearly a perfect sphere, but bigger ones get flattened like a hamburger bun. The biggest drops fall at about twenty miles an hour. So what is squashing them on the way down? Air resistance pushes up on the bottom of the falling drop. If a drop grows too large, it tears itself apart into smaller drops. So why does everyone draw a teardrop? Because a drop hanging from a tap really does look that way, just before it falls.",
+ "hook": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon.",
+ "hook_headline": "SAHARA FEEDS THE AMAZON",
+ "script": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon. Rainforest soil is poor, because heavy rain washes its nutrients away. The missing ingredient is phosphorus, and the dust carries it. So where does all that dust come from? Much of it comes from one dried lake bed in Chad. Once full of life, it is now feeding a jungle an ocean away. Could a desert and a jungle really depend on each other? They do, and a quiet wind links two of the most different places on Earth.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Raindrops are not shaped like teardrops, even though everyone draws them that way.",
-   "on_screen_text": "NOT A TEARDROP",
-   "search_query": "rain falling slow motion",
+   "voiceover": "The Sahara sends 27 million tonnes of dust across the ocean to feed the Amazon.",
+   "on_screen_text": "SAHARA FEEDS THE AMAZON",
+   "search_query": "sahara desert dunes",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Small drops are very nearly a perfect sphere, but bigger ones get flattened like a hamburger bun.",
-   "on_screen_text": "SPHERE TO BUN",
-   "search_query": "water droplet closeup",
+   "voiceover": "Rainforest soil is poor, because heavy rain washes its nutrients away.",
+   "on_screen_text": "POOR SOIL",
+   "search_query": "amazon rainforest aerial",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "The biggest drops fall at about twenty miles an hour.",
-   "on_screen_text": "20 MPH",
-   "search_query": "raindrop splash puddle",
+   "voiceover": "The missing ingredient is phosphorus, and the dust carries it.",
+   "on_screen_text": "THE MISSING INGREDIENT",
+   "search_query": "rain forest rain",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what is squashing them on the way down?",
-   "on_screen_text": "WHAT SQUASHES THEM?",
-   "search_query": "rain window closeup",
+   "voiceover": "So where does all that dust come from?",
+   "on_screen_text": "WHERE FROM?",
+   "search_query": "desert sand wind",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Air resistance pushes up on the bottom of the falling drop.",
-   "on_screen_text": "AIR PUSHING UP",
-   "search_query": "heavy rain street",
+   "voiceover": "Much of it comes from one dried lake bed in Chad.",
+   "on_screen_text": "ONE DRIED LAKE",
+   "search_query": "dry lake bed cracked",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "If a drop grows too large, it tears itself apart into smaller drops.",
-   "on_screen_text": "IT TEARS APART",
-   "search_query": "rain on leaves",
+   "voiceover": "Once full of life, it is now feeding a jungle an ocean away.",
+   "on_screen_text": "FEEDING A JUNGLE",
+   "search_query": "jungle trees canopy",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "So why does everyone draw a teardrop?",
-   "on_screen_text": "WHY A TEARDROP?",
-   "search_query": "umbrella rain walking",
+   "voiceover": "Could a desert and a jungle really depend on each other?",
+   "on_screen_text": "DEPEND ON EACH OTHER?",
+   "search_query": "sand dunes desert",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Because a drop hanging from a tap really does look that way, just before it falls.",
-   "on_screen_text": "THE TAP DROP",
-   "search_query": "water tap dripping",
+   "voiceover": "They do, and a quiet wind links two of the most different places on Earth.",
+   "on_screen_text": "A QUIET WIND",
+   "search_query": "clouds over ocean",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Raindrops are not shaped like teardrops.",
-  "Big raindrops look like hamburger buns.",
-  "Why everyone draws a raindrop wrong."
+  "The Sahara feeds the Amazon rainforest.",
+  "27 million tonnes of dust cross the Atlantic every year.",
+  "The dried lake bed that feeds a jungle."
  ],
  "hashtags": [
   "#science",
-  "#rain",
-  "#weather",
-  "#physics",
+  "#sahara",
+  "#amazon",
+  "#earth",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_raindrops-not-teardrops",
+ "video_id": "science_2026-11-22_sahara-feeds-amazon",
  "cta_style": "SAVE_WORTHY",
- "domain": "weather",
+ "domain": "earth",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "raindrop_shape",
- "kokoro_voice": "am_eric",
+ "fact_id": "sahara_feeds_amazon",
+ "kokoro_voice": "af_kore",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
