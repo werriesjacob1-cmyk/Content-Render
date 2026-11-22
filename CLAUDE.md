@@ -105,6 +105,17 @@ banana-radiation video was produced).
   is now `true`, contrary to the notes above) held the group for ~30 min (its timeout) and my manual render sat
   "pending" with no jobs. Not a bug in the render: check for a running fill-script-buffer before assuming a stall.
 
+- **Later results (same night).** Sent: trees_air 492 (A-, QA 9/9/9/9), woodweb 498 (A-, 9/9/9/9), bamboo 490
+  (B+), spiders 497 (B), hummingbird 507 (B+), pineapple 508 (B+). Held back: diamond 499/501 (dark or STATIC
+  tabletop stock -> audit fail "picture does not change"), tickle 502 (abstract: QA footage 4), banana 503,
+  cockroach 494 (Pexels returns mantis/other insects), octopus, taller, photon. **Rule of thumb that held for
+  every pass: scenes need MOVING, literal camera subjects (forest, bamboo, hummingbird, fruit being cut). Static
+  product shots and abstract mechanisms fail.** New Kokoro misreads found and linted: "live", "lead" (->"laid"),
+  "midair" (->"madeira"); extend `KOKORO_MISREAD` whenever QA flags a mispronunciation.
+- **Scheduled cron is live.** A scheduled render-video (run 505, event=schedule on main) rendered a buffered
+  script on 2026-11-22 16:46 UTC and cancelled a pending manual dispatch (shared concurrency group). Its
+  publish steps were skipped (AUTO_PUBLISH_ENABLED not true), so nothing was posted.
+
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
 script + new footage logic, B-). **Read this before trusting any "it passed" claim.**
