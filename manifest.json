@@ -1,118 +1,118 @@
 {
- "title": "The Planet That Would Float",
+ "title": "The Frog That Comes Back From Frozen",
  "viewer_job": "REFRAME",
- "keyword": "saturn planet",
- "metaphor": "saturn density",
- "vibe": "awe",
- "hook": "Saturn is a giant planet, and it is lighter than water.",
- "hook_headline": "LIGHTER THAN WATER",
- "script": "Saturn is a giant planet, and it is lighter than water. It weighs ninety-five times more than Earth, yet it would float. Its average density is only 0.687 grams per cubic centimetre. So why is a planet that big so light? Because it is mostly hydrogen and helium, the lightest gases there are. Under the clouds there is no solid ground at all. Just gas, getting thicker and hotter the deeper you go. Is there anything to float in? You would need a bathtub bigger than the planet. Even its rings are mostly water ice, which is denser than the planet they circle.",
+ "keyword": "wood frog",
+ "metaphor": "frog freezes and revives",
+ "vibe": "visceral",
+ "hook": "A frog frozen solid is not a dead frog.",
+ "hook_headline": "FROZEN, NOT DEAD",
+ "script": "A frog frozen solid is not a dead frog. In winter, the wood frog's heart stops and it stops breathing. Up to two-thirds of the water in its body turns to ice. So how does anything survive that? Its cells fill with glucose, a sugar that stops ice from tearing them apart. For weeks, by any normal definition, it is dead. Then spring arrives. What happens when the ice melts? Its heart restarts on its own, with nothing to jump-start it. Within hours the frog is breathing, and soon it hops away alive.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Saturn is a giant planet, and it is lighter than water.",
-   "on_screen_text": "LIGHTER THAN WATER",
-   "search_query": "saturn rings cassini",
+   "voiceover": "A frog frozen solid is not a dead frog.",
+   "on_screen_text": "NOT DEAD",
+   "search_query": "wood frog",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "It weighs ninety-five times more than Earth, yet it would float.",
-   "on_screen_text": "STILL FLOATS",
-   "search_query": "earth planet blue marble",
+   "voiceover": "In winter, the wood frog's heart stops and it stops breathing.",
+   "on_screen_text": "HEART STOPS",
+   "search_query": "frog in snow",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Its average density is only 0.687 grams per cubic centimetre.",
-   "on_screen_text": "0.687",
-   "search_query": "water drop ripple",
+   "voiceover": "Up to two-thirds of the water in its body turns to ice.",
+   "on_screen_text": "2/3 ICE",
+   "search_query": "ice crystals closeup",
    "motion": "pan_left",
    "visual": {
     "type": "gauge",
-    "label": "Density",
-    "start": 1.0,
-    "end": 0.687,
-    "unit": "g/cm3",
-    "before": "Water",
-    "after": "Saturn"
+    "label": "Body water frozen",
+    "start": 0,
+    "end": 66,
+    "unit": "%",
+    "before": "Autumn",
+    "after": "Deep winter"
    }
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why is a planet that big so light?",
-   "on_screen_text": "WHY SO LIGHT?",
-   "search_query": "saturn storm cassini",
+   "voiceover": "So how does anything survive that?",
+   "on_screen_text": "HOW?",
+   "search_query": "frozen pond winter",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Because it is mostly hydrogen and helium, the lightest gases there are.",
-   "on_screen_text": "LIGHTEST GASES",
-   "search_query": "nebula gas cloud space",
+   "voiceover": "Its cells fill with glucose, a sugar that stops ice from tearing them apart.",
+   "on_screen_text": "SUGAR SHIELD",
+   "search_query": "glucose sugar crystals",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Under the clouds there is no solid ground at all.",
-   "on_screen_text": "NO GROUND",
-   "search_query": "cloud layer aerial",
+   "voiceover": "For weeks, by any normal definition, it is dead.",
+   "on_screen_text": "DEAD FOR WEEKS",
+   "search_query": "snow forest silent",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Just gas, getting thicker and hotter the deeper you go.",
-   "on_screen_text": "THICKER, HOTTER",
-   "search_query": "jupiter great red spot",
+   "voiceover": "Then spring arrives. What happens when the ice melts?",
+   "on_screen_text": "THAW",
+   "search_query": "melting ice drops",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Is there anything to float in? You would need a bathtub bigger than the planet.",
-   "on_screen_text": "BATHTUB?",
-   "search_query": "calm ocean surface water",
+   "voiceover": "Its heart restarts on its own, with nothing to jump-start it.",
+   "on_screen_text": "HEART RESTARTS",
+   "search_query": "heartbeat monitor",
    "motion": "zoom_out"
   },
   {
    "id": 9,
    "duration": 4,
-   "voiceover": "Even its rings are mostly water ice, which is denser than the planet they circle.",
-   "on_screen_text": "RINGS OF ICE",
-   "search_query": "ice crystals closeup",
+   "voiceover": "Within hours the frog is breathing, and soon it hops away alive.",
+   "on_screen_text": "HOPS AWAY",
+   "search_query": "frog jumping leaves",
    "motion": "zoom_in"
   }
  ],
  "captions": [
-  "A planet that weighs 95 Earths would still float in a bathtub.",
-  "Saturn is lighter than water. Here is how.",
-  "The giant planet with no ground, and rings denser than itself."
+  "This frog freezes solid every winter and walks away in spring.",
+  "Heart stopped, breathing stopped, two-thirds ice. Alive.",
+  "How a sugar shield brings a frozen frog back."
  ],
  "hashtags": [
-  "#space",
-  "#saturn",
+  "#frog",
+  "#animals",
   "#science",
-  "#astronomy",
-  "#nasa",
+  "#nature",
+  "#wildlife",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_the-planet-that-would-float",
+ "video_id": "science_2026-11-22_the-frog-that-comes-back",
  "cta_style": "SAVE_WORTHY",
- "domain": "space",
+ "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "saturn_floats",
- "kokoro_voice": "am_onyx",
- "kokoro_speed": 0.93,
+ "fact_id": "wood_frog_freeze",
+ "kokoro_voice": "af_heart",
+ "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
