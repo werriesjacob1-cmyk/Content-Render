@@ -3185,7 +3185,10 @@ def _build_gauge_card(scene, idx, seg_mp3, seg_dur, out_path, spec):
     water's boiling point falling as air pressure disappears) instead of decorating it. No newline,
     no ':' or quote in any text (drawtext-safe)."""
     def clean(t):
-        return re.sub(r"[^A-Z0-9 .,\-%]", "", str(t or "").upper()).strip()
+        # '%' is drawtext's expansion character and renders as nothing ("66" with no unit), so a
+        # percent unit is spelled out instead.
+        t = str(t or "").upper().replace("%", " PERCENT ")
+        return re.sub(r"\s+", " ", re.sub(r"[^A-Z0-9 .,\-]", "", t)).strip()
     label, unit = clean(spec.get("label")), clean(spec.get("unit"))
     before, after = clean(spec.get("before")), clean(spec.get("after"))
     a, b = float(spec.get("start", 0)), float(spec.get("end", 0))
