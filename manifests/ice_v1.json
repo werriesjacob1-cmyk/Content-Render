@@ -1,0 +1,101 @@
+{
+ "title": "Why Ice Floats",
+ "viewer_job": "REFRAME",
+ "keyword": "ice",
+ "metaphor": "ice expands",
+ "vibe": "awe",
+ "hook": "Almost everything sinks when it freezes, but ice floats.",
+ "hook_headline": "ICE SHOULD SINK",
+ "script": "Almost everything sinks when it freezes, but ice floats. Water is one of the only things that expands when it freezes. That makes ice less dense than the water it came from. So what happens to a bottle of water in your freezer? It bursts, because the ice has nowhere to go. And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart. Every winter, that splits boulders and tears up roads. Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Almost everything sinks when it freezes, but ice floats.",
+   "on_screen_text": "ICE FLOATS",
+   "search_query": "ice floating water",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Water is one of the only things that expands when it freezes.",
+   "on_screen_text": "IT EXPANDS",
+   "search_query": "ice cubes glass",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "That makes ice less dense than the water it came from.",
+   "on_screen_text": "LESS DENSE",
+   "search_query": "frozen lake surface",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So what happens to a bottle of water in your freezer?",
+   "on_screen_text": "IN YOUR FREEZER?",
+   "search_query": "water bottle frost",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "It bursts, because the ice has nowhere to go.",
+   "on_screen_text": "IT BURSTS",
+   "search_query": "cracked ice macro",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart.",
+   "on_screen_text": "BREAKS ROCK",
+   "search_query": "boulder rock crack",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Every winter, that splits boulders and tears up roads.",
+   "on_screen_text": "POTHOLES",
+   "search_query": "pothole road winter",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
+   "on_screen_text": "LAKES WOULD DIE",
+   "search_query": "frozen lake winter",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Almost everything sinks when it freezes. Ice floats, and that saves every lake.",
+  "Why a bottle bursts in your freezer and potholes appear every spring.",
+  "The one quirk that keeps fish alive."
+ ],
+ "hashtags": [
+  "#science",
+  "#ice",
+  "#chemistry",
+  "#facts",
+  "#winter",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_why-ice-floats",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "chemistry",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "water_expands_ice",
+ "kokoro_voice": "bm_george",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
