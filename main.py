@@ -1221,6 +1221,32 @@ def _extract_qa_frames(video, n, dest_dir):
     return paths
 
 
+def _extract_qa_verdict(data):
+    """Pull the final-QA verdict dict out of a Gemini generateContent reply (pure).
+    Reads EVERY non-thought text part (a reasoning part can come first -- run 466 aborted on a
+    prose first part while the JSON sat in a later one), and takes the last {...} object that
+    carries the footage_matches_narration key. Raises ValueError when there is none."""
+    parts = (((data.get("candidates") or [{}])[0].get("content") or {}).get("parts") or [])
+    texts = [p.get("text", "") for p in parts if p.get("text") and not p.get("thought")]
+    txt = "\n".join(texts)
+    for cand in reversed(re.findall(r"\{[^{}]*\}", txt, re.S)):
+        try:
+            v = json.loads(cand)
+        except ValueError:
+            continue
+        if isinstance(v, dict) and "footage_matches_narration" in v:
+            return v
+    m = re.search(r"\{.*\}", txt, re.S)
+    if m:
+        try:
+            v = json.loads(m.group(0))
+            if isinstance(v, dict) and "footage_matches_narration" in v:
+                return v
+        except ValueError:
+            pass
+    raise ValueError(f"no JSON in reply: {txt[:80]!r}")
+
+
 def _final_qa_check(video, m):
     """Holistic sanity check on the ASSEMBLED, captioned video.
 
@@ -1301,6 +1327,7 @@ def _final_qa_check(video, m):
         # the reply before any closing "}" once reasoning ate the budget).
         body = json.dumps({"contents": [{"parts": parts}],
                            "generationConfig": {"temperature": 0, "maxOutputTokens": 1024,
+                                                "responseMimeType": "application/json",
                                                 "thinkingConfig": {"thinkingBudget": 512}}}).encode()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{JUDGE_GEMINI_MODEL}:generateContent"
         rq = urllib.request.Request(url, data=body,
@@ -1318,11 +1345,7 @@ def _final_qa_check(video, m):
             try:
                 with urllib.request.urlopen(rq, timeout=60) as r:
                     data = json.loads(r.read().decode())
-                txt = data["candidates"][0]["content"]["parts"][0]["text"]
-                _match = re.search(r"\{.*\}", txt, re.S)
-                if _match is None:
-                    raise ValueError(f"no JSON in reply: {txt[:80]!r}")
-                verdict = json.loads(_match.group(0))
+                verdict = _extract_qa_verdict(data)
                 break
             except Exception as e:  # noqa: BLE001 — retried once, then re-raised below
                 last_err = e
