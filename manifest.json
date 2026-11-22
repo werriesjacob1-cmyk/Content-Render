@@ -1,105 +1,106 @@
 {
-  "title": "What Space Actually Does to Your Body",
-  "viewer_job": "REFRAME",
-  "keyword": "exposed to space",
-  "metaphor": "human vacuum survival",
-  "vibe": "visceral",
-  "hook": "Right now, atmospheric pressure is keeping the water inside your body from boiling.",
-  "hook_headline": "YOU WOULDN'T EXPLODE",
-  "script": "Right now, atmospheric pressure is keeping the water inside your body from boiling. If an airlock blew open, would your body pop like a balloon? Your tough collagen skin actually stretches instead of bursting. So why do you still pass out in only 15 seconds? In a vacuum, your lungs violently reverse, stripping oxygen backward out of your blood. Can a human survive ebullism when fluids boil at normal body temperature? In 1965, an exposed NASA technician felt his saliva boil and made a full recovery. Since animals survive two minutes flatlined, should vacuum decompression be treated as a rescue window or certain death?",
-  "scenes": [
-    {
-      "id": 1,
-      "duration": 5,
-      "voiceover": "Right now, atmospheric pressure is keeping the water inside your body from boiling.",
-      "on_screen_text": "ATMOSPHERIC SHIELD",
-      "search_query": "boiling water bubbles beaker",
-      "motion": "zoom_in",
-      "footage_mode": "ai"
-    },
-    {
-      "id": 2,
-      "duration": 5,
-      "voiceover": "If an airlock blew open, would your body pop like a balloon?",
-      "on_screen_text": "EXPOSED TO SPACE",
-      "search_query": "space helmet reflection",
-      "motion": "zoom_out",
-      "footage_mode": "real"
-    },
-    {
-      "id": 3,
-      "duration": 4,
-      "voiceover": "Your tough collagen skin actually stretches instead of bursting.",
-      "on_screen_text": "COLLAGEN SHIELD",
-      "search_query": "astronaut spacewalk",
-      "motion": "zoom_out",
-      "footage_mode": "real"
-    },
-    {
-      "id": 4,
-      "duration": 5,
-      "voiceover": "So why do you still pass out in only 15 seconds?",
-      "on_screen_text": "15 SECONDS",
-      "search_query": "stopwatch ticking hand",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 5,
-      "duration": 6,
-      "voiceover": "In a vacuum, your lungs violently reverse, stripping oxygen backward out of your blood.",
-      "on_screen_text": "REVERSED BREATHING",
-      "search_query": "outer space stars",
-      "motion": "static",
-      "footage_mode": "real"
-    },
-    {
-      "id": 6,
-      "duration": 5,
-      "voiceover": "Can a human survive ebullism when fluids boil at normal body temperature?",
-      "on_screen_text": "EBULLISM EFFECT",
-      "search_query": "water bubbling surface liquid",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 7,
-      "duration": 6,
-      "voiceover": "In 1965, an exposed NASA technician felt his saliva boil and made a full recovery.",
-      "on_screen_text": "NASA 1965 TEST",
-      "search_query": "space flight control room",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 6,
-      "voiceover": "Since animals survive two minutes flatlined, should vacuum decompression be treated as a rescue window or certain death?",
-      "on_screen_text": "EXPOSED TO SPACE",
-      "search_query": "earth from space horizon",
-      "motion": "zoom_out",
-      "footage_mode": "ai"
-    }
-  ],
-  "captions": [
-    "If you were exposed to space without a suit, is it a brief rescue window or instant death? Most sci-fi gets this backwards.",
-    "Hollywood lied about exploding bodies in a vacuum. Here is what human physiology actually does.",
-    "The 15-second rule of space decompression and why your own blood betrays you first."
-  ],
-  "hashtags": [
-    "#space",
-    "#science",
-    "#biology",
-    "#astronaut",
-    "#nasa",
-    "#learnontiktok"
-  ],
-  "render": {
-    "voice": "en-US-GuyNeural",
-    "rate": "-5%",
-    "resolution": "1080x1920"
+ "title": "What Space Really Does to Your Body",
+ "viewer_job": "REFRAME",
+ "keyword": "outer space",
+ "metaphor": "human vacuum survival",
+ "vibe": "visceral",
+ "hook": "Your body would not explode in space.",
+ "hook_headline": "YOU WOULDN'T EXPLODE",
+ "script": "Your body would not explode in space. It would not freeze solid either, whatever the movies show. You would stay awake for about 15 seconds. So why does that last so long, with nothing to breathe out there? Because the oxygen already in your blood keeps your brain running until it drains away through your lungs. And what happens to the water in your body? It starts to boil, even at normal body temperature. A NASA test subject once felt the saliva bubbling on his tongue before he blacked out. He recovered once the chamber was repressurised. So the real danger of a vacuum is how little time you have, not an explosion.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Your body would not explode in space.",
+   "on_screen_text": "NO EXPLOSION",
+   "search_query": "astronaut helmet space",
+   "motion": "zoom_in"
   },
-  "video_id": "science_2026-11-22_what-space-actually-does-to-your-body",
-  "cta_style": "COMMENT",
-  "domain": "space"
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "It would not freeze solid either, whatever the movies show.",
+   "on_screen_text": "NOT FROZEN",
+   "search_query": "ice crystals frozen",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "You would stay awake for about 15 seconds.",
+   "on_screen_text": "15 SECONDS",
+   "search_query": "stopwatch clock ticking",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So why does that last so long, with nothing to breathe out there?",
+   "on_screen_text": "WHY SO LONG",
+   "search_query": "empty space stars",
+   "motion": "pan_right"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Because the oxygen already in your blood keeps your brain running until it drains away through your lungs.",
+   "on_screen_text": "OXYGEN DRAINS",
+   "search_query": "human lungs breathing",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "And what happens to the water in your body? It starts to boil, even at normal body temperature.",
+   "on_screen_text": "WATER BOILS",
+   "search_query": "boiling water bubbles",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "A NASA test subject once felt the saliva bubbling on his tongue before he blacked out.",
+   "on_screen_text": "SALIVA BOILED",
+   "search_query": "nasa test chamber",
+   "motion": "pan_left"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "He recovered once the chamber was repressurised.",
+   "on_screen_text": "HE RECOVERED",
+   "search_query": "vacuum chamber window",
+   "motion": "pan_right"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "So the real danger of a vacuum is how little time you have, not an explosion.",
+   "on_screen_text": "LITTLE TIME",
+   "search_query": "earth from space horizon",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "Your body would not explode in space. What actually happens in the first 15 seconds is stranger.",
+  "Forget the movies: here is what a vacuum really does to a person.",
+  "15 seconds of consciousness, and a NASA test subject who felt his own saliva boil."
+ ],
+ "hashtags": [
+  "#space",
+  "#science",
+  "#biology",
+  "#astronaut",
+  "#nasa",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_what-space-really-does-to-your-body",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "space",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "human_vacuum"
 }
