@@ -248,6 +248,9 @@ jobs:
 
       - name: Commit footage dedup history
         if: always()
+        # A rebase conflict here (e.g. someone pushed to the branch mid-run) must not abort the
+        # job: it would skip the artifact upload and throw away a finished render (run 470).
+        continue-on-error: true
         run: |
           git config user.name "render-bot"
           git config user.email "bot@users.noreply.github.com"
