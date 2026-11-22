@@ -96,6 +96,34 @@ Then download the artifact and run `measure_caption_sync.py` on it. **Not verifi
 edge-tts (blocked locally), the CI Kokoro download/cache, whether Kokoro sounds good (needs the
 user's ears), real stock footage relevance, and Gemini obeying the new rules.
 
+## Session 2026-11-21 — Phase B: the director layer (branch `claude/phase-b-director-20261121`, off Phase A)
+`director.py` holds the pure logic; `main.py` does the I/O. Nothing here was render-verified
+on real footage. Verified locally with real ffmpeg on synthetic clips: the multi-clip path
+renders 7.0s from 4 cuts; the punch-in zoom is CENTRED (an early version drifted toward the
+bottom-right because `crop` centres on its configured size — fixed and pinned by a test);
+the sound bed builds at the intended levels.
+- **Shot list** (`DIRECTOR_SHOTLIST=1`, **default OFF** until the user has watched a render
+  made with it): one free LLM call (the judge-bucket `_groq_chat`) before footage fetch asks for
+  2-3 literal, filmable shots per line, each with a reason. Abstract/duplicate/over-length
+  shots are dropped; the FIRST shot becomes the scene's `search_query` (so the existing
+  relevance judge, fal and still fallbacks gate it exactly as before) and the rest are
+  searched first for extra cuts, each gated on its own subject word. Any failure leaves the
+  manifest untouched. **Honest limit:** extra shots are gated on the clip's description, not
+  the LLM judge (that would multiply judge calls); only the primary shot is judged. When
+  nothing clears the floor the existing chain still ends in the stat card (animated text), not
+  random stock.
+- **Mood grade** (`SCENE_MOOD`, default on): hook / build / turn (a question scene) / payoff
+  nudge, appended after the profile grade, deliberately mild (saturation <= 1.10).
+- **Punch-in** (`SCENE_PUNCH`, default on): +5% centred zoom, triangle ramp +-0.3s around the
+  scene's first keyword word. Needs real word timings; without them, none.
+- **Sound bed** (`SOUND_BED`, default on): ffmpeg-generated, license-safe: room tone (mean
+  ~-45 dB), a soft riser ending at the payoff scene's start, one low impact on it (peaks
+  ~-19 dB vs narration peaks ~-4.5 dB). Cut whooshes stay OFF. **Needs the user's ears** and
+  interacts with the unmerged music-level PR #96; if it is audible as noise, lower the
+  `ROOM_VOL/RISER_VOL/IMPACT_VOL` constants in `director.py` or set `SOUND_BED=0`.
+- Extra log lines to check on a real render: `[director] shot list applied to N/M`,
+  `[sfx] mixing quiet sound bed`, plus Phase A's.
+
 ## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
 Downstream machinery is now proven on REAL ffmpeg output, and the proof
 immediately earned its keep by exposing a defect every render had shipped.
