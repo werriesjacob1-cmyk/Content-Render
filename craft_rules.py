@@ -34,6 +34,8 @@ PURPLE_WORDS = (
     ("undisputed", r"undisputed"),
     ("vast", r"vast(?:ly)?"),
     ("endless", r"endless(?:ly)?"),
+    ("violently", r"violent(?:ly)?"),
+    ("betrays", r"betray(?:s|ed|ing)?"),
 )
 
 # --- 2. Crutch / filler phrases --------------------------------------------
@@ -50,7 +52,21 @@ CRUTCH_PHRASES = (
      r"(?:it|things) gets? (?:even )?(?:weirder|stranger|crazier)"),
 )
 
+# Words a smart 15-year-old would not know, or that read as written, not spoken. They
+# come from real shipped videos (run 455: "ebullism", "tough collagen", "decompression").
+# Each is a (display, regex) pair so the prompt and the check cannot drift.
+EXTRA_JARGON = (
+    ("ebullism", r"ebullism"),
+    ("cryptobiosis", r"cryptobiosis"),
+    ("decompression", r"decompress(?:ion|ed)?"),
+    ("collagen", r"collagen"),
+)
+
+MAX_QUESTIONS = 3          # questions in the narration (ending question earns one more)
+
+
 _PURPLE_RE = re.compile(r"\b(?:" + "|".join(p for _, p in PURPLE_WORDS) + r")\b", re.I)
+_JARGON_RE = re.compile(r"\b(?:" + "|".join(p for _, p in EXTRA_JARGON) + r")\b", re.I)
 _CRUTCH_RE = re.compile("(?:" + "|".join(p for _, p in CRUTCH_PHRASES) + ")", re.I)
 
 
@@ -61,6 +77,11 @@ def _norm(text):
 
 def find_purple(text):
     m = _PURPLE_RE.search(_norm(text))
+    return m.group(0) if m else None
+
+
+def find_jargon(text):
+    m = _JARGON_RE.search(_norm(text))
     return m.group(0) if m else None
 
 
@@ -150,26 +171,56 @@ def has_rehook(voiceover):
 
 
 # --- 5. Ending: a question/belief people will argue with -------------------
-DEBATE_ENDING_RULE = (
-    "ENDING (applies to EVERY style): the last line must leave the viewer with something to argue "
-    "about -- a question or a belief that is genuinely defensible BOTH ways given the facts the video "
-    "just gave. It must be honest: pick the real open question inside THIS topic (what scientists "
-    "actually disagree about, or a judgement call the facts leave open) and never manufacture "
-    "controversy or fake outrage. It must ADD an idea the hook did not contain; it must not restate "
-    "the hook or the reveal in new words."
+ENDING_STATEMENT_RULE = (
+    "ENDING: end on a plain STATEMENT that adds one new idea the hook did not contain -- the "
+    "implication, the consequence, or the proof. Do NOT end on a question: this fact has no "
+    "genuinely open question, and a manufactured one reads as fake outrage. Never restate the "
+    "hook or the reveal in new words."
 )
 
 
-def prompt_block():
+def ending_open_question_rule(question):
+    return (
+        "ENDING: end on THIS genuinely open question from the verified material, in your own plain "
+        f"words: \"{question}\" Both answers must be defensible with the facts you gave. It must ADD "
+        "an idea the hook did not contain; never restate the hook."
+    )
+
+
+def misconception_rule(misconception):
+    return (
+        "- MISCONCEPTION FIRST: the hook states the TRUE claim that contradicts this common belief, in "
+        f"plain words, in its first line: \"{misconception}\" The mechanism comes AFTER the hook, as "
+        "the answer to it -- never open on the mechanism. BAD (mechanism first, belief never "
+        "challenged): \"Right now, atmospheric pressure is keeping the water inside your body from "
+        "boiling.\" GOOD: \"Your body would not explode in space.\"\n"
+    )
+
+
+def effective_cta_style(cta_style, fact):
+    """COMMENT means 'end on the open question'. A fact with no open_question has none,
+    so COMMENT becomes a resonant payoff instead of a manufactured argument."""
+    if cta_style == "COMMENT" and not (fact or {}).get("open_question"):
+        return "SAVE_WORTHY"
+    return cta_style
+
+
+def prompt_block(fact=None):
     """The craft-rules text for the live Writer prompt, built from the constants
     above so the prompt can never name a rule check_script() does not enforce."""
+    fact = fact or {}
     purple = ", ".join(w for w, _ in PURPLE_WORDS)
     crutch = "; ".join(f'"{c}"' for c, _ in CRUTCH_PHRASES)
+    jargon = ", ".join(w for w, _ in EXTRA_JARGON)
+    oq = (fact.get("open_question") or "").strip()
+    mis = (fact.get("misconception") or "").strip()
     return (
         "CRAFT RULES (each one is checked MECHANICALLY after you write -- a script that breaks one is "
         "rejected and you will have to redo it):\n"
-        f"- BANNED PURPLE WORDS (any form): {purple}. Say it the way a person talking would.\n"
+        + (misconception_rule(mis) if mis else "")
+        + f"- BANNED PURPLE WORDS (any form): {purple}. Say it the way a person talking would.\n"
         f"- BANNED CRUTCH PHRASES: {crutch}. Just state the next real fact.\n"
+        f"- BANNED JARGON: {jargon}. Explain the thing in plain words; never name it.\n"
         f"- THE PAYOFF ADDS A NEW IDEA. The final line may reuse at most {int(PAYOFF_MAX_HOOK_OVERLAP * 100)}% "
         "of its meaningful words from the hook; if you are circling back to the opening claim, "
         "you have not written a payoff yet. BAD (restates the hook): hook \"This fungus is one "
@@ -178,15 +229,24 @@ def prompt_block():
         "- RE-HOOK TWICE: somewhere in the scenes spoken around the 15-second mark (about word 38) AND "
         "around the 30-second mark (about word 75; a ~30 s short only needs the first), ask a fresh "
         "QUESTION the viewer now wants answered -- a new open loop, not a recap.\n"
-        f"- {DEBATE_ENDING_RULE}\n"
+        f"- AT MOST {MAX_QUESTIONS} QUESTIONS in the narration" +
+        (" (plus the one ending question)" if oq else "") +
+        ": more than that is a wall of interrogatives, not a story. Everything else is a statement.\n"
+        f"- {ending_open_question_rule(oq) if oq else ENDING_STATEMENT_RULE}\n"
     )
 
 
-def check_script(hook, voiceovers):
+def _shared(a, b):
+    return len(content_stems(a) & content_stems(b))
+
+
+def check_script(hook, voiceovers, fact=None):
     """Mechanical enforcement of the rules above. Returns an error string or None.
 
-    `voiceovers` is the list of scene voiceovers in order. Order of checks is the
-    order a writer can most cheaply fix them."""
+    `voiceovers` is the list of scene voiceovers in order; `fact` (optional) is the bank
+    fact, whose misconception/open_question fields switch on the hook and ending rules.
+    Order of checks is the order a writer can most cheaply fix them."""
+    fact = fact or {}
     texts = [hook or ""] + [v or "" for v in voiceovers]
     for i, t in enumerate(texts):
         where = "hook" if i == 0 else f"scene {i - 1} voiceover"
@@ -194,16 +254,39 @@ def check_script(hook, voiceovers):
         if p:
             return (f"{where} uses the banned purple word {p!r} — say it plainly, the way a person "
                     f"talking would")
+        j = find_jargon(t)
+        if j:
+            return (f"{where} uses the jargon word {j!r} — a smart 15-year-old would not know it; "
+                    f"describe the thing in plain words instead of naming it")
         c = find_crutch(t)
         if c:
             return (f"{where} uses the banned crutch phrase {c!r} — just state the next real fact "
                     f"instead of announcing that something is coming")
+    mis = (fact.get("misconception") or "").strip()
+    if mis:
+        anchor = mis + " " + " ".join(str(k) for k in fact.get("key_terms", []))
+        if _shared(hook, anchor) < 2:
+            return (f"the hook {hook!r} does not state the claim that contradicts the common belief "
+                    f"{mis!r} — open on the surprising TRUE claim first; the mechanism answers it afterwards")
     if voiceovers:
         final = voiceovers[-1]
         if payoff_restates_hook(hook, final):
             frac, _ = payoff_overlap(hook, final)
             return (f"the final line {final!r} restates the hook ({int(frac * 100)}% of its meaningful "
                     f"words were already in the hook) — the payoff must add a NEW idea, not circle back")
+        oq = (fact.get("open_question") or "").strip()
+        ends_q = final.rstrip().endswith("?")
+        if ends_q and not oq:
+            return (f"the final line {final!r} is a question but this fact has no genuinely open "
+                    f"question — end on a plain statement that adds a new idea")
+        if oq and not (ends_q and _shared(final, oq) >= 2):
+            return (f"this fact has a genuinely open question ({oq!r}) — the final line must pose it "
+                    f"(as a question, in plain words); got {final!r}")
+        n_q = sum(v.count("?") for v in voiceovers)
+        cap = MAX_QUESTIONS + (1 if ends_q else 0)
+        if n_q > cap:
+            return (f"{n_q} questions in the narration (max {cap}) — it reads as a wall of "
+                    f"interrogatives; turn the extras into plain statements")
         counts = [len(v.split()) for v in voiceovers]
         for idxs in rehook_windows(counts):
             if not any(has_rehook(voiceovers[i]) for i in idxs):

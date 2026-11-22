@@ -1691,7 +1691,7 @@ SAVES (5x a like) — THIS COMES FROM THE CONTENT, NOT A COMMAND:
 
 {CTA_ENDING_RULES.get(cta_style, CTA_ENDING_RULES["SAVE_WORTHY"])}
 
-{craft_rules.prompt_block()}
+{craft_rules.prompt_block(fact)}
 
 COMMENTS (binary questions outperform — easiest to answer, drive depth):
 - Independent of the ending style above, plant ONE line somewhere in the script that provokes a
@@ -3130,7 +3130,7 @@ def validate(m, job_name, fact=None):
     # from): purple words, crutch phrases, payoff-restates-hook, ~15s/~30s re-hook.
     # Deliberately LAST so every older, more specific rejection keeps its own
     # message and test; this is the newest layer, not a replacement for them.
-    _craft_err = craft_rules.check_script(m["hook"], [s["voiceover"] for s in m["scenes"]])
+    _craft_err = craft_rules.check_script(m["hook"], [s["voiceover"] for s in m["scenes"]], fact=fact)
     if _craft_err:
         return _craft_err
 
@@ -4648,6 +4648,11 @@ def main():
         cta_style = _weighted_choice(cta_options, weights, EXPLORE_EPSILON)
     else:
         cta_style = random.choice(cta_options)
+    _eff = craft_rules.effective_cta_style(cta_style, chosen_fact)
+    if _eff != cta_style:
+        print(f"[generate] cta_style {cta_style} -> {_eff}: this fact has no genuinely open question "
+              f"to end on")
+        cta_style = _eff
     print(f"[generate] cta_style={cta_style}")
 
     # Rotate the OPENING-LINE shape too (see HOOK_FRAMES) so consecutive videos

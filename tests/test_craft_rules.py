@@ -119,15 +119,86 @@ def test_validate_runs_the_craft_layer():
     check(err is not None and "purple" in err, f"validate() rejects a purple word ({err})")
 
 
-def test_ending_rule_is_in_every_style():
-    block = C.prompt_block()
-    check(C.DEBATE_ENDING_RULE in block, "debate-ending rule is in the live prompt for every style")
-    check("defensible BOTH ways" in G.CTA_ENDING_RULES["COMMENT"],
-          "COMMENT style asks for a genuinely either-way question")
-    check("never invent controversy" in G.CTA_ENDING_RULES["COMMENT"],
-          "COMMENT style forbids manufactured controversy")
-    check("recasts the hook" not in G.CTA_ENDING_RULES["SAVE_WORTHY"],
-          "SAVE_WORTHY no longer invites the hook to be restated")
+RUN455_HOOK = "Right now, atmospheric pressure is keeping the water inside your body from boiling."
+RUN455 = [
+    RUN455_HOOK,
+    "If an airlock blew open, would your body pop like a balloon?",
+    "Your tough collagen skin actually stretches instead of bursting.",
+    "So why do you still pass out in only 15 seconds?",
+    "In a vacuum, your lungs violently reverse, stripping oxygen backward out of your blood.",
+    "Can a human survive ebullism when fluids boil at normal body temperature?",
+    "In 1965, an exposed NASA technician felt his saliva boil and made a full recovery.",
+    "Since animals survive two minutes flatlined,",
+    "should vacuum decompression be treated as a rescue window or certain death?",
+]
+
+
+def _vacuum():
+    import json
+    bank = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "topic_bank.json")))
+    return {f["id"]: f for f in bank["facts"]}["human_vacuum"]
+
+
+def test_run455_script_is_rejected_for_the_right_reasons():
+    f = _vacuum()
+    check(C.check_script(RUN455_HOOK, RUN455, f) is not None, "the real run-455 script no longer passes")
+    clean = [RUN455_HOOK] + [f"Plain line {i}." for i in range(1, 8)]
+    check("contradicts" in (C.check_script(RUN455_HOOK, clean, f) or ""),
+          "the mechanism-first hook is rejected even when the rest of the script is clean")
+    check("collagen" in C.check_script(RUN455_HOOK, RUN455, f), "and the full script trips the first banned word it reaches (collagen)")
+    ok_hook = "Your body would not explode in space."
+    for bad, why in (("ebullism", "jargon"), ("collagen", "jargon"), ("decompression", "jargon"),
+                     ("violently", "purple")):
+        vos = [ok_hook] + [f"Plain line {i}." for i in range(1, 8)]
+        vos[2] = f"It is the {bad} that matters."
+        err = C.check_script(ok_hook, vos, f)
+        check(err and bad in err, f"{bad!r} ({why}) is rejected")
+
+
+def test_bank_no_longer_forces_jargon():
+    f = _vacuum()
+    check("ebullism" not in [k.lower() for k in f["key_terms"]] and "ebullism" in f.get("optional_terms", []),
+          "human_vacuum no longer MANDATES the word 'ebullism'")
+    check(len(f["key_terms"]) >= 2, "it still has enough plain key terms to satisfy validate()")
+    check(f.get("misconception") and f.get("open_question") is None, "misconception set; no invented open question")
+
+
+def test_hook_first_and_ending_rules_follow_the_fact():
+    f = _vacuum()
+    hook = "Your body would not explode in space."
+    vos = [hook, "You would stay conscious for about 15 seconds.", "Your skin is tough enough to hold you together.",
+           "So why do you black out so fast?", "The air in your lungs rushes out and drags the oxygen from your blood.",
+           "That air is gone in a couple of seconds, and the blood keeps flowing to your brain without it.",
+           "What did a NASA technician feel in 1965 when his suit lost pressure? His saliva began to boil.",
+           "He passed out in about 14 seconds and recovered once the chamber was repressurised.",
+           "So the real danger of a vacuum is how little time you have, not an explosion."]
+    check(C.check_script(hook, vos, f) is None, f"a hook-first, statement-ending script passes ({C.check_script(hook, vos, f)})")
+    q_end = vos[:-1] + ["So is the real danger the time you have, or the explosion?"]
+    check("no genuinely open" in (C.check_script(hook, q_end, f) or ""), "a question ending is rejected when the fact has no open question")
+    oq = dict(f, open_question="Is a vacuum survivable if help arrives within seconds?")
+    check("open question" in (C.check_script(hook, vos, oq) or ""), "when the fact HAS an open question the ending must pose it")
+    ok_end = vos[:-1] + ["Is a vacuum survivable if help arrives within seconds?"]
+    check(C.check_script(hook, ok_end, oq) is None, "posing it passes")
+    many = list(vos); many[1] = "Would you really stay awake?"; many[2] = "Would your skin hold?"
+    check("questions in the narration" in (C.check_script(hook, many, f) or ""), "more than 3 questions is rejected")
+
+
+def test_cta_remap_and_prompt_follow_the_fact():
+    f = _vacuum()
+    check(C.effective_cta_style("COMMENT", f) == "SAVE_WORTHY", "COMMENT becomes a payoff when there is no open question")
+    check(C.effective_cta_style("COMMENT", dict(f, open_question="Why?")) == "COMMENT", "COMMENT stays when there is one")
+    check(C.effective_cta_style("LOOP", f) == "LOOP", "other styles are untouched")
+    block = C.prompt_block(f)
+    check("MISCONCEPTION FIRST" in block and f["misconception"] in block, "the hook-first rule names this fact's misconception")
+    check(C.ENDING_STATEMENT_RULE in block, "no open question -> the prompt says end on a statement")
+    oq_block = C.prompt_block(dict(f, open_question="Is it survivable?"))
+    check("Is it survivable?" in oq_block and C.ENDING_STATEMENT_RULE not in oq_block, "an open question is handed to the writer verbatim")
+    check("MISCONCEPTION FIRST" not in C.prompt_block({}), "a fact without a misconception gets no hook-first rule")
+    for w, _ in C.EXTRA_JARGON:
+        check(w in block, f"prompt names jargon word {w!r}")
+    check("MISCONCEPTION FIRST" in G.build_prompt("EXPLAIN", "explain a thing", "none", fact=f, cta_style="COMMENT"),
+          "build_prompt() carries the fact-specific rules")
+    check("COMMENT" not in G.CTA_ENDING_RULES.get("NONE", ""), "sanity")
 
 
 if __name__ == "__main__":
