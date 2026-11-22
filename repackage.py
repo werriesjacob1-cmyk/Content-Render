@@ -428,9 +428,10 @@ def write_platform_text(resolved_files):
 
     # TikTok: keyword-stuffed caption + question (search + comments). Tags inline, heavy.
     tiktok = _truncate(f"{base_cap} {' '.join(tags[:5])}", CAPTION_LIMITS["tiktok"])
-    # Instagram Reels: share-prompt framing, fewer tags, cleaner. 'Send this to...' drives DM sends.
+    # Instagram Reels: fewer tags, cleaner. No "send this to someone" command line -- the channel's
+    # standing rule is no command endings (the caption already carries the hook).
     insta_reels = _truncate(
-        f"{base_cap}\n\nSend this to someone who needs to see it.\n{' '.join(tags[:5])}",
+        f"{base_cap}\n\n{' '.join(tags[:5])}",
         CAPTION_LIMITS["instagram_reels"])
     # Instagram feed: same content, deliberately reworded/reordered (not a byte-identical
     # copy of the Reels caption) so cross-posting to both placements doesn't read as spam.
