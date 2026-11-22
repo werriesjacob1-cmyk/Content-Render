@@ -1,0 +1,101 @@
+{
+ "title": "Sharks Are Older Than Trees",
+ "viewer_job": "REFRAME",
+ "keyword": "sharks",
+ "metaphor": "older than trees",
+ "vibe": "awe",
+ "hook": "Sharks have been swimming for 450 million years, longer than trees have existed.",
+ "hook_headline": "OLDER THAN TREES",
+ "script": "Sharks have been swimming for 450 million years, longer than trees have existed. Back then, nothing on land stood taller than a shrub. A shark grows and sheds thousands of teeth in its lifetime. So what were sharks doing back then? They have survived all five mass extinctions, events that wiped out most life on Earth. They outlived the dinosaurs, which came and vanished long after the first sharks. How does an animal survive that long? Scientists think it is their efficient design, which has barely changed in a very long time.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Sharks have been swimming for 450 million years, longer than trees have existed.",
+   "on_screen_text": "OLDER THAN TREES",
+   "search_query": "shark swimming underwater",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Back then, nothing on land stood taller than a shrub.",
+   "on_screen_text": "NOTHING TALLER THAN A SHRUB",
+   "search_query": "ancient forest trees",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "A shark grows and sheds thousands of teeth in its lifetime.",
+   "on_screen_text": "THOUSANDS OF TEETH",
+   "search_query": "shark teeth jaws",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So what were sharks doing back then?",
+   "on_screen_text": "WHAT WERE THEY DOING?",
+   "search_query": "deep ocean blue",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "They have survived all five mass extinctions, events that wiped out most life on Earth.",
+   "on_screen_text": "FIVE EXTINCTIONS",
+   "search_query": "reef shark swimming",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "They outlived the dinosaurs, which came and vanished long after the first sharks.",
+   "on_screen_text": "OUTLIVED DINOSAURS",
+   "search_query": "dinosaur fossil museum",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "How does an animal survive that long?",
+   "on_screen_text": "HOW?",
+   "search_query": "shark fin ocean surface",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Scientists think it is their efficient design, which has barely changed in a very long time.",
+   "on_screen_text": "BARELY CHANGED",
+   "search_query": "great white shark",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "Sharks are older than trees.",
+  "450 million years of swimming.",
+  "The animal that outlived five mass extinctions."
+ ],
+ "hashtags": [
+  "#science",
+  "#sharks",
+  "#deeptime",
+  "#ocean",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_sharks-older-than-trees",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "deep_time",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "sharks_older_than_trees",
+ "kokoro_voice": "bm_lewis",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
