@@ -3058,6 +3058,40 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
     return paths
 
 
+_SECONDS_RE = re.compile(r"\b(\d{1,2})[- ]?seconds?\b", re.I)
+
+
+def _countdown_seconds(scene):
+    """The duration (3-60 s) a scene's narration states, or None (pure). A line like 'you
+    pass out in only 15 seconds' has a literal, always-relevant visual: a stopwatch."""
+    for t in (scene.get("voiceover", ""), scene.get("on_screen_text", "")):
+        m = _SECONDS_RE.search(t or "")
+        if m and 3 <= int(m.group(1)) <= 60:
+            return int(m.group(1))
+    return None
+
+
+def _build_timer_card(scene, idx, seg_mp3, seg_dur, out_path, n):
+    """A stopwatch card: the number ticks up from 0 to n over ~80% of the card, then holds,
+    under the word SECONDS. Procedural, license-free, and exactly what the line says."""
+    palette = STAT_CARD_PALETTES[(idx - 1) % len(STAT_CARD_PALETTES)]
+    c0, c1 = palette
+    T = max(0.5, seg_dur * 0.8)
+    num = f"%{{eif\\:trunc(min({n}\\,{n}*t/{T:.3f}))\\:d}}"
+    vf = (
+        f"vignette=PI/5.2,"
+        f"drawtext=text='{num}':fontfile='{FONT}':fontsize=420:fontcolor=white:borderw=12:"
+        f"bordercolor=black@0.75:x=(w-tw)/2:y=(h*0.42)-(th/2),"
+        f"drawtext=text='SECONDS':fontfile='{FONT}':fontsize=110:fontcolor=white@0.9:borderw=8:"
+        f"bordercolor=black@0.7:x=(w-tw)/2:y=(h*0.42)+230,setsar=1"
+    )
+    run(["ffmpeg", "-y", "-f", "lavfi", "-i",
+         f"gradients=s={W}x{H}:d={seg_dur:.3f}:r=30:c0={c0}:c1={c1}:type=radial:speed=0.006:seed={1000 + idx}",
+         "-i", seg_mp3, "-t", f"{seg_dur:.3f}", "-filter_complex", f"[0:v]{vf}[v]",
+         "-map", "[v]", "-map", "1:a", "-r", "30", "-pix_fmt", "yuv420p",
+         "-c:v", "libx264", "-c:a", "aac", "-shortest", out_path])
+
+
 def _card_part(scene, idx, j, d, part):
     """A silent filler CARD shot of d seconds (the scene's stat-card text over the animated
     gradient): the visual that fills time no on-subject footage can, instead of a longer
@@ -3066,7 +3100,15 @@ def _card_part(scene, idx, j, d, part):
     run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{d:.3f}", silent])
     tmp = part + ".card.mp4"
     motion = _motion_filter(scene, max(1, round(d * 30)), PROFILE["zoom_speed"], idx=idx + j, prev_kind=None)
-    _build_stat_card(scene, idx, silent, d, tmp, motion)
+    n_sec = _countdown_seconds(scene)
+    if n_sec:
+        try:
+            _build_timer_card(scene, idx, silent, d, tmp, n_sec)
+        except Exception as e:  # noqa: BLE001
+            print(f"  timer card failed ({e}) — using the stat card")
+            _build_stat_card(scene, idx, silent, d, tmp, motion)
+    else:
+        _build_stat_card(scene, idx, silent, d, tmp, motion)
     run(["ffmpeg", "-y", "-i", tmp, "-an", "-c:v", "copy", part])
 
 

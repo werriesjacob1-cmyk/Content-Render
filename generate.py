@@ -761,6 +761,8 @@ HOOK_FRAMES = [
      "Use the viewer perspective only when it clarifies a real consequence the science actually supports."),
 ]
 
+import claim_ledger
+import fact_verifier
 import craft_rules  # single source of truth for purple/crutch/payoff/re-hook/ending rules
 
 CTA_ENDING_RULES = {
@@ -3133,6 +3135,10 @@ def validate(m, job_name, fact=None):
     _craft_err = craft_rules.check_script(m["hook"], [s["voiceover"] for s in m["scenes"]], fact=fact)
     if _craft_err:
         return _craft_err
+    _ledger_err = claim_ledger.lint([s["voiceover"] for s in m["scenes"]])
+    if _ledger_err:
+        return _ledger_err
+    m["claim_ledger"] = claim_ledger.build_ledger([s["voiceover"] for s in m["scenes"]])
 
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None
@@ -4237,6 +4243,32 @@ def deterministic_mechanical_trim(writer_out, validate_err, num_beats):
     return None
 
 
+def verify_claims(m, fact, dossier):
+    """One LLM call (fact_verifier.py): does the verified SOURCE support what the script says?
+    Returns an error string to reject the attempt, or None. FACT_VERIFY=0 disables it. Fails
+    OPEN -- a down, garbled or empty checker never blocks a script."""
+    if os.environ.get("FACT_VERIFY", "1").strip().lower() in ("0", "false", "no", "off"):
+        return None
+    try:
+        lines = [s["voiceover"] for s in m["scenes"]]
+        f = fact or {}
+        source = "\n".join(x for x in (f.get("fact"), f.get("wow"), f.get("whatif"),
+                                        dossier if isinstance(dossier, str) else "") if x)
+        if not source.strip():
+            return None
+        v = fact_verifier.parse(call_groq(fact_verifier.build_prompt(source, lines)), len(lines))
+        if not v:
+            print("  [verify] no usable verdicts from the checker — skipping (fail-open)")
+            return None
+        err, notes = fact_verifier.decide(v, lines)
+        for n in notes:
+            print(f"  [verify] {n}")
+        return err
+    except Exception as e:  # noqa: BLE001
+        print(f"  [verify] checker failed ({e}) — skipping (fail-open)")
+        return None
+
+
 def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_openers=None,
                         cta_style="SAVE_WORTHY", dossier=None, hook_frame=None):
     """Run the full generate -> validate -> info-gain -> punch-up pipeline
@@ -4309,6 +4341,10 @@ def generate_candidate(job_name, job_desc, avoid, chosen_fact, history, avoid_op
                       f"(flocking/emergence/etc), retrying"); continue
             if _metaphor_too_similar(m.get("metaphor", ""), history):
                 print(f"  attempt {attempt+1} too similar to a recent topic, retrying"); continue
+            _vfy = verify_claims(m, chosen_fact, dossier)
+            if _vfy:
+                print(f"  attempt {attempt+1} invalid: {_vfy}")
+                continue            # a factual error is never kept as a near-miss
             # ONE call does the redundancy gate AND the rubric score (was two
             # separate Groq calls over the same voiceover list). The score is
             # stashed on the manifest so main()'s quality ratchet can reuse it
