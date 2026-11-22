@@ -1,101 +1,101 @@
 {
- "title": "Diamond and Pencil: Same Stuff",
+ "title": "Why You Can't Tickle Yourself",
  "viewer_job": "REFRAME",
- "keyword": "diamond",
- "metaphor": "same carbon",
+ "keyword": "tickle",
+ "metaphor": "brain prediction",
  "vibe": "awe",
- "hook": "A diamond and the graphite in your pencil are made of the same thing: carbon.",
- "hook_headline": "DIAMOND = PENCIL?",
- "script": "A diamond and the graphite in your pencil are made of the same thing: carbon. One is the hardest natural material, and the other is soft enough to smear. Diamonds form deep underground, squeezed for ages under crushing pressure. So what makes the two behave so differently? In a diamond, every atom grips four neighbours in a rigid cage. In graphite, atoms sit in flat sheets that slide over each other. Could a pencil mark ever become a diamond? With enough heat and pressure, yes, and that is how labs grow diamonds.",
+ "hook": "You cannot tickle yourself, and your brain is the reason.",
+ "hook_headline": "YOU CAN'T TICKLE YOURSELF",
+ "script": "You cannot tickle yourself, and your brain is the reason. When you move your own hand, your cerebellum predicts the touch before it lands. Your brain does this all day, to save its attention for real surprises. So why does a friend's touch still make you laugh? Because your brain cannot predict what someone else will do. It is the same system that tells you the world is shaking, not just your head. Could you ever fool it into tickling you? Scientists have: add a small delay to your own touch, and it tickles again.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A diamond and the graphite in your pencil are made of the same thing: carbon.",
-   "on_screen_text": "SAME STUFF",
-   "search_query": "diamond close up",
+   "voiceover": "You cannot tickle yourself, and your brain is the reason.",
+   "on_screen_text": "YOU CAN'T TICKLE YOURSELF",
+   "search_query": "woman laughing",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "One is the hardest natural material, and the other is soft enough to smear.",
-   "on_screen_text": "HARD VS SOFT",
-   "search_query": "hand writing pencil notebook",
+   "voiceover": "When you move your own hand, your cerebellum predicts the touch before it lands.",
+   "on_screen_text": "IT PREDICTS THE TOUCH",
+   "search_query": "hand reaching forward",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Diamonds form deep underground, squeezed for ages under crushing pressure.",
-   "on_screen_text": "CRUSHING PRESSURE",
-   "search_query": "mineral crystals rock",
+   "voiceover": "Your brain does this all day, to save its attention for real surprises.",
+   "on_screen_text": "SAVING ATTENTION",
+   "search_query": "hand touching arm",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what makes the two behave so differently?",
-   "on_screen_text": "WHY SO DIFFERENT?",
-   "search_query": "pencil drawing paper",
+   "voiceover": "So why does a friend's touch still make you laugh?",
+   "on_screen_text": "WHY A FRIEND?",
+   "search_query": "friends laughing together",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "In a diamond, every atom grips four neighbours in a rigid cage.",
-   "on_screen_text": "A RIGID CAGE",
-   "search_query": "jewelry store diamond ring",
+   "voiceover": "Because your brain cannot predict what someone else will do.",
+   "on_screen_text": "CAN'T PREDICT THEM",
+   "search_query": "tickling baby feet",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "In graphite, atoms sit in flat sheets that slide over each other.",
-   "on_screen_text": "SLIDING SHEETS",
-   "search_query": "pencil shavings desk",
+   "voiceover": "It is the same system that tells you the world is shaking, not just your head.",
+   "on_screen_text": "SAME SYSTEM",
+   "search_query": "person turning head",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Could a pencil mark ever become a diamond?",
-   "on_screen_text": "COULD IT?",
-   "search_query": "sharpened pencil",
+   "voiceover": "Could you ever fool it into tickling you?",
+   "on_screen_text": "CAN YOU FOOL IT?",
+   "search_query": "robot arm",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "With enough heat and pressure, yes, and that is how labs grow diamonds.",
-   "on_screen_text": "HEAT AND PRESSURE",
-   "search_query": "jeweller examining diamond",
+   "voiceover": "Scientists have: add a small delay to your own touch, and it tickles again.",
+   "on_screen_text": "ADD A DELAY",
+   "search_query": "scientist laboratory experiment",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "A diamond and your pencil's graphite are the same thing.",
-  "Why one is the hardest material and the other smears.",
-  "Could a pencil mark become a diamond?"
+  "You cannot tickle yourself, and your brain is why.",
+  "The part of your brain that cancels your own touch.",
+  "How scientists made it tickle again."
  ],
  "hashtags": [
   "#science",
-  "#diamond",
-  "#chemistry",
-  "#carbon",
+  "#brain",
+  "#tickle",
+  "#psychology",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_diamond-pencil-carbon",
+ "video_id": "science_2026-11-22_cant-tickle-yourself",
  "cta_style": "SAVE_WORTHY",
- "domain": "chemistry",
+ "domain": "senses",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "diamond_graphite_carbon",
- "kokoro_voice": "bf_lily",
+ "fact_id": "cant_tickle_yourself",
+ "kokoro_voice": "af_nova",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
