@@ -1,109 +1,103 @@
 {
- "title": "A Banana Is a Berry. A Strawberry Is Not.",
+ "title": "Your Eyes Can See One Photon",
  "viewer_job": "REFRAME",
- "keyword": "banana",
- "metaphor": "berry botany",
+ "keyword": "eye",
+ "metaphor": "single photon",
  "vibe": "awe",
- "hook": "A banana is a berry, and a strawberry is not.",
- "hook_headline": "BANANA = BERRY",
- "script": "A banana is a berry, and a strawberry is not. That is not a joke, it is how botany sorts fruit. A berry grows from one flower, has soft flesh, and keeps its seeds inside. So why does a strawberry fail the test? Its seeds sit on the outside, stuck to the skin. The red flesh grows from the base of the flower, not from the part that holds the seeds. So what else counts as a berry? Grapes, tomatoes and avocados. Raspberries and blackberries fail too, because each one is a cluster of tiny fruits. In the supermarket, the name on the label and the botany rarely agree.",
+ "hook": "Your eyes can catch one particle of light.",
+ "hook_headline": "ONE PARTICLE OF LIGHT",
+ "script": "Your eyes can catch one particle of light. You do not need a bright room, or even a dim one. In total darkness, your eyes can still register a single photon. So how can anything that small make you see? Cells at the back of your eye switch on when one photon lands. On a clear, dark night, that is enough to spot a single candle flame from miles away. Is anything built by humans that sensitive? Almost no camera works that well in the dark. So when you stare into the dark, you are using one of the most sensitive detectors you own.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A banana is a berry, and a strawberry is not.",
-   "on_screen_text": "BANANA = BERRY",
-   "search_query": "bananas bunch",
+   "voiceover": "Your eyes can catch one particle of light.",
+   "on_screen_text": "ONE PARTICLE",
+   "search_query": "eye closeup blinking",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "That is not a joke, it is how botany sorts fruit.",
-   "on_screen_text": "IT'S BOTANY",
-   "search_query": "fruit market stall",
+   "voiceover": "You do not need a bright room, or even a dim one.",
+   "on_screen_text": "NO BRIGHT ROOM",
+   "search_query": "candle flame dark",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "A berry grows from one flower, has soft flesh, and keeps its seeds inside.",
-   "on_screen_text": "WHAT IS A BERRY?",
-   "search_query": "flower blossom",
+   "voiceover": "In total darkness, your eyes can still register a single photon.",
+   "on_screen_text": "IN THE DARK",
+   "search_query": "dark forest night",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So why does a strawberry fail the test?",
-   "on_screen_text": "WHY NOT?",
-   "search_query": "strawberries closeup",
+   "voiceover": "So how can anything that small make you see?",
+   "on_screen_text": "HOW?",
+   "search_query": "pupil dilating dark",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Its seeds sit on the outside, stuck to the skin.",
-   "on_screen_text": "SEEDS OUTSIDE",
-   "search_query": "strawberry plant garden",
+   "voiceover": "Cells at the back of your eye switch on when one photon lands.",
+   "on_screen_text": "DIMMEST LIGHT",
+   "search_query": "night camping tent",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "The red flesh grows from the base of the flower, not from the part that holds the seeds.",
-   "on_screen_text": "WRONG PART",
-   "search_query": "hand picking strawberry",
+   "voiceover": "On a clear, dark night, that is enough to spot a single candle flame from miles away.",
+   "on_screen_text": "MILES AWAY",
+   "search_query": "candle flame hill night",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "So what else counts as a berry? Grapes, tomatoes and avocados.",
-   "on_screen_text": "GRAPES, TOMATOES",
-   "search_query": "grapes vine",
+   "voiceover": "Is anything built by humans that sensitive? Almost no camera works that well in the dark.",
+   "on_screen_text": "BEATS CAMERAS",
+   "search_query": "security camera night",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Raspberries and blackberries fail too, because each one is a cluster of tiny fruits.",
-   "on_screen_text": "TINY FRUITS",
-   "search_query": "raspberries bowl",
+   "voiceover": "So when you stare into the dark, you are using one of the most sensitive detectors you own.",
+   "on_screen_text": "YOUR EYES",
+   "search_query": "person looking night window",
    "motion": "zoom_out"
-  },
-  {
-   "id": 9,
-   "duration": 4,
-   "voiceover": "In the supermarket, the name on the label and the botany rarely agree.",
-   "on_screen_text": "LABEL VS BOTANY",
-   "search_query": "tomatoes basket",
-   "motion": "zoom_in"
   }
  ],
  "captions": [
-  "A banana is a berry. A strawberry is not. Here is the botany.",
-  "Grapes, tomatoes and avocados are berries too.",
-  "The fruit labels at the supermarket are mostly wrong."
+  "Your eyes can catch a single particle of light.",
+  "In the dark you can spot a candle from miles away.",
+  "One of the most sensitive detectors you own."
  ],
  "hashtags": [
-  "#fruit",
-  "#botany",
+  "#eyes",
   "#science",
+  "#senses",
+  "#light",
   "#facts",
-  "#food",
+  "#spine",
+  "#height",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_banana-is-a-berry",
+ "video_id": "science_2026-11-22_eyes-see-one-photon",
  "cta_style": "SAVE_WORTHY",
- "domain": "plants",
+ "domain": "senses",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "banana_berry",
- "kokoro_voice": "bm_lewis",
- "kokoro_speed": 0.96,
+ "fact_id": "single_photon_eye",
+ "kokoro_voice": "am_liam",
+ "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
