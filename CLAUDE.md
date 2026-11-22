@@ -51,7 +51,20 @@ banana-radiation video was produced).
   NASA space clips are mostly black background (audit: 4.2 s near-black, 11.5 s dim) and a keyword match
   on "jupiter" got used under a Saturn line. **Lesson: pick topics Pexels covers (animals, body, food,
   water); space topics need procedural visuals or curated NASA clip ids.**
-- Manifests: `saturn_floats_v1.json` (am_onyx, shelved), `wood_frog_v1.json` (af_heart).
+- **Shipped (cert-only, private) renders, all audit PASS:** run 461 frog (af_heart, QA 6/6/7/7, B), 462
+  woodpecker (bm_fable, QA 6/6/8/9, B+), 464 honey (am_michael, QA 8/8/9/9, B+/A-). Run 463 honey aborted
+  at final QA `narration_flow=4`: **Kokoro read the verb "live" as the adjective /laiv/** (the gate caught
+  a real TTS defect). `tests/test_operator_manifest.py` now has `KOKORO_MISREAD` (extend as found).
+- **Topic choice decides stock relevance more than any code**: animals/food/body topics get real on-subject
+  Pexels footage (honey 7-8/10); planets get junk. Pick by what a camera can film.
+- Gauge card: a bare `%` unit rendered as nothing (drawtext expansion char) -> spelled "PERCENT"; added an
+  animated progress bar (`_gauge_bar_filters`) so the lower half is not empty.
+- Operator-manifest authoring lessons (each cost a test run): `validate()` rejects restating the fact in 2
+  scenes (reveal ONCE, then escalate), formal connectors ("however"), modifier-first queries, "microscope/
+  cells/system" queries, duplicate queries (new test), and needs a '?' in scenes overlapping ~15s AND ~30s.
+- Manifests: `saturn_floats_v1` (am_onyx, shelved), `wood_frog_v1` (af_heart), `woodpecker_v1` (bm_fable),
+  `honey_v1` (am_michael), `axolotl_v1` (af_nicole), `dust_v1` (af_bella). Voice default NOT changed: the
+  agent cannot hear; QA narration_flow was 9 for both michael and fable. User picks by ear.
 
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
