@@ -1,101 +1,101 @@
 {
- "title": "The Turtle That Breathes Backwards",
+ "title": "Raindrops Are Not Teardrops",
  "viewer_job": "REFRAME",
- "keyword": "turtles",
- "metaphor": "rear breathing",
+ "keyword": "raindrops",
+ "metaphor": "hamburger bun",
  "vibe": "awe",
- "hook": "Some turtles can breathe through their rear ends.",
- "hook_headline": "BREATHING BACKWARDS",
- "script": "Some turtles can breathe through their rear ends. Cold ponds can freeze over, trapping a turtle under the ice for months. With no air to reach, it pulls oxygen straight out of the water. So how does water get into its body? Through a small opening at the base of its tail, lined with tiny blood vessels. Its body slows almost to a stop, so it needs very little oxygen to get through the winter. What happens when the ice finally melts? It surfaces in spring, and the whole winter passed without a single breath.",
+ "hook": "Raindrops are not shaped like teardrops, even though everyone draws them that way.",
+ "hook_headline": "NOT A TEARDROP",
+ "script": "Raindrops are not shaped like teardrops, even though everyone draws them that way. Small drops are very nearly a perfect sphere, but bigger ones get flattened like a hamburger bun. The biggest drops fall at about twenty miles an hour. So what is squashing them on the way down? Air resistance pushes up on the bottom of the falling drop. If a drop grows too large, it tears itself apart into smaller drops. So why does everyone draw a teardrop? Because a drop hanging from a tap really does look that way, just before it falls.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Some turtles can breathe through their rear ends.",
-   "on_screen_text": "BREATHING BACKWARDS",
-   "search_query": "turtle swimming underwater",
+   "voiceover": "Raindrops are not shaped like teardrops, even though everyone draws them that way.",
+   "on_screen_text": "NOT A TEARDROP",
+   "search_query": "rain falling slow motion",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Cold ponds can freeze over, trapping a turtle under the ice for months.",
-   "on_screen_text": "TRAPPED UNDER ICE",
-   "search_query": "frozen pond ice winter",
+   "voiceover": "Small drops are very nearly a perfect sphere, but bigger ones get flattened like a hamburger bun.",
+   "on_screen_text": "SPHERE TO BUN",
+   "search_query": "water droplet closeup",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "With no air to reach, it pulls oxygen straight out of the water.",
-   "on_screen_text": "OXYGEN FROM WATER",
-   "search_query": "pond turtle swimming",
+   "voiceover": "The biggest drops fall at about twenty miles an hour.",
+   "on_screen_text": "20 MPH",
+   "search_query": "raindrop splash puddle",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how does water get into its body?",
-   "on_screen_text": "HOW?",
-   "search_query": "turtle underwater close up",
+   "voiceover": "So what is squashing them on the way down?",
+   "on_screen_text": "WHAT SQUASHES THEM?",
+   "search_query": "rain window closeup",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Through a small opening at the base of its tail, lined with tiny blood vessels.",
-   "on_screen_text": "A TINY OPENING",
-   "search_query": "sea turtle swimming",
+   "voiceover": "Air resistance pushes up on the bottom of the falling drop.",
+   "on_screen_text": "AIR PUSHING UP",
+   "search_query": "heavy rain street",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Its body slows almost to a stop, so it needs very little oxygen to get through the winter.",
-   "on_screen_text": "SLOW MOTION",
-   "search_query": "turtle on log pond",
+   "voiceover": "If a drop grows too large, it tears itself apart into smaller drops.",
+   "on_screen_text": "IT TEARS APART",
+   "search_query": "rain on leaves",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "What happens when the ice finally melts?",
-   "on_screen_text": "WHEN IT MELTS?",
-   "search_query": "ice melting pond spring",
+   "voiceover": "So why does everyone draw a teardrop?",
+   "on_screen_text": "WHY A TEARDROP?",
+   "search_query": "storm clouds rain",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "It surfaces in spring, and the whole winter passed without a single breath.",
-   "on_screen_text": "NOT ONE BREATH",
-   "search_query": "turtle surfacing water",
+   "voiceover": "Because a drop hanging from a tap really does look that way, just before it falls.",
+   "on_screen_text": "THE TAP DROP",
+   "search_query": "water tap dripping",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Some turtles can breathe through their rear ends.",
-  "How a turtle survives a winter under the ice.",
-  "A whole winter without a single breath."
+  "Raindrops are not shaped like teardrops.",
+  "Big raindrops look like hamburger buns.",
+  "Why everyone draws a raindrop wrong."
  ],
  "hashtags": [
   "#science",
-  "#turtle",
-  "#animals",
-  "#nature",
+  "#rain",
+  "#weather",
+  "#physics",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_turtle-rear-breathing",
+ "video_id": "science_2026-11-22_raindrops-not-teardrops",
  "cta_style": "SAVE_WORTHY",
- "domain": "animals",
+ "domain": "weather",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "turtle_breathing",
- "kokoro_voice": "bf_alice",
+ "fact_id": "raindrop_shape",
+ "kokoro_voice": "am_eric",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
