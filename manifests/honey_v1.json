@@ -1,0 +1,118 @@
+{
+ "title": "The Food That Never Goes Bad",
+ "viewer_job": "REFRAME",
+ "keyword": "honey",
+ "metaphor": "honey preservation",
+ "vibe": "awe",
+ "hook": "Some food never spoils, no matter how long you wait.",
+ "hook_headline": "NEVER SPOILS",
+ "script": "Some food never spoils, no matter how long you wait. Honey from a 3,000-year-old Egyptian tomb was still edible. Nobody had touched those jars since the time of the pharaohs. So what stops bacteria from growing in it? Honey has so little water that bacteria dry out and die. Why can't other microbes live there? It is acidic, and most cannot survive that. Then bees add an enzyme that slowly makes hydrogen peroxide. And what is that for? It is a natural preservative, made inside the jar. So the jar in your cupboard is a food built never to rot.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Some food never spoils, no matter how long you wait.",
+   "on_screen_text": "NEVER SPOILS",
+   "search_query": "honey dripping spoon",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "Honey from a 3,000-year-old Egyptian tomb was still edible.",
+   "on_screen_text": "STILL EDIBLE",
+   "search_query": "egyptian tomb hieroglyphs",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Nobody had touched those jars since the time of the pharaohs.",
+   "on_screen_text": "UNTOUCHED",
+   "search_query": "honey jar golden",
+   "motion": "pan_left",
+   "visual": {
+    "type": "gauge",
+    "label": "Age of the honey",
+    "start": 0,
+    "end": 3000,
+    "unit": "years",
+    "before": "Freshly made",
+    "after": "Still edible"
+   }
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So what stops bacteria from growing in it?",
+   "on_screen_text": "WHAT STOPS IT?",
+   "search_query": "petri dish bacteria",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Honey has so little water that bacteria dry out and die.",
+   "on_screen_text": "TOO DRY",
+   "search_query": "honeycomb bees",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Why can't other microbes live there? It is acidic, and most cannot survive that.",
+   "on_screen_text": "TOO ACIDIC",
+   "search_query": "lemon slice closeup",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Then bees add an enzyme that slowly makes hydrogen peroxide.",
+   "on_screen_text": "BEE ENZYME",
+   "search_query": "bee flower pollen",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "And what is that for? It is a natural preservative, made inside the jar.",
+   "on_screen_text": "NATURAL PRESERVATIVE",
+   "search_query": "honey pouring jar",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "So the jar in your cupboard is a food built never to rot.",
+   "on_screen_text": "BUILT NEVER TO ROT",
+   "search_query": "honey dipper wooden",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "Honey from a 3,000-year-old tomb was still edible. Here is why it never rots.",
+  "Too dry, too acidic, and the bees add a preservative of their own.",
+  "The one food built never to spoil."
+ ],
+ "hashtags": [
+  "#honey",
+  "#food",
+  "#science",
+  "#history",
+  "#facts",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_the-food-that-never-goes-bad",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "honey_never_spoils",
+ "kokoro_voice": "am_michael",
+ "kokoro_speed": 0.95,
+ "voice_engine": "kokoro"
+}
