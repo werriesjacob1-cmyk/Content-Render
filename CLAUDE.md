@@ -37,6 +37,22 @@ the repo Variable `LEGACY_SCHEDULED_GENERATION_ENABLED`, which is not set to
 `true`. Manual dispatch is the live path (and is how the 2026-09-10
 banana-radiation video was produced).
 
+## Night session 2026-11-22/23 — voices, manifests, stock relevance (branch `claude/quality-v2-20261122`)
+- **Per-video voice**: a manifest may set `kokoro_voice` (any of `KOKORO_KNOWN_VOICES`), `kokoro_speed`
+  (0.7-1.2) and `voice_engine:"kokoro"` (skips ElevenLabs). **Proven in CI** (run 459, `am_onyx`: Kokoro
+  SUCCESS, 100/103 words matched). A 12-voice sampler was sent to the user; they have not picked yet.
+- **Gemini spend**: operator manifests use no writer; `render.yml` sets `FAL_MAX_CLIPS=0` when `use_manifest`
+  is given (fal clips were rejected 4/4 by the vision check on run 457/458 = wasted credit). Remaining
+  Gemini use is small judge/vision/final-QA calls.
+- **Run 459 / 460 (saturn_floats_v1) both aborted at final QA, correctly** (footage 5/10, then 3/10).
+  Cause 1 (fixed): `_gather_candidates` consults NASA only when Pexels returns NOTHING, so junk Pexels
+  results for planets hid NASA's real Cassini video. `fetch_clip` now also asks NASA/Wikimedia/Archive
+  (`_alt_candidates`) when the judged best is weak (`ALT_SOURCES_ON_WEAK=0` disables). Cause 2 (NOT fixed):
+  NASA space clips are mostly black background (audit: 4.2 s near-black, 11.5 s dim) and a keyword match
+  on "jupiter" got used under a Saturn line. **Lesson: pick topics Pexels covers (animals, body, food,
+  water); space topics need procedural visuals or curated NASA clip ids.**
+- Manifests: `saturn_floats_v1.json` (am_onyx, shelved), `wood_frog_v1.json` (af_heart).
+
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
 script + new footage logic, B-). **Read this before trusting any "it passed" claim.**
