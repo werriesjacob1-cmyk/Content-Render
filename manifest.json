@@ -1,101 +1,101 @@
 {
- "title": "The Hunters Hiding in Your Corners",
+ "title": "The Animal That Lives Without a Head",
  "viewer_job": "REFRAME",
- "keyword": "spiders",
- "metaphor": "invisible appetite",
+ "keyword": "cockroach",
+ "metaphor": "headless survivor",
  "vibe": "awe",
- "hook": "Spiders eat 400 to 800 million tons of prey a year, more than all humans.",
- "hook_headline": "SPIDERS OUT-EAT HUMANITY",
- "script": "Spiders eat 400 to 800 million tons of prey a year, more than all humans. Mostly insects, from flies in your kitchen to beetles in the grass. They catch it with silk spun from liquid, thread for thread tougher than steel. So how can something so small eat so much? There are so many of them that you are rarely more than a few feet from one. Their combined weight is around 25 million tons, and all of it is hunting. What would happen if every spider disappeared tomorrow? Insect numbers would likely explode, and crops and people would feel it fast.",
+ "hook": "A cockroach can survive for weeks without its head.",
+ "hook_headline": "WEEKS WITHOUT A HEAD",
+ "script": "A cockroach can survive for weeks without its head. It breathes through tiny holes along its body, not through a mouth. Its nerves are spread out, so a headless body can still stand and react. So what finally kills it? Thirst. With no mouth, it cannot drink, and slowly dries out. Being cold-blooded, it burns so little energy that going without food is no rush. Why would evolution build an animal that hard to kill? It has outlived the dinosaurs, and barely changed in three hundred million years.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Spiders eat 400 to 800 million tons of prey a year, more than all humans.",
-   "on_screen_text": "MORE THAN ALL HUMANS",
-   "search_query": "spider spinning web",
+   "voiceover": "A cockroach can survive for weeks without its head.",
+   "on_screen_text": "WEEKS WITHOUT A HEAD",
+   "search_query": "cockroach crawling floor",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Mostly insects, from flies in your kitchen to beetles in the grass.",
-   "on_screen_text": "MOSTLY INSECTS",
-   "search_query": "spider catching fly",
+   "voiceover": "It breathes through tiny holes along its body, not through a mouth.",
+   "on_screen_text": "BREATHES THROUGH ITS BODY",
+   "search_query": "insect close up leaf",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "They catch it with silk spun from liquid, thread for thread tougher than steel.",
-   "on_screen_text": "SILK TOUGHER THAN STEEL",
-   "search_query": "spider web closeup silk",
+   "voiceover": "Its nerves are spread out, so a headless body can still stand and react.",
+   "on_screen_text": "NO BRAIN NEEDED",
+   "search_query": "insect legs walking",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how can something so small eat so much?",
-   "on_screen_text": "HOW?",
-   "search_query": "orb weaver spider",
+   "voiceover": "So what finally kills it?",
+   "on_screen_text": "WHAT KILLS IT?",
+   "search_query": "cockroach antennae closeup",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "There are so many of them that you are rarely more than a few feet from one.",
-   "on_screen_text": "NEVER FAR AWAY",
-   "search_query": "dew on spider web",
+   "voiceover": "Thirst. With no mouth, it cannot drink, and slowly dries out.",
+   "on_screen_text": "THIRST",
+   "search_query": "dry cracked soil",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Their combined weight is around 25 million tons, and all of it is hunting.",
-   "on_screen_text": "ALL HUNTING",
-   "search_query": "spider in web garden",
+   "voiceover": "Being cold-blooded, it burns so little energy that going without food is no rush.",
+   "on_screen_text": "SLOW BURN",
+   "search_query": "insect walking rock",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "What would happen if every spider disappeared tomorrow?",
-   "on_screen_text": "IF THEY VANISHED?",
-   "search_query": "spider web sunrise",
+   "voiceover": "Why would evolution build an animal that hard to kill?",
+   "on_screen_text": "WHY SO TOUGH?",
+   "search_query": "cockroach on wall",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Insect numbers would likely explode, and crops and people would feel it fast.",
-   "on_screen_text": "INSECTS EXPLODE",
-   "search_query": "insects swarm field",
+   "voiceover": "It has outlived the dinosaurs, and barely changed in three hundred million years.",
+   "on_screen_text": "OUTLIVED DINOSAURS",
+   "search_query": "dinosaur fossil museum",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Spiders eat more meat than all humans combined.",
-  "400 to 800 million tons of prey a year.",
-  "What if they all vanished?"
+  "A cockroach can live for weeks without its head.",
+  "What actually kills a headless roach.",
+  "The animal that outlived the dinosaurs."
  ],
  "hashtags": [
   "#science",
-  "#spiders",
-  "#nature",
+  "#cockroach",
   "#animals",
+  "#nature",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_spiders-out-eat-humans",
+ "video_id": "science_2026-11-22_cockroach-no-head",
  "cta_style": "SAVE_WORTHY",
- "domain": "biology",
+ "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "spider_biomass",
- "kokoro_voice": "af_alloy",
+ "fact_id": "cockroach_headless",
+ "kokoro_voice": "am_fenrir",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
