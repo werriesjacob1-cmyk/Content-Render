@@ -59,7 +59,7 @@ def test_every_committed_manifest_clears_the_live_rules():
 
 # Words Kokoro reads with the wrong pronunciation (found on a real render: run 463 read the verb
 # "live" as the adjective /laiv/, and final QA scored narration_flow 4/10). Extend as found.
-KOKORO_MISREAD = ("live", "lead")  # "lead" (the pencil/metal noun) was read as "laid" in run 500
+KOKORO_MISREAD = ("live", "lead", "midair")  # "lead" (the pencil/metal noun) was read as "laid" in run 500
 
 
 def test_no_manifest_uses_a_word_kokoro_misreads():

@@ -6,7 +6,7 @@
  "vibe": "awe",
  "hook": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
  "hook_headline": "1,200 BEATS A MINUTE",
- "script": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards. Your own heart beats about seventy times in that same minute. Its wings keep pace, beating up to eighty times every second. So how does a body that small keep up? It drinks nectar almost nonstop, and burns it as fast as it arrives. Its wings trace a figure eight, which holds it still in midair. What happens when the flowers run out at night? It slows its heart to a crawl and sleeps in a deep, cold trance.",
+ "script": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards. Your own heart beats about seventy times in that same minute. Its wings keep pace, beating up to eighty times every second. So how does a body that small keep up? It drinks nectar almost nonstop, and burns it as fast as it arrives. Its wings trace a figure eight, which holds it still in the air. What happens when the flowers run out at night? It slows its heart to a crawl and sleeps in a deep, cold trance.",
  "scenes": [
   {
    "id": 1,
@@ -51,7 +51,7 @@
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Its wings trace a figure eight, which holds it still in midair.",
+   "voiceover": "Its wings trace a figure eight, which holds it still in the air.",
    "on_screen_text": "HOVERING",
    "search_query": "hummingbird hovering",
    "motion": "pan_left"
