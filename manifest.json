@@ -1,101 +1,101 @@
 {
- "title": "Twins Do Not Share Fingerprints",
+ "title": "Why Ice Floats",
  "viewer_job": "REFRAME",
- "keyword": "fingerprints",
- "metaphor": "twin fingerprints",
- "vibe": "visceral",
- "hook": "Identical twins do not have identical fingerprints.",
- "hook_headline": "DIFFERENT PRINTS",
- "script": "Identical twins do not have identical fingerprints. Police have never found two people whose prints match. So the code they share is not the whole story. So what actually decides them? They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers. Every baby meets its own pressure and its own fluid flow, even next to a twin. Is the mark police trust most really just chance? Yes. It is mostly randomness, because fingerprints are not in your genes.",
+ "keyword": "ice",
+ "metaphor": "ice expands",
+ "vibe": "awe",
+ "hook": "Almost everything sinks when it freezes, but ice floats.",
+ "hook_headline": "ICE SHOULD SINK",
+ "script": "Almost everything sinks when it freezes, but ice floats. Water is one of the only things that expands when it freezes. That makes ice less dense than the water it came from. So what happens to a bottle of water in your freezer? It bursts, because the ice has nowhere to go. And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart. Every winter, that splits boulders and tears up roads. Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Identical twins do not have identical fingerprints.",
-   "on_screen_text": "DIFFERENT PRINTS",
-   "search_query": "fingerprint close up",
+   "voiceover": "Almost everything sinks when it freezes, but ice floats.",
+   "on_screen_text": "ICE FLOATS",
+   "search_query": "ice floating water",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Police have never found two people whose prints match.",
-   "on_screen_text": "NEVER A MATCH",
-   "search_query": "police fingerprint powder",
+   "voiceover": "Water is one of the only things that expands when it freezes.",
+   "on_screen_text": "IT EXPANDS",
+   "search_query": "ice cubes glass",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "So the code they share is not the whole story.",
-   "on_screen_text": "NOT THE WHOLE STORY",
-   "search_query": "fingertip pressed glass",
+   "voiceover": "That makes ice less dense than the water it came from.",
+   "on_screen_text": "LESS DENSE",
+   "search_query": "frozen lake surface",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So what actually decides them?",
-   "on_screen_text": "WHAT DECIDES?",
-   "search_query": "newborn baby hand",
+   "voiceover": "So what happens to a bottle of water in your freezer?",
+   "on_screen_text": "IN YOUR FREEZER?",
+   "search_query": "water bottle frost",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "They form in the womb, shaped by tiny details like pressure and the flow of fluid around your fingers.",
-   "on_screen_text": "FORMED IN THE WOMB",
-   "search_query": "pregnant woman belly",
+   "voiceover": "It bursts, because the ice has nowhere to go.",
+   "on_screen_text": "IT BURSTS",
+   "search_query": "cracked ice macro",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Every baby meets its own pressure and its own fluid flow, even next to a twin.",
-   "on_screen_text": "NEVER THE SAME",
-   "search_query": "hand ridges macro",
+   "voiceover": "And how does ice break solid rock? Water seeps into a crack, freezes, and pushes it apart.",
+   "on_screen_text": "BREAKS ROCK",
+   "search_query": "boulder rock crack",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Is the mark police trust most really just chance?",
-   "on_screen_text": "JUST CHANCE?",
-   "search_query": "police detective evidence",
+   "voiceover": "Every winter, that splits boulders and tears up roads.",
+   "on_screen_text": "POTHOLES",
+   "search_query": "pothole road winter",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "Yes. It is mostly randomness, because fingerprints are not in your genes.",
-   "on_screen_text": "RANDOMNESS",
-   "search_query": "fingerprint scanner",
+   "voiceover": "Without this quirk, lakes would freeze from the bottom up, and fish would have nowhere to go.",
+   "on_screen_text": "LAKES WOULD DIE",
+   "search_query": "frozen lake winter",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Identical twins have the same DNA but different fingerprints.",
-  "Your fingerprints are decided by chance in the womb.",
-  "The mark police trust most is mostly randomness."
+  "Almost everything sinks when it freezes. Ice floats, and that saves every lake.",
+  "Why a bottle bursts in your freezer and potholes appear every spring.",
+  "The one quirk that keeps fish alive."
  ],
  "hashtags": [
-  "#twins",
-  "#fingerprints",
   "#science",
-  "#body",
+  "#ice",
+  "#chemistry",
   "#facts",
+  "#winter",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_twins-fingerprints",
+ "video_id": "science_2026-11-22_why-ice-floats",
  "cta_style": "SAVE_WORTHY",
- "domain": "body",
+ "domain": "chemistry",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "twin_fingerprints",
- "kokoro_voice": "am_adam",
+ "fact_id": "water_expands_ice",
+ "kokoro_voice": "bm_george",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
