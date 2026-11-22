@@ -29,7 +29,7 @@
    "duration": 4,
    "voiceover": "Then the wind lifts it high above the Sahara.",
    "on_screen_text": "THE WIND LIFTS IT",
-   "search_query": "sandstorm desert",
+   "search_query": "dust cloud rising desert truck",
    "motion": "pan_left"
   },
   {
@@ -37,7 +37,7 @@
    "duration": 4,
    "voiceover": "So where do 27 million tonnes of dust go every year?",
    "on_screen_text": "WHERE DOES IT GO?",
-   "search_query": "dust storm desert",
+   "search_query": "sandstorm approaching desert horizon",
    "motion": "zoom_in"
   },
   {
@@ -53,7 +53,7 @@
    "duration": 4,
    "voiceover": "A week later, a storm gathers over the Amazon.",
    "on_screen_text": "A STORM GATHERS",
-   "search_query": "rain clouds sky timelapse",
+   "search_query": "storm clouds timelapse daytime",
    "motion": "pan_left"
   },
   {
@@ -77,7 +77,7 @@
    "duration": 4,
    "voiceover": "The soil there has almost no phosphorus, and this speck is exactly what the trees were missing.",
    "on_screen_text": "WHAT THE TREES NEEDED",
-   "search_query": "amazon rainforest aerial",
+   "search_query": "rainforest river aerial",
    "motion": "pan_left"
   },
   {
