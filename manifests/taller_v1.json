@@ -1,0 +1,101 @@
+{
+ "title": "You Are Taller in the Morning",
+ "viewer_job": "REFRAME",
+ "keyword": "height",
+ "metaphor": "morning height",
+ "vibe": "awe",
+ "hook": "Your height is not the same all day, because you are taller in the morning.",
+ "hook_headline": "TALLER IN THE MORNING",
+ "script": "Your height is not the same all day, because you are taller in the morning. By up to 2 centimetres, which is almost an inch. So where does that height go during the day? The soft spinal discs between your bones get squeezed by your weight. They slowly push out water, so you shrink a little with every hour. Then you lie down, and they soak it back up while you sleep. Is that why astronauts grow taller in space? Without gravity, their discs expand too. So the tape measure says one thing at breakfast and another at bedtime.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Your height is not the same all day, because you are taller in the morning.",
+   "on_screen_text": "TALLER AT DAWN",
+   "search_query": "person stretching morning",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "By up to 2 centimetres, which is almost an inch.",
+   "on_screen_text": "2 CENTIMETRES",
+   "search_query": "measuring tape closeup",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "So where does that height go during the day?",
+   "on_screen_text": "WHERE DOES IT GO?",
+   "search_query": "walking city sidewalk",
+   "motion": "pan_left"
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "The soft spinal discs between your bones get squeezed by your weight.",
+   "on_screen_text": "SQUEEZED DISCS",
+   "search_query": "spine skeleton model",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "They slowly push out water, so you shrink a little with every hour.",
+   "on_screen_text": "WATER SQUEEZED OUT",
+   "search_query": "wringing wet sponge",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Then you lie down, and they soak it back up while you sleep.",
+   "on_screen_text": "REFILLS AT NIGHT",
+   "search_query": "sleeping person bed",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Is that why astronauts grow taller in space? Without gravity, their discs expand too.",
+   "on_screen_text": "ASTRONAUTS GROW",
+   "search_query": "astronaut floating space station",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "So the tape measure says one thing at breakfast and another at bedtime.",
+   "on_screen_text": "BREAKFAST VS BEDTIME",
+   "search_query": "breakfast table morning",
+   "motion": "zoom_out"
+  }
+ ],
+ "captions": [
+  "You are up to 2 centimetres taller in the morning.",
+  "Your spinal discs squeeze out water all day and refill while you sleep.",
+  "Even astronauts grow taller in space."
+ ],
+ "hashtags": [
+  "#body",
+  "#science",
+  "#facts",
+  "#spine",
+  "#height",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_taller-in-the-morning",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "body",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "taller_morning",
+ "kokoro_voice": "af_sky",
+ "kokoro_speed": 0.96,
+ "voice_engine": "kokoro"
+}
