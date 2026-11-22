@@ -1,92 +1,92 @@
 {
- "title": "The Heart That Never Rests",
+ "title": "The Animal With Three Hearts",
  "viewer_job": "REFRAME",
- "keyword": "hummingbird",
- "metaphor": "racing heart",
+ "keyword": "octopus",
+ "metaphor": "blue blood",
  "vibe": "awe",
- "hook": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
- "hook_headline": "1,200 BEATS A MINUTE",
- "script": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards. Your own heart beats about seventy times in that same minute. Its wings keep pace, beating up to eighty times every second. So how does a body that small keep up? It drinks nectar almost nonstop, and burns it as fast as it arrives. Its wings trace a figure eight, which holds it still in midair. What happens when the flowers run out at night? It slows its heart to a crawl and sleeps in a deep, cold trance.",
+ "hook": "An octopus has three hearts, and its blood is blue.",
+ "hook_headline": "THREE HEARTS",
+ "script": "An octopus has three hearts, and its blood is blue. Its blue blood carries oxygen with copper, where ours uses iron. Thick blood like that is hard to pump, so the work is split up. So what happens when an octopus swims? The main heart stops beating, so it would rather crawl. Swimming tires it out fast, which is why octopuses rest in dens between hunts. Why would any animal have blue blood at all? Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "A hummingbird heart beats over 1,200 times per minute, and it can fly backwards.",
-   "on_screen_text": "1,200 BEATS A MINUTE",
-   "search_query": "hummingbird flying",
+   "voiceover": "An octopus has three hearts, and its blood is blue.",
+   "on_screen_text": "THREE HEARTS",
+   "search_query": "octopus swimming ocean",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "Your own heart beats about seventy times in that same minute.",
-   "on_screen_text": "YOURS: 70",
-   "search_query": "hand wrist pulse",
+   "voiceover": "Its blue blood carries oxygen with copper, where ours uses iron.",
+   "on_screen_text": "COPPER BLOOD",
+   "search_query": "octopus close up",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "Its wings keep pace, beating up to eighty times every second.",
-   "on_screen_text": "80 FLAPS A SECOND",
-   "search_query": "hummingbird wings slow motion",
+   "voiceover": "Thick blood like that is hard to pump, so the work is split up.",
+   "on_screen_text": "SPLIT THE WORK",
+   "search_query": "octopus tentacles rock",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how does a body that small keep up?",
-   "on_screen_text": "HOW?",
-   "search_query": "hummingbird flower",
+   "voiceover": "So what happens when an octopus swims?",
+   "on_screen_text": "WHEN IT SWIMS?",
+   "search_query": "octopus crawling seabed",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "It drinks nectar almost nonstop, and burns it as fast as it arrives.",
-   "on_screen_text": "NONSTOP FUEL",
-   "search_query": "hummingbird feeder drinking",
+   "voiceover": "The main heart stops beating, so it would rather crawl.",
+   "on_screen_text": "IT STOPS",
+   "search_query": "octopus coral reef",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "Its wings trace a figure eight, which holds it still in midair.",
-   "on_screen_text": "HOVERING",
-   "search_query": "hummingbird hovering",
+   "voiceover": "Swimming tires it out fast, which is why octopuses rest in dens between hunts.",
+   "on_screen_text": "TIRING",
+   "search_query": "octopus den hiding",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "What happens when the flowers run out at night?",
-   "on_screen_text": "AT NIGHT?",
-   "search_query": "hummingbird branch perched",
+   "voiceover": "Why would any animal have blue blood at all?",
+   "on_screen_text": "WHY BLUE?",
+   "search_query": "octopus hunting crab",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "It slows its heart to a crawl and sleeps in a deep, cold trance.",
-   "on_screen_text": "DEEP SLEEP",
-   "search_query": "hummingbird nest",
+   "voiceover": "Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
+   "on_screen_text": "COLD DARK WATER",
+   "search_query": "deep sea octopus",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "A hummingbird's heart beats over 1,200 times per minute.",
-  "How a bird that small survives the night.",
-  "The only bird that can fly backwards."
+  "An octopus has three hearts and blue blood.",
+  "Why one heart stops whenever it swims.",
+  "The reason its blood is blue."
  ],
  "hashtags": [
   "#science",
-  "#hummingbird",
-  "#birds",
+  "#octopus",
+  "#ocean",
   "#animals",
   "#facts",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_hummingbird-heart",
+ "video_id": "science_2026-11-22_octopus-three-hearts",
  "cta_style": "SAVE_WORTHY",
  "domain": "animals",
  "render": {
@@ -94,8 +94,8 @@
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "hummingbird_heart",
- "kokoro_voice": "bm_daniel",
+ "fact_id": "octopus_three_hearts",
+ "kokoro_voice": "bf_emma",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
