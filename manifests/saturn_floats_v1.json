@@ -1,0 +1,118 @@
+{
+ "title": "The Planet That Would Float",
+ "viewer_job": "REFRAME",
+ "keyword": "saturn planet",
+ "metaphor": "saturn density",
+ "vibe": "awe",
+ "hook": "Saturn is a giant planet, and it is lighter than water.",
+ "hook_headline": "LIGHTER THAN WATER",
+ "script": "Saturn is a giant planet, and it is lighter than water. It weighs ninety-five times more than Earth, yet it would float. Its average density is only 0.687 grams per cubic centimetre. So why is a planet that big so light? Because it is mostly hydrogen and helium, the lightest gases there are. Under the clouds there is no solid ground at all. Just gas, getting thicker and hotter the deeper you go. Is there anything to float in? You would need a bathtub bigger than the planet. Even its rings are mostly water ice, which is denser than the planet they circle.",
+ "scenes": [
+  {
+   "id": 1,
+   "duration": 4,
+   "voiceover": "Saturn is a giant planet, and it is lighter than water.",
+   "on_screen_text": "LIGHTER THAN WATER",
+   "search_query": "saturn planet rings",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 2,
+   "duration": 4,
+   "voiceover": "It weighs ninety-five times more than Earth, yet it would float.",
+   "on_screen_text": "STILL FLOATS",
+   "search_query": "earth planet blue marble",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 3,
+   "duration": 4,
+   "voiceover": "Its average density is only 0.687 grams per cubic centimetre.",
+   "on_screen_text": "0.687",
+   "search_query": "water drop ripple",
+   "motion": "pan_left",
+   "visual": {
+    "type": "gauge",
+    "label": "Density",
+    "start": 1.0,
+    "end": 0.687,
+    "unit": "g/cm3",
+    "before": "Water",
+    "after": "Saturn"
+   }
+  },
+  {
+   "id": 4,
+   "duration": 4,
+   "voiceover": "So why is a planet that big so light?",
+   "on_screen_text": "WHY SO LIGHT?",
+   "search_query": "saturn clouds storm",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 5,
+   "duration": 4,
+   "voiceover": "Because it is mostly hydrogen and helium, the lightest gases there are.",
+   "on_screen_text": "LIGHTEST GASES",
+   "search_query": "hydrogen balloon helium",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 6,
+   "duration": 4,
+   "voiceover": "Under the clouds there is no solid ground at all.",
+   "on_screen_text": "NO GROUND",
+   "search_query": "cloud layer aerial",
+   "motion": "pan_left"
+  },
+  {
+   "id": 7,
+   "duration": 4,
+   "voiceover": "Just gas, getting thicker and hotter the deeper you go.",
+   "on_screen_text": "THICKER, HOTTER",
+   "search_query": "jupiter storm clouds",
+   "motion": "zoom_in"
+  },
+  {
+   "id": 8,
+   "duration": 4,
+   "voiceover": "Is there anything to float in? You would need a bathtub bigger than the planet.",
+   "on_screen_text": "BATHTUB?",
+   "search_query": "bathtub water floating",
+   "motion": "zoom_out"
+  },
+  {
+   "id": 9,
+   "duration": 4,
+   "voiceover": "Even its rings are mostly water ice, which is denser than the planet they circle.",
+   "on_screen_text": "RINGS OF ICE",
+   "search_query": "ice crystals closeup",
+   "motion": "zoom_in"
+  }
+ ],
+ "captions": [
+  "A planet that weighs 95 Earths would still float in a bathtub.",
+  "Saturn is lighter than water. Here is how.",
+  "The giant planet with no ground, and rings denser than itself."
+ ],
+ "hashtags": [
+  "#space",
+  "#saturn",
+  "#science",
+  "#astronomy",
+  "#nasa",
+  "#learnontiktok"
+ ],
+ "video_id": "science_2026-11-22_the-planet-that-would-float",
+ "cta_style": "SAVE_WORTHY",
+ "domain": "space",
+ "render": {
+  "voice": "en-US-GuyNeural",
+  "rate": "-5%",
+  "resolution": "1080x1920"
+ },
+ "fact_id": "saturn_floats",
+ "kokoro_voice": "am_onyx",
+ "kokoro_speed": 0.93,
+ "voice_engine": "kokoro"
+}

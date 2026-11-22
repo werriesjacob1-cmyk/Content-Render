@@ -239,7 +239,7 @@ jobs:
           MUSIC_URL: ${{ vars.MUSIC_URL }}
           FAL_KEY: ${{ secrets.FAL_KEY }}
           FAL_VIDEO_MODEL: ${{ vars.FAL_VIDEO_MODEL }}
-          FAL_MAX_CLIPS: ${{ vars.FAL_MAX_CLIPS }}
+          FAL_MAX_CLIPS: ${{ github.event.inputs.use_manifest != '' && '0' || vars.FAL_MAX_CLIPS }}
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           # video_audit.py always runs and reports; it only STOPS a release run. A
           # certification (private) run keeps its artifact either way.

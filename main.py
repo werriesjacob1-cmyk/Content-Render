@@ -236,6 +236,24 @@ KOKORO_MODEL = os.environ.get("KOKORO_MODEL", os.path.join(ROOT, "voices", "koko
 KOKORO_VOICES = os.environ.get("KOKORO_VOICES", os.path.join(ROOT, "voices", "kokoro", "voices-v1.0.bin"))
 KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "bm_george")
 KOKORO_SPEED = os.environ.get("KOKORO_SPEED", "0.95")
+# Voices a manifest may request (operator choice per video); anything else is ignored.
+KOKORO_KNOWN_VOICES = frozenset((
+    "af_alloy af_aoede af_bella af_heart af_jessica af_kore af_nicole af_nova af_river "
+    "af_sarah af_sky am_adam am_echo am_eric am_fenrir am_liam am_michael am_onyx am_puck "
+    "am_santa bf_alice bf_emma bf_isabella bf_lily bm_daniel bm_fable bm_george bm_lewis").split())
+_SKIP_ELEVENLABS = os.environ.get("SKIP_ELEVENLABS", "") == "1"
+
+
+def manifest_voice_overrides(m):
+    """(voice, speed, skip_eleven) a manifest asks for; pure. Unknown voice / bad speed -> None."""
+    v = m.get("kokoro_voice")
+    v = v if v in KOKORO_KNOWN_VOICES else None
+    try:
+        sp = float(m.get("kokoro_speed"))
+        sp = sp if 0.7 <= sp <= 1.2 else None
+    except (TypeError, ValueError):
+        sp = None
+    return v, sp, (m.get("voice_engine") == "kokoro" and v is not None)
 KOKORO_SENTENCE_SILENCE = os.environ.get("KOKORO_SENTENCE_SILENCE", "0.30")  # beat between sentences (s)
 
 
@@ -297,7 +315,7 @@ def _voice_order(engine):
 
 def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
-    el_key = os.environ.get("ELEVENLABS_API_KEY", "")
+    el_key = "" if _SKIP_ELEVENLABS else os.environ.get("ELEVENLABS_API_KEY", "")
     if el_key:
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE}/with-timestamps"
         headers = {"xi-api-key": el_key, "Content-Type": "application/json", "Accept": "application/json"}
@@ -4358,7 +4376,16 @@ def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else "manifest.json"
     with open(mpath) as f:
         m = json.load(f)
-    global voice, rate
+    global voice, rate, KOKORO_VOICE, KOKORO_SPEED, _SKIP_ELEVENLABS
+    _kv, _ks, _skip = manifest_voice_overrides(m)
+    if _kv:
+        KOKORO_VOICE = _kv
+    if _ks:
+        KOKORO_SPEED = str(_ks)
+    if _skip:
+        _SKIP_ELEVENLABS = True
+    if _kv:
+        print(f"[voice] manifest voice {_kv} speed {KOKORO_SPEED} skip_elevenlabs={_SKIP_ELEVENLABS}")
     # Prefer the PROFILE's edge_voice (a deeper, more documentary-sounding free
     # voice — en-GB-RyanNeural for science) over the manifest's generic default.
     # The manifest is written by generate.py with a fixed "en-US-GuyNeural"; the

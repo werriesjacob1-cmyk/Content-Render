@@ -120,3 +120,17 @@ if __name__ == "__main__":
         if n.startswith("test_") and callable(f):
             f()
     print("ALL PASS")
+
+
+def test_manifest_voice_overrides():
+    import main as M
+    v, sp, skip = M.manifest_voice_overrides({"kokoro_voice": "am_onyx", "kokoro_speed": 0.9, "voice_engine": "kokoro"})
+    assert (v, sp, skip) == ("am_onyx", 0.9, True), (v, sp, skip)
+    assert M.manifest_voice_overrides({"kokoro_voice": "nope", "voice_engine": "kokoro"}) == (None, None, False)
+    assert M.manifest_voice_overrides({"kokoro_voice": "af_heart", "kokoro_speed": 5})[1] is None
+    assert M.manifest_voice_overrides({"kokoro_voice": "af_heart"})[2] is False
+    print("PASS manifest voice overrides")
+
+
+if __name__ == "__main__":
+    test_manifest_voice_overrides()
