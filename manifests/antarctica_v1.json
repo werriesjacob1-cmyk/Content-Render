@@ -6,7 +6,7 @@
  "vibe": "awe",
  "hook": "The largest desert on Earth is not the Sahara, it is covered in ice.",
  "hook_headline": "NOT THE SAHARA",
- "script": "The largest desert on Earth is not the Sahara, it is covered in ice. It is Antarctica, a polar desert about 14 million square kilometres across. That is about one and a half times the size of the Sahara. So how dry can a frozen place really be? In parts of its Dry Valleys, it may not have rained for around two million years. Very little new snow arrives, so the ice there is ancient. What keeps storm clouds away from a continent that cold? The air is so cold that it holds almost no moisture to drop.",
+ "script": "The largest desert on Earth is not the Sahara, it is covered in ice. It is Antarctica, a polar desert about 14 million square kilometres across. That is about one and a half times the size of the Sahara. So how dry can a frozen place really be? In some of its driest corners, it may not have rained for around two million years. Very little new snow arrives, so the ice there is ancient. What keeps storm clouds away from a continent that cold? The air is so cold that it holds almost no moisture to drop.",
  "scenes": [
   {
    "id": 1,
@@ -43,7 +43,7 @@
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "In parts of its Dry Valleys, it may not have rained for around two million years.",
+   "voiceover": "In some of its driest corners, it may not have rained for around two million years.",
    "on_screen_text": "2 MILLION YEARS",
    "search_query": "glacier ice close",
    "motion": "zoom_out"
