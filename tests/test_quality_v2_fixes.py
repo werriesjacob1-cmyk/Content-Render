@@ -156,6 +156,52 @@ def test_gauge_and_timer_render():
     check(os.path.exists(o) and abs(M.ffprobe_dur(o) - 4.0) < 0.2, "a visual-only scene renders at its narration length")
 
 
+def test_inaturalist_must_name_the_subject():
+    cow = {"taxon": {"name": "Testudo graeca", "preferred_common_name": "Greek Tortoise"}}
+    shrimp = {"taxon": {"name": "Alpheidae", "preferred_common_name": "Snapping Shrimp"}}
+    check(not M._inat_matches(cow, "lungs breathing"), "run 458: a tortoise is not 'lungs breathing'")
+    check(not M._inat_matches(cow, "space stars"), "nor 'space stars'")
+    check(M._inat_matches(shrimp, "pistol shrimp claw"), "a species query still finds its animal")
+    check(not M._inat_matches({}, "shrimp"), "an observation with no taxon is refused")
+    check(M._inat_matches(cow, "human tortoise"), "a generic modifier alone does not count as the subject (tortoise does)")
+
+
+def test_filler_is_one_card_not_two_identical_ones():
+    cuts = M._cut_plan(M._subclip_plan(7.2, 1.9, 6), [10.0])
+    cards = [c for c in cuts if c[0] is None]
+    check(len(cards) == 1, f"a 4.2s remainder is ONE card, not two copies of the same text ({cuts})")
+    cuts = M._cut_plan(M._subclip_plan(12.0, 1.9, 6), [])
+    check(len([c for c in cuts if c[0] is None]) >= 2 and all(c[2] <= M.CARD_MAX_S for c in cuts), "a long card-only scene is split")
+
+
+def test_procedural_visuals_leave_the_caption_band_clear():
+    import shutil, subprocess
+    if not shutil.which("ffmpeg"):
+        print("SKIP ffmpeg not available"); return
+    d = tempfile.mkdtemp()
+    M.WORK = d
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "4", f"{d}/s.wav"], check=True)
+    spec = {"type": "gauge", "label": "Boiling point of water", "start": 100, "end": 37, "unit": "deg C",
+            "before": "Normal air pressure", "after": "No air pressure"}
+    M._build_gauge_card({"voiceover": "x"}, 6, f"{d}/s.wav", 4.0, f"{d}/g.mp4", spec)
+    M._build_timer_card({"voiceover": "x"}, 4, f"{d}/s.wav", 4.0, f"{d}/t.mp4", 15)
+    cy = M.PROFILE["cap_y"]
+    lo, hi = cy - 90, cy + 90                                     # where captions are drawn
+    for name in ("g", "t"):
+        raw = subprocess.check_output(["ffmpeg", "-v", "error", "-ss", "3.5", "-i", f"{d}/{name}.mp4", "-frames:v", "1",
+                                       "-vf", f"crop={M.W}:{hi - lo}:0:{lo},scale=270:{(hi - lo) // 4},format=gray",
+                                       "-f", "rawvideo", "-"])
+        white = sum(1 for b in raw if b > 200)
+        check(white < 20, f"{'gauge' if name == 'g' else 'timer'}: no visual text inside the caption band ({white} bright px)")
+
+
+def test_operator_manifest_queries_are_unique():
+    import glob
+    for p in glob.glob(os.path.join(ROOT, "manifests", "*.json")):
+        qs = [s["search_query"].lower() for s in json.load(open(p))["scenes"]]
+        check(len(qs) == len(set(qs)), f"{os.path.basename(p)}: no two scenes share a search query (the renderer would rewrite one into nonsense)")
+
+
 if __name__ == "__main__":
     for n, f in list(globals().items()):
         if n.startswith("test_") and callable(f):

@@ -2001,6 +2001,17 @@ def _inaturalist_safe_photo_url(photo):
     return square.replace("square.jpg", "large.jpg").replace("square.jpeg", "large.jpeg")
 
 
+def _inat_matches(res, query):
+    """Whether an iNaturalist observation's TAXON (scientific + common name) shares a content word
+    with the scene query (pure). The API's `q` is a free-text search over notes and places, so a
+    query about lungs or space returned a tortoise, algae and a protozoan (run 458). A species
+    query ('pistol shrimp') still passes: its taxon names the animal."""
+    taxon = (res or {}).get("taxon") or {}
+    label = f"{taxon.get('name', '')} {taxon.get('preferred_common_name', '')}"
+    qw = _relevance_words(query) - craft_rules.GENERIC_QUERY_MODIFIERS
+    return bool(qw & _relevance_words(label))
+
+
 def _inaturalist_image(query, dest):
     """FIRST archival-STILL source, tried before Openverse/Wikimedia: iNaturalist,
     a citizen-science biodiversity platform, no API key, explicitly built for
@@ -2026,6 +2037,8 @@ def _inaturalist_image(query, dest):
         with urllib.request.urlopen(req, timeout=20) as r:
             data = json.loads(r.read().decode())
         for res in (data.get("results") or []):
+            if not _inat_matches(res, query):
+                continue            # free-text 'q' matches notes/places: 'lungs breathing' returned a tortoise
             for p in (res.get("photos") or []):
                 img = _inaturalist_safe_photo_url(p)
                 if not img:
@@ -2941,7 +2954,7 @@ HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer sh
 
 
 HOLD_SLACK_S = 1.2     # a shot may run this much over the cap rather than cut to a card for a sliver
-CARD_MAX_S = 4.0       # longest a filler card may run
+CARD_MAX_S = 5.0       # longest a filler card may run (one card, not two identical ones back to back)
 
 
 def _cut_plan(plan, src_durs, hold_cap=None):
@@ -3107,10 +3120,10 @@ def _build_timer_card(scene, idx, seg_mp3, seg_dur, out_path, n):
     num = f"%{{eif\\:trunc(min({n}\\,{n}*t/{T:.3f}))\\:d}}"
     vf = (
         f"vignette=PI/5.2,"
-        f"drawtext=text='{num}':fontfile='{FONT}':fontsize=420:fontcolor=white:borderw=12:"
-        f"bordercolor=black@0.75:x=(w-tw)/2:y=(h*0.42)-(th/2),"
-        f"drawtext=text='SECONDS':fontfile='{FONT}':fontsize=110:fontcolor=white@0.9:borderw=8:"
-        f"bordercolor=black@0.7:x=(w-tw)/2:y=(h*0.42)+230,setsar=1"
+        f"drawtext=text='{num}':fontfile='{FONT}':fontsize=330:fontcolor=white:borderw=12:"
+        f"bordercolor=black@0.75:x=(w-tw)/2:y=h*0.12,"
+        f"drawtext=text='SECONDS':fontfile='{FONT}':fontsize=96:fontcolor=white@0.9:borderw=8:"
+        f"bordercolor=black@0.7:x=(w-tw)/2:y=h*0.12+330,setsar=1"
     )
     run(["ffmpeg", "-y", "-f", "lavfi", "-i",
          f"gradients=s={W}x{H}:d={seg_dur:.3f}:r=30:c0={c0}:c1={c1}:type=radial:speed=0.006:seed={1000 + idx}",
@@ -3139,13 +3152,15 @@ def _build_gauge_card(scene, idx, seg_mp3, seg_dur, out_path, spec):
         return (f"drawtext=text='{text}':fontfile='{FONT}':fontsize={size}:fontcolor=white:borderw=8:"
                 f"bordercolor=black@0.75:x=(w-tw)/2:y={y}{extra}")
 
+    # Layout keeps the caption band (PROFILE cap_y, ~40% down) CLEAR: run 458's captions printed
+    # straight over the big number. Label + number + unit sit above it, the state label below it.
     vf = ",".join([
         "vignette=PI/5.2",
-        dt(label, 78, "h*0.27"),
-        dt(num, 400, "h*0.36"),
-        dt(unit, 100, "h*0.36+420"),
-        dt(before, 70, "h*0.68", f":enable='lt(t\\,{half:.3f})'"),
-        dt(after, 70, "h*0.68", f":enable='gte(t\\,{half:.3f})':fontcolor=0xFFD400"),
+        dt(label, 78, "h*0.075"),
+        dt(num, 330, "h*0.12"),
+        dt(unit, 96, "h*0.12+330"),
+        dt(before, 72, "h*0.56", f":enable='lt(t\\,{half:.3f})'"),
+        dt(after, 72, "h*0.56", f":enable='gte(t\\,{half:.3f})':fontcolor=0xFFD400"),
         "setsar=1",
     ])
     run(["ffmpeg", "-y", "-f", "lavfi", "-i",
