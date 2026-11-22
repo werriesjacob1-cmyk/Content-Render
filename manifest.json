@@ -1,103 +1,101 @@
 {
- "title": "Your Eyes Can See One Photon",
+ "title": "The Animal With Three Hearts",
  "viewer_job": "REFRAME",
- "keyword": "eye",
- "metaphor": "single photon",
+ "keyword": "octopus",
+ "metaphor": "blue blood",
  "vibe": "awe",
- "hook": "Your eyes can catch one particle of light.",
- "hook_headline": "ONE PARTICLE OF LIGHT",
- "script": "Your eyes can catch one particle of light. You do not need a bright room, or even a dim one. In total darkness, your eyes can still register a single photon. So how can anything that small make you see? Cells at the back of your eye switch on when one photon lands. On a clear, dark night, that is enough to spot a single candle flame from miles away. Is anything built by humans that sensitive? Almost no camera works that well in the dark. So when you stare into the dark, you are using one of the most sensitive detectors you own.",
+ "hook": "An octopus has three hearts, and its blood is blue.",
+ "hook_headline": "THREE HEARTS",
+ "script": "An octopus has three hearts, and its blood is blue. Its blue blood carries oxygen with copper, where ours uses iron. Thick blood like that is hard to pump, so the work is split up. So what happens when an octopus swims? The main heart stops beating, so it would rather crawl. Swimming tires it out fast, which is why octopuses rest in dens between hunts. Why would any animal have blue blood at all? Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
  "scenes": [
   {
    "id": 1,
    "duration": 4,
-   "voiceover": "Your eyes can catch one particle of light.",
-   "on_screen_text": "ONE PARTICLE",
-   "search_query": "eye closeup blinking",
+   "voiceover": "An octopus has three hearts, and its blood is blue.",
+   "on_screen_text": "THREE HEARTS",
+   "search_query": "octopus swimming ocean",
    "motion": "zoom_in"
   },
   {
    "id": 2,
    "duration": 4,
-   "voiceover": "You do not need a bright room, or even a dim one.",
-   "on_screen_text": "NO BRIGHT ROOM",
-   "search_query": "candle flame dark",
+   "voiceover": "Its blue blood carries oxygen with copper, where ours uses iron.",
+   "on_screen_text": "COPPER BLOOD",
+   "search_query": "octopus close up",
    "motion": "zoom_out"
   },
   {
    "id": 3,
    "duration": 4,
-   "voiceover": "In total darkness, your eyes can still register a single photon.",
-   "on_screen_text": "IN THE DARK",
-   "search_query": "dark forest night",
+   "voiceover": "Thick blood like that is hard to pump, so the work is split up.",
+   "on_screen_text": "SPLIT THE WORK",
+   "search_query": "octopus tentacles rock",
    "motion": "pan_left"
   },
   {
    "id": 4,
    "duration": 4,
-   "voiceover": "So how can anything that small make you see?",
-   "on_screen_text": "HOW?",
-   "search_query": "pupil dilating dark",
+   "voiceover": "So what happens when an octopus swims?",
+   "on_screen_text": "WHEN IT SWIMS?",
+   "search_query": "octopus crawling seabed",
    "motion": "zoom_in"
   },
   {
    "id": 5,
    "duration": 4,
-   "voiceover": "Cells at the back of your eye switch on when one photon lands.",
-   "on_screen_text": "DIMMEST LIGHT",
-   "search_query": "night camping tent",
+   "voiceover": "The main heart stops beating, so it would rather crawl.",
+   "on_screen_text": "IT STOPS",
+   "search_query": "octopus coral reef",
    "motion": "zoom_out"
   },
   {
    "id": 6,
    "duration": 4,
-   "voiceover": "On a clear, dark night, that is enough to spot a single candle flame from miles away.",
-   "on_screen_text": "MILES AWAY",
-   "search_query": "candle flame hill night",
+   "voiceover": "Swimming tires it out fast, which is why octopuses rest in dens between hunts.",
+   "on_screen_text": "TIRING",
+   "search_query": "octopus den hiding",
    "motion": "pan_left"
   },
   {
    "id": 7,
    "duration": 4,
-   "voiceover": "Is anything built by humans that sensitive? Almost no camera works that well in the dark.",
-   "on_screen_text": "BEATS CAMERAS",
-   "search_query": "security camera night",
+   "voiceover": "Why would any animal have blue blood at all?",
+   "on_screen_text": "WHY BLUE?",
+   "search_query": "octopus hunting crab",
    "motion": "zoom_in"
   },
   {
    "id": 8,
    "duration": 4,
-   "voiceover": "So when you stare into the dark, you are using one of the most sensitive detectors you own.",
-   "on_screen_text": "YOUR EYES",
-   "search_query": "person looking night window",
+   "voiceover": "Copper carries oxygen well in cold, dark water, and that is where an octopus lives.",
+   "on_screen_text": "COLD DARK WATER",
+   "search_query": "deep sea octopus",
    "motion": "zoom_out"
   }
  ],
  "captions": [
-  "Your eyes can catch a single particle of light.",
-  "In the dark you can spot a candle from miles away.",
-  "One of the most sensitive detectors you own."
+  "An octopus has three hearts and blue blood.",
+  "Why one heart stops whenever it swims.",
+  "The reason its blood is blue."
  ],
  "hashtags": [
-  "#eyes",
   "#science",
-  "#senses",
-  "#light",
+  "#octopus",
+  "#ocean",
+  "#animals",
   "#facts",
-  "#spine",
-  "#height",
   "#learnontiktok"
  ],
- "video_id": "science_2026-11-22_eyes-see-one-photon",
+ "video_id": "science_2026-11-22_octopus-three-hearts",
  "cta_style": "SAVE_WORTHY",
- "domain": "senses",
+ "domain": "animals",
  "render": {
   "voice": "en-US-GuyNeural",
   "rate": "-5%",
   "resolution": "1080x1920"
  },
- "fact_id": "single_photon_eye",
- "kokoro_voice": "am_liam",
+ "fact_id": "octopus_three_hearts",
+ "kokoro_voice": "bf_emma",
  "kokoro_speed": 0.95,
  "voice_engine": "kokoro"
 }
