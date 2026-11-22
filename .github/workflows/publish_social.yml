@@ -1,0 +1,84 @@
+name: publish-social
+
+# Manual approval step: nothing here ever runs on a schedule or a push.
+# Clicking "Run workflow" IS the human approval. It sends one already-rendered,
+# already-QA'd video to YouTube Shorts and/or TikTok (as a draft in your inbox).
+#
+# Safety, in the order it bites:
+#   1. AUTO_PUBLISH_ENABLED must be exactly 'true' (same master switch as render.yml
+#      and publish_publer.py) or the job does not start.
+#   2. dry_run defaults to TRUE: builds every request, makes no network call.
+#   3. YouTube uploads PRIVATE unless the YOUTUBE_PRIVACY variable says otherwise.
+#   4. TikTok uses the inbox/draft flow only -- you tap Post in the app.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "render-video run id whose artifact to publish (the number in its URL)"
+        required: true
+      platforms:
+        description: "comma-separated: youtube, tiktok"
+        default: "youtube"
+      dry_run:
+        description: "true = build requests but upload nothing. Set false to really upload."
+        default: "true"
+
+permissions:
+  contents: read
+  actions: read   # needed to download another run's artifact
+
+concurrency:
+  group: publish-social
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ vars.AUTO_PUBLISH_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download the rendered video
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ github.token }}
+          pattern: final-video-*
+          merge-multiple: true
+          path: dl
+
+      - name: Show what will be published
+        run: |
+          ls -la dl
+          test -f dl/tiktok_reels_shorts.mp4 || { echo "::error::dl/tiktok_reels_shorts.mp4 missing from that run's artifact"; exit 1; }
+          test -f dl/post.json || { echo "::error::dl/post.json missing from that run's artifact"; exit 1; }
+          python -c "import json;p=json.load(open('dl/post.json'));print('title:',p.get('title'));print('hook :',p.get('hook'))"
+
+      - name: Publish
+        env:
+          AUTO_PUBLISH_ENABLED: ${{ vars.AUTO_PUBLISH_ENABLED }}
+          YOUTUBE_PRIVACY: ${{ vars.YOUTUBE_PRIVACY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          # Inputs go through env, never interpolated into the script text, so a
+          # crafted input value cannot become shell code.
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          PLATFORMS: ${{ github.event.inputs.platforms }}
+        run: |
+          set -euo pipefail
+          LIVE=""
+          # Only the exact string "false" goes live; anything else stays a dry run.
+          if [ "$DRY_RUN" = "false" ]; then LIVE="--live"; fi
+          echo "dry_run=$DRY_RUN  platforms=$PLATFORMS"
+          python publish_social.py dl/tiktok_reels_shorts.mp4 dl/post.json \
+            --platforms "$PLATFORMS" $LIVE
