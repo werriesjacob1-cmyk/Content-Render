@@ -37,6 +37,65 @@ the repo Variable `LEGACY_SCHEDULED_GENERATION_ENABLED`, which is not set to
 `true`. Manual dispatch is the live path (and is how the 2026-09-10
 banana-radiation video was produced).
 
+## Session 2026-11-21 — craft layer, Phase A (branch `claude/phase-a-craft-20261121`)
+Driven by "videos feel flat, almost no comments." Nothing here was render-verified;
+read "What to check on the first real render" before trusting any of it.
+
+**Premise correction (read first).** A prior analysis assumed `writer_v2.WRITER_V2_STATIC`
+is the live prompt. It is NOT. `render.yml` runs `quality_production_generate.py`, a thin
+wrapper that calls LEGACY `generate.G.main()`; `WRITER_V2` is never set and
+`generate_candidate_v21` is reachable only from certification/bake-off scripts. **The live
+writer prompt is `generate.build_prompt`.** Rules added to `writer_v2.py` would change nothing.
+
+**What shipped (all pure functions, zero-network tests, wired into `tests.yml`):**
+- `craft_rules.py` — ONE source for the writer's craft rules. `build_prompt` injects
+  `prompt_block()`; `validate()` enforces `check_script()` (deliberately LAST, so older
+  rejections keep their messages). `tests/test_craft_rules.py` asserts every banned item the
+  prompt names is caught. Rules: purple words (unfurls, cascades, dances, whispers, beckons,
+  undisputed, vast, endless), crutch phrases ("that's not even the strangest part", "most
+  people still think", ...), payoff may reuse <=60% of its meaningful words from the hook,
+  a question near the ~15s and ~30s marks (any scene overlapping mark +/-3s), and an
+  either-way debate ending (COMMENT style rewritten; SAVE_WORTHY no longer invites a hook
+  restatement). Not enforceable mechanically: whether the ending is genuinely defensible
+  both ways or honest — that is prompt-only plus the rubric.
+- Captions: 2-3 word phrases, spoken word lit in the accent colour, 1-2 meaning words
+  larger, first event at t=0 with no fade (a fade blanks frame 0), no separate headline
+  layer. `CAPTION_STYLE=word` restores the old style. Overlap across scene cuts is clamped.
+- Footage: no single-word variant queries; extras need the scene's subject word in their own
+  description; `_cut_plan` replaces cycling (every clip gets a turn, then NEW in-points of
+  clips with unseen footage, else HOLD and log `[hold]`). Hold <=3s (`HOLD_CAP_SECONDS`)
+  whenever footage exists, final scene included.
+- Voice: Kokoro (Apache-2.0, local) first, then edge-tts, then Piper. `VOICE_ENGINE=edge|piper`
+  keep their old orders. `KOKORO_VOICE` (default `bm_george`) / `KOKORO_SPEED` (0.95) are
+  untuned guesses. render.yml caches `voices/kokoro/` (~350 MB, Actions CACHE, not artifacts).
+  Delivery rate/bitrate stays in `delivery_contract` (pinned by a test).
+
+**Measured (local fixture, Kokoro voice, 8 scenes, independent whisper "small"):**
+caption sync — one-word style 68/68 events matched, median +0.07s, p95 0.18s, max 0.34s,
+0 leading the voice; phrase style 94/94, median +0.06s, p95 0.16s, max 0.18s, 0 leading.
+No drift was shown, so sync logic was NOT changed (the +~0.1s is the intended
+`CAPTION_DELAY_MS`). The fixture does show per-scene requested-vs-rendered drift up to 0.23s;
+`build_ass` already corrects for it and a test pins that mapping. Writer corpus replay (54
+V2.1 rounds): 0 payoff/crutch false positives, 2 real purple hits; the re-hook rule flags all
+54 because no historical writer ever re-hooked — **so live compliance is unmeasured and the
+abort rate may rise.** That is the single question the first paid run answers.
+
+**Tools:** `fixture_render.py OUTDIR` (real voice->align->split->ASS->burn over synthetic
+footage, no providers) and `measure_caption_sync.py VIDEO ASS` (independent whisper vs ASS
+event times). Needs `pip install faster-whisper kokoro-onnx soundfile` and the Kokoro files.
+
+**What to check on the first real render** (`certification_only=true` keeps it private; no
+publish step runs): dispatch with
+`gh workflow run render.yml --repo werriesjacob1-cmyk/content-render --ref <branch> -f certification_only=true`
+(only with the user's go-ahead). Log lines: `[model] using ...`; any
+`no question near the ~15s/~30s re-hook mark` / `purple` / `crutch` / `restates the hook`
+rejections (how often, and did a later attempt fix it?); `Kokoro SUCCESS` (not
+`Kokoro TTS unavailable`) and `whisper align: N REAL word timings`; `[align] x/y matched`;
+`multi-clip scene: N cuts` and any `[hold] scene` lines; `[sync] max per-scene ... drift`.
+Then download the artifact and run `measure_caption_sync.py` on it. **Not verifiable here:**
+edge-tts (blocked locally), the CI Kokoro download/cache, whether Kokoro sounds good (needs the
+user's ears), real stock footage relevance, and Gemini obeying the new rules.
+
 ## Session 2026-09-09 — factory-proof closure (PR #76, branch `claude/integrated-factory-proof-20260909`)
 Downstream machinery is now proven on REAL ffmpeg output, and the proof
 immediately earned its keep by exposing a defect every render had shipped.

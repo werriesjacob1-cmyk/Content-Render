@@ -95,6 +95,29 @@ jobs:
           fi
           ls -la voices/ || true
 
+      # Kokoro (Apache-2.0, free, offline) is the FIRST local voice: far more
+      # natural than Piper, no quota. ~350 MB, so it is cached like Piper (the
+      # Actions CACHE has its own allowance, separate from the artifact/package
+      # storage the repo ran out of). A failed download is not fatal: main.py
+      # skips Kokoro when the files are absent and falls through to edge-tts, then
+      # Piper.
+      - name: Cache Kokoro voice
+        uses: actions/cache@v4
+        with:
+          path: voices/kokoro
+          key: kokoro-v1.0-models-v1
+
+      - name: Fetch Kokoro voice (local neural TTS)
+        run: |
+          mkdir -p voices/kokoro
+          BASE="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
+          if [ ! -s voices/kokoro/kokoro-v1.0.onnx ] || [ ! -s voices/kokoro/voices-v1.0.bin ]; then
+            curl -sSL --fail -o voices/kokoro/kokoro-v1.0.onnx "$BASE/kokoro-v1.0.onnx" \
+              && curl -sSL --fail -o voices/kokoro/voices-v1.0.bin "$BASE/voices-v1.0.bin" \
+              || { echo "Kokoro download failed - will fall back to edge-tts"; rm -f voices/kokoro/*; }
+          fi
+          ls -la voices/kokoro/ || true
+
       - name: Auto-generate a fresh video idea
         if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
         env:

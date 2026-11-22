@@ -745,6 +745,8 @@ HOOK_FRAMES = [
      "Use the viewer perspective only when it clarifies a real consequence the science actually supports."),
 ]
 
+import craft_rules  # single source of truth for purple/crutch/payoff/re-hook/ending rules
+
 CTA_ENDING_RULES = {
     "SAVE_WORTHY": (
         "ENDING STYLE FOR THIS VIDEO: RESONANT PAYOFF. End on the single most striking, "
@@ -754,8 +756,8 @@ CTA_ENDING_RULES = {
         "kind: never tell the viewer to save, screenshot, remember, look up, keep, or do anything "
         "-- phrases like 'save this', 'worth a screenshot', 'you'll want this again' are BANNED and "
         "read as hollow filler. The last line is a thought that stays with them, not a command. "
-        "Best of all is a final line that recasts the hook -- so the thing they thought they "
-        "understood at the start now means something bigger."
+        "Best of all is a final line that makes the thing they thought they understood at the "
+        "start mean something bigger -- through a NEW idea, never by repeating the hook's own claim."
     ),
     "LOOP": (
         "ENDING STYLE FOR THIS VIDEO: LOOP FOR REWATCH. The final line should echo the FEELING or "
@@ -771,13 +773,14 @@ CTA_ENDING_RULES = {
         "leaves the hook's image ringing. No call-to-action language (no 'save', 'share', 'comment')."
     ),
     "COMMENT": (
-        "ENDING STYLE FOR THIS VIDEO: EARNED DISCUSSION. End with a SPECIFIC question or disputed "
-        "scientific implication that follows directly from what the video proved. Prefer a concrete "
-        "choice, mechanism, consequence, or misconception the viewer now has enough information to "
-        "answer. BANNED: generic outrage/reframe clichés such as 'everything you know/learned about X "
-        "is wrong', 'myth busted', 'this changes everything', or 'you've been lied to'. Those create "
-        "cheap comments but make the page sound like an AI content farm. NEVER phrase this as "
-        "'Did you know' / 'Have you ever', and never tell them to save/share."
+        "ENDING STYLE FOR THIS VIDEO: EARNED DISCUSSION. End on the real open question inside THIS "
+        "topic: something the facts you just gave leave genuinely defensible BOTH ways (what "
+        "scientists actually still disagree about, or a judgement call the evidence does not settle), "
+        "phrased so a viewer instantly has an opinion and wants to type it. It must be honest -- never "
+        "invent controversy. BANNED: generic outrage/reframe clichés such as 'everything you know/"
+        "learned about X is wrong', 'myth busted', 'this changes everything', or 'you've been lied "
+        "to'. NEVER phrase this as 'Did you know' / 'Have you ever', and never tell them to "
+        "save/share."
     ),
     "SHARE": (
         "ENDING STYLE FOR THIS VIDEO: SHARE TRIGGER. The final line must hand the viewer a concrete, "
@@ -1671,6 +1674,8 @@ SAVES (5x a like) — THIS COMES FROM THE CONTENT, NOT A COMMAND:
   person could repeat it verbatim.
 
 {CTA_ENDING_RULES.get(cta_style, CTA_ENDING_RULES["SAVE_WORTHY"])}
+
+{craft_rules.prompt_block()}
 
 COMMENTS (binary questions outperform — easiest to answer, drive depth):
 - Independent of the ending style above, plant ONE line somewhere in the script that provokes a
@@ -3104,6 +3109,14 @@ def validate(m, job_name, fact=None):
                      f"accent (main.py's caption highlight) would never fire for this whole "
                      f"video; pick a keyword using the SAME words the script actually says, or "
                      f"work the keyword's words into the narration")
+
+    # CRAFT RULES (craft_rules.py -- the SAME constants the prompt block is built
+    # from): purple words, crutch phrases, payoff-restates-hook, ~15s/~30s re-hook.
+    # Deliberately LAST so every older, more specific rejection keeps its own
+    # message and test; this is the newest layer, not a replacement for them.
+    _craft_err = craft_rules.check_script(m["hook"], [s["voiceover"] for s in m["scenes"]])
+    if _craft_err:
+        return _craft_err
 
     m.setdefault("render", {"voice": "en-US-GuyNeural", "rate": "-5%", "resolution": "1080x1920"})
     return None

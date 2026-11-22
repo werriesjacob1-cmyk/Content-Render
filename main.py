@@ -222,6 +222,76 @@ def _piper_tts(text, out_mp3):
             pass
 
 
+# Local neural TTS (Kokoro, Apache-2.0, 82M params, ONNX): free, offline, no quota,
+# and far more natural than Piper -- the answer to the "choppy robotic narrator"
+# complaint now that ElevenLabs is cancelled. Model files are fetched (and cached)
+# by render.yml into voices/. Like Piper it gives NO word timings, so
+# tts_full clears WORD_TIMINGS and whisper_align recovers them from the audio.
+# Voice/pace are ear-tuned knobs: KOKORO_VOICE (bm_george = British male, matching
+# the channel's en-GB-RyanNeural; am_michael / am_adam = US male) and KOKORO_SPEED.
+KOKORO_MODEL = os.environ.get("KOKORO_MODEL", os.path.join(ROOT, "voices", "kokoro", "kokoro-v1.0.onnx"))
+KOKORO_VOICES = os.environ.get("KOKORO_VOICES", os.path.join(ROOT, "voices", "kokoro", "voices-v1.0.bin"))
+KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "bm_george")
+KOKORO_SPEED = os.environ.get("KOKORO_SPEED", "0.95")
+KOKORO_SENTENCE_SILENCE = os.environ.get("KOKORO_SENTENCE_SILENCE", "0.30")  # beat between sentences (s)
+
+
+def _split_sentences(text):
+    """Split narration into sentences on . ! ? (pure). Kokoro is synthesized one
+    sentence at a time so a deliberate pause can be inserted between them -- the
+    "no beat between sentences" complaint -- instead of trusting the model's own
+    run-on prosody across a whole paragraph."""
+    parts = re.split(r"(?<=[.!?])\s+", (text or "").strip())
+    return [p.strip() for p in parts if p and re.search(r"[A-Za-z0-9]", p)]
+
+
+def _kokoro_tts(text, out_mp3):
+    """Synthesize with Kokoro -> WAV -> MP3. Returns True on success. Fully
+    fail-safe like _piper_tts: a missing package/model or any error returns False
+    so tts_full falls through to edge-tts/Piper and a render never breaks on TTS."""
+    if not (os.path.exists(KOKORO_MODEL) and os.path.exists(KOKORO_VOICES)):
+        return False
+    wav = out_mp3 + ".kokoro.wav"
+    try:
+        import numpy as np
+        import soundfile as sf
+        from kokoro_onnx import Kokoro
+        k = Kokoro(KOKORO_MODEL, KOKORO_VOICES)
+        chunks, sr = [], 24000
+        for sent in _split_sentences(text):
+            samples, sr = k.create(sent, voice=KOKORO_VOICE, speed=float(KOKORO_SPEED), lang="en-us")
+            chunks.append(np.asarray(samples, dtype="float32"))
+            chunks.append(np.zeros(int(sr * float(KOKORO_SENTENCE_SILENCE)), dtype="float32"))
+        if not chunks:
+            return False
+        sf.write(wav, np.concatenate(chunks[:-1]), sr)      # no trailing silence
+        if not (os.path.exists(wav) and os.path.getsize(wav) > 1000):
+            return False
+        run(["ffmpeg", "-y", "-i", wav, "-c:a", "libmp3lame", "-q:a", "3", out_mp3])
+        return os.path.exists(out_mp3) and os.path.getsize(out_mp3) > 1000
+    except Exception as e:  # noqa: BLE001
+        print(f"  Kokoro TTS unavailable/failed ({e}); falling back")
+        return False
+    finally:
+        try:
+            os.remove(wav)
+        except OSError:
+            pass
+
+
+def _voice_order(engine):
+    """Free-voice try order for a VOICE_ENGINE value (pure, unit-tested).
+    auto/kokoro (default) -> Kokoro, edge-tts, Piper;  edge -> edge-tts, Piper
+    (the old default, kept so the edge probe / A-B stays exact);
+    piper -> Piper, edge-tts (the offline proof). Unknown values mean auto."""
+    e = (engine or "auto").strip().lower()
+    if e == "edge":
+        return ["edge", "piper"]
+    if e == "piper":
+        return ["piper", "edge"]
+    return ["kokoro", "edge", "piper"]
+
+
 def tts_full(full_text, out_mp3, voice, rate):
     global WORD_TIMINGS
     el_key = os.environ.get("ELEVENLABS_API_KEY", "")
@@ -317,8 +387,17 @@ def tts_full(full_text, out_mp3, voice, rate):
             return True
         return False
 
-    engine = os.environ.get("VOICE_ENGINE", "edge").strip().lower()
-    free_order = [_try_piper, _try_edge] if engine == "piper" else [_try_edge, _try_piper]
+    def _try_kokoro():
+        # Local neural TTS (Kokoro): free, offline. No native word timings, so
+        # clear WORD_TIMINGS and let whisper_align supply the caption times.
+        if _kokoro_tts(full_text, out_mp3):
+            WORD_TIMINGS[:] = []
+            print(f"  Kokoro SUCCESS (local neural voice {KOKORO_VOICE}, speed {KOKORO_SPEED})")
+            return True
+        return False
+
+    _tries = {"kokoro": _try_kokoro, "edge": _try_edge, "piper": _try_piper}
+    free_order = [_tries[n] for n in _voice_order(os.environ.get("VOICE_ENGINE", "auto"))]
     for _try in free_order:
         if _try():
             return True
@@ -2776,22 +2855,79 @@ def _subclip_plan(seg_dur, target_secs, max_subclips):
 
 def _variant_queries(q):
     """A few FREE query variants of a scene's search query, to widen the distinct-
-    clip pool (more real VIDEO packed into each scene). The full phrase first, then
-    its broader single content words — a broad noun ('turtle') returns many more
-    stock clips than a 3-word phrase ('pond turtle swimming'), so pooling across
-    them multiplies how many distinct clips the multi-clip cutter can find, at zero
-    cost. Pure/testable."""
+    clip pool. The full phrase first, then SHORT PHRASES that keep the scene's
+    SUBJECT word and pair it with one other content word ('honey fungus mushrooms
+    forest' -> 'honey fungus', 'honey mushrooms', 'honey forest').
+
+    NEVER a bare single word. The old variants fell back to the broadest word
+    ('dark', 'tree', 'square'), which returns a huge pool of unrelated stock --
+    the night road / lumberjack / brick wall that appeared mid-scene in the
+    honey-fungus video. A query with no second content word has no variant: the
+    scene holds its one good clip instead. Pure/testable."""
     q = (q or "").strip()
     if not q:
         return []
-    words = list(_relevance_words(q))                    # content words, >2 chars, non-stopword
-    variants = [q] + sorted(words, key=len, reverse=True)  # phrase, then broadest words
+    subject = _subject_word(q)
+    words = [w for w in re.findall(r"[a-z]+", q.lower())
+             if len(w) > 2 and w not in _QUERY_STOPWORDS]
+    variants = [q]
+    if subject:
+        variants += [f"{subject} {w}" for w in words if w != subject]
     seen, out = set(), []
     for v in variants:
         vl = v.lower().strip()
         if vl and vl not in seen:
             seen.add(vl); out.append(v)
     return out[:4]
+
+
+def _extra_clip_on_subject(desc, subject):
+    """Whether an EXTRA sub-clip candidate may be cut into a scene (pure): its own
+    description must name the scene's subject word. With no subject word there is
+    nothing to anchor on, so NO extra clip is allowed -- the old behaviour was 'no
+    subject = no filter', which let any unrelated stock in."""
+    return bool(subject) and subject in _relevance_words(desc)
+
+
+HOLD_CAP_S = float(os.getenv("HOLD_CAP_SECONDS", "3.0"))   # longest a viewer should sit on one shot
+
+
+def _cut_plan(plan, src_durs, hold_cap=None):
+    """Assign each planned cut (a duration from _subclip_plan) a real piece of
+    footage: [(source_index, offset_s, duration_s)], summing EXACTLY to sum(plan).
+
+    Rules (pure, unit-tested):
+      * a source is used whole-first: every distinct clip gets a cut before any clip
+        is revisited;
+      * a clip is revisited only at a NEW in-point inside footage it really has
+        (offset + duration <= its length) -- never the same frames re-panned, which
+        is the "fake cut" the user complained about;
+      * when no unseen footage is left, the remaining time is HELD on the last shot
+        (fewer cuts) rather than padded with an unrelated or repeated clip. That is
+        the only way a hold can exceed hold_cap, and the caller logs it."""
+    hold_cap = HOLD_CAP_S if hold_cap is None else hold_cap
+    n_src = len(src_durs)
+    if not plan or n_src == 0:
+        return []
+    next_off, used, cuts = [0.0] * n_src, [False] * n_src, []
+    for j, d in enumerate(plan):
+        pick = next((i for i in range(n_src) if not used[i]), None)
+        if pick is None:
+            pick = next((i for i in range(n_src)
+                         if next_off[i] + d <= (src_durs[i] or 0.0) + 0.05), None)
+        if pick is None:
+            tail = round(sum(plan[j:]), 3)
+            si, off, dur = cuts[-1]
+            cuts[-1] = (si, off, round(dur + tail, 3))
+            break
+        cuts.append((pick, round(next_off[pick], 3), round(d, 3)))
+        next_off[pick] += d
+        used[pick] = True
+    return cuts
+
+
+def _longest_hold(cuts):
+    return max((c[2] for c in cuts), default=0.0)
 
 
 def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
@@ -2827,8 +2963,8 @@ def _extra_scene_clips(scene, need, exclude_ids, dest_prefix):
                 # orange being cut for "octopus close up") because THEY share a
                 # word too, just not the subject. No subject word (rare) = no
                 # filter, same as before.
-                if subject and subject not in _relevance_words(c.get("desc", "")):
-                    continue  # keep sub-clips on-subject
+                if not _extra_clip_on_subject(c.get("desc", ""), subject):
+                    continue  # keep sub-clips on-subject (no subject word = no extras)
                 seen.add(cid)          # provisional: don't pool the same id twice
                 pool.append(c)
         except Exception:  # noqa: BLE001 — a bad query/source, try the next variant
@@ -2929,12 +3065,25 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
         except Exception:  # noqa: BLE001 — never let footage gathering break a render
             extra = []
         sources = [raw] + extra
-        if len(plan) > 1 and len(sources) >= 2:
+        # Real cuts only: _cut_plan gives every distinct clip a turn, then NEW
+        # in-points of clips that have unseen footage, and otherwise HOLDS the last
+        # shot -- it never cycles the same clip back in or pads with unrelated stock.
+        cuts = []
+        if len(plan) > 1:
+            try:
+                cuts = _cut_plan(plan, [ffprobe_dur(x) for x in sources])
+            except Exception:  # noqa: BLE001
+                cuts = []
+        _hold = _longest_hold(cuts) if cuts else seg_dur
+        if _hold > HOLD_CAP_S + 0.25:
+            print(f"  [hold] scene {idx}: longest single shot {_hold:.1f}s "
+                  f"(cap {HOLD_CAP_S:.1f}s) — no unseen on-subject footage left to cut to")
+        if len(cuts) > 1:
             try:
                 parts = []
                 _lift_cache = {raw: lift}   # per-SOURCE lift: a dark sub-clip needs its
-                for j, d in enumerate(plan):
-                    src = sources[j % len(sources)]   # cycle if we got fewer distinct clips
+                for j, (si, off, d) in enumerate(cuts):
+                    src = sources[si]
                     # own brightness lift — reusing the primary's lift left dark
                     # sub-clips (moody/black-background footage) reading as a black
                     # screen mid-scene (the "went black at 10s" bug).
@@ -2947,7 +3096,7 @@ def build_scene(scene, idx, seg_mp3, seg_dur):
                     pmotion = _motion_filter({**scene, "motion": _MULTICLIP_MOTIONS[j % len(_MULTICLIP_MOTIONS)]},
                                              pf, zspeed, idx=idx + j, prev_kind=None)
                     pstat = stat if j == 0 else ""   # number card once, on the first cut only
-                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", src, "-t", f"{d:.3f}",
+                    run(["ffmpeg", "-y", "-stream_loop", "-1", "-ss", f"{off:.3f}", "-i", src, "-t", f"{d:.3f}",
                          "-filter_complex", f"[0:v]{pmotion}{slift}{grade}{pstat},setsar=1[v]",
                          "-map", "[v]", "-r", "30", "-pix_fmt", "yuv420p",
                          "-an", "-c:v", "libx264", part])
@@ -3245,6 +3394,168 @@ def _group_function_words(word_times, max_chars=15):
     return out
 
 
+# ---------- PHRASE CAPTIONS (2-3 words, active word highlighted) ----------
+# One word at a time (the old style) reads as a flicker and carries no context;
+# the user wants a film-like caption: a short PHRASE on screen, the word being
+# spoken lit in the accent colour, and the one or two words that carry the
+# meaning drawn larger. CAPTION_STYLE=word restores the old one-word captions.
+CAPTION_STYLE = os.environ.get("CAPTION_STYLE", "phrase").strip().lower()
+CAPTION_SAFE_W = 880              # px: keeps text clear of TikTok's right-hand button column
+CAPTION_MIN_FS = 56
+CAPTION_PHRASE_MAX_WORDS = 3
+CAPTION_PHRASE_MAX_CHARS = 22
+CAPTION_PHRASE_GAP_S = 0.35       # a pause this long always starts a new phrase
+CAPTION_TAIL_S = 0.10             # how long the last word's phrase lingers
+CAPTION_EMPH_SCALE = 118          # % size of an emphasised word
+_PHRASE_BREAK_RE = re.compile(r"[.!?,;:\u2014\u2013]$")
+
+
+def _bare(w):
+    return re.sub(r"[^A-Za-z0-9]", "", w or "")
+
+
+def _phrase_groups(word_times, max_words=None, max_chars=None, gap=None):
+    """Group [(word, start, end)] into short caption PHRASES (pure).
+
+    A phrase breaks at sentence/clause punctuation, at a spoken pause, and at
+    max_words/max_chars. It never ENDS on a lone function word (a trailing "OF"
+    or "THE" reads as a broken line): that word moves to the next phrase when it
+    fits, and a function word left alone is merged into its neighbour. Every word
+    is kept, in order, so coverage stays word-for-word."""
+    max_words = max_words or CAPTION_PHRASE_MAX_WORDS
+    max_chars = max_chars or CAPTION_PHRASE_MAX_CHARS
+    gap = CAPTION_PHRASE_GAP_S if gap is None else gap
+    groups, cur = [], []
+    for w, st, en in word_times:
+        if cur:
+            text_len = len(" ".join(x[0] for x in cur)) + 1 + len(w)
+            pause = st - cur[-1][2] > gap
+            if (len(cur) >= max_words or text_len > max_chars or pause
+                    or _PHRASE_BREAK_RE.search(cur[-1][0])):
+                groups.append(cur)
+                cur = []
+        cur.append((w, st, en))
+    if cur:
+        groups.append(cur)
+
+    def is_fn(w):
+        return _bare(w).lower() in _CAPTION_FUNCTION_WORDS
+
+    # never end a phrase on a function word: push it onto the next phrase
+    for i in range(len(groups) - 1):
+        g, nxt = groups[i], groups[i + 1]
+        while (len(g) > 1 and is_fn(g[-1][0]) and not _PHRASE_BREAK_RE.search(g[-1][0])
+               and len(nxt) < max_words
+               and len(" ".join(x[0] for x in nxt)) + 1 + len(g[-1][0]) <= max_chars):
+            nxt.insert(0, g.pop())
+    # a phrase that is ONLY a function word joins the next phrase
+    out = []
+    for i, g in enumerate(groups):
+        if len(g) == 1 and is_fn(g[0][0]) and out and not _PHRASE_BREAK_RE.search(out[-1][-1][0]) \
+                and len(out[-1]) < max_words:
+            out[-1].append(g[0])
+        else:
+            out.append(g)
+    return [g for g in out if g]
+
+
+def _emphasis_indexes(words, keyword_tokens=None):
+    """Indexes of the 1-2 words in a phrase to draw larger (pure): the video's
+    keyword words first, then numbers, then the longest content word. A phrase of
+    two words or fewer gets at most one."""
+    kt = _KEYWORD_TOKENS if keyword_tokens is None else keyword_tokens
+    cap = 1 if len(words) <= 2 else 2
+    bare = [_bare(w).upper() for w in words]
+    picks = [i for i, b in enumerate(bare) if b and b in kt]
+    picks += [i for i, b in enumerate(bare) if i not in picks and any(c.isdigit() for c in b)]
+    content = [i for i, b in enumerate(bare)
+               if i not in picks and len(b) >= 5 and b.lower() not in _CAPTION_FUNCTION_WORDS]
+    picks += sorted(content, key=lambda i: -len(bare[i]))[:1]
+    return sorted(picks[:cap])
+
+
+def _phrase_font_size(text):
+    """Largest size (<= profile cap_size) at which the phrase fits CAPTION_SAFE_W (pure)."""
+    # 0.36 * fs px per character: measured on a real libass render of the Anton
+    # caption font (an ASS font size is the line HEIGHT, so a glyph is ~0.275 * fs
+    # wide on average); 0.36 keeps ~30% headroom for wide letters (W, M) and the
+    # larger emphasised words. The old one-word estimate (0.64) was ~2x too wide.
+    base = int(PROFILE.get("cap_size", 120))
+    est = 0.36 * max(1, len(text))
+    return max(CAPTION_MIN_FS, min(base, int(CAPTION_SAFE_W / est)))
+
+
+def _colour_tag(c):
+    c = c or ""
+    return f"\\c{c}" if c.endswith("&") else f"\\c{c}&"
+
+
+def _clamp_event_overlaps(lines, gap=0.01):
+    """Trim every Dialogue event so it ends before the next one starts (pure, on ASS
+    text lines in time order). _phrase_events clamps within a scene, but a scene's
+    last phrase lingers CAPTION_TAIL_S past its last word and the next scene's first
+    phrase can start inside that tail -- a brief double caption at the cut."""
+    def secs(t):
+        h, m, sec = t.split(":")
+        return int(h) * 3600 + int(m) * 60 + float(sec)
+
+    out = list(lines)
+    for i in range(len(out) - 1):
+        a = out[i].split(",", 3)
+        b = out[i + 1].split(",", 3)
+        if len(a) < 4 or len(b) < 4:
+            continue
+        st_a, en_a, st_b = secs(a[1]), secs(a[2]), secs(b[1])
+        if en_a > st_b - gap:
+            a[2] = _ass_t(max(st_a + 0.05, st_b - gap))
+            out[i] = ",".join(a)
+    return out
+
+
+def _phrase_events(group, next_start=None, at_zero=False):
+    """The Dialogue lines for ONE phrase: one event per word, abutting exactly, each
+    showing the whole phrase with that word lit in the accent colour. The Name field
+    carries the active word index ("w2") so measure_caption_sync can read it back.
+    at_zero starts the first event at t=0 so the hook is on screen from frame 0."""
+    words = [re.sub(r"[{}\\]", "", w).upper() for w, _, _ in group]
+    fs = _phrase_font_size(" ".join(words))
+    emph = set(_emphasis_indexes(words))
+    accent = PROFILE.get("cap_accent") or ""
+    primary = PROFILE.get("cap_primary") or "&H00FFFFFF"
+    lines = []
+    for k in range(len(group)):
+        st = group[k][1] + CAPTION_DELAY_S
+        if k + 1 < len(group):
+            en = group[k + 1][1] + CAPTION_DELAY_S
+        else:
+            en = group[k][2] + CAPTION_DELAY_S + CAPTION_TAIL_S
+            if next_start is not None:
+                en = min(en, next_start - 0.01)
+        if k == 0 and at_zero and st <= 0.6:
+            st = 0.0
+        en = max(en, st + 0.08)
+        parts, state = [], (primary, 100)          # what libass is currently drawing with
+        for j, w in enumerate(words):
+            want = (accent if (j == k and accent) else primary,
+                    CAPTION_EMPH_SCALE if j in emph else 100)
+            tag = ""
+            if want != state:
+                if want[0] != state[0]:
+                    tag += _colour_tag(want[0])
+                if want[1] != state[1]:
+                    tag += f"\\fscx{want[1]}\\fscy{want[1]}"
+                state = want
+            parts.append(f"{{{tag}}}{w}" if tag else w)
+        # No fade/scale-in for the event that starts at t=0: a fade begins at alpha 0,
+        # which would make frame 0 -- the frame TikTok may use as the cover -- blank.
+        intro = (k == 0 and st > 0.0)
+        pop = "\\fscx92\\fscy92\\t(0,100,\\fscx100\\fscy100)" if intro else ""
+        fad = "\\fad(30,0)" if intro else ""
+        head = f"{{\\pos(540,{PROFILE['cap_y']})\\an5{fad}\\fs{fs}{pop}}}"
+        lines.append(f"Dialogue: 0,{_ass_t(st)},{_ass_t(en)},Pop,w{k},0,0,0,,{head}{' '.join(parts)}")
+    return lines
+
+
 # Captions are nudged a touch LATER than the word's raw onset. ElevenLabs' word
 # "start" marks the phoneme onset, which lands a hair BEFORE the ear registers
 # the word — so word-perfect timing still reads as "the subtitle is ahead of the
@@ -3302,8 +3613,14 @@ def build_ass(scenes, segments, actual_durs, path, headline=""):
     # show in the merged frame), so coverage stays word-for-word and tightly
     # synced while the lone-function-word frames are gone.
     def _emit(word_times):
-        for w, st, en in _group_function_words(word_times):
-            events.append(_event(st + CAPTION_DELAY_S, en + CAPTION_DELAY_S, w))
+        if CAPTION_STYLE == "word":
+            for w, st, en in _group_function_words(word_times):
+                events.append(_event(st + CAPTION_DELAY_S, en + CAPTION_DELAY_S, w))
+            return
+        groups = _phrase_groups(word_times)
+        for gi, g in enumerate(groups):
+            nxt = groups[gi + 1][0][1] + CAPTION_DELAY_S if gi + 1 < len(groups) else None
+            events.extend(_phrase_events(g, nxt, at_zero=(not events and gi == 0)))
 
     if WORD_TIMINGS:
         # exact: drive captions from ElevenLabs word timings, per-scene shift
@@ -3343,6 +3660,8 @@ def build_ass(scenes, segments, actual_durs, path, headline=""):
                 wt.append((w, clock, clock + wd)); clock += wd
             _emit(wt)
     # Prepend the top-of-frame hook headline (first few seconds) if one was written.
+    if CAPTION_STYLE != "word":
+        events = _clamp_event_overlaps(events)
     hl = _headline_event(headline)
     if hl:
         events.insert(0, hl)
