@@ -57,6 +57,21 @@ def test_every_committed_manifest_clears_the_live_rules():
                 check(str(int(v["seconds"])) in s["voiceover"], "the timer shows a duration the narration actually states")
 
 
+# Words Kokoro reads with the wrong pronunciation (found on a real render: run 463 read the verb
+# "live" as the adjective /laiv/, and final QA scored narration_flow 4/10). Extend as found.
+KOKORO_MISREAD = ("live",)
+
+
+def test_no_manifest_uses_a_word_kokoro_misreads():
+    import re
+    for p in sorted(glob.glob(os.path.join(ROOT, "manifests", "*.json"))):
+        m = json.load(open(p))
+        for sc in m["scenes"]:
+            for w in KOKORO_MISREAD:
+                check(not re.search(rf"\b{w}\b", sc["voiceover"], re.I),
+                      f"{os.path.basename(p)} scene {sc['id']} avoids {w!r} (Kokoro misreads it)")
+
+
 def test_spelled_out_numbers_satisfy_a_numeric_key_term():
     k = G._key_term_present
     check(k("15 seconds", "you have fifteen seconds"), "'fifteen seconds' names '15 seconds' (run 456 died 8x on this)")
