@@ -50,6 +50,7 @@ jobs:
             tests/test_delivery_mastering_adversarial.py \
             tests/test_actions_storage_budget.py \
             craft_rules.py tests/test_craft_rules.py \
+            curiosity_gate.py tests/test_curiosity_gate.py \
             tests/test_voice_chain.py \
             tests/test_phrase_captions.py measure_caption_sync.py fixture_render.py \
             tests/test_footage_cuts.py \
@@ -143,6 +144,7 @@ jobs:
           run_check "writer length contract" env -u GROQ_API_KEY python tests/test_writer_length_contract.py
           run_check "downstream factory seam" env -u GROQ_API_KEY python tests/test_downstream_factory_smoke.py
           run_check "writer craft rules" env -u GROQ_API_KEY python tests/test_craft_rules.py
+          run_check "curiosity gate + fact pin" env -u GROQ_API_KEY python tests/test_curiosity_gate.py
           run_check "free voice chain" env -u GROQ_API_KEY python tests/test_voice_chain.py
           run_check "phrase captions + sync contract" env -u GROQ_API_KEY python tests/test_phrase_captions.py
           run_check "footage cut rules" env -u GROQ_API_KEY python tests/test_footage_cuts.py

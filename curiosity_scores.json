@@ -1,0 +1,3683 @@
+{
+ "note": "heuristic curiosity scores; see curiosity_gate.py",
+ "scores": [
+  {
+   "id": "human_vacuum",
+   "domain": "space",
+   "score": 7,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mantis_shrimp_eyes",
+   "domain": "senses",
+   "score": 7,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x3",
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "saturn_floats",
+   "domain": "space",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glass_solid",
+   "domain": "physics",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x5",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cell_replacement",
+   "domain": "body",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x4",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "muon_time_dilation",
+   "domain": "physics",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "woodpecker_skull",
+   "domain": "animals",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "water_expands_ice",
+   "domain": "chemistry",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "banana_berry",
+   "domain": "plants",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "twin_fingerprints",
+   "domain": "body",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "wood_frog_freeze",
+   "domain": "animals",
+   "score": 6,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "taller_morning",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "eclipse_coincidence",
+   "domain": "space",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "head_ages_faster",
+   "domain": "physics",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mantis_shrimp",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x4",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "honey_never_spoils",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "sun_light_time",
+   "domain": "space",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "hummingbird_heart",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "skin_cells",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x5",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "andromeda_time",
+   "domain": "space",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x5",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "dna_length",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x8",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "vent_tube_worms",
+   "domain": "ocean",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "human_bioluminescence",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "axolotl_regeneration",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "naked_mole_rat",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x3",
+    "mechanism x5",
+    "open question"
+   ]
+  },
+  {
+   "id": "earths_core_hot_as_sun",
+   "domain": "earth",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x7",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "antarctica_largest_desert",
+   "domain": "earth",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sun_quantum_tunneling",
+   "domain": "physics",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "pistol_shrimp_bubble",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "octopus_three_hearts",
+   "domain": "animals",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "single_photon_eye",
+   "domain": "senses",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x4",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "helium_found_on_sun",
+   "domain": "chemistry",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "stomach_self_digest",
+   "domain": "body",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x6",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "diamond_graphite_carbon",
+   "domain": "chemistry",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x4",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "lightning_balls",
+   "domain": "atmosphere",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "rainbow_eucalyptus",
+   "domain": "botany",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mantis_shrimp_vision",
+   "domain": "light",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "superfluids",
+   "domain": "matter",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bioluminescent_bays",
+   "domain": "ecology",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x6",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bioluminescent_bay",
+   "domain": "nature",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x4",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bioluminescent_forest",
+   "domain": "ecology",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_bioluminescence",
+   "domain": "ocean",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x5",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_wave_visualization",
+   "domain": "physics",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x6",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sensory_perception",
+   "domain": "senses",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ice_circle_formation",
+   "domain": "earth",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "color_changing_sand",
+   "domain": "earth",
+   "score": 5,
+   "verdict": "keep",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "rainbow_circle",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "stomach_lining",
+   "domain": "body",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x7",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "venus_day",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "diamond_rain",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mauna_kea",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "blood_vessels_length",
+   "domain": "body",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "footprints_moon",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "turtle_breathing",
+   "domain": "animals",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "lightning_strikes_earth",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "immortal_jellyfish",
+   "domain": "animals",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "bootes_void",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mariana_pressure",
+   "domain": "ocean",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mercury_extremes",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "aerogel_frozen_smoke",
+   "domain": "materials",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "earth_magnetic_flip",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "largest_fungus",
+   "domain": "fungi",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "krakatoa_loudest",
+   "domain": "physics",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "spider_silk_steel",
+   "domain": "materials",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_makes_oxygen",
+   "domain": "ocean",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bacteria_outnumber_cells",
+   "domain": "body",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_twenty_watts",
+   "domain": "body",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "eiffel_grows_summer",
+   "domain": "materials",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "pineapple_bromelain",
+   "domain": "chemistry",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x11",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cloud_weight",
+   "domain": "weather",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "pitch_drop_experiment",
+   "domain": "physics",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "trees_made_of_air",
+   "domain": "plants",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "exploding_lake_nyos",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "wombat_cube_poop",
+   "domain": "animals",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cockroach_headless",
+   "domain": "animals",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "pluto_no_orbit",
+   "domain": "space",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "gut_second_brain",
+   "domain": "body",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cant_tickle_yourself",
+   "domain": "senses",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fulgurite_lightning_glass",
+   "domain": "geology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_speed_limit",
+   "domain": "physics",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_bending",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x5",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "singing_sand_dunes",
+   "domain": "geology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ice_circles",
+   "domain": "physics",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "dolphin_sleep",
+   "domain": "nature",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "lightning_storm",
+   "domain": "atmosphere",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "microbe_metabolism",
+   "domain": "mycology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "material_transitions",
+   "domain": "matter",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "synchronous_fireflies",
+   "domain": "biology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mirror_neurons",
+   "domain": "neurology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_default_mode",
+   "domain": "neurology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_twilight",
+   "domain": "marine",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_tricks",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x9",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_speed",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_forests",
+   "domain": "ecology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_dead_zones",
+   "domain": "ecology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_plants",
+   "domain": "plants",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_mushroom",
+   "domain": "fungi",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_phenomenon",
+   "domain": "meteorology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_twilight_zone",
+   "domain": "marinebiology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_waterfalls",
+   "domain": "ocean",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sea_cucumber_brains",
+   "domain": "marinebiology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "tree_root_networks",
+   "domain": "zoology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "microbiology_insight",
+   "domain": "microbiology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x2",
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_forest",
+   "domain": "nature",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_waves",
+   "domain": "neuroscience",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_refraction",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_optics",
+   "domain": "light",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_waves",
+   "domain": "ocean",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x8",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "singing_rivers",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bioluminescent_waves",
+   "domain": "biology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x7",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_mushrooms",
+   "domain": "biology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glowing_caves",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "rainbow_after_volcano",
+   "domain": "earth",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "magnetic_plant_growth",
+   "domain": "biology",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "gravity_wave_in_fountain",
+   "domain": "physics",
+   "score": 4,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "neutron_star_spoon",
+   "domain": "space",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_unmapped",
+   "domain": "ocean",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "tardigrade",
+   "domain": "animals",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "nerve_speed",
+   "domain": "body",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "star_sand",
+   "domain": "space",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "banana_radioactive",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "heart_beats_day",
+   "domain": "body",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "giant_squid_eye",
+   "domain": "ocean",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "raindrop_shape",
+   "domain": "weather",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bamboo_growth",
+   "domain": "plants",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_faster_water",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "gps_relativity",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "shape_memory_metal",
+   "domain": "materials",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "lightning_hotter_sun",
+   "domain": "weather",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "hawaii_moving_japan",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "plastic_eating_bacteria",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "day_getting_longer",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sahara_feeds_amazon",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cold_welding_space",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "gallium_melts_hand",
+   "domain": "materials",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atlantic_widening",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "everyone_is_your_ancestor",
+   "domain": "math",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "green_sahara",
+   "domain": "deep_time",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "left_lung_smaller",
+   "domain": "body",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bamboo_mass_flowering",
+   "domain": "plants",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "zombie_ant_fungus",
+   "domain": "fungi",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "slow_light_lab",
+   "domain": "light",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "geo_magnetic_field",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_reactions",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "hidden_world",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_time",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "biological_electricity",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x5",
+    "open question"
+   ]
+  },
+  {
+   "id": "light_optics",
+   "domain": "light",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x7",
+    "open question"
+   ]
+  },
+  {
+   "id": "gravity_waves",
+   "domain": "math",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x7",
+    "open question"
+   ]
+  },
+  {
+   "id": "morning_glory_clouds",
+   "domain": "atmosphere",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "space_debris",
+   "domain": "atmosphere",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "frozen_methane",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "seafloor_spreading",
+   "domain": "geology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "magnetic_moon",
+   "domain": "astronomy",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x6",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_plastic",
+   "domain": "oceanography",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "superconducting_materials",
+   "domain": "matter",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_acidification",
+   "domain": "oceanography",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_shockwave",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_brain",
+   "domain": "neurology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sleep_paralysis",
+   "domain": "psychology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "neural_rejuvenation",
+   "domain": "neurology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bacteria_electrical",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_phenomena",
+   "domain": "atmosphere",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_circulation",
+   "domain": "atmosphere",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fungi_medicine",
+   "domain": "fungi",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "nature_cycles",
+   "domain": "nature",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "frozen_methane_deposits",
+   "domain": "ecology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "forest_frozen_carbon",
+   "domain": "ecology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_rivers",
+   "domain": "ocean",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "forgotten_language",
+   "domain": "linguistics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_river",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_river",
+   "domain": "meteorology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_waterfall",
+   "domain": "ocean",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_life_paradox",
+   "domain": "ocean",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fossil_record",
+   "domain": "deep_time",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "linguistic_diversity",
+   "domain": "linguistics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_time_trees",
+   "domain": "deep_time",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cloud_mystery",
+   "domain": "meteorology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "bacteria_electrical_grid",
+   "domain": "microbiology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "ecosystem_interconnectedness",
+   "domain": "zoology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_migration",
+   "domain": "zoology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "linguistic_shift",
+   "domain": "language",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "echo_location",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "electric_bacteria",
+   "domain": "microbiology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x4",
+    "open question"
+   ]
+  },
+  {
+   "id": "neural_synchronization",
+   "domain": "neuroscience",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_signaling",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_camouflage",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_patterns",
+   "domain": "math",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_telepathy",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_memory",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "memory_masters",
+   "domain": "psychology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "electric_ants",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x6",
+    "open question"
+   ]
+  },
+  {
+   "id": "solar_sails",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "sonic_booms",
+   "domain": "physics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_waves",
+   "domain": "math",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "electric_fish",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x5",
+    "open question"
+   ]
+  },
+  {
+   "id": "hidden_pattern",
+   "domain": "mathematics",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_science",
+   "domain": "materials_science",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x3",
+    "open question"
+   ]
+  },
+  {
+   "id": "shape_memory_alloys",
+   "domain": "materials_science",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "seismic_activity",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x2",
+    "open question"
+   ]
+  },
+  {
+   "id": "fog_formation",
+   "domain": "meteorology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "frozen_carbonsink",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x5",
+    "open question"
+   ]
+  },
+  {
+   "id": "electric_eel_laser",
+   "domain": "biology",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "self_healing_ice",
+   "domain": "chemistry",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "lightning_in_snow",
+   "domain": "earth",
+   "score": 3,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atoms_empty",
+   "domain": "physics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "space_silent",
+   "domain": "space",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "whale_heart",
+   "domain": "animals",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "liver_regrows",
+   "domain": "body",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "gold_neutron_origin",
+   "domain": "chemistry",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "petrichor_rain_smell",
+   "domain": "weather",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "birthday_paradox",
+   "domain": "math",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_viruses",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "cleopatra_pyramid_moon",
+   "domain": "history",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "flavor_is_mostly_smell",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sharks_older_than_trees",
+   "domain": "deep_time",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "glass_rain_exoplanet",
+   "domain": "space",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "chess_possible_games",
+   "domain": "math",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "spider_biomass",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "shortest_war",
+   "domain": "history",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "greenland_shark_age",
+   "domain": "ocean",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "boiling_river_amazon",
+   "domain": "geology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "oxford_older_than_aztecs",
+   "domain": "history",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "forgotten_senses",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_sea_vents",
+   "domain": "geology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_trees",
+   "domain": "math",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sensory_deception",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_universe",
+   "domain": "math",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "slime_mold_intelligence",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_currents",
+   "domain": "atmosphere",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "coral_reef",
+   "domain": "atmosphere",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "space_weathering",
+   "domain": "space",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "starling_murmurations",
+   "domain": "astronomy",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "matter_mystery",
+   "domain": "matter",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "microbial_intelligence",
+   "domain": "matter",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "nanomaterials",
+   "domain": "matter",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "butterfly_effect",
+   "domain": "weather",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "microbe_intelligence",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "frozen_carbonite",
+   "domain": "chemistry",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "neural_networks",
+   "domain": "neurology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_computer_interfaces",
+   "domain": "neurology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "dream_incubation",
+   "domain": "psychology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "synesthesia",
+   "domain": "psychology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "social_learning",
+   "domain": "psychology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_time_secret",
+   "domain": "history",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "giant_sea_sponge",
+   "domain": "marine_biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_river_impact",
+   "domain": "meteorology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "linguistic_isolation_effect",
+   "domain": "linguistics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_time_geology",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_biology_symbiosis",
+   "domain": "marinebiology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_lakes",
+   "domain": "marinebiology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "storm_chasing",
+   "domain": "meteorology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_mimicry",
+   "domain": "marine_biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "tree_communication",
+   "domain": "linguistics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fish_migration",
+   "domain": "marine_biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "tongue_eating_parasite",
+   "domain": "marine_biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_mammal_sociality",
+   "domain": "marine_biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "memory_transplant",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "microbe_habitats",
+   "domain": "microbiology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "fish_mimicry",
+   "domain": "zoology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "zoology_discovery",
+   "domain": "zoology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "language_shift",
+   "domain": "language",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_computer",
+   "domain": "neuroscience",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "linguistic_relativity",
+   "domain": "language",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "gut_brain_connection",
+   "domain": "neuroscience",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "neurorejuvenation",
+   "domain": "neuroscience",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "weather_pattern_disruptions",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "sensory_adaptation",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "solar_sail",
+   "domain": "physics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_code",
+   "domain": "mathematics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fractal_rivers",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_flowers",
+   "domain": "mathematics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_clouds",
+   "domain": "mathematics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fungal_highways",
+   "domain": "biology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "self_healing_materials",
+   "domain": "materials_science",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "fractal_nature",
+   "domain": "mathematics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "nanoscale_materials",
+   "domain": "materials_science",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "complex_systems",
+   "domain": "mathematics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "visualisable",
+    "open question"
+   ]
+  },
+  {
+   "id": "metamaterials",
+   "domain": "materials_science",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "chemical_senses",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "fractal_forests",
+   "domain": "math",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "forest_networks",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_healing",
+   "domain": "senses",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "atmospheric_water",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "relatable",
+    "open question"
+   ]
+  },
+  {
+   "id": "octopus_detached_arm",
+   "domain": "neurology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "bouncing_supercooled_liquid",
+   "domain": "physics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "scent_memory_of_rocks",
+   "domain": "earth",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "mirror_neurons_in_crowd",
+   "domain": "psychology",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "expectation-violation x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "sound_speed_in_helium_balloon",
+   "domain": "physics",
+   "score": 2,
+   "verdict": "weak",
+   "notes": [
+    "mechanism x1",
+    "open question"
+   ]
+  },
+  {
+   "id": "alcohol_cloud",
+   "domain": "space",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "wood_wide_web",
+   "domain": "plants",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "trex_stegosaurus_time",
+   "domain": "deep_time",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "catatumbo_lightning",
+   "domain": "weather",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "material_science",
+   "domain": "materials",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "weather_patterns",
+   "domain": "weather",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "history_mystery",
+   "domain": "history",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "mycoremediation",
+   "domain": "fungi",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "history_of_science",
+   "domain": "history",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "forest_ecosystem",
+   "domain": "nature",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "antarctic_ice",
+   "domain": "nature",
+   "score": 1,
+   "verdict": "reject",
+   "notes": [
+    "relatable",
+    "visualisable",
+    "open question",
+    "MAGNITUDE-ONLY"
+   ]
+  },
+  {
+   "id": "butterfly_migration",
+   "domain": "nature",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "ocean_current_patterns",
+   "domain": "oceanography",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "electroreception",
+   "domain": "biology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_plasticity",
+   "domain": "psychology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "emotional_contagion",
+   "domain": "psychology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "neural_synchrony",
+   "domain": "neurology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "placebo_effect",
+   "domain": "psychology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "emotional_intelligence",
+   "domain": "psychology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_ecosystems",
+   "domain": "marine",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "fungi_networks",
+   "domain": "fungi",
+   "score": 1,
+   "verdict": "reject",
+   "notes": [
+    "open question",
+    "MAGNITUDE-ONLY"
+   ]
+  },
+  {
+   "id": "nature_sounds",
+   "domain": "nature",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_time_clues",
+   "domain": "deep_time",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "history_preservation",
+   "domain": "history",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "microbial_mining",
+   "domain": "ecology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "coral_reef_conservation",
+   "domain": "ecology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "deep_sea_vent_ecosystems",
+   "domain": "ecology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "giant_crystal_caves",
+   "domain": "ecology",
+   "score": 1,
+   "verdict": "reject",
+   "notes": [
+    "visualisable",
+    "open question",
+    "MAGNITUDE-ONLY"
+   ]
+  },
+  {
+   "id": "giant_crystal_cave",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "linguistic_isolation",
+   "domain": "language",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "language_evolution",
+   "domain": "linguistics",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "marine_mammals",
+   "domain": "marinebiology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "weather_extremes",
+   "domain": "meteorology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "fossil_records",
+   "domain": "deep_time",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "language_puzzle",
+   "domain": "linguistics",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "sea_slime_intelligence",
+   "domain": "marine_biology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "language_isolation",
+   "domain": "linguistics",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "mimicry_in_nature",
+   "domain": "zoology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "language_curiosity",
+   "domain": "language",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "animal_intelligence",
+   "domain": "zoology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "microbial",
+   "domain": "microbiology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "fungal_networks",
+   "domain": "microbiology",
+   "score": 1,
+   "verdict": "reject",
+   "notes": [
+    "open question",
+    "MAGNITUDE-ONLY"
+   ]
+  },
+  {
+   "id": "microbe_memory",
+   "domain": "microbiology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "forest_intelligence",
+   "domain": "ecology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "brain_reboot",
+   "domain": "neuroscience",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "language_learning",
+   "domain": "language",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "sea_slug_intelligence",
+   "domain": "marine_biology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_optimization",
+   "domain": "math",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "historical_preservation",
+   "domain": "history",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "geological_formation",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "weather_forecasting",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "geological_history",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "fungal_intelligence",
+   "domain": "fungi",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "fungal_highway",
+   "domain": "biology",
+   "score": 1,
+   "verdict": "reject",
+   "notes": [
+    "open question",
+    "MAGNITUDE-ONLY"
+   ]
+  },
+  {
+   "id": "geological_memory",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "mathematical_animals",
+   "domain": "math",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "underwater_cities",
+   "domain": "materials_science",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "memory_mushrooms",
+   "domain": "mathematics",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "cave_formation",
+   "domain": "earth",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  },
+  {
+   "id": "memory_of_amoeba",
+   "domain": "biology",
+   "score": 1,
+   "verdict": "weak",
+   "notes": [
+    "open question"
+   ]
+  }
+ ]
+}

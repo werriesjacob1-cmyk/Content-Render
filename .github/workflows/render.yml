@@ -14,6 +14,9 @@ on:
       gemini_model:
         description: "OPTIONAL one-off Gemini writer model for THIS run (e.g. gemini-3.8-flash). Empty = live discovery. Forces the model, skipping discovery."
         default: ""
+      fact_id:
+        description: "OPTIONAL: pin the topic-bank fact id for THIS manual run (e.g. human_vacuum). Empty = normal selection."
+        default: ""
       certification_only:
         description: "Run the real pipeline but skip all publish steps; output stays a private Actions artifact"
         type: boolean
@@ -131,6 +134,7 @@ jobs:
           # treats a NON-empty GEMINI_MODEL as an override), so scheduled runs and
           # any dispatch that omits it behave exactly as before.
           GEMINI_MODEL: ${{ github.event.inputs.gemini_model || '' }}
+          FORCE_FACT_ID: ${{ github.event.inputs.fact_id || '' }}
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ github.event.inputs.openrouter_model || vars.OPENROUTER_MODEL || 'anthropic/claude-sonnet-5,openai/gpt-5,meta-llama/llama-3.3-70b-instruct' }}

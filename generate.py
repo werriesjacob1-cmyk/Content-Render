@@ -640,11 +640,27 @@ def load_topic_quarantine():
         return set()
 
 
+def pick_forced_fact(forced_id, bank_all):
+    """Operator pin (render.yml `fact_id` input -> FORCE_FACT_ID): the bank fact with
+    that id, or None to fall back to normal selection. Looks in the FULL bank so a
+    deliberate choice is honoured even if the gate or quarantine would have hidden it."""
+    fid = (forced_id or "").strip()
+    if not fid:
+        return None
+    return next((f for f in bank_all if f.get("id") == fid), None)
+
+
 def selectable_bank(facts, quarantined=None):
     """Return the runtime-safe fact pool, preserving old behavior if a
     quarantine would somehow exclude the entire bank."""
     facts = list(facts or [])
     q = load_topic_quarantine() if quarantined is None else set(quarantined)
+    # CURIOSITY GATE (curiosity_gate.py): facts whose only strength is magnitude are
+    # dropped before the writer sees them. Fail-open and switchable: CURIOSITY_GATE=0
+    # or a missing/corrupt curiosity_scores.json rejects nothing.
+    if os.environ.get("CURIOSITY_GATE", "1").strip().lower() not in ("0", "false", "no", "off"):
+        import curiosity_gate
+        q = set(q) | curiosity_gate.rejected_ids()
     if not q:
         return facts
     clean = [f for f in facts if f.get("id") not in q]
@@ -4572,6 +4588,12 @@ def main():
         chosen_fact = _weighted_choice(available, weights, EXPLORE_EPSILON)
     else:
         chosen_fact = random.choice(available) if available else None
+    _forced = pick_forced_fact(os.environ.get("FORCE_FACT_ID", ""), bank_all)
+    if _forced:
+        chosen_fact = _forced
+        print(f"  [bank] operator pinned fact {_forced['id']!r} (FORCE_FACT_ID)")
+    elif os.environ.get("FORCE_FACT_ID", "").strip():
+        print(f"  [bank] FORCE_FACT_ID={os.environ['FORCE_FACT_ID']!r} is not in the bank; selecting normally")
     if chosen_fact:
         print(f"  [bank] fact: {chosen_fact['id']}")
 
