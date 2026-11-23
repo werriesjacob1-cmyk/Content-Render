@@ -4335,7 +4335,21 @@ def _seamless_loop_bed(src, dst, xf=1.5):
 
 
 # ---------- MUSIC BED ----------
-def _ensure_music_bed(duration):
+MUSIC_MODES = ("off", "ambient", "loop")
+
+
+def manifest_music(m, env=None):
+    """Which music bed this video wants: "off" (voice + sound bed only), "ambient" (the generated,
+    never-repeating pad in ambient_bed.py) or "loop" (the legacy bundled/MUSIC_URL track). A
+    manifest's "music" wins, then the MUSIC_MODE env var, else None = legacy behaviour. Pure."""
+    for v in ((m or {}).get("music"), env if env is not None else os.environ.get("MUSIC_MODE", "")):
+        v = str(v or "").strip().lower()
+        if v in MUSIC_MODES:
+            return v
+    return None
+
+
+def _ensure_music_bed(duration, mode=None):
     """Path to a music bed so every video has one instead of dead silence (the
     #1 'it doesn't POP' fix). Prefers a committed royalty-free `music.mp3` — drop
     your own energetic track there for maximum energy, or point MUSIC_URL at a
@@ -4347,6 +4361,17 @@ def _ensure_music_bed(duration):
     Priority: MUSIC_URL (paste a royalty-free link via the repo Variable — wins so
     you can swap tracks without committing a file) > committed per-profile track >
     synthesized pad."""
+    if mode == "off":
+        return None
+    if mode == "ambient":
+        try:
+            import ambient_bed
+            bed = ambient_bed.synth_ambient(max(4.0, float(duration or 40) + 1.0),
+                                            os.path.join(WORK, "bed_ambient.wav"))
+            print("[music] generated ambient pad (never repeats)")
+            return bed
+        except Exception as e:  # noqa: BLE001 - a bed is a nice-to-have, never fatal
+            print(f"[music] ambient pad failed ({e}) -- falling back to the default bed")
     url = os.getenv("MUSIC_URL", "").strip()
     if url:
         dst = os.path.join(WORK, "music_url.mp3")
@@ -4719,7 +4744,7 @@ def main():
     _vbv_max = os.environ.get("UPLOAD_MAXRATE", "1000k")
     VBV = ["-maxrate", _vbv_max, "-bufsize", "2000k"]
     ff_inputs, filt, labels, idx = ["-i", captioned], [], ["[0:a]"], 1
-    bed_path = _ensure_music_bed(padded_dur)
+    bed_path = _ensure_music_bed(padded_dur, manifest_music(m))
     if bed_path:
         print(f"[music] mixing bed under voice ({os.path.basename(bed_path)}, vibe={CURRENT_VIBE})")
         ff_inputs += ["-stream_loop", "-1", "-i", bed_path]

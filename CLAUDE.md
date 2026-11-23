@@ -122,6 +122,17 @@ banana-radiation video was produced).
   script on 2026-11-22 16:46 UTC and cancelled a pending manual dispatch (shared concurrency group). Its
   publish steps were skipped (AUTO_PUBLISH_ENABLED not true), so nothing was posted.
 
+## Music (2026-11-23): user does not like it
+User feedback: "not a big fan of the music, I'd probably skip just because of that." Cause found in the log of run
+519: `MUSIC_URL` is EMPTY, so every video used the committed `music_science.mp3`, an **8 s** clip (6.5 s seamless
+unit) looped ~6x under a 40 s video. New, opt-in, nothing changes until chosen: manifest field **`"music"`**
+(`off` | `ambient` | `loop`) or env `MUSIC_MODE`; `ambient` = `ambient_bed.py`, a numpy-synthesized chord pad
+(Am-F-C-G, lowpassed, never repeats, licence-free, ~8 s to render). Four listening samples (current loop / old
+synth pad / new ambient / no music) were sent to the user to pick by ear; **record their pick here and set it
+as the default** (a one-line change in `manifest_music`, or put `"music"` in the manifests). `tests/test_music_mode.py`.
+Also new: manifest **`"xfade": 0.25`** = scene dissolves that stay on the audio timeline (`build_body_xfade`
+rewritten; the old chain let the picture drift ahead by (N-1)*xf; `tests/test_xfade_aligned.py`).
+
 ## Session 2026-11-22 — quality v2 (branch `claude/quality-v2-20261122`; stacks A + B + curiosity gate)
 Two real renders on this work: run 455 (generated script, scored C+/B-) and run 457 (operator
 script + new footage logic, B-). **Read this before trusting any "it passed" claim.**
