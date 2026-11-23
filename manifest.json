@@ -1,88 +1,88 @@
 {
-  "title": "The Waterfall Beneath the Sea",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "underwater waterfall",
-  "metaphor": "ocean circulation engine",
+  "title": "The Planet Where It Rains Diamonds",
+  "viewer_job": "REFRAME",
+  "keyword": "diamond rain",
+  "metaphor": "alien gemstone weather",
   "vibe": "awe",
-  "hook": "The tallest waterfall on Earth is entirely submerged beneath the open ocean.",
-  "hook_headline": "EARTH'S HIDDEN WATERFALL",
-  "script": "The tallest waterfall on Earth is entirely submerged beneath the open ocean. Could an invisible underwater waterfall actually drive our planet's global circulation? In the Denmark Strait, freezing polar water collides with a warmer sea. Being slightly denser, that icy water plummets down a massive slope along the ocean floor. It out-flows a thousand Niagaras combined. That sinking torrent acts like a giant pump, pulling warm tropical water northward. If melting ice weakens this plunge, will Europe freeze while the planet warms?",
+  "hook": "Guess what falls from the sky on Neptune \u2014 whatever you pictured is wrong.",
+  "hook_headline": "RAINING SOLID DIAMONDS",
+  "script": "Guess what falls from the sky on Neptune \u2014 whatever you pictured is wrong. What if you could actually stand beneath that deep blue storm? Ten thousand kilometers down, atmospheric pressure violently strips carbon out of methane gas. Pressure like fifteen hundred elephants on a postage stamp squeezes that carbon into diamond rain. They sink like slow boulders. Near the core, they pool into an ocean where solid diamond icebergs drift. In the outer solar system, our rarest treasure is just regular weather.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "The tallest waterfall on Earth is entirely submerged beneath the open ocean.",
-      "on_screen_text": "underwater waterfall",
-      "search_query": "underwater waterfall ocean",
+      "voiceover": "Guess what falls from the sky on Neptune \u2014 whatever you pictured is wrong.",
+      "on_screen_text": "Neptune sky secret",
+      "search_query": "planet neptune",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Could an invisible underwater waterfall actually drive our planet's global circulation?",
-      "on_screen_text": "driving the climate?",
-      "search_query": "deep ocean current motion",
+      "voiceover": "What if you could actually stand beneath that deep blue storm?",
+      "on_screen_text": "Inside the storm",
+      "search_query": "blue planet space",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "In the Denmark Strait, freezing polar water collides with a warmer sea.",
-      "on_screen_text": "Denmark Strait",
-      "search_query": "greenland sea iceberg ice",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "Ten thousand kilometers down, atmospheric pressure violently strips carbon out of methane gas.",
+      "on_screen_text": "Crushing pressure",
+      "search_query": "dark storm clouds swirling",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "Being slightly denser, that icy water plummets down a massive slope along the ocean floor.",
-      "on_screen_text": "ocean floor drop",
-      "search_query": "deep ocean floor canyon",
-      "motion": "static",
+      "voiceover": "Pressure like fifteen hundred elephants on a postage stamp squeezes that carbon into diamond rain.",
+      "on_screen_text": "Real diamond rain",
+      "search_query": "diamond crystal",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 3,
-      "voiceover": "It out-flows a thousand Niagaras combined.",
-      "on_screen_text": "1000 Niagaras",
-      "search_query": "massive raging waterfall aerial",
+      "voiceover": "They sink like slow boulders.",
+      "on_screen_text": "Sinking crystals",
+      "search_query": "heavy rock sinking water",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "That sinking torrent acts like a giant pump, pulling warm tropical water northward.",
-      "on_screen_text": "global ocean pump",
-      "search_query": "tropical ocean current aerial",
-      "motion": "zoom_out",
+      "voiceover": "Near the core, they pool into an ocean where solid diamond icebergs drift.",
+      "on_screen_text": "Diamond oceans",
+      "search_query": "iceberg floating ocean water",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "If melting ice weakens this plunge, will Europe freeze while the planet warms?",
-      "on_screen_text": "will it stop?",
-      "search_query": "glacier melting into ocean",
+      "voiceover": "In the outer solar system, our rarest treasure is just regular weather.",
+      "on_screen_text": "Cosmic weather",
+      "search_query": "planet neptune space dark",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Could an underwater waterfall shut down Europe's warmth? What do you think?",
-    "The biggest cataract on Earth is completely hidden beneath the waves.",
-    "Dense polar water powers a circulation engine larger than every river on land combined."
+    "Could you imagine diamond rain falling like hail? Which planet has the wildest weather?",
+    "Deep inside Neptune and Uranus, carbon gets squeezed into literal gemstones.",
+    "The strangest weather in our solar system doesn't make water \u2014 it makes diamonds."
   ],
   "hashtags": [
-    "#ocean",
+    "#space",
     "#science",
-    "#nature",
-    "#geology",
-    "#earth",
+    "#astronomy",
+    "#neptune",
+    "#facts",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,14 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-11-23_the-waterfall-beneath-the-sea",
-  "cta_style": "COMMENT",
-  "domain": "ocean"
+  "video_id": "science_2026-11-23_the-planet-where-it-rains-diamonds",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "space",
+  "_factory_contract": {
+    "schema": "content-render-queue-contract-v1",
+    "writer_version": "legacy_v1",
+    "certification_version": "legacy_generation",
+    "source": "buffer",
+    "created_at": "2026-11-23T19:38:28Z"
+  }
 }
