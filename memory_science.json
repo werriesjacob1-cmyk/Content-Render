@@ -1,42 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-07_how-machines-learn-your-brain-code",
-      "metaphor": "merging brain with machine",
-      "viewer_job": "SOCIAL_CURRENCY",
-      "cta_style": "LOOP",
-      "hook_frame": "COMPARISON_COLLISION",
-      "title": "How Machines Learn Your Brain Code",
-      "fact_id": "brain_computer_interfaces",
-      "domain": "neurology",
-      "hook": "A drop of fruit juice in 1969 created the first brain-computer interface.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 8.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 9.0,
-        "clarity": 8.0,
-        "coherence": 7.0,
-        "overall": 8.0
-      },
-      "final_qa": {
-        "footage_matches_narration": 6,
-        "visual_variety": 6,
-        "caption_legible": 7,
-        "narration_flow": 7,
-        "biggest_issue": "Some initial frames feel loosely related to the brain-computer interface subject matter.",
-        "audio_judged": true,
-        "aborted": false
-      }
-    },
-    {
       "video_id": "science_2026-08-08_the-flammable-ocean-floor",
       "metaphor": "ocean floor gas ice",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -442,6 +406,33 @@
         "biggest_issue": "Frames 4 and 5 feature a completely unrelated duck swimming on water while describing deep ocean water density.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-11-23_the-planet-where-it-rains-diamonds",
+      "metaphor": "alien gemstone weather",
+      "viewer_job": "REFRAME",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "CHALLENGE",
+      "title": "The Planet Where It Rains Diamonds",
+      "fact_id": "diamond_rain",
+      "domain": "space",
+      "hook": "Guess what falls from the sky on Neptune \u2014 whatever you pictured is wrong.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 8.0,
+        "overall": 7.57
       }
     }
   ]
