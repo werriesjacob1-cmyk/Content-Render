@@ -1,97 +1,88 @@
 {
-  "title": "Amoeba Memory Without a Brain",
-  "viewer_job": "REFRAME",
-  "keyword": "amoeba memory",
-  "metaphor": "single celled intelligence",
+  "title": "The Waterfall Beneath the Sea",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "underwater waterfall",
+  "metaphor": "ocean circulation engine",
   "vibe": "awe",
-  "hook": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals.",
-  "hook_headline": "MEMORY WITHOUT BRAIN",
-  "script": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals. How can a single cell recall a past food location? Touching food triggers a chemical that permanently widens its microscopic veins. This carves a physical hydraulic highway straight to the nutrition. Its memory is its shape. The altered path persists for up to 72 hours despite constant outside changes. Tear the organism into pieces, and the reconnected fragments still remember where to go. Follow so you do not miss part two.",
+  "hook": "The tallest waterfall on Earth is entirely submerged beneath the open ocean.",
+  "hook_headline": "EARTH'S HIDDEN WATERFALL",
+  "script": "The tallest waterfall on Earth is entirely submerged beneath the open ocean. Could an invisible underwater waterfall actually drive our planet's global circulation? In the Denmark Strait, freezing polar water collides with a warmer sea. Being slightly denser, that icy water plummets down a massive slope along the ocean floor. It out-flows a thousand Niagaras combined. That sinking torrent acts like a giant pump, pulling warm tropical water northward. If melting ice weakens this plunge, will Europe freeze while the planet warms?",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Part one: human memory requires complex neurons, yet a brainless amoeba remembers its meals.",
-      "on_screen_text": "Part 1: Your Body",
-      "search_query": "amoeba moving petri dish",
+      "voiceover": "The tallest waterfall on Earth is entirely submerged beneath the open ocean.",
+      "on_screen_text": "underwater waterfall",
+      "search_query": "underwater waterfall ocean",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "How can a single cell recall a past food location?",
-      "on_screen_text": "Amoeba Memory?",
-      "search_query": "amoeba memory food",
-      "motion": "zoom_out",
+      "voiceover": "Could an invisible underwater waterfall actually drive our planet's global circulation?",
+      "on_screen_text": "driving the climate?",
+      "search_query": "deep ocean current motion",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 4,
-      "voiceover": "Touching food triggers a chemical that permanently widens its microscopic veins.",
-      "on_screen_text": "Internal Highways",
-      "search_query": "liquid flowing through tube",
+      "voiceover": "In the Denmark Strait, freezing polar water collides with a warmer sea.",
+      "on_screen_text": "Denmark Strait",
+      "search_query": "greenland sea iceberg ice",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 4,
-      "voiceover": "This carves a physical hydraulic highway straight to the nutrition.",
-      "on_screen_text": "Hydraulic Memory",
-      "search_query": "amoeba navigation experiment",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "Being slightly denser, that icy water plummets down a massive slope along the ocean floor.",
+      "on_screen_text": "ocean floor drop",
+      "search_query": "deep ocean floor canyon",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 5,
       "duration": 3,
-      "voiceover": "Its memory is its shape.",
-      "on_screen_text": "Memory Is Shape",
-      "search_query": "slime mold spreading time lapse",
-      "motion": "zoom_out",
+      "voiceover": "It out-flows a thousand Niagaras combined.",
+      "on_screen_text": "1000 Niagaras",
+      "search_query": "massive raging waterfall aerial",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 6,
       "duration": 5,
-      "voiceover": "The altered path persists for up to 72 hours despite constant outside changes.",
-      "on_screen_text": "Lasts 72 Hours",
-      "search_query": "slime mold forest floor",
-      "motion": "zoom_in",
+      "voiceover": "That sinking torrent acts like a giant pump, pulling warm tropical water northward.",
+      "on_screen_text": "global ocean pump",
+      "search_query": "tropical ocean current aerial",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 5,
-      "voiceover": "Tear the organism into pieces, and the reconnected fragments still remember where to go.",
-      "on_screen_text": "Rebuilding The Map",
-      "search_query": "slime mold fusing together",
-      "motion": "zoom_in",
-      "footage_mode": "real"
-    },
-    {
-      "id": 8,
-      "duration": 3,
-      "voiceover": "Follow so you do not miss part two.",
-      "on_screen_text": "Follow For Part 2",
-      "search_query": "slime mold branching pattern",
-      "motion": "pan",
+      "voiceover": "If melting ice weakens this plunge, will Europe freeze while the planet warms?",
+      "on_screen_text": "will it stop?",
+      "search_query": "glacier melting into ocean",
+      "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Part 1: Things Happening In Your Body Right Now. Could amoeba memory prove intelligence doesn't need a brain, or is it pure physics?",
-    "A single-celled organism retains a food location for three days with zero neurons.",
-    "Follow for part two of the hidden biology series."
+    "Could an underwater waterfall shut down Europe's warmth? What do you think?",
+    "The biggest cataract on Earth is completely hidden beneath the waves.",
+    "Dense polar water powers a circulation engine larger than every river on land combined."
   ],
   "hashtags": [
+    "#ocean",
     "#science",
-    "#biology",
     "#nature",
-    "#stem",
-    "#microbiology",
+    "#geology",
+    "#earth",
     "#learnontiktok"
   ],
   "render": {
@@ -99,14 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-11-22_amoeba-memory-without-a-brain",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "biology",
-  "_factory_contract": {
-    "schema": "content-render-queue-contract-v1",
-    "writer_version": "legacy_v1",
-    "certification_version": "legacy_generation",
-    "source": "buffer",
-    "created_at": "2026-11-22T15:51:23Z"
-  }
+  "video_id": "science_2026-11-23_the-waterfall-beneath-the-sea",
+  "cta_style": "COMMENT",
+  "domain": "ocean"
 }

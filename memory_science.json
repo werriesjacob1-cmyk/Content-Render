@@ -1,45 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-07_part-1-the-solid-that-is-secretly-a-liqu",
-      "metaphor": "pitch drop experiment",
-      "viewer_job": "REFRAME",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "Part 1: The Solid That Is Secretly A Liquid",
-      "fact_id": "pitch_drop_experiment",
-      "domain": "physics",
-      "hook": "Black tar shatters like glass, but it is secretly dripping right now.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": {
-        "name": "The Universe You Can't See",
-        "part": 1
-      },
-      "quality": {
-        "hook": 7.0,
-        "surprise": 7.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.0
-      },
-      "final_qa": {
-        "footage_matches_narration": 4,
-        "visual_variety": 6,
-        "caption_legible": 7,
-        "narration_flow": 7,
-        "biggest_issue": "Multiple visuals feature irrelevant subjects like cement mixers and blue lab chemicals rather than pitch.",
-        "audio_judged": true,
-        "aborted": true
-      }
-    },
-    {
       "video_id": "science_2026-08-07_how-machines-learn-your-brain-code",
       "metaphor": "merging brain with machine",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -445,6 +406,33 @@
         "biggest_issue": "Frame 3 is a completely blank black screen, disrupting visual continuity.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-11-23_the-waterfall-beneath-the-sea",
+      "metaphor": "ocean circulation engine",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Waterfall Beneath the Sea",
+      "fact_id": "underwater_waterfall",
+      "domain": "ocean",
+      "hook": "The tallest waterfall on Earth is entirely submerged beneath the open ocean.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 6.0,
+        "surprise": 6.0,
+        "escalation": 8.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.57
       }
     }
   ]

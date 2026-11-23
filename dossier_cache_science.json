@@ -1238,5 +1238,33 @@
       "The human heart does not simply squeeze blood like a rubber bulb; it wrings itself out like a wet towel: its outer myofibrils spiral in a left-handed helix while its inner myofibrils form a right-handed helix, causing the apex to twist approximately 15 degrees against the base during systole before springing back during diastole to generate a negative suction pressure that literally vacuums blood into the ventricles."
     ],
     "grounded": true
+  },
+  "d9812acb2ef49e9c": {
+    "facts": [
+      "Most bacteria require a water activity (aw) of at least 0.91 to multiply, but ripe honey sits at an arid 0.50 to 0.60 aw\u2014a zone so chemically thirsty that its osmotic pressure exceeds 100 atmospheres, instantly ripping water out of invading microbial cells via plasmolysis.",
+      "Worker bees lace regurgitated nectar with the enzyme glucose oxidase from their hypopharyngeal glands; in undiluted honey the enzyme lies dormant, but the moment atmospheric moisture or an invading cell touches the surface, it activates, continuously synthesizing sub-lethal washes of gluconic acid and hydrogen peroxide (H2O2) to sanitize itself on demand.",
+      "While the 3,000-year-old Egyptian jars from KV46 are famous, the oldest preserved honey ever discovered was excavated in 2003 inside Bronze Age burial vessels in Borjomi, Georgia\u2014intact, chemically recognizable, and dated to roughly 4,300 to 5,500 years old.",
+      "Honey is fundamentally non-perishable yet can harbor the deadliest biological substance on Earth: it frequently contains dormant endospores of Clostridium botulinum, which remain harmlessly suspended in the sugar matrix for centuries but can germinate in an infant's immature gut, producing lethal botulinum neurotoxin.",
+      "At an osmotic pressure of roughly 10 to 15 megapascals, honey exerts a desiccating vacuum equivalent to plunging a bacterium more than 1,000 meters beneath the ocean, collapsing its internal cellular pressure and shrinking its cytoplasm into an inert husk in minutes.",
+      "Modern hospitals routinely use gamma-irradiated honey dressings (such as Medihoney) to heal intractable diabetic ulcers and surgical wounds infected with MRSA, because bacteria cannot evolve resistance to a simultaneous physical assault of osmotic desiccation, a razor-thin pH of 3.2\u20134.5, and low-dose hydrogen peroxide.",
+      "In 1905, when archaeologist Theodore M. Davis uncovered the intact Valley of the Kings tomb of Yuya and Tjuyu (KV46), excavators opened an alabaster jar and reported that the dark, syrupy residue inside still possessed a faint, distinctly sweet scent of honey after roughly 3,300 years.",
+      "Even when scientists artificially neutralize honey's hydrogen peroxide with catalase, buffer its acidity to neutral, and dilute away its osmotic pressure, certain floral honeys continue to obliterate stubborn bacterial biofilms via unidentified synergies and non-peroxide phytochemical fractions that mass spectrometry has yet to synthesize or isolate.",
+      "Honey preserves neurotoxins as effectively as it preserves itself: in 67 BC, the Heptakometes wiped out three cohorts of Pompey the Great's Roman legions by placing honeycomb along their march filled with grayanotoxins from Rhododendron ponticum nectar, inducing severe hypotension, hallucinations, and incapacitation."
+    ],
+    "grounded": true
+  },
+  "72d9e2715d769ffb": {
+    "facts": [
+      "Located beneath the Denmark Strait between Greenland and Iceland, this submarine cascade plunges roughly 3,500 meters (11,500 feet)\u2014over three and a half times the vertical drop of Angel Falls, making it the tallest waterfall on Earth by a wide margin.",
+      "The entire cataract is triggered by a tiny density contrast of less than 0.05 percent: as near-freezing, highly saline water from the Greenland Sea encounters the warmer Irminger Sea, the fractional difference in weight causes the colder water to slide beneath the warm layer and plummet over a 600-meter-deep ridge.",
+      "The cataract discharges an estimated 3.2 to 3.5 million cubic meters of water per second (over 3 Sverdrups)\u2014a flow rate greater than 1,000 Niagara Falls combined and roughly 16 times the total volumetric outflow of the Amazon River.",
+      "Despite being called a waterfall, the water does not plummet vertically off a cliff: the Earth's Coriolis effect continuously deflects the dense plume to the right, forcing the icy torrent to bank diagonally against the Greenland continental shelf like a submerged river pinned sideways against a mountainside.",
+      "If drained of the surrounding Atlantic, the waterfall would span approximately 160 kilometers (100 miles) wide\u2014spanning the distance from Philadelphia to New York City\u2014and drop down an incline tall enough to stack eight Empire State Buildings end-to-end.",
+      "This underwater cascade directly insulates human civilization against climate extremes: it forms the primary engine driving the Atlantic Meridional Overturning Circulation (AMOC), which draws warm tropical waters northward to keep Western Europe 5 to 10 degrees Celsius warmer than equivalent latitudes elsewhere.",
+      "Because the cascade is completely invisible from the surface, oceanographers couldn't photograph it and instead had to confirm its existence in the 1960s using 'Swallow floats'\u2014pioneering, hollow aluminum tubes calibrated by British oceanographer John C. Swallow to drift weightless at target depths and chirp back acoustic tracking signals.",
+      "Oceanographers still cannot fully explain why the waterfall does not flow as a continuous current, but instead pulses in violent, intermittent 'boluses'\u2014massive cyclonic eddies of freezing water up to 30 kilometers in diameter that burst over the sill every two to four days through poorly understood hydrodynamic triggers.",
+      "Rather than pulverizing benthic habitats, the cascade's speed creates massive submerged 'hydraulic jumps'\u2014standing underwater shockwaves that keep nutrient-dense organic debris suspended above the seabed, feeding thriving deep-sea oases of fragile glass sponges and Lophelia pertusa cold-water corals in an otherwise pitch-black, sediment-starved abyss."
+    ],
+    "grounded": true
   }
 }
