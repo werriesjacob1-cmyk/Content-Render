@@ -433,6 +433,15 @@
         "clarity": 9.0,
         "coherence": 8.0,
         "overall": 7.57
+      },
+      "final_qa": {
+        "footage_matches_narration": 5,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Frame 6 shows an insect in water rather than geological boulders or atmospheric diamond rain.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
