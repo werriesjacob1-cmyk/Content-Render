@@ -6318,6 +6318,132 @@
         "snow glow lightning",
         "blue flash snow storm"
       ]
+    },
+    {
+      "id": "snap_freeze",
+      "domain": "physics",
+      "fact": "A supercooled liquid will freeze instantly when disturbed, turning solid in a split second with a tiny crack that spreads like a wave.",
+      "angle": "instant freeze",
+      "key_terms": [
+        "snap",
+        "freeze",
+        "supercooled"
+      ],
+      "whatif": "What if you could freeze a glass of water just by flicking your finger?",
+      "wow": "The sudden solidification can launch tiny ice shards outward at speeds over 10 m/s, creating a miniature ice explosion.",
+      "queries": [
+        "supercooled water experiment",
+        "instant freeze video",
+        "snap freezing demonstration"
+      ]
+    },
+    {
+      "id": "hand_melt_gallium",
+      "domain": "chemistry",
+      "fact": "Gallium melts at 29.8 °C, so it turns from solid to liquid in the palm of your hand without any external heat source.",
+      "angle": "hand melt",
+      "key_terms": [
+        "gallium",
+        "melting",
+        "body heat"
+      ],
+      "whatif": "What if you could write a secret message with a metal that disappears as soon as you touch it?",
+      "wow": "The liquid gallium can seep into tiny cracks in electronics and then re‑solidify, effectively ‘welding’ the gap without solder.",
+      "queries": [
+        "gallium melting hand",
+        "metal that melts at skin temperature",
+        "gallium repair experiment"
+      ]
+    },
+    {
+      "id": "razor_blade_stomach",
+      "domain": "biology",
+      "fact": "Human stomach acid (hydrochloric acid, pH ≈ 1.5) is strong enough to dissolve a clean razor blade in a matter of hours.",
+      "angle": "acid power",
+      "key_terms": [
+        "stomach acid",
+        "razor blade",
+        "dissolve"
+      ],
+      "whatif": "What if you could use your own stomach chemistry to break down metal waste?",
+      "wow": "The same acid can also dissolve small amounts of gold, which is why gold‑coated pills are used for targeted drug delivery.",
+      "queries": [
+        "stomach acid dissolve metal",
+        "human gastric acid strength",
+        "razor blade in stomach acid"
+      ]
+    },
+    {
+      "id": "brain_led_power",
+      "domain": "neurology",
+      "fact": "The human brain generates about 20 watts of electrical power—enough to light a small LED bulb continuously.",
+      "angle": "brain power",
+      "key_terms": [
+        "brain electricity",
+        "LED",
+        "20 watts"
+      ],
+      "whatif": "What if you could harvest brain power to run a tiny wearable device?",
+      "wow": "During intense concentration, the brain’s power output can spike to over 30 watts for a few seconds, briefly brightening a high‑efficiency LED.",
+      "queries": [
+        "brain electricity power",
+        "LED lit by brain",
+        "human brain power output"
+      ]
+    },
+    {
+      "id": "zero_multiple_origins",
+      "domain": "math",
+      "fact": "The concept of zero as a number was invented independently by the Maya, the ancient Indians, and the early Mesopotamians.",
+      "angle": "zero origins",
+      "key_terms": [
+        "zero",
+        "independent invention",
+        "ancient cultures"
+      ],
+      "whatif": "What if the idea of ‘nothing’ emerged in completely separate societies at the same time?",
+      "wow": "Each culture used zero not only as a placeholder but also for calculations, paving the way for modern algebra centuries before contact.",
+      "queries": [
+        "origin of zero number",
+        "ancient zero invention",
+        "maya zero placeholder"
+      ]
+    },
+    {
+      "id": "raindrop_microlens_fire",
+      "domain": "light",
+      "fact": "A single spherical raindrop can focus sunlight to a point hot enough to ignite dry leaves, acting as a natural magnifying glass.",
+      "angle": "raindrop fire",
+      "key_terms": [
+        "raindrop lens",
+        "sunlight focus",
+        "ignition"
+      ],
+      "whatif": "What if a storm could start a wildfire simply by the geometry of its drops?",
+      "wow": "Under optimal angles, a cluster of droplets can create a chain reaction of tiny fires that merge into a larger blaze within minutes.",
+      "queries": [
+        "raindrop lens fire",
+        "sunlight focused by water droplet",
+        "natural magnifying glass raindrop"
+      ]
+    },
+    {
+      "id": "ancient_air_bubbles",
+      "domain": "earth",
+      "fact": "Some ancient basalt rocks trap air bubbles that are over 800 million years old, preserving the exact composition of Earth’s atmosphere at that time.",
+      "angle": "time capsule air",
+      "key_terms": [
+        "air bubbles",
+        "basalt",
+        "ancient atmosphere"
+      ],
+      "whatif": "What if we could read the climate story of half a billion years from a single rock?",
+      "wow": "Analysis of those bubbles shows a surprisingly high oxygen level, suggesting early complex life may have existed much earlier than thought.",
+      "queries": [
+        "ancient air bubbles in rock",
+        "basalt trapped atmosphere",
+        "800 million year air bubbles"
+      ]
     }
   ]
 }
