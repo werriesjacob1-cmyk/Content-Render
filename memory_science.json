@@ -1,42 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-08_the-flammable-ocean-floor",
-      "metaphor": "ocean floor gas ice",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "MYTH_FLIP",
-      "title": "The Flammable Ocean Floor",
-      "fact_id": "frozen_methane",
-      "domain": "geology",
-      "hook": "You think the deep ocean floor is solid rock \u2014 it is actually flammable ice.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 6.0,
-        "surprise": 8.0,
-        "escalation": 8.0,
-        "payoff": 8.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.0
-      },
-      "final_qa": {
-        "footage_matches_narration": 6,
-        "visual_variety": 6,
-        "caption_legible": 7,
-        "narration_flow": 7,
-        "biggest_issue": "The abstract city graphic in the final frame feels disconnected from deep sea methane deposits.",
-        "audio_judged": true,
-        "aborted": false
-      }
-    },
-    {
       "video_id": "science_2026-08-09_venus-where-a-day-outlasts-a-year",
       "metaphor": "planet's broken clock",
       "viewer_job": "SOCIAL_CURRENCY",
@@ -442,6 +406,33 @@
         "biggest_issue": "Frame 6 shows an insect in water rather than geological boulders or atmospheric diamond rain.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-11-24_the-collapsing-family-tree",
+      "metaphor": "collapsing family tree",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "The Collapsing Family Tree",
+      "fact_id": "everyone_is_your_ancestor",
+      "domain": "math",
+      "hook": "You are directly related to every single human being alive today.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 8.0,
+        "payoff": 8.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 8.14
       }
     }
   ]
