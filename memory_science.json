@@ -433,6 +433,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 8.14
+      },
+      "final_qa": {
+        "footage_matches_narration": 6,
+        "visual_variety": 7,
+        "caption_legible": 3,
+        "narration_flow": 8,
+        "biggest_issue": "Frames 7 and 8 have huge, garbled burned-in watermarks or subtitle text covering the bottom half of the screen.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
