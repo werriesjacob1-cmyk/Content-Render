@@ -385,6 +385,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.57
+      },
+      "final_qa": {
+        "footage_matches_narration": 8,
+        "visual_variety": 8,
+        "caption_legible": 9,
+        "narration_flow": 9,
+        "biggest_issue": "The fire footage at the end does not clearly represent bioluminescent fungi or an ecosystem talking in pure light.",
+        "audio_judged": true,
+        "aborted": false
       }
     },
     {
