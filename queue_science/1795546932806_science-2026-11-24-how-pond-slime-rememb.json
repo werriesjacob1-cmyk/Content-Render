@@ -1,0 +1,103 @@
+{
+  "title": "How Pond Slime Remembers",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "microbial memory",
+  "metaphor": "brainless memories in nature",
+  "vibe": "eerie",
+  "hook": "Your brain needs billions of neurons to remember, but pond slime needs none.",
+  "hook_headline": "MEMORY WITHOUT A BRAIN",
+  "script": "Your brain needs billions of neurons to remember, but pond slime needs none. How does a single microbe recall where it was poisoned? When microbes survive a toxic environment, they alter internal iron levels like living scar tissue. That physical memory changes how they swim hours after the danger disappears. They learn without a brain. Even wilder, that stored experience passes directly down to four generations of offspring. Entire swarms inherit survival tricks from ancestors who faced threats they never saw.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Your brain needs billions of neurons to remember, but pond slime needs none.",
+      "on_screen_text": "brainless memory",
+      "search_query": "green pond water surface",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "How does a single microbe recall where it was poisoned?",
+      "on_screen_text": "microbial memory",
+      "search_query": "geothermal pool bubbling steam",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "When microbes survive a toxic environment, they alter internal iron levels like living scar tissue.",
+      "on_screen_text": "chemical scars",
+      "search_query": "rusty metal dripping water",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "That physical memory changes how they swim hours after the danger disappears.",
+      "on_screen_text": "altered behavior",
+      "search_query": "petri dish laboratory shelf",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 3,
+      "voiceover": "They learn without a brain.",
+      "on_screen_text": "no brain needed",
+      "search_query": "yellow sulfur hot spring",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "Even wilder, that stored experience passes directly down to four generations of offspring.",
+      "on_screen_text": "inherited memories",
+      "search_query": "algae floating calm lake",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "Entire swarms inherit survival tricks from ancestors who faced threats they never saw.",
+      "on_screen_text": "inherited survival",
+      "search_query": "dark swamp water reflection",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "Could microbial memory change how we define intelligence? Would you call this real memory or pure chemistry?",
+    "Single-celled microbes can store memories and pass them down four generations without a nervous system.",
+    "The wildest adaptation in biology isn't teeth or claws. It is chemical memory."
+  ],
+  "hashtags": [
+    "#biology",
+    "#science",
+    "#nature",
+    "#microbiology",
+    "#weirdfacts",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-11-24_how-pond-slime-remembers",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "microbiology",
+  "_factory_contract": {
+    "schema": "content-render-queue-contract-v1",
+    "writer_version": "legacy_v1",
+    "certification_version": "legacy_generation",
+    "source": "buffer",
+    "created_at": "2026-11-24T19:13:37Z"
+  }
+}

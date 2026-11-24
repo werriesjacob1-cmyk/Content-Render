@@ -1,0 +1,103 @@
+{
+  "title": "The Forest That Talks in Light",
+  "viewer_job": "MYTH_BUSTER",
+  "keyword": "glowing mushroom",
+  "metaphor": "forest runway lights",
+  "vibe": "awe",
+  "hook": "A single glowing mushroom can shine bright enough for you to read.",
+  "hook_headline": "IT CAN LIGHT A ROOM",
+  "script": "A single glowing mushroom can shine bright enough for you to read. Why would a fungus burn precious energy shining into the pitch black? It runs on the exact same acid found inside morning coffee. It even sets an internal timer. People assume the light is an accident, but it is an airport runway. The green beacon recruits passing beetles as taxis to spread its spores. What looks like quiet rot is actually an ecosystem talking in pure light.",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "A single glowing mushroom can shine bright enough for you to read.",
+      "on_screen_text": "THE GLOWING MUSHROOM",
+      "search_query": "glowing mushroom night forest",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 5,
+      "voiceover": "Why would a fungus burn precious energy shining into the pitch black?",
+      "on_screen_text": "WASTED ENERGY?",
+      "search_query": "dark forest canopy night",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "It runs on the exact same acid found inside morning coffee.",
+      "on_screen_text": "POWERED BY COFFEE ACID",
+      "search_query": "coffee beans roasting close up",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 3,
+      "voiceover": "It even sets an internal timer.",
+      "on_screen_text": "NIGHT SHIFT ONLY",
+      "search_query": "timelapse sunrise forest trees",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 5,
+      "voiceover": "People assume the light is an accident, but it is an airport runway.",
+      "on_screen_text": "NOT AN ACCIDENT",
+      "search_query": "glowing mushroom rotting log",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 5,
+      "voiceover": "The green beacon recruits passing beetles as taxis to spread its spores.",
+      "on_screen_text": "INSECT TAXIS",
+      "search_query": "beetle crawling on moss",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 5,
+      "voiceover": "What looks like quiet rot is actually an ecosystem talking in pure light.",
+      "on_screen_text": "FOREST ECOSYSTEM",
+      "search_query": "deep forest moss glowing",
+      "motion": "zoom_out",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "A glowing mushroom looks like magic, but would you walk through this forest alone at night?",
+    "Nature built living lanterns long before we discovered electricity.",
+    "The secret communication network hidden on the forest floor."
+  ],
+  "hashtags": [
+    "#nature",
+    "#science",
+    "#biology",
+    "#forest",
+    "#plants",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-11-24_the-forest-that-talks-in-light",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "fungi",
+  "_factory_contract": {
+    "schema": "content-render-queue-contract-v1",
+    "writer_version": "legacy_v1",
+    "certification_version": "legacy_generation",
+    "source": "buffer",
+    "created_at": "2026-11-24T19:13:37Z"
+  }
+}

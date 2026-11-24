@@ -1,0 +1,103 @@
+{
+  "title": "Why You Can Smell Rain Before It Hits",
+  "viewer_job": "REFRAME",
+  "keyword": "smell of rain",
+  "metaphor": "human sensory radar",
+  "vibe": "awe",
+  "hook": "Every time you smell rain, you are actually smelling bacteria.",
+  "hook_headline": "BETTER THAN A SHARK",
+  "script": "Every time you smell rain, you are actually smelling bacteria. Could your own nose really out-smell a hunting shark? Falling raindrops trap air against the ground, launching microscopic aerosols into the wind. This mist carries geosmin, the bacterial compound behind the fresh scent of petrichor. A shark tracks blood in seawater, but you detect geosmin at parts per trillion. A single speck in an Olympic pool is enough to trigger your nose. Did our ancestors evolve this superpower to find water, or to avoid poisoned springs?",
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 4,
+      "voiceover": "Every time you smell rain, you are actually smelling bacteria.",
+      "on_screen_text": "smell of rain",
+      "search_query": "rain on pavement",
+      "motion": "zoom_in",
+      "footage_mode": "ai"
+    },
+    {
+      "id": 2,
+      "duration": 4,
+      "voiceover": "Could your own nose really out-smell a hunting shark?",
+      "on_screen_text": "better than sharks",
+      "search_query": "shark swimming underwater",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "voiceover": "Falling raindrops trap air against the ground, launching microscopic aerosols into the wind.",
+      "on_screen_text": "trapped air bursting",
+      "search_query": "rain falling ground",
+      "motion": "pan",
+      "footage_mode": "real"
+    },
+    {
+      "id": 4,
+      "duration": 5,
+      "voiceover": "This mist carries geosmin, the bacterial compound behind the fresh scent of petrichor.",
+      "on_screen_text": "meet petrichor",
+      "search_query": "wet soil closeup",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 5,
+      "duration": 5,
+      "voiceover": "A shark tracks blood in seawater, but you detect geosmin at parts per trillion.",
+      "on_screen_text": "extreme sensitivity",
+      "search_query": "great white shark ocean",
+      "motion": "zoom_out",
+      "footage_mode": "real"
+    },
+    {
+      "id": 6,
+      "duration": 4,
+      "voiceover": "A single speck in an Olympic pool is enough to trigger your nose.",
+      "on_screen_text": "one single speck",
+      "search_query": "swimming pool water surface",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 7,
+      "duration": 6,
+      "voiceover": "Did our ancestors evolve this superpower to find water, or to avoid poisoned springs?",
+      "on_screen_text": "smell of rain origin",
+      "search_query": "desert landscape dry ground",
+      "motion": "zoom_out",
+      "footage_mode": "ai"
+    }
+  ],
+  "captions": [
+    "The secret behind the smell of rain. Was it to track water or avoid poison?",
+    "Why your nose can detect geosmin faster than a shark scents blood.",
+    "The hidden biology floating inside every fresh rainstorm."
+  ],
+  "hashtags": [
+    "#science",
+    "#biology",
+    "#nature",
+    "#rain",
+    "#facts",
+    "#learnontiktok"
+  ],
+  "render": {
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%",
+    "resolution": "1080x1920"
+  },
+  "video_id": "science_2026-11-24_why-you-can-smell-rain-before-it-hits",
+  "cta_style": "COMMENT",
+  "domain": "weather",
+  "_factory_contract": {
+    "schema": "content-render-queue-contract-v1",
+    "writer_version": "legacy_v1",
+    "certification_version": "legacy_generation",
+    "source": "buffer",
+    "created_at": "2026-11-24T19:13:37Z"
+  }
+}
