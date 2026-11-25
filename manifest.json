@@ -1,88 +1,88 @@
 {
-  "title": "Why You Can Smell Rain Before It Hits",
-  "viewer_job": "REFRAME",
-  "keyword": "smell of rain",
-  "metaphor": "human sensory radar",
-  "vibe": "awe",
-  "hook": "Every time you smell rain, you are actually smelling bacteria.",
-  "hook_headline": "BETTER THAN A SHARK",
-  "script": "Every time you smell rain, you are actually smelling bacteria. Could your own nose really out-smell a hunting shark? Falling raindrops trap air against the ground, launching microscopic aerosols into the wind. This mist carries geosmin, the bacterial compound behind the fresh scent of petrichor. A shark tracks blood in seawater, but you detect geosmin at parts per trillion. A single speck in an Olympic pool is enough to trigger your nose. Did our ancestors evolve this superpower to find water, or to avoid poisoned springs?",
+  "title": "How Pond Slime Remembers",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "microbial memory",
+  "metaphor": "brainless memories in nature",
+  "vibe": "eerie",
+  "hook": "Your brain needs billions of neurons to remember, but pond slime needs none.",
+  "hook_headline": "MEMORY WITHOUT A BRAIN",
+  "script": "Your brain needs billions of neurons to remember, but pond slime needs none. How does a single microbe recall where it was poisoned? When microbes survive a toxic environment, they alter internal iron levels like living scar tissue. That physical memory changes how they swim hours after the danger disappears. They learn without a brain. Even wilder, that stored experience passes directly down to four generations of offspring. Entire swarms inherit survival tricks from ancestors who faced threats they never saw.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Every time you smell rain, you are actually smelling bacteria.",
-      "on_screen_text": "smell of rain",
-      "search_query": "rain on pavement",
+      "voiceover": "Your brain needs billions of neurons to remember, but pond slime needs none.",
+      "on_screen_text": "brainless memory",
+      "search_query": "green pond water surface",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "Could your own nose really out-smell a hunting shark?",
-      "on_screen_text": "better than sharks",
-      "search_query": "shark swimming underwater",
-      "motion": "static",
+      "voiceover": "How does a single microbe recall where it was poisoned?",
+      "on_screen_text": "microbial memory",
+      "search_query": "geothermal pool bubbling steam",
+      "motion": "pan",
       "footage_mode": "real"
     },
     {
       "id": 3,
       "duration": 5,
-      "voiceover": "Falling raindrops trap air against the ground, launching microscopic aerosols into the wind.",
-      "on_screen_text": "trapped air bursting",
-      "search_query": "rain falling ground",
-      "motion": "pan",
-      "footage_mode": "real"
-    },
-    {
-      "id": 4,
-      "duration": 5,
-      "voiceover": "This mist carries geosmin, the bacterial compound behind the fresh scent of petrichor.",
-      "on_screen_text": "meet petrichor",
-      "search_query": "wet soil closeup",
+      "voiceover": "When microbes survive a toxic environment, they alter internal iron levels like living scar tissue.",
+      "on_screen_text": "chemical scars",
+      "search_query": "rusty metal dripping water",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
+      "id": 4,
+      "duration": 4,
+      "voiceover": "That physical memory changes how they swim hours after the danger disappears.",
+      "on_screen_text": "altered behavior",
+      "search_query": "petri dish laboratory shelf",
+      "motion": "static",
+      "footage_mode": "real"
+    },
+    {
       "id": 5,
-      "duration": 5,
-      "voiceover": "A shark tracks blood in seawater, but you detect geosmin at parts per trillion.",
-      "on_screen_text": "extreme sensitivity",
-      "search_query": "great white shark ocean",
+      "duration": 3,
+      "voiceover": "They learn without a brain.",
+      "on_screen_text": "no brain needed",
+      "search_query": "yellow sulfur hot spring",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 4,
-      "voiceover": "A single speck in an Olympic pool is enough to trigger your nose.",
-      "on_screen_text": "one single speck",
-      "search_query": "swimming pool water surface",
+      "duration": 5,
+      "voiceover": "Even wilder, that stored experience passes directly down to four generations of offspring.",
+      "on_screen_text": "inherited memories",
+      "search_query": "algae floating calm lake",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "Did our ancestors evolve this superpower to find water, or to avoid poisoned springs?",
-      "on_screen_text": "smell of rain origin",
-      "search_query": "desert landscape dry ground",
-      "motion": "zoom_out",
+      "duration": 5,
+      "voiceover": "Entire swarms inherit survival tricks from ancestors who faced threats they never saw.",
+      "on_screen_text": "inherited survival",
+      "search_query": "dark swamp water reflection",
+      "motion": "zoom_in",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "The secret behind the smell of rain. Was it to track water or avoid poison?",
-    "Why your nose can detect geosmin faster than a shark scents blood.",
-    "The hidden biology floating inside every fresh rainstorm."
+    "Could microbial memory change how we define intelligence? Would you call this real memory or pure chemistry?",
+    "Single-celled microbes can store memories and pass them down four generations without a nervous system.",
+    "The wildest adaptation in biology isn't teeth or claws. It is chemical memory."
   ],
   "hashtags": [
-    "#science",
     "#biology",
+    "#science",
     "#nature",
-    "#rain",
-    "#facts",
+    "#microbiology",
+    "#weirdfacts",
     "#learnontiktok"
   ],
   "render": {
@@ -90,9 +90,9 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-11-24_why-you-can-smell-rain-before-it-hits",
-  "cta_style": "COMMENT",
-  "domain": "weather",
+  "video_id": "science_2026-11-24_how-pond-slime-remembers",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "microbiology",
   "_factory_contract": {
     "schema": "content-render-queue-contract-v1",
     "writer_version": "legacy_v1",
