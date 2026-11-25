@@ -1328,5 +1328,19 @@
       "The collapse of the cavitation bubble triggers true sonoluminescence: peak localized core temperatures inside the imploding vapor cavity momentarily spike up to 20,000 Kelvin\u2014generating a sub-nanosecond flash of light that makes this creature one of the only known organisms capable of producing light purely through fluid physics rather than chemical bioluminescence."
     ],
     "grounded": true
+  },
+  "2d42a12fbb628687": {
+    "facts": [
+      "American cockroaches (Periplaneta americana) can survive up to 30 days without a head in cool, humid conditions; because they are poikilotherms that require almost zero calories while stationary, they do not starve to death, but instead slowly succumb to dehydration after losing roughly 20 to 30 percent of their body mass in moisture.",
+      "Respiration is completely decoupled from the head: cockroaches do not possess lungs and breathe through 10 pairs of valve-like openings called spiracles lining their thorax and abdomen, which feed oxygen directly into branching tracheal tubes without relying on red blood cells, hemolymph transport, or brainstem-directed breathing cycles.",
+      "Decapitation creates two surviving organisms: when isolated, kept cool, and nourished in an insect saline bath, the severed head itself remains viable for hours, flicking its antennae and flexing its maxillary palps in response to chemical vapors and tactile stimuli.",
+      "Rather than paralyzing the insect, losing its head can make a cockroach walk continuously: the subesophageal ganglion located inside the head normally serves as an inhibitory brake on locomotion, meaning decapitation removes the organism's neural 'stop' mechanism and triggers endless, rhythmic stepping in the legs.",
+      "A human loses consciousness in seconds after decapitation because a 120 mmHg hydraulic pump drains liters of blood from open arteries, whereas a cockroach operates an open circulatory system at near 0 mmHg pressure\u2014hemolymph pools through an open body cavity like liquid in a damp sponge, allowing clotted hemocytes to seal the neck wound in minutes without catastrophic hemorrhage.",
+      "If you crush or detach only the head of a kitchen cockroach with a slipper, it can still escape: the insect's rear sensory appendages (cerci) connect directly to giant interneurons in the terminal abdominal ganglion, triggering a headless escape sprint within 11 milliseconds of detecting a shift in air currents.",
+      "To test the absolute limits of headless survival, entomologist Christopher Tipping decapitated American cockroaches under a microscope and sealed their open cervical stumps with dental wax to halt fluid evaporation, keeping them alive for multiple weeks inside glass jars until desiccation ultimately set in.",
+      "In 1962, neurobiologist G. Adrian Horridge demonstrated that completely headless cockroaches suspended over water can learn to keep an extended leg lifted to avoid repeated electrical shocks, leaving an enduring mystery: scientists still cannot fully explain how a decentralized thoracic ganglion of roughly 1,000 neurons forms and retains operant memory without a brain.",
+      "A decapitated female cockroach can still successfully mate and produce offspring: because the sequence of courtship posturing, spermatophore reception, and ootheca (egg purse) construction is orchestrated entirely by caudal abdominal ganglia, a headless female can lay viable, fertilized egg batches days after losing her head."
+    ],
+    "grounded": true
   }
 }
