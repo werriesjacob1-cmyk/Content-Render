@@ -457,6 +457,15 @@
         "clarity": 9.0,
         "coherence": 9.0,
         "overall": 7.57
+      },
+      "final_qa": {
+        "footage_matches_narration": 4,
+        "visual_variety": 6,
+        "caption_legible": 9,
+        "narration_flow": 9,
+        "biggest_issue": "Footage largely consists of generic or disconnected imagery (like geysers, sewer grates, and dark reflections) instead of showing microbes or slime behavior under a microscope.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
