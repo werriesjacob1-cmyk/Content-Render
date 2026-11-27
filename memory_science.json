@@ -1,33 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-13_your-fingerprints-aren-t-in-your-genes",
-      "metaphor": "womb's random art",
-      "viewer_job": "REFRAME",
-      "cta_style": "COMMENT",
-      "hook_frame": "BODY_SCENARIO",
-      "title": "Your fingerprints aren't in your genes",
-      "fact_id": "twin_fingerprints",
-      "domain": "body",
-      "hook": "Right now, your fingertips are pressing against your past.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 8,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 7.0,
-        "clarity": 9.0,
-        "coherence": 9.0,
-        "overall": 8.14
-      }
-    },
-    {
       "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
       "metaphor": "the hidden hunters",
       "viewer_job": "EXISTENTIAL_CHILL",
@@ -466,6 +439,36 @@
         "biggest_issue": "Footage largely consists of generic or disconnected imagery (like geysers, sewer grates, and dark reflections) instead of showing microbes or slime behavior under a microscope.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-11-27_why-the-sun-shouldn-t-burn",
+      "metaphor": "cosmic quantum engine",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "COMMENT",
+      "hook_frame": "IMPOSSIBLE_FACT",
+      "title": "Why the Sun Shouldn't Burn",
+      "fact_id": "sun_quantum_tunneling",
+      "domain": "physics",
+      "hook": "Part one: the Sun's core is actually too cold to shine.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": {
+        "name": "The Universe You Can't See",
+        "part": 1
+      },
+      "quality": {
+        "hook": 7.0,
+        "surprise": 8.0,
+        "escalation": 7.0,
+        "payoff": 7.0,
+        "rewatch": 7.0,
+        "clarity": 7.0,
+        "coherence": 8.0,
+        "overall": 7.29
       }
     }
   ]
