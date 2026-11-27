@@ -469,6 +469,15 @@
         "clarity": 7.0,
         "coherence": 8.0,
         "overall": 7.29
+      },
+      "final_qa": {
+        "footage_matches_narration": 6,
+        "visual_variety": 5,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Frame 4 features an abstract green fibrous texture that disconnects from the cosmic context.",
+        "audio_judged": true,
+        "aborted": false
       }
     }
   ]
