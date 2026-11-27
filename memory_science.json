@@ -1,33 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-14_spiders-out-eat-all-of-us",
-      "metaphor": "the hidden hunters",
-      "viewer_job": "EXISTENTIAL_CHILL",
-      "cta_style": "SAVE_WORTHY",
-      "hook_frame": "STAKES_SCENARIO",
-      "title": "Spiders Out-Eat All of Us",
-      "fact_id": "spider_biomass",
-      "domain": "biology",
-      "hook": "Spiders in your walls eat more meat every year than you do.",
-      "vibe": "eerie",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 8.0,
-        "surprise": 9.0,
-        "escalation": 7.0,
-        "payoff": 8.0,
-        "rewatch": 6.0,
-        "clarity": 9.0,
-        "coherence": 10.0,
-        "overall": 8.14
-      }
-    },
-    {
       "video_id": "science_2026-08-16_light-that-doesn-t-move",
       "metaphor": "stopped sunbeams",
       "viewer_job": "REFRAME",
@@ -478,6 +451,33 @@
         "biggest_issue": "Frame 4 features an abstract green fibrous texture that disconnects from the cosmic context.",
         "audio_judged": true,
         "aborted": false
+      }
+    },
+    {
+      "video_id": "science_2026-11-27_the-metal-that-remembers",
+      "metaphor": "living shape memory metal",
+      "viewer_job": "EXISTENTIAL_CHILL",
+      "cta_style": "SAVE_WORTHY",
+      "hook_frame": "BODY_SCENARIO",
+      "title": "The Metal That Remembers",
+      "fact_id": "shape_memory_metal",
+      "domain": "materials",
+      "hook": "Right now, warm blood in your chest is forcing metal to remember its shape.",
+      "vibe": "awe",
+      "structure": {
+        "scene_count": 7,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 8.0,
+        "surprise": 7.0,
+        "escalation": 7.0,
+        "payoff": 7.0,
+        "rewatch": 8.0,
+        "clarity": 9.0,
+        "coherence": 9.0,
+        "overall": 7.86
       }
     }
   ]

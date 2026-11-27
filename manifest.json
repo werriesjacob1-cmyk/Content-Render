@@ -1,88 +1,88 @@
 {
-  "title": "Why the Sun Shouldn't Burn",
-  "viewer_job": "SOCIAL_CURRENCY",
-  "keyword": "the Sun's core",
-  "metaphor": "cosmic quantum engine",
+  "title": "The Metal That Remembers",
+  "viewer_job": "EXISTENTIAL_CHILL",
+  "keyword": "metal memory",
+  "metaphor": "living shape memory metal",
   "vibe": "awe",
-  "hook": "Part one: the Sun's core is actually too cold to shine.",
-  "hook_headline": "TOO COLD TO SHINE",
-  "script": "Part one: the Sun's core is actually too cold to shine. At 15 million degrees, how do protons ever cross the Coulomb barrier? Every rule of classical physics says their positive charges must push them apart. They only fuse because quantum tunnelling lets them slip through that wall. The odds are so low that a single proton waits billions of years. Without that loophole, no stars exist. If stars burned by simple heat alone, would life have ever had time to evolve? Follow for part two.",
+  "hook": "Right now, warm blood in your chest is forcing metal to remember its shape.",
+  "hook_headline": "METAL THAT HEALS",
+  "script": "Right now, warm blood inside a patient's chest is forcing metal to remember its shape. What if you could crumple a wire and watch it heal itself? A shape memory alloy called nitinol does that under gentle heat. Its atoms shift into mirror images without breaking bonds, so it returns to shape. As this metal springs back, it exerts enough force to lift an anvil. Surgeons crush tiny nitinol stents in ice water so body heat springs them open inside blocked arteries. Heat does not weaken this alloy, it wakes it up.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Part one: the Sun's core is actually too cold to shine.",
-      "on_screen_text": "UNSEEN UNIVERSE: PT 1",
-      "search_query": "sun surface plasma",
+      "voiceover": "Right now, warm blood inside a patient's chest is forcing metal to remember its shape.",
+      "on_screen_text": "metal memory",
+      "search_query": "metal wire bending",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
-      "duration": 5,
-      "voiceover": "At 15 million degrees, how do protons ever cross the Coulomb barrier?",
-      "on_screen_text": "THE SUN'S CORE",
-      "search_query": "solar flare closeup",
+      "duration": 4,
+      "voiceover": "What if you could crumple a wire and watch it heal itself?",
+      "on_screen_text": "self healing wire",
+      "search_query": "hands twisting metal wire",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 5,
-      "voiceover": "Every rule of classical physics says their positive charges must push them apart.",
-      "on_screen_text": "REPULSION BARRIER",
-      "search_query": "boiling plasma surface",
-      "motion": "zoom_out",
+      "duration": 4,
+      "voiceover": "A shape memory alloy called nitinol does that under gentle heat.",
+      "on_screen_text": "nitinol alloy",
+      "search_query": "heated metal glow",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 4,
       "duration": 5,
-      "voiceover": "They only fuse because quantum tunnelling lets them slip through that wall.",
-      "on_screen_text": "QUANTUM TUNNELLING",
-      "search_query": "glowing star space",
+      "voiceover": "Its atoms shift into mirror images without breaking bonds, so it returns to shape.",
+      "on_screen_text": "metal memory lock",
+      "search_query": "metal spring uncoiling",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 5,
-      "voiceover": "The odds are so low that a single proton waits billions of years.",
-      "on_screen_text": "INSIDE THE SUN'S CORE",
-      "search_query": "solar flare space view",
+      "duration": 3,
+      "voiceover": "As this metal springs back, it exerts enough force to lift an anvil.",
+      "on_screen_text": "pure recovery force",
+      "search_query": "heavy iron blacksmith anvil",
       "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 3,
-      "voiceover": "Without that loophole, no stars exist.",
-      "on_screen_text": "NO LOOPHOLE NO STARS",
-      "search_query": "deep space dark galaxy",
-      "motion": "zoom_out",
+      "duration": 6,
+      "voiceover": "Surgeons crush tiny nitinol stents in ice water so body heat springs them open inside blocked arteries.",
+      "on_screen_text": "unfolding in arteries",
+      "search_query": "surgeon hands sterile gloves",
+      "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
-      "duration": 6,
-      "voiceover": "If stars burned by simple heat alone, would life have ever had time to evolve? Follow for part two.",
-      "on_screen_text": "PART 2 TOMORROW",
-      "search_query": "earth seen from space",
-      "motion": "zoom_in",
+      "duration": 4,
+      "voiceover": "Heat does not weaken this alloy, it wakes it up.",
+      "on_screen_text": "alive under heat",
+      "search_query": "flame torch metal heating",
+      "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "The Universe You Can't See (Part 1): The Sun's core is technically too cold to burn. Would life exist if it burned faster?",
-    "Classical physics says the sun should be completely dark.",
-    "A quantum loophole is the only reason sunlight reaches Earth."
+    "Does metal memory feel more like advanced engineering or biology?",
+    "Nitinol does not bend like normal steel\u2014its atomic lattice simply tilts and snaps back.",
+    "Millions of people walk around with warm blood powering self-expanding nitinol stents."
   ],
   "hashtags": [
-    "#space",
     "#science",
-    "#astronomy",
     "#physics",
-    "#sun",
+    "#materials",
+    "#engineering",
+    "#technology",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +90,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-11-27_why-the-sun-shouldn-t-burn",
-  "cta_style": "COMMENT",
-  "domain": "physics"
+  "video_id": "science_2026-11-27_the-metal-that-remembers",
+  "cta_style": "SAVE_WORTHY",
+  "domain": "materials"
 }
