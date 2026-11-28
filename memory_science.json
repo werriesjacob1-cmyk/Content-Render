@@ -1,33 +1,6 @@
 {
   "history": [
     {
-      "video_id": "science_2026-08-16_light-that-doesn-t-move",
-      "metaphor": "stopped sunbeams",
-      "viewer_job": "REFRAME",
-      "cta_style": "LOOP",
-      "hook_frame": "IMPOSSIBLE_FACT",
-      "title": "Light that doesn\u2019t move",
-      "fact_id": "slow_light_lab",
-      "domain": "light",
-      "hook": "A sunbeam can be trapped in a jar.",
-      "vibe": "awe",
-      "structure": {
-        "scene_count": 7,
-        "used_whatif": true
-      },
-      "series": null,
-      "quality": {
-        "hook": 8.0,
-        "surprise": 7.0,
-        "escalation": 9.0,
-        "payoff": 6.0,
-        "rewatch": 8.0,
-        "clarity": 9.0,
-        "coherence": 8.0,
-        "overall": 7.86
-      }
-    },
-    {
       "video_id": "science_2026-09-01_lightning-storms-the-hidden-power-you-ne",
       "metaphor": "invisible energy",
       "viewer_job": "MYTH_BUSTER",
@@ -487,6 +460,33 @@
         "biggest_issue": "The footage includes irrelevant stock clips like a person working out in a gym and a burning tiki torch instead of showing nitinol shape-memory effects.",
         "audio_judged": true,
         "aborted": true
+      }
+    },
+    {
+      "video_id": "science_2026-11-28_the-shrimp-that-boils-water",
+      "metaphor": "underwater sonic weapon",
+      "viewer_job": "SOCIAL_CURRENCY",
+      "cta_style": "LOOP",
+      "hook_frame": "DIRECT_QUESTION",
+      "title": "The Shrimp That Boils Water",
+      "fact_id": "pistol_shrimp_bubble",
+      "domain": "animals",
+      "hook": "A two-inch shrimp can punch water hard enough to spark actual light.",
+      "vibe": "chaotic",
+      "structure": {
+        "scene_count": 8,
+        "used_whatif": true
+      },
+      "series": null,
+      "quality": {
+        "hook": 7.0,
+        "surprise": 6.0,
+        "escalation": 7.0,
+        "payoff": 6.0,
+        "rewatch": 6.0,
+        "clarity": 8.0,
+        "coherence": 9.0,
+        "overall": 7.0
       }
     }
   ]

@@ -1,88 +1,97 @@
 {
-  "title": "The Metal That Remembers",
-  "viewer_job": "EXISTENTIAL_CHILL",
-  "keyword": "metal memory",
-  "metaphor": "living shape memory metal",
-  "vibe": "awe",
-  "hook": "Right now, warm blood in your chest is forcing metal to remember its shape.",
-  "hook_headline": "METAL THAT HEALS",
-  "script": "Right now, warm blood inside a patient's chest is forcing metal to remember its shape. What if you could crumple a wire and watch it heal itself? A shape memory alloy called nitinol does that under gentle heat. Its atoms shift into mirror images without breaking bonds, so it returns to shape. As this metal springs back, it exerts enough force to lift an anvil. Surgeons crush tiny nitinol stents in ice water so body heat springs them open inside blocked arteries. Heat does not weaken this alloy, it wakes it up.",
+  "title": "The Shrimp That Boils Water",
+  "viewer_job": "SOCIAL_CURRENCY",
+  "keyword": "pistol shrimp",
+  "metaphor": "underwater sonic weapon",
+  "vibe": "chaotic",
+  "hook": "A two-inch shrimp can punch water hard enough to spark actual light.",
+  "hook_headline": "HOTTER THAN THE SUN",
+  "script": "A two-inch shrimp can punch water hard enough to spark actual light. How does a tiny claw create temperatures nearly as hot as the Sun? The pistol shrimp locks its claw like a spring, loading muscle power into a biological catapult. When it snaps, a high-speed water jet rips open an empty cavitation bubble. Then the bubble collapses. The imploding void reaches over 4,700 degrees, flashing with light before the heat can spread. That shockwave stuns prey instantly and can even blind military submarine sonar. All sparked by a strike faster than a bullet underwater.",
   "scenes": [
     {
       "id": 1,
       "duration": 4,
-      "voiceover": "Right now, warm blood inside a patient's chest is forcing metal to remember its shape.",
-      "on_screen_text": "metal memory",
-      "search_query": "metal wire bending",
+      "voiceover": "A two-inch shrimp can punch water hard enough to spark actual light.",
+      "on_screen_text": "PUNCHING LIGHT",
+      "search_query": "pistol shrimp reef",
       "motion": "zoom_in",
       "footage_mode": "ai"
     },
     {
       "id": 2,
       "duration": 4,
-      "voiceover": "What if you could crumple a wire and watch it heal itself?",
-      "on_screen_text": "self healing wire",
-      "search_query": "hands twisting metal wire",
+      "voiceover": "How does a tiny claw create temperatures nearly as hot as the Sun?",
+      "on_screen_text": "PISTOL SHRIMP SECRET",
+      "search_query": "coral reef shrimp",
       "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 3,
-      "duration": 4,
-      "voiceover": "A shape memory alloy called nitinol does that under gentle heat.",
-      "on_screen_text": "nitinol alloy",
-      "search_query": "heated metal glow",
-      "motion": "zoom_in",
+      "duration": 5,
+      "voiceover": "The pistol shrimp locks its claw like a spring, loading muscle power into a biological catapult.",
+      "on_screen_text": "BIOLOGICAL CATAPULT",
+      "search_query": "pistol shrimp claw",
+      "motion": "zoom_out",
       "footage_mode": "real"
     },
     {
       "id": 4,
-      "duration": 5,
-      "voiceover": "Its atoms shift into mirror images without breaking bonds, so it returns to shape.",
-      "on_screen_text": "metal memory lock",
-      "search_query": "metal spring uncoiling",
+      "duration": 4,
+      "voiceover": "When it snaps, a high-speed water jet rips open an empty cavitation bubble.",
+      "on_screen_text": "CAVITATION BUBBLE",
+      "search_query": "underwater bubbles macro",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 5,
-      "duration": 3,
-      "voiceover": "As this metal springs back, it exerts enough force to lift an anvil.",
-      "on_screen_text": "pure recovery force",
-      "search_query": "heavy iron blacksmith anvil",
-      "motion": "zoom_out",
+      "duration": 2,
+      "voiceover": "Then the bubble collapses.",
+      "on_screen_text": "SUDDEN COLLAPSE",
+      "search_query": "water splash macro motion",
+      "motion": "static",
       "footage_mode": "real"
     },
     {
       "id": 6,
-      "duration": 6,
-      "voiceover": "Surgeons crush tiny nitinol stents in ice water so body heat springs them open inside blocked arteries.",
-      "on_screen_text": "unfolding in arteries",
-      "search_query": "surgeon hands sterile gloves",
+      "duration": 5,
+      "voiceover": "The imploding void reaches over 4,700 degrees, flashing with light before the heat can spread.",
+      "on_screen_text": "4700 DEGREES",
+      "search_query": "underwater light flash",
       "motion": "zoom_in",
       "footage_mode": "real"
     },
     {
       "id": 7,
       "duration": 4,
-      "voiceover": "Heat does not weaken this alloy, it wakes it up.",
-      "on_screen_text": "alive under heat",
-      "search_query": "flame torch metal heating",
+      "voiceover": "That shockwave stuns prey instantly and can even blind military submarine sonar.",
+      "on_screen_text": "BLINDING SONAR",
+      "search_query": "submarine underwater ocean",
+      "motion": "zoom_in",
+      "footage_mode": "real"
+    },
+    {
+      "id": 8,
+      "duration": 4,
+      "voiceover": "All sparked by a strike faster than a bullet underwater.",
+      "on_screen_text": "THE PISTOL SHRIMP",
+      "search_query": "pistol shrimp hunting",
       "motion": "zoom_out",
       "footage_mode": "ai"
     }
   ],
   "captions": [
-    "Does metal memory feel more like advanced engineering or biology?",
-    "Nitinol does not bend like normal steel\u2014its atomic lattice simply tilts and snaps back.",
-    "Millions of people walk around with warm blood powering self-expanding nitinol stents."
+    "The pistol shrimp punches hard enough to mimic the Sun. Did you think the flash came from the claw itself, or the collapsing water?",
+    "Nature packed an implosion furnace into a two-inch crustacean.",
+    "Why pistol shrimp can out-shout military submarines using cavitation physics."
   ],
   "hashtags": [
-    "#science",
+    "#ocean",
+    "#nature",
     "#physics",
-    "#materials",
-    "#engineering",
-    "#technology",
+    "#animals",
+    "#science",
     "#learnontiktok"
   ],
   "render": {
@@ -90,7 +99,7 @@
     "rate": "-5%",
     "resolution": "1080x1920"
   },
-  "video_id": "science_2026-11-27_the-metal-that-remembers",
-  "cta_style": "SAVE_WORTHY",
-  "domain": "materials"
+  "video_id": "science_2026-11-28_the-shrimp-that-boils-water",
+  "cta_style": "LOOP",
+  "domain": "animals"
 }
