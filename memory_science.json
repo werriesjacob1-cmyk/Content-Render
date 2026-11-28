@@ -487,6 +487,15 @@
         "clarity": 8.0,
         "coherence": 9.0,
         "overall": 7.0
+      },
+      "final_qa": {
+        "footage_matches_narration": 4,
+        "visual_variety": 6,
+        "caption_legible": 7,
+        "narration_flow": 7,
+        "biggest_issue": "Footage includes irrelevant subjects like a sea turtle and scuba diver instead of focusing consistently on the pistol shrimp mechanism.",
+        "audio_judged": true,
+        "aborted": true
       }
     }
   ]
